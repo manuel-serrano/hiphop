@@ -1,3 +1,7 @@
+function must_be_implemented(context) {
+   throw "Runtime error: must be implemented! " + context.constructor.name;
+}
+
 function Signal(name, value) {
    /* value == false: pure signal
       value != false: valued signal */
@@ -33,18 +37,41 @@ function Statement() {
    this.w_k = [null, null];
 }
 
+/* Get the mask telling which wire are on on a begining of a tick.
+   Note that only "inputs" wires are needed here. */
+
+Statement.prototype.get_config = function(incarnation_lvl) {
+   var mask = 0;
+
+   mask |= this.w_go != null ? w_go.state[incarnation_lvl] : 0;
+   mask |= this.w_res != null ? w_res.state[incarnation_lvl] : 0;
+   mask |= this.w_susp != null ? w_susp.state[incarnation_lvl] : 0;
+   mask |= this.w_kill != null ? w_kill.state[incarnation_lvl] : 0;
+
+   return mask;
+}
+
+Statement.prototype.run = function() {
+   must_be_implemented(this);
+}
+
 function EmitStatement(signal) {
    Statement.call(this);
    this.signal = null;
 }
 
-EmitStatement.prototype.baseClass = new Statement();
+EmitStatement.prototype = new Statement();
 
 function PauseStatement() {
    Statement.call(this);
+   this.reg = false;
 }
 
-PauseStatement.prototype.baseClass = new Statement()
+PauseStatement.prototype = new Statement()
+
+PauseStatement.prototype.run() {
+   this.reg = 
+}
 
 exports.Signal = Signal;
 exports.EmitStatement = EmitStatement;
