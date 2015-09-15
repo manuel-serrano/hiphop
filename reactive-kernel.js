@@ -9,23 +9,20 @@ function Signal(name, value, scope_lvl) {
    this.name = name;
    this.set = false;
    this.value = value == undefined ? false : value;
-   this.scope_lvl = scope_lvl;
 }
 
 /* A wire connect two statements.
    Example: the GO wire of suspend to GO wire of pause.
-   The `state` array, indexed by incarnation level, contains the status
-   (set or unset) of the wire */
+   The `state` attribute, contains the status (set or unset) of the wire */
 
 function Wire(input, output) {
    this.input = input;
    this.output = output;
-   this.state = [ false ]
+   this.state = false;
 }
 
 /* Root class of any kernel statement. Attributes prefixed by `w_` are
-   wire that connect it to other statements. They can be a list, since a
-   wire can by divided into two branchs (eg. the GO wire of `pause`) */
+   wire that connect it to other statements. */
 
 function Statement() {
    this.w_go = null;
@@ -44,15 +41,15 @@ function Statement() {
 Statement.prototype.get_config = function(incarnation_lvl) {
    var mask = 0;
 
-   mask |= this.w_go != null ? w_go.state[incarnation_lvl] : 0;
-   mask |= this.w_res != null ? w_res.state[incarnation_lvl] : 0;
-   mask |= this.w_susp != null ? w_susp.state[incarnation_lvl] : 0;
-   mask |= this.w_kill != null ? w_kill.state[incarnation_lvl] : 0;
+   mask |= this.w_go != null ? w_go.state : 0;
+   mask |= this.w_res != null ? w_res.state : 0;
+   mask |= this.w_susp != null ? w_susp.state : 0;
+   mask |= this.w_kill != null ? w_kill.state : 0;
 
    return mask;
 }
 
-Statement.prototype.run = function(incarnation_lvl) {
+Statement.prototype.run = function() {
    must_be_implemented(this);
 }
 
@@ -63,8 +60,7 @@ function EmitStatement(signal) {
 
 EmitStatement.prototype = new Statement();
 
-EmitStatement.prototype.run(incarnation_lvl) {
-   
+EmitStatement.prototype.run() {
 }
 
 function PauseStatement() {
@@ -75,12 +71,12 @@ function PauseStatement() {
 PauseStatement.prototype = new Statement()
 
 PauseStatement.prototype.run(incarnation_lvl) {
-   if (this.w_res[incarnation_lvl] && this.reg) {
+   if (this.w_res && this.reg) {
       this.reg = false;
-      this.w_k[0][incarnation_lvl].out.run(incarnation_lvl + 1);
+      this.w_k[0].out.run();
    } else {
       this.reg = true;
-      this.w_k[1][incarnation_lvl].out.run(incarnation_lvl);
+      this.w_k[1].out.run();
    }
 }
 
