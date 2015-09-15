@@ -2,13 +2,14 @@ function must_be_implemented(context) {
    throw "Runtime error: must be implemented! " + context.constructor.name;
 }
 
-function Signal(name, value) {
+function Signal(name, value, scope_lvl) {
    /* value == false: pure signal
       value != false: valued signal */
 
    this.name = name;
    this.set = false;
    this.value = value == undefined ? false : value;
+   this.scope_lvl = scope_lvl;
 }
 
 /* A wire connect two statements.
@@ -51,7 +52,7 @@ Statement.prototype.get_config = function(incarnation_lvl) {
    return mask;
 }
 
-Statement.prototype.run = function() {
+Statement.prototype.run = function(incarnation_lvl) {
    must_be_implemented(this);
 }
 
@@ -62,6 +63,10 @@ function EmitStatement(signal) {
 
 EmitStatement.prototype = new Statement();
 
+EmitStatement.prototype.run(incarnation_lvl) {
+   
+}
+
 function PauseStatement() {
    Statement.call(this);
    this.reg = false;
@@ -69,8 +74,14 @@ function PauseStatement() {
 
 PauseStatement.prototype = new Statement()
 
-PauseStatement.prototype.run() {
-   this.reg = 
+PauseStatement.prototype.run(incarnation_lvl) {
+   if (this.w_res[incarnation_lvl] && this.reg) {
+      this.reg = false;
+      this.w_k[0][incarnation_lvl].out.run(incarnation_lvl + 1);
+   } else {
+      this.reg = true;
+      this.w_k[1][incarnation_lvl].out.run(incarnation_lvl);
+   }
 }
 
 exports.Signal = Signal;
