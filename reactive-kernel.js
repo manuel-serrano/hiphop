@@ -33,8 +33,6 @@ function Wire(stmt1, stmt2) {
 /* Root class of any kernel statement. */
 
 function Statement() {
-   this.machine = null;
-
    this.wires = [];
    this.wires[GO] = null;
    this.wires[RES] = null;
@@ -63,6 +61,39 @@ Statement.prototype.run = function() {
    must_be_implemented(this);
 }
 
+Statement.prototype.connect = function(out_wire, stmt, in_wire) {
+   var wire = new Wire(this, stmt);
+   this.wires[out_wire] = wire;
+   stmt.wires[in_wire] = wire;
+}
+
+Statement.prototype.connect_direct = function(stmt, wire) {
+   this.connect(wire, stmt, wire);
+}
+
+Statement.prototype.connect_return_input = function(ret_code, stmt, in_wire) {
+   if (ret_code < 0)
+      throw "Invalid code";
+
+   var wire = new Wire(this, stmt);
+   this.wires[K][ret_code] = wire;
+   stmt.wires[in_wire] = wire;
+}
+
+Statement.prototype.connect_return_return = function(ret_code1, stmt,
+						     ret_code2) {
+   if (ret_code1 < 0 || ret_code2 < 0)
+      throw "Invalid code";
+
+   var wire = new Wire(this, stmt);
+   this.wires[K][ret_code1] = wire;
+   stmt.wires[K][ret_code2] = wire;
+}
+
+Statement.prototype.connect_return_direct = function(stmt, ret_code) {
+   this.connect_return_return(ret_code, stmt, ret_code);
+}
+
 function EmitStatement(signal) {
    Statement.call(this);
    this.signal = signal;
@@ -84,9 +115,10 @@ EmitStatement.prototype.run = function() {
    this.signal.set = false;
 }
 
-function PauseStatement() {
+function PauseStatement(machine) {
    Statement.call(this);
    this.reg = false;
+   this.machine = machine;
 }
 
 PauseStatement.prototype = new Statement()
@@ -104,61 +136,23 @@ PauseStatement.prototype.run = function() {
    }
 }
 
+function PresentStatement() {}
+
 function ReactiveMachine() {
    Statement.call(this);
    this.seq = -1;
    this.resume_stmt = null;
-   delete this.machine;
 }
 
 ReactiveMachine.prototype = new Statement();
 
-ReactiveMachine.prototype.add_stmt = function(stmt) {
-   if (stmt == this)
-      return;
-   stmt.machine = this;
-}
+/* GO and RES wires of global environment are always set */
 
-ReactiveMachine.prototype.connect = function(stmt1, w1, stmt2, w2) {
-   var wire = new Wire(stmt1, stmt2);
+ReactiveMachine.prototype.connect = function(out_wire, stmt, in_wire) {
+   Statement.prototype.connect.call(this, out_wire, stmt, in_wire);
 
-   stmt1.wires[w1] = wire;
-   stmt2.wires[w2] = wire;
-
-   /* GO and RES wires of global environment are always set */
-
-   if (stmt1 == this && (w1 == GO || w1 == RES))
-      stmt1.wires[w1].set = true;
-
-   this.add_stmt(stmt1);
-   this.add_stmt(stmt2);
-}
-
-ReactiveMachine.prototype.connect_return = function(stmt1, code, stmt2, w) {
-   if (code < 0)
-      throw "Invalid return code";
-
-   var wire = new Wire(stmt1, stmt2);
-
-   stmt1.wires[K][code] = wire;
-   stmt2.wires[w] = wire;
-
-   this.add_stmt(stmt1);
-   this.add_stmt(stmt2);
-}
-
-ReactiveMachine.prototype.connect_return_direct = function(stmt1, code1,
-							   stmt2, code2) {
-   if (code1 < 0 || code2 < 0)
-      throw "Invalid return codes";
-
-   var wire = new Wire(stmt1, stmt2);
-
-   stmt1.wires[K][code1] = wire;
-   stmt2.wires[K][code2] = wire;
-
-   this.add_stmt(stmt1);
-   this.add_stmt(stmt2);
+   if (out_wire == GO || out_wire == RES)
+      this.wires[out_wire].set = true;
 }
 
 ReactiveMachine.prototype.react = function(seq) {
