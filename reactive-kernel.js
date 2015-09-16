@@ -7,6 +7,10 @@ var KILL = 3;
 var SEL = 4;
 var K = 5;
 
+/* As RES/SUSP wires are never used for conditionnal, we reuse it as well */
+var GO_THEN = 1;
+var GO_ELSE = 2;
+
 function must_be_implemented(context) {
    throw "Runtime error: must be implemented! " + context.constructor.name;
 }
@@ -136,7 +140,54 @@ PauseStatement.prototype.run = function() {
    }
 }
 
-function PresentStatement() {}
+function PresentStatement(signal) {
+   Statement.call(this);
+   this.signal = signal;
+}
+
+PresentStatement.prototype = new Statement();
+
+PresentStatement.prototype.connect_then = function(stmt, in_wire) {
+   var wire = new Wire(this, stmt);
+   this.wires[GO_THEN] = wire;
+   stmt.wires[in_wire] = wire;
+}
+
+PresentStatement.prototype.connect_else = function(stmt, in_wire) {
+   var wire = new Wire(this, stmt);
+   this.wires[GO_ELSE] = wire;
+   stmt.wires[in_wire] = wire;
+}
+
+PresentStatement.prototype.connect_then_return = function(stmt, ret_code) {
+   var wire = new Wire(this, stmt);
+   this.wires[GO_THEN] = wire;
+   stmt.wires[K][ret_code] = wire;
+}
+
+PresentStatement.prototype.connect_else_return = function(stmt, ret_code) {
+   var wire = new Wire(this, stmt);
+   this.wires[GO_ELSE] = wire;
+   stmt.wires[K][ret_code] = wire;
+}
+
+PresentStatement.prototype.run = function() {
+   if (!this.wires[GO])
+      return;
+
+   var wire;
+
+   if (this.signal.set)
+      wire = this.wires[GO_THEN];
+   else
+      wire = this.wires[GO_ELSE];
+
+   wire.set = true;
+   wire.stmt2.run();
+
+   /* See comment on pause about that */
+   wire.set = false;
+}
 
 function ReactiveMachine() {
    Statement.call(this);
@@ -179,6 +230,7 @@ ReactiveMachine.prototype.run = function() {
 exports.Signal = Signal;
 exports.EmitStatement = EmitStatement;
 exports.PauseStatement = PauseStatement;
+exports.PresentStatement = PresentStatement;
 exports.ReactiveMachine = ReactiveMachine;
 
 exports.GO = GO;
