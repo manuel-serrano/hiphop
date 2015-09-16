@@ -95,6 +95,7 @@ PauseStatement.prototype.run = function() {
    if (this.wires[RES] && this.reg) {
       this.reg = false;
       this.machine.resume_stmt = null;
+      this.wires[K][0].set = true;
       this.wires[K][0].stmt2.run();
    } else if (this.wires[GO].set) {
       this.reg = true;

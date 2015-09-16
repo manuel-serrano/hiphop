@@ -26,7 +26,5 @@ reactive_machine.connect_return_direct(emit_stmt, 0, reactive_machine, 0);
 console.log("reactive machine ready...");
 
 reactive_machine.react(0);
-console.log(reactive_machine);
 
 reactive_machine.react(1);
-console.log(reactive_machine);
