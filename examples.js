@@ -4,8 +4,11 @@ var rk = require("./reactive-kernel.js");
 
 /*
   <ReactiveMachine>
-     <Pause />
-     <Emit signal=${s} />
+     <pause />
+     <emit signal=${s} />
+     <present signal=${s}>
+        <emit signal=${t} />
+     </present>
   </ReactiveMachine>
 */
 
