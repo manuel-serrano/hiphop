@@ -200,6 +200,10 @@ PresentStatement.prototype.run = function() {
    wire.set = false;
 }
 
+function make_loop(begin, end) {
+   end.connect_return_input(0, begin, GO);
+}
+
 function ReactiveMachine() {
    Statement.call(this);
    this.seq = -1;
@@ -243,6 +247,7 @@ exports.EmitStatement = EmitStatement;
 exports.PauseStatement = PauseStatement;
 exports.PresentStatement = PresentStatement;
 exports.ReactiveMachine = ReactiveMachine;
+exports.make_loop = make_loop;
 
 exports.GO = GO;
 exports.RES = RES;
