@@ -42,3 +42,4 @@ console.log("reactive machine ready...");
 reactive_machine.react(0);
 
 reactive_machine.react(1);
+

@@ -1,15 +1,11 @@
 "use strict"
 
-var GO = 0;
-var RES = 1;
-var SUSP = 2;
-var KILL = 3;
-var SEL = 4;
-var K = 5;
-
-/* As RES/SUSP wires are never used for conditionnal, we reuse it as well */
-var GO_THEN = 1;
-var GO_ELSE = 2;
+var GO = "w_go";
+var RES = "w_res";
+var SUSP = "w_susp";
+var KILL = "w_kill";
+var SEL = "w_sel";
+var K = "w_k";
 
 function must_be_implemented(context) {
    throw "Runtime error: must be implemented! " + context.constructor.name;
@@ -37,28 +33,14 @@ function Wire(stmt1, stmt2) {
 /* Root class of any kernel statement. */
 
 function Statement() {
-   this.wires = [];
-   this.wires[GO] = null;
-   this.wires[RES] = null;
-   this.wires[SUSP] = null;
-   this.wires[KILL] = null;
-   this.wires[SEL] = null;
+   this.w_go = [];
+   this.w_res = [];
+   this.w_susp = [];
+   this.w_kill = [];
+   this.w_sel = [];
 
    /* Any statement has at least two terminaison branch: K0 and K1 */
-   this.wires[K] = [null, null];
-}
-
-/* Get the mask telling which wire are on on a begining of a tick.
-   Note that only "inputs" wires are needed here. */
-
-Statement.prototype.get_config = function() {
-   var mask = 0;
-
-   mask |= this.wires[GO] != null ? this.wires[GO].set : 0;
-   mask |= this.wires[RES] != null ? this.wires[RES].set : 0;
-   mask |= this.wires[SUSP] != null ? this.wires[SUSP].set : 0;
-   mask |= this.wires[KILL] != null ? this.wires[KILL].set : 0;
-   return mask;
+   this.w_k = [[], []];
 }
 
 Statement.prototype.run = function() {
@@ -67,8 +49,31 @@ Statement.prototype.run = function() {
 
 Statement.prototype.connect = function(out_wire, stmt, in_wire) {
    var wire = new Wire(this, stmt);
-   this.wires[out_wire] = wire;
-   stmt.wires[in_wire] = wire;
+
+   /* As JS properties are hashed in the object, we can access to w_go, w_X
+      with this[wire] since wire matches to the property name */
+   this[out_wire].push(wire);
+   stmt[in_wire].push(wire);
+}
+
+Statement.prototype.is_set_OR = function(wire) {
+   for (var i in this[wire]) {
+      if (this[wire][i].set)
+	 return true;
+   }
+   return false;
+}
+
+Statement.prototype.is_set_return_OR = function(ret_code)  {
+   for (var i in this.w_k[ret_code])
+      if (this.w_k[ret_code][i].set)
+	 return true;
+   return false;
+}
+
+Statement.prototype.init_return_wire = function(return_code) {
+   if (this.w_k[return_code] == undefined)
+      this.w_k[return_code] = [];
 }
 
 Statement.prototype.connect_direct = function(stmt, wire) {
@@ -80,8 +85,10 @@ Statement.prototype.connect_return_input = function(ret_code, stmt, in_wire) {
       throw "Invalid code";
 
    var wire = new Wire(this, stmt);
-   this.wires[K][ret_code] = wire;
-   stmt.wires[in_wire] = wire;
+
+   this.init_return_wire(ret_code);
+   this.w_k[ret_code].push(wire);
+   stmt[in_wire].push(wire);
 }
 
 Statement.prototype.connect_return_return = function(ret_code1, stmt,
@@ -90,8 +97,10 @@ Statement.prototype.connect_return_return = function(ret_code1, stmt,
       throw "Invalid code";
 
    var wire = new Wire(this, stmt);
-   this.wires[K][ret_code1] = wire;
-   stmt.wires[K][ret_code2] = wire;
+   this.init_return_wire(ret_code1);
+   this.w_k[ret_code1].push(wire);
+   stmt.init_return_wire(ret_code2);
+   stmt.w_k[ret_code2].push(wire);
 }
 
 Statement.prototype.connect_return_direct = function(stmt, ret_code) {
@@ -106,17 +115,16 @@ function EmitStatement(signal) {
 EmitStatement.prototype = new Statement();
 
 EmitStatement.prototype.run = function() {
-   if (!this.wires[GO].set)
+   if (!this.is_set_OR(GO))
       return;
 
    this.signal.set = true;
    if (this.signal.emit_cb)
       this.signal.emit_cb();
-   this.wires[K][0].stmt2.run();
-
-   /* TODO: Maybe it's wrong to reset the signal here (because of parallels).
-      That case, make a list to signal to reset on reactive machine */
+   this.w_k[0][0].set = true;
+   this.w_k[0][0].stmt2.run();
    this.signal.set = false;
+   this.w_k[0][0].set = false;
 }
 
 function PauseStatement(machine) {
@@ -128,64 +136,67 @@ function PauseStatement(machine) {
 PauseStatement.prototype = new Statement()
 
 PauseStatement.prototype.run = function() {
-   if (this.wires[RES] && this.reg) {
+   if (this.is_set_OR(RES) && this.reg) {
       this.reg = false;
       this.machine.resume_stmt = null;
-      this.wires[K][0].set = true;
-      this.wires[K][0].stmt2.run();
-   } else if (this.wires[GO].set) {
+      this.w_k[0][0].set = true;
+      this.w_k[0][0].stmt2.run();
+      this.w_k[0][0].set = false;
+   } else if (this.is_set_OR(GO)) {
       this.reg = true;
       this.machine.resume_stmt = this;
-      this.wires[K][1].stmt2.run();
+      this.w_k[1][0].set = true;
+      this.w_k[1][0].stmt2.run();
+      this.w_k[1][0].set = false;
    }
 }
 
 function PresentStatement(signal) {
    Statement.call(this);
    this.signal = signal;
+   this.w_go_then = null;
+   this.w_go_else = null;
 }
 
 PresentStatement.prototype = new Statement();
 
 PresentStatement.prototype.connect_then = function(stmt, in_wire) {
    var wire = new Wire(this, stmt);
-   this.wires[GO_THEN] = wire;
-   stmt.wires[in_wire] = wire;
+   this.w_go_then = wire;
+   stmt[in_wire].push(wire);
 }
 
 PresentStatement.prototype.connect_else = function(stmt, in_wire) {
    var wire = new Wire(this, stmt);
-   this.wires[GO_ELSE] = wire;
-   stmt.wires[in_wire] = wire;
+   this.w_go_else = wire;
+   stmt[in_wire].push(wire);
 }
 
 PresentStatement.prototype.connect_then_return = function(stmt, ret_code) {
    var wire = new Wire(this, stmt);
-   this.wires[GO_THEN] = wire;
-   stmt.wires[K][ret_code] = wire;
+   this.w_go_then = wire;
+   stmt.w_k[ret_code].push(wire);
 }
 
 PresentStatement.prototype.connect_else_return = function(stmt, ret_code) {
    var wire = new Wire(this, stmt);
-   this.wires[GO_ELSE] = wire;
-   stmt.wires[K][ret_code] = wire;
+   this.w_go_else = wire;
+   stmt.w_k[ret_code].push(wire);
 }
 
 PresentStatement.prototype.run = function() {
-   if (!this.wires[GO])
+   if (!this.is_set_OR(GO))
       return;
 
    var wire;
 
    if (this.signal.set)
-      wire = this.wires[GO_THEN];
+      wire = this.w_go_then;
    else
-      wire = this.wires[GO_ELSE];
+      wire = this.w_go_else;
 
    wire.set = true;
    wire.stmt2.run();
-
-   /* See comment on pause about that */
    wire.set = false;
 }
 
@@ -203,7 +214,7 @@ ReactiveMachine.prototype.connect = function(out_wire, stmt, in_wire) {
    Statement.prototype.connect.call(this, out_wire, stmt, in_wire);
 
    if (out_wire == GO || out_wire == RES)
-      this.wires[out_wire].set = true;
+      this[out_wire][0].set = true;
 }
 
 ReactiveMachine.prototype.react = function(seq) {
@@ -216,10 +227,10 @@ ReactiveMachine.prototype.react = function(seq) {
    if (this.resume_stmt != null)
       this.resume_stmt.run();
    else
-      this.wires[GO].stmt2.run();
+      this.w_go[0].stmt2.run();
 
-   if ((this.wires[K][1].set && resume_stmt == null)
-       || (this.wires[K][0].set && resume_stmt != null))
+   if ((this.is_set_return_OR(1) && resume_stmt == null)
+       || (this.is_set_return_OR(0) && resume_stmt != null))
       throw "Unconsistent state";
 }
 
