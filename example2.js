@@ -35,6 +35,7 @@ rm.connect_direct(emitS, rk.GO);
 emitS.connect_return_input(0, present, rk.GO);
 present.connect_then(emitT, rk.GO);
 emitT.connect_return_input(0, pause, rk.GO);
+//emitT.connect_return_input(0, emitV, rk.GO);
 present.connect_else(pause, rk.GO); /* TODO exit present? */
 rm.connect_direct(pause, rk.RES);
 pause.connect_return_direct(rm, 1);
