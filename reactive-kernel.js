@@ -278,6 +278,37 @@ Sequence.prototype.run = function() {
    this.k[0].set = this.k_in[0].set;
 }
 
+function Loop(circuit) {
+   Circuit.call(this);
+   this.go_in = circuit.go = new Wire(this, circuit);
+   this.res_in = circuit.res = new Wire(this, circuit);
+   this.susp_in = circuit.susp = new Wire(this, circuit);
+   this.kill_in = circuit.kill = new Wire(this, circuit);
+   this.sel_in = circuit.sel = new Wire(circuit, this);
+   for(var i in circuit.k)
+      this.k_in[i] = new Wire(this, circuit);
+}
+
+Loop.prototype = new Circuit();
+
+Loop.prototype.run = function() {
+   var loop = true;
+
+   while (loop) {
+      this.go_in.set = this.go.set;
+      this.res_in.set = this.res.set;
+      this.susp_in.set = this.susp.set;
+      this.kill_in.set = this.kill.set;
+
+      this.go_in.stmt_out.run();
+
+      for (var i in this.k_in)
+	 this.k[i].set = this.k_in[i].set;
+
+      loop = this.k[0].set;
+   }
+}
+
 exports.Signal = Signal;
 exports.Emit = Emit;
 exports.Pause = Pause;
