@@ -128,16 +128,12 @@ Pause.prototype.run = function() {
    if (this.res.set && this.reg) {
       this.reg = false;
       this.k[0].set = true;
-   }
-
-   if (this.susp.set && this.sel.set && !this.kill.set)
-      this.reg = true;
-
-   if (this.go.set) {
+   } else if (this.go.set) {
       if (!this.kill.set)
 	 this.reg = true;
       this.k[1].set = true;
-   }
+   } else if (this.susp.set && this.sel.set && !this.kill.set)
+      this.reg = true;
 }
 
 /* Present test - Figure 11.5 page 117
@@ -287,4 +283,5 @@ exports.Emit = Emit;
 exports.Pause = Pause;
 exports.Present = Present;
 exports.Sequence = Sequence;
+exports.Loop = Loop;
 exports.ReactiveMachine = ReactiveMachine;

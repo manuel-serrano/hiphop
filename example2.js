@@ -16,15 +16,15 @@ var reactive = require("./reactive-kernel.js");
 */
 
 var sigS = new reactive.Signal("S", false, function() {
-   console.out("EMIT S");
+   console.log("EMIT S");
 });
 
 var sigT = new reactive.Signal("T", false, function() {
-   console.out("EMIT T");
+   console.log("EMIT T");
 });
 
 var sigV = new reactive.Signal("V", false, function() {
-   console.out("EMIT V");
+   console.log("EMIT V");
 });
 
 var emitS = new reactive.Emit(sigS);
