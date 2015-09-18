@@ -1,6 +1,6 @@
 "use strict"
 
-var rk = require("./reactive-kernel.js");
+var reactive = require("./reactive-kernel.js");
 
 /*
   <ReactiveMachine>
@@ -15,37 +15,26 @@ var rk = require("./reactive-kernel.js");
   </ReactiveMachine>
 */
 
-var rm = new rk.ReactiveMachine();
-var pause = new rk.PauseStatement(rm);
-var s = new rk.Signal("S", false, function() {
-   console.log("EMIT " + this.name)
+var sigS = new reactive.Signal("S", false, function() {
+   console.out("EMIT S");
 });
-var t = new rk.Signal("T", false, function() {
-   console.log("EMIT " + this.name)
+
+var sigT = new reactive.Signal("T", false, function() {
+   console.out("EMIT T");
 });
-var v = new rk.Signal("V", false, function() {
-   console.log("EMIT " + this.name);
+
+var sigV = new reactive.Signal("V", false, function() {
+   console.out("EMIT V");
 });
-var present = new rk.PresentStatement(s);
-var emitS = new rk.EmitStatement(s);
-var emitT = new rk.EmitStatement(t);
-var emitV = new rk.EmitStatement(v);
 
-rm.connect_direct(emitS, rk.GO);
-emitS.connect_return_input(0, present, rk.GO);
-present.connect_then(emitT, rk.GO);
-emitT.connect_return_input(0, pause, rk.GO);
-//emitT.connect_return_input(0, emitV, rk.GO);
-present.connect_else(pause, rk.GO); /* TODO exit present? */
-rm.connect_direct(pause, rk.RES);
-pause.connect_return_direct(rm, 1);
-pause.connect_return_input(0, emitV, rk.GO);
-rk.make_loop(emitS, emitV);
+var emitS = new reactive.Emit(sigS);
+var emitT = new reactive.Emit(sigT);
+var emitV = new reactive.Emit(sigV);
+var present = new reactive.Present(sigS, emitT);
+var pause = new reactive.Pause();
+var seq = new reactive.Sequence(emitS, present, pause, emitV);
+var loop = new reactive.Loop(seq);
+var machine = new reactive.ReactiveMachine(loop);
 
-console.log("reactive machine ready...");
-
-rm.react(0);
-rm.react(1);
-rm.react(2);
-rm.react(3);
-rm.react(4);
+for (var i = 0; i < 5; i++)
+   machime.react(i);

@@ -23,9 +23,9 @@ var sigT = new reactive.Signal("T", false, function() {
 var emitS = new reactive.Emit(sigS);
 var emitT = new reactive.Emit(sigT);
 var present = new reactive.Present(sigS, emitT);
-var pause = new Pause();
-var seq = new Sequence(pause, emitS, present);
-var machine = new ReactiveMachine(seq);
+var pause = new reactive.Pause();
+var seq = new reactive.Sequence(pause, emitS, present);
+var machine = new reactive.ReactiveMachine(seq);
 
 for (var i = 0; i < 5; i++)
    machime.react(i);
