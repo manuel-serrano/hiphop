@@ -82,7 +82,8 @@ ReactiveMachine.prototype.react = function(seq) {
    this.susp_in.set = false;
    this.kill_in.set = false;
 
-   console.log("---- reaction " + seq + " started ----");
+   console.log("---- reaction " + seq + " GO:" + this.go_in.set + " RES:"
+	       + this.res_in.set + " ----");
    this.go_in.stmt_out.run();
 
    this.boot_reg = this.k_in[0].set;
@@ -303,16 +304,16 @@ Loop.prototype.run = function() {
    this.go_in.stmt_out.run();
 
    this.k[0].set = false;
+   this.sel.set = this.sel_in.set;
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
 
    if (this.k_in[0].set) {
       this.go_in.set = true;
       this.go_in.stmt_out.run();
-         this.k[0].set = false;
-   for (var i = 1; i < this.k_in.length; i++)
-      this.k[i].set = this.k_in[i].set;
-
+      this.k[0].set = false;
+      for (var i = 1; i < this.k_in.length; i++)
+	 this.k[i].set = this.k_in[i].set;
    }
 }
 
