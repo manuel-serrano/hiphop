@@ -1,7 +1,7 @@
 "use strict"
 
-const THEN = 0;
-const ELSE = 1;
+var THEN = 0;
+var ELSE = 1;
 
 function must_be_implemented(context) {
    throw "Runtime error: must be implemented! " + context.constructor.name;
@@ -78,7 +78,7 @@ function ReactiveMachine(circuit) {
 
 ReactiveMachine.prototype = new Circuit();
 
-ReactiveMachine.prototype.react(seq) {
+ReactiveMachine.prototype.react = function(seq) {
    if (seq <= this.seq)
       return;
 
@@ -156,6 +156,11 @@ Pause.prototype.run = function() {
 function Present(signal, then_branch, else_branch) {
    Circuit.call(this);
    this.signal = signal;
+   this.go_in = [];
+   this.res_in = [];
+   this.susp_in = [];
+   this.kill_in = [];
+   this.sel_in = [];
    this.init_internal_wires(THEN, then_branch);
    if (else_branch != undefined)
       this.init_internal_wires(ELSE, else_branch);
@@ -179,7 +184,7 @@ Present.prototype.init_internal_wires = function(branch, circuit) {
    }
 }
 
-Present.prototype.run() {
+Present.prototype.run = function() {
    var branch;
 
    if (this.signal.set)
@@ -197,38 +202,45 @@ Present.prototype.run() {
    this.sel.set = this.sel_in[branch].set;
    for (var i in this.k_in)
       this.k[i] = (this.k_in[i][branch] == undefined ?
-		   false : this.k_in[i][branch];)
+		   false : this.k_in[i][branch]);
 }
 
 /* Sequence - Figure 11.8 page 120
-   X_in[i] represents the connexion of the i subcircuit inside this sequence.
-   k_in[0][i] represent the connexion of the i subcircuit return wire 0. */
+   `go_in` connect to `go` of the first subcircuit.
+   Last subcircuit `k[0]` connect to `k_in[0]`. */
 
 function Sequence() {
    Circuit.call(this);
    this.seq_len = arguments.length;
 
-   if (seq_len == 0)
+   if (this.seq_len == 0)
       return;
 
-   this.go_in[0] = arguments[0].go = new Wire(this, arguments[0]);
-   this.k_in[0][seq_len - 1] = arguments[seq_len - 1].k[0]
-      = new Wire(this, arguments[seq_len - 1]);
+   this.res_in = [];
+   this.susp_in = [];
+   this.kill_in = [];
+   this.sel_in = [];
+   this.k_in = [];
 
-   for (var i = 1; i < seq_len; i++) {
-      var circuit_pre = arguments[i - 1];
+   this.go_in = arguments[0].go = new Wire(this, arguments[0]);
+   this.k_in[0] = arguments[this.seq_len - 1].k[0] =
+      new Wire(arguments[this.seq_len - 1], this);
+
+   for (var i = 0; i < this.seq_len; i++) {
       var circuit_cur = arguments[i];
 
-      circuit_cur.go = circuit_pre.k[0] = new Wire(circuit_pre, circuit_cur);
+      if (i > 0)
+	 circuit_cur.go = arguments[i - 1].k[0] = new Wire(arguments[i - 1],
+							   circuit_cur);
       this.res_in[i] = circuit_cur.res = new Wire(this, circuit_cur);
       this.susp_in[i] = circuit_cur.susp = new Wire(this, circuit_cur);
       this.kill_in[i] = circuit_cur.kill = new Wire(this, circuit_cur);
       this.sel_in[i] = circuit_cur.sel = new Wire(circuit_cur, this);
 
       for (var j = 1; j < circuit_cur.k.length; j++) {
-	 if (this.k_in[i] == undefined)
-	    this.k_in[i] = [];
-	 this.k_in[i][j] = circuit_cur.k[j] = new Wire(circuit_cur, this);
+	 if (this.k_in[j] == undefined)
+	    this.k_in[j] = [];
+	 this.k_in[j][i] = circuit_cur.k[j] = new Wire(circuit_cur, this);
       }
    }
 }
@@ -240,20 +252,19 @@ Sequence.prototype.run = function() {
    for (var i in this.k)
       this.k[i].set = false;
 
-   for (var i = 0; i < this.seq_len; i++) {
-      this.go_in[i] = i == 0 ? this.go.set : this.k_in[i - 1].set;
-      this.res_in.set = this.res;
-      this.susp_in.set = this.susp;
-      this.kill_in.set = this.kill;
+   var stmt = go_in;
 
-      this.go_in[i].stmt_out.run();
+   this.go_in.set = this.go.set;
+   this.res[0].set = this.res.set;
+   this.susp[0].set = this.susp.set;
+   this.kill[0].set = this.kill.set;
 
-      this.sel.set |= this.sel_in[i].set;
-      for (var j = 0; j < this.k_in[i].length; j++)
-	 this.k[j].set |= this.k_in[j][i].set;
-   }
+   this.go_in.run();
 
-   this.k[0].set = this.k_in[0][this.seq_len - 1].set;
+   for (var i = 0; i < this.k.length; i++)
+      this.k[i].set |= (this.k_in[i][0] != undefined && this.k_in[i][0].set);
+   this.sel.set |= this.sel_in[0].set;
+
 }
 
 exports.Signal = Signal;

@@ -37,4 +37,4 @@ var loop = new reactive.Loop(seq);
 var machine = new reactive.ReactiveMachine(loop);
 
 for (var i = 0; i < 5; i++)
-   machime.react(i);
+   machine.react(i);

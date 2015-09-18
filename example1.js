@@ -27,5 +27,7 @@ var pause = new reactive.Pause();
 var seq = new reactive.Sequence(pause, emitS, present);
 var machine = new reactive.ReactiveMachine(seq);
 
+console.log(machine);
+
 for (var i = 0; i < 5; i++)
-   machime.react(i);
+   machine.react(i);
