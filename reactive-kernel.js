@@ -124,7 +124,6 @@ function Pause() {
 Pause.prototype = new Statement()
 
 Pause.prototype.run = function() {
-   console.log("pause", this.go.set, this.res.set);
    this.k[0].set = false;
    this.k[1].set = false;
    this.sel.set = this.reg;
@@ -303,12 +302,14 @@ Loop.prototype.run = function() {
 
    this.go_in.stmt_out.run();
 
-   this.k[i].set = false;
+   this.k[0].set = false;
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
 
-   if (this.k_in[0].set)
-      this.k_in[0].stmt_out.run();
+   if (this.k_in[0].set) {
+      this.go_in.set = true;
+      this.go_in.stmt_out.run();
+   }
 }
 
 exports.Signal = Signal;
