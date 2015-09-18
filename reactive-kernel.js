@@ -3,10 +3,6 @@
 var THEN = 0;
 var ELSE = 1;
 
-function must_be_implemented(context) {
-   throw "Runtime error: must be implemented! " + context.constructor.name;
-}
-
 function Signal(name, value, emit_cb) {
    /* value == false: pure signal
       value != false: valued signal */
@@ -40,9 +36,7 @@ function Statement() {
    this.k = [null, null];
 }
 
-Statement.prototype.run = function() {
-   must_be_implemented(this);
-}
+Statement.prototype.run = function() { }
 
 /* Root class of any circuit (construction with statements, or others
    circuits.
@@ -89,9 +83,6 @@ ReactiveMachine.prototype.react = function(seq) {
 
    console.log("---- reaction " + seq + " started ----");
    this.go_in.stmt_out.run();
-}
-
-ReactiveMachine.prototype.run = function() {
    console.log("---- return codes sel:"
 	       + this.sel_in
 	       + " k:" + this.k_in + " ----");
