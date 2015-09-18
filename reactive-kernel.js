@@ -59,6 +59,7 @@ Circuit.prototype = new Statement();
 function ReactiveMachine(circuit) {
    Circuit.call(this);
    this.seq = -1;
+   this.boot_reg = true;
 
    this.go_in = circuit.go = new Wire(this, circuit);
    this.res_in = circuit.res = new Wire(this, circuit);
@@ -76,13 +77,15 @@ ReactiveMachine.prototype.react = function(seq) {
    if (seq <= this.seq)
       return;
 
-   this.go_in.set = true;
+   this.go_in.set = this.boot_reg;
    this.res_in.set = true;
    this.susp_in.set = false;
    this.kill_in.set = false;
 
    console.log("---- reaction " + seq + " started ----");
    this.go_in.stmt_out.run();
+
+   this.boot_reg = this.k_in[0].set;
 
    var buf = "";
    for (var i in this.k_in)
@@ -121,6 +124,7 @@ function Pause() {
 Pause.prototype = new Statement()
 
 Pause.prototype.run = function() {
+   console.log("pause", this.go.set, this.res.set);
    this.k[0].set = false;
    this.k[1].set = false;
    this.sel.set = this.reg;
@@ -165,10 +169,10 @@ Present.prototype.init_internal_wires = function(branch, circuit) {
    this.sel_in[branch] = circuit.sel = new Wire(circuit, this);
 
    for (var i in circuit.k) {
-      if (this.k_in[i] == undefined) {
+      if (this.k_in[i] == undefined)
 	 this.k_in[i] = [];
+      if (this.k[i] == undefined)
 	 this.k[i] = [];
-      }
       this.k_in[i][branch] = circuit.k[i] = new Wire(circuit, this);
    }
 }
@@ -193,8 +197,8 @@ Present.prototype.run = function() {
 
    this.sel.set = this.sel_in[branch].set;
    for (var i in this.k_in)
-      this.k[i] = (this.k_in[i][branch] == undefined ?
-		   false : this.k_in[i][branch]);
+      this.k[i].set = (this.k_in[i][branch] == undefined ?
+		       false : this.k_in[i][branch].set);
 }
 
 /* Sequence - Figure 11.8 page 120 */
@@ -286,27 +290,25 @@ function Loop(circuit) {
    this.kill_in = circuit.kill = new Wire(this, circuit);
    this.sel_in = circuit.sel = new Wire(circuit, this);
    for(var i in circuit.k)
-      this.k_in[i] = new Wire(this, circuit);
+      this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
 }
 
 Loop.prototype = new Circuit();
 
 Loop.prototype.run = function() {
-   var loop = true;
+   this.go_in.set = this.go.set;
+   this.res_in.set = this.res.set;
+   this.susp_in.set = this.susp.set;
+   this.kill_in.set = this.kill.set;
 
-   while (loop) {
-      this.go_in.set = this.go.set;
-      this.res_in.set = this.res.set;
-      this.susp_in.set = this.susp.set;
-      this.kill_in.set = this.kill.set;
+   this.go_in.stmt_out.run();
 
-      this.go_in.stmt_out.run();
+   this.k[i].set = false;
+   for (var i = 1; i < this.k_in.length; i++)
+      this.k[i].set = this.k_in[i].set;
 
-      for (var i in this.k_in)
-	 this.k[i].set = this.k_in[i].set;
-
-      loop = this.k[0].set;
-   }
+   if (this.k_in[0].set)
+      this.k_in[0].stmt_out.run();
 }
 
 exports.Signal = Signal;

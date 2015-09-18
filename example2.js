@@ -33,8 +33,8 @@ var emitV = new reactive.Emit(sigV);
 var present = new reactive.Present(sigS, emitT);
 var pause = new reactive.Pause();
 var seq = new reactive.Sequence(emitS, present, pause, emitV);
-//var loop = new reactive.Loop(seq);
-var machine = new reactive.ReactiveMachine(seq);
+var loop = new reactive.Loop(seq);
+var machine = new reactive.ReactiveMachine(loop);
 
 for (var i = 0; i < 5; i++)
    machine.react(i);
