@@ -225,31 +225,35 @@ function Sequence() {
       this.kill_in[i] = circuit_cur.kill = new Wire(this, circuit_cur);
       this.sel_in[i] = circuit_cur.sel = new Wire(circuit_cur, this);
 
-      this.k_in[i] = [];
-      for (var j = 1; j < circuit_cur.k.length; j++)
+      for (var j = 1; j < circuit_cur.k.length; j++) {
+	 if (this.k_in[i] == undefined)
+	    this.k_in[i] = [];
 	 this.k_in[i][j] = circuit_cur.k[j] = new Wire(circuit_cur, this);
+      }
    }
 }
 
 Sequence.prototype = new Circuit();
 
 Sequence.prototype.run = function() {
-   this.sel = false;
+   this.sel.set = false;
    for (var i in this.k)
-      this.k[i] = false;
+      this.k[i].set = false;
 
    for (var i = 0; i < this.seq_len; i++) {
-      this.go_in[i] = this.k_in[i - 1];
-      this.res_in = this.res;
-      this.susp_in = this.susp;
-      this.kill_in = this.kill;
+      this.go_in[i] = i == 0 ? this.go.set : this.k_in[i - 1].set;
+      this.res_in.set = this.res;
+      this.susp_in.set = this.susp;
+      this.kill_in.set = this.kill;
 
       this.go_in[i].stmt_out.run();
 
-      this.sel |= this.sel_in[i];
+      this.sel.set |= this.sel_in[i].set;
       for (var j = 0; j < this.k_in[i].length; j++)
-	 this.k[j] |= this.k_in[i][j];
+	 this.k[j].set |= this.k_in[j][i].set;
    }
+
+   this.k[0].set = this.k_in[0][this.seq_len - 1].set;
 }
 
 exports.Signal = Signal;
