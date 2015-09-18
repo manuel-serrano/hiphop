@@ -62,9 +62,18 @@ function Circuit() {
 
 Circuit.prorotype = new Statement();
 
-function ReactiveMachine() {
+function ReactiveMachine(circuit) {
    Circuit.call(this);
    this.seq = -1;
+
+   this.go_in = circuit.go = new Wire(this, circuit);
+   this.res_in = circuit.res = new Wire(this, circuit);
+   this.susp_in = circuit.susp = new Wire(this, circuit);
+   this.kill_in = circuit.kill = new Wire(this, circuit);
+   this.sel_in = circuit.sel = new Wire(this, circuit);
+
+   for (var i in circuit.k)
+      this.k_in[i] = circuit.k[i] = new Wire(this, circuit);
 }
 
 ReactiveMachine.prototype = new Circuit();
@@ -83,6 +92,10 @@ ReactiveMachine.prototype.react(seq) {
 }
 
 ReactiveMachine.prototype.run = function() {
+   this.sel = this.sel_in;
+   for (var i in this.k_in)
+      this.k[i] = this.k_in;
+   console.log("---- return codes sel:" + this.sel + " k:" + this.k + " ----");
    console.log("---- reaction " + seq + " ended ----");
 }
 
@@ -187,9 +200,12 @@ Present.prototype.run() {
 		   false : this.k_in[i][branch];)
 }
 
-/* Sequence - Figure 11.8 page 120 */
+/* Sequence - Figure 11.8 page 120
+   X_in[i] represents the connexion of the i subcircuit inside this sequence */
 
 function Sequence() {
+   Circuit.call(this);
+   var seq_len = arguments.length;
 }
 
 Sequence.prototype = new Circuit();
