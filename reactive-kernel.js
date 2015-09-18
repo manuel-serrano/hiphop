@@ -309,6 +309,10 @@ Loop.prototype.run = function() {
    if (this.k_in[0].set) {
       this.go_in.set = true;
       this.go_in.stmt_out.run();
+         this.k[0].set = false;
+   for (var i = 1; i < this.k_in.length; i++)
+      this.k[i].set = this.k_in[i].set;
+
    }
 }
 
