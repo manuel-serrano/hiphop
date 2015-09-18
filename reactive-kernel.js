@@ -1,12 +1,5 @@
 "use strict"
 
-var GO = "w_go";
-var RES = "w_res";
-var SUSP = "w_susp";
-var KILL = "w_kill";
-var SEL = "w_sel";
-var K = "w_k";
-
 function must_be_implemented(context) {
    throw "Runtime error: must be implemented! " + context.constructor.name;
 }
@@ -24,25 +17,82 @@ function Signal(name, value, emit_cb) {
 /* A wire connect two statements.
    The `set` attribute, contains the status (1 or 0) of the wire */
 
-function Wire(stmt1, stmt2) {
-   this.stmt1 = stmt1;
-   this.stmt2 = stmt2;
+function Wire(stmt_in, stmt_out) {
+   this.stmt_in = stmt_in;
+   this.stmt_out = stmt_out;
    this.set = false;
 }
 
-/* Root class of any kernel statement. */
+/* Root class of any kernel statement. Theses properties representes the
+   connections to others circuits */
 
 function Statement() {
-   this.w_go = [];
-   this.w_res = [];
-   this.w_susp = [];
-   this.w_kill = [];
-   this.w_sel = [];
+   this.go = null;
+   this.res = null;
+   this.susp = null;
+   this.kill = null;
+   this.sel = null;
 
    /* Any statement has at least two terminaison branch: K0 and K1 */
-   this.w_k = [[], []];
+   this.k = [null, null];
 }
 
+Statement.prototype.run = function() {
+   must_be_implemented(this);
+}
+
+/* Root class of any circuit (construction with statements, or others
+   circuits.
+   `X_in` represent the connections of the circuit with subcircuit.
+   The relations between in/out wires (booleans doors, etc.) which are
+   specifics to the circuit, are represented in the code of `run` functions. */
+
+function Circuit() {
+   Statement.call(this);
+   this.go_in = null;
+   this.res_in = null;
+   this.susp_in = null;
+   this.kill_in = null;
+   this.sel_in = null;
+   this.k_in = [null, null];
+}
+
+Circuit.prorotype = new Statement();
+
+function ReactiveMachine() {
+   Circuit.call(this);
+   this.seq = -1;
+}
+
+ReactiveMachine.prototype = new Circuit();
+
+ReactiveMachine.prototype.react(seq) {
+   if (seq <= this.seq)
+      return;
+
+   this.go_in.set = true;
+   this.res_in.set = true;
+   this.susp_in.set = false;
+   this.kill_in.set = false;
+
+   console.log("---- reaction " + seq + " started ----");
+   this.go_in.stmt_out.run();
+}
+
+ReactiveMachine.prototype.run = function() {
+   console.log("---- reaction " + seq + " ended ----");
+}
+
+
+
+
+
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////
 Statement.prototype.run = function() {
    must_be_implemented(this);
 }
