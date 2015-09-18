@@ -117,6 +117,7 @@ Emit.prototype.run = function() {
    if (this.signal.emit_cb)
       this.signal.emit_cb();
    this.k[0].set = true;
+   this.k[0].stmt_out.run();
 }
 
 /* Pause - Figure 11.3 page 115 */
@@ -145,6 +146,7 @@ Pause.prototype.run = function() {
    if (this.res.set && this.reg) {
       this.reg = false;
       this.k[0].set = true;
+      this.k[0].stmt_out.run();
    }
 }
 
@@ -187,6 +189,9 @@ Present.prototype.init_internal_wires = function(branch, circuit) {
 Present.prototype.run = function() {
    var branch;
 
+   if (!this.go.set)
+      return;
+
    if (this.signal.set)
       branch = THEN;
    else
@@ -203,11 +208,11 @@ Present.prototype.run = function() {
    for (var i in this.k_in)
       this.k[i] = (this.k_in[i][branch] == undefined ?
 		   false : this.k_in[i][branch]);
+
+   this.k[0].stmt_out.run();
 }
 
-/* Sequence - Figure 11.8 page 120
-   `go_in` connect to `go` of the first subcircuit.
-   Last subcircuit `k[0]` connect to `k_in[0]`. */
+/* Sequence - Figure 11.8 page 120 */
 
 function Sequence() {
    Circuit.call(this);
@@ -216,22 +221,21 @@ function Sequence() {
    if (this.seq_len == 0)
       return;
 
+   this.go_in = arguments[0].go = new Wire(this, arguments[0]);
    this.res_in = [];
    this.susp_in = [];
    this.kill_in = [];
    this.sel_in = [];
    this.k_in = [];
 
-   this.go_in = arguments[0].go = new Wire(this, arguments[0]);
    this.k_in[0] = arguments[this.seq_len - 1].k[0] =
       new Wire(arguments[this.seq_len - 1], this);
 
-   for (var i = 0; i < this.seq_len; i++) {
+   for (var i = 1; i < this.seq_len; i++) {
       var circuit_cur = arguments[i];
 
-      if (i > 0)
-	 circuit_cur.go = arguments[i - 1].k[0] = new Wire(arguments[i - 1],
-							   circuit_cur);
+      circuit_cur.go = arguments[i - 1].k[0] = new Wire(arguments[i - 1],
+							circuit_cur);
       this.res_in[i] = circuit_cur.res = new Wire(this, circuit_cur);
       this.susp_in[i] = circuit_cur.susp = new Wire(this, circuit_cur);
       this.kill_in[i] = circuit_cur.kill = new Wire(this, circuit_cur);
@@ -248,23 +252,30 @@ function Sequence() {
 Sequence.prototype = new Circuit();
 
 Sequence.prototype.run = function() {
+   /* init subcircuits outputs */
    this.sel.set = false;
    for (var i in this.k)
       this.k[i].set = false;
 
-   var stmt = go_in;
-
+   /* init subcircuits inputs */
+   for (var i = 0; i < this.seq_len; i++) {
+      this.res_in[i].set = this.res.set;
+      this.susp_in[i].set = this.susp.set;
+      this.kill_in[i].set = this.kill.set;
+   }
    this.go_in.set = this.go.set;
-   this.res[0].set = this.res.set;
-   this.susp[0].set = this.susp.set;
-   this.kill[0].set = this.kill.set;
 
-   this.go_in.run();
+   this.go_in.stmt_out.run();
 
-   for (var i = 0; i < this.k.length; i++)
-      this.k[i].set |= (this.k_in[i][0] != undefined && this.k_in[i][0].set);
-   this.sel.set |= this.sel_in[0].set;
+   /* boolean OR of return codes > 0 and sel */
+   for (i = 0; i < this.seq_len; i++) {
+      this.sel.set |= this.sel_in[i];
+      for (j = 1; j , j < this.k.length; j++)
+	 this.k[j].set |= (this.k_in[j][i] != undefined && this.k_in[j][i].set)
+   }
 
+   this.k[0].set = this.k_in[0].set;
+   this.k[0].stmt_out.run();
 }
 
 exports.Signal = Signal;
