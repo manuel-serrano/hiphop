@@ -13,11 +13,11 @@ var reactive = require("./reactive-kernel.js");
 */
 
 var sigS = new reactive.Signal("S", false, function() {
-   console.out("EMIT S");
+   console.log("EMIT S");
 });
 
 var sigT = new reactive.Signal("T", false, function() {
-   console.out("EMIT T");
+   console.log("EMIT T");
 });
 
 var emitS = new reactive.Emit(sigS);
@@ -25,9 +25,11 @@ var emitT = new reactive.Emit(sigT);
 var present = new reactive.Present(sigS, emitT);
 var pause = new reactive.Pause();
 var seq = new reactive.Sequence(pause, emitS, present);
-var machine = new reactive.ReactiveMachine(seq);
+//var machine = new reactive.ReactiveMachine(seq);
+var machine = new reactive.ReactiveMachine(new reactive.Sequence(pause));
 
-console.log(machine);
+// for (var i = 0; i < 5; i++)
+//    machine.react(i);
 
-for (var i = 0; i < 5; i++)
-   machine.react(i);
+machine.react(0);
+machine.react(1);

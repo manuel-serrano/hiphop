@@ -54,7 +54,7 @@ function Circuit() {
    this.k_in = [null, null];
 }
 
-Circuit.prorotype = new Statement();
+Circuit.prototype = new Statement();
 
 function ReactiveMachine(circuit) {
    Circuit.call(this);
@@ -83,10 +83,11 @@ ReactiveMachine.prototype.react = function(seq) {
 
    console.log("---- reaction " + seq + " started ----");
    this.go_in.stmt_out.run();
-   console.log("---- return codes sel:"
-	       + this.sel_in
-	       + " k:" + this.k_in + " ----");
-   console.log("---- reaction " + seq + " ended ----");
+
+   var buf = "";
+   for (var i in this.k_in)
+      buf += "K" + i + ":" + this.k_in[i].set + " ";
+   console.log("---- SEL:" + this.sel_in.set + " " + buf + "----\n");
 }
 
 /* Emit = Figure 11.4 page 116 */
@@ -108,7 +109,6 @@ Emit.prototype.run = function() {
    if (this.signal.emit_cb)
       this.signal.emit_cb();
    this.k[0].set = true;
-   this.k[0].stmt_out.run();
 }
 
 /* Pause - Figure 11.3 page 115 */
@@ -125,19 +125,18 @@ Pause.prototype.run = function() {
    this.k[1].set = false;
    this.sel.set = this.reg;
 
-   if (this.go.set) {
-      if (!this.kill.set )
-	 this.reg = true;
-      this.k[1].set = true;
+   if (this.res.set && this.reg) {
+      this.reg = false;
+      this.k[0].set = true;
    }
 
    if (this.susp.set && this.sel.set && !this.kill.set)
       this.reg = true;
 
-   if (this.res.set && this.reg) {
-      this.reg = false;
-      this.k[0].set = true;
-      this.k[0].stmt_out.run();
+   if (this.go.set) {
+      if (!this.kill.set)
+	 this.reg = true;
+      this.k[1].set = true;
    }
 }
 
@@ -154,6 +153,7 @@ function Present(signal, then_branch, else_branch) {
    this.susp_in = [];
    this.kill_in = [];
    this.sel_in = [];
+   this.k_in = [];
    this.init_internal_wires(THEN, then_branch);
    if (else_branch != undefined)
       this.init_internal_wires(ELSE, else_branch);
@@ -188,10 +188,10 @@ Present.prototype.run = function() {
    else
       branch = ELSE;
 
-   this.go_in[branch].go.set = this.go.set;
-   this.res_in[branch].res.set = this.res.set;
-   this.susp_in[branch].susp.set = this.susp.set;
-   this.kill_in[branch].kill.set = this.kill.set;
+   this.go_in[branch].set = this.go.set;
+   this.res_in[branch].set = this.res.set;
+   this.susp_in[branch].set = this.susp.set;
+   this.kill_in[branch].set = this.kill.set;
 
    this.go_in[branch].stmt_out.run();
 
@@ -200,6 +200,7 @@ Present.prototype.run = function() {
       this.k[i] = (this.k_in[i][branch] == undefined ?
 		   false : this.k_in[i][branch]);
 
+   this.current_exec = false;
    this.k[0].stmt_out.run();
 }
 
@@ -217,24 +218,29 @@ function Sequence() {
    this.susp_in = [];
    this.kill_in = [];
    this.sel_in = [];
-   this.k_in = [];
+   this.k_in = [null, []];
 
    this.k_in[0] = arguments[this.seq_len - 1].k[0] =
       new Wire(arguments[this.seq_len - 1], this);
 
-   for (var i = 1; i < this.seq_len; i++) {
+   for (var i = 0; i < this.seq_len; i++) {
       var circuit_cur = arguments[i];
 
-      circuit_cur.go = arguments[i - 1].k[0] = new Wire(arguments[i - 1],
-							circuit_cur);
+      if (i > 0)
+	 circuit_cur.go = arguments[i - 1].k[0] = new Wire(arguments[i - 1],
+							   circuit_cur);
       this.res_in[i] = circuit_cur.res = new Wire(this, circuit_cur);
       this.susp_in[i] = circuit_cur.susp = new Wire(this, circuit_cur);
       this.kill_in[i] = circuit_cur.kill = new Wire(this, circuit_cur);
       this.sel_in[i] = circuit_cur.sel = new Wire(circuit_cur, this);
 
       for (var j = 1; j < circuit_cur.k.length; j++) {
-	 if (this.k_in[j] == undefined)
+	 if (this.k_in[j] == undefined) {
 	    this.k_in[j] = [];
+	    this.k[j] = null; /* If we plug a circuit after this one, we have
+				 to know there is more than 2 K outputs, and
+				 connect it */
+	 }
 	 this.k_in[j][i] = circuit_cur.k[j] = new Wire(circuit_cur, this);
       }
    }
@@ -243,7 +249,7 @@ function Sequence() {
 Sequence.prototype = new Circuit();
 
 Sequence.prototype.run = function() {
-   /* init subcircuits outputs */
+   /* init circuits outputs */
    this.sel.set = false;
    for (var i in this.k)
       this.k[i].set = false;
@@ -259,14 +265,16 @@ Sequence.prototype.run = function() {
    this.go_in.stmt_out.run();
 
    /* boolean OR of return codes > 0 and sel */
-   for (i = 0; i < this.seq_len; i++) {
-      this.sel.set |= this.sel_in[i];
-      for (j = 1; j , j < this.k.length; j++)
-	 this.k[j].set |= (this.k_in[j][i] != undefined && this.k_in[j][i].set)
+   for (var i = 0; i < this.seq_len; i++) {
+      this.sel.set = this.sel.set || this.sel_in[i].set;
+      for (var j = 1; j < this.k_in.length; j++) {
+	 if (this.k[j] != undefined) {
+	    this.k[j].set = this.k[j].set || this.k_in[j][i].set;
+	 }
+      }
    }
 
    this.k[0].set = this.k_in[0].set;
-   this.k[0].stmt_out.run();
 }
 
 exports.Signal = Signal;
