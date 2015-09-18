@@ -25,11 +25,8 @@ var emitT = new reactive.Emit(sigT);
 var present = new reactive.Present(sigS, emitT);
 var pause = new reactive.Pause();
 var seq = new reactive.Sequence(pause, emitS, present);
-//var machine = new reactive.ReactiveMachine(seq);
-var machine = new reactive.ReactiveMachine(new reactive.Sequence(pause));
+var machine = new reactive.ReactiveMachine(seq);
 
-// for (var i = 0; i < 5; i++)
-//    machine.react(i);
+for (var i = 0; i < 5; i++)
+   machine.react(i);
 
-machine.react(0);
-machine.react(1);

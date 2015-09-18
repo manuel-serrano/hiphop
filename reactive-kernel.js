@@ -199,9 +199,6 @@ Present.prototype.run = function() {
    for (var i in this.k_in)
       this.k[i] = (this.k_in[i][branch] == undefined ?
 		   false : this.k_in[i][branch]);
-
-   this.current_exec = false;
-   this.k[0].stmt_out.run();
 }
 
 /* Sequence - Figure 11.8 page 120 */
@@ -209,11 +206,12 @@ Present.prototype.run = function() {
 function Sequence() {
    Circuit.call(this);
    this.seq_len = arguments.length;
+   this.stmts = arguments;
 
    if (this.seq_len == 0)
       return;
 
-   this.go_in = arguments[0].go = new Wire(this, arguments[0]);
+   this.go_in = [];
    this.res_in = [];
    this.susp_in = [];
    this.kill_in = [];
@@ -226,9 +224,16 @@ function Sequence() {
    for (var i = 0; i < this.seq_len; i++) {
       var circuit_cur = arguments[i];
 
-      if (i > 0)
-	 circuit_cur.go = arguments[i - 1].k[0] = new Wire(arguments[i - 1],
-							   circuit_cur);
+      if (i == 0) {
+	 this.go_in[i] = circuit_cur.go = new Wire(this, circuit_cur);
+      } else {
+	 var w = new Wire(arguments[i - 1], circuit_cur);
+
+	 this.go_in[i] = w;
+	 this.k_in[0][i - 1] = w;
+	 arguments[i - 1].k[0] = w;
+	 circuit_cur.go = w;
+      }
       this.res_in[i] = circuit_cur.res = new Wire(this, circuit_cur);
       this.susp_in[i] = circuit_cur.susp = new Wire(this, circuit_cur);
       this.kill_in[i] = circuit_cur.kill = new Wire(this, circuit_cur);
@@ -254,15 +259,15 @@ Sequence.prototype.run = function() {
    for (var i in this.k)
       this.k[i].set = false;
 
-   /* init subcircuits inputs */
-   for (var i = 0; i < this.seq_len; i++) {
-      this.res_in[i].set = this.res.set;
-      this.susp_in[i].set = this.susp.set;
-      this.kill_in[i].set = this.kill.set;
-   }
-   this.go_in.set = this.go.set;
+   for (var s in this.stmts) {
+      /* init subcircuits inputs */
+      this.go_in[s].set = s == 0 ? this.go.set : this.k_in[0][s - 1].set;
+      this.res_in[s].set = this.res.set;
+      this.susp_in[s].set = this.susp.set;
+      this.kill_in[s].set = this.kill.set;
 
-   this.go_in.stmt_out.run();
+      this.go_in[s].stmt_out.run();
+   }
 
    /* boolean OR of return codes > 0 and sel */
    for (var i = 0; i < this.seq_len; i++) {
