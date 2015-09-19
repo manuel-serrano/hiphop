@@ -38,6 +38,8 @@ function Statement() {
 
 Statement.prototype.run = function() { }
 
+Statement.prototype.init_reg = function() { }
+
 /* Root class of any circuit (construction with statements, or others
    circuits.
    `X_in` represent the connections of the circuit with subcircuit.
@@ -77,13 +79,21 @@ ReactiveMachine.prototype.react = function(seq) {
    if (seq <= this.seq)
       return;
 
+   /* init any register in the machine */
+   var buf_init = "";
+
+   if (this.boot_reg) {
+      buf_init = " INIT";
+      this.go_in.stmt_out.init_reg();
+   }
+
    this.go_in.set = this.boot_reg;
    this.res_in.set = true;
    this.susp_in.set = false;
    this.kill_in.set = false;
 
    console.log("---- reaction " + seq + " GO:" + this.go_in.set + " RES:"
-	       + this.res_in.set + " ----");
+	       + this.res_in.set + buf_init + " ----");
    this.go_in.stmt_out.run();
 
    this.boot_reg = this.k_in[0].set;
@@ -138,6 +148,10 @@ Pause.prototype.run = function() {
       this.k[1].set = true;
    } else if (this.susp.set && this.sel.set && !this.kill.set)
       this.reg = true;
+}
+
+Pause.prototype.init_reg = function() {
+   this.reg = false;
 }
 
 /* Present test - Figure 11.5 page 117
@@ -199,6 +213,13 @@ Present.prototype.run = function() {
    for (var i in this.k_in)
       this.k[i].set = (this.k_in[i][branch] == undefined ?
 		       false : this.k_in[i][branch].set);
+}
+
+Present.prototype.init_reg = function() {
+   this.go_in[THEN].stmt_out.init_reg();
+   if (this.go_in[ELSE] != undefined)
+      this.go_in[ELSE].stmt_out.init_reg();
+   this.k[0].stmt_out.init_reg();
 }
 
 /* Sequence - Figure 11.8 page 120 */
@@ -282,6 +303,11 @@ Sequence.prototype.run = function() {
    this.k[0].set = this.k_in[0].set;
 }
 
+Sequence.prototype.init_reg = function() {
+   for (var i in this.go_in)
+      this.go_in[i].stmt_out.init_reg();
+}
+
 function Loop(circuit) {
    Circuit.call(this);
    this.go_in = circuit.go = new Wire(this, circuit);
@@ -320,6 +346,10 @@ Loop.prototype.run = function() {
    }
 }
 
+Loop.prototype.init_reg = function() {
+   this.go_in.stmt_out.init_reg();
+}
+
 function Abort(circuit, signal) {
    Circuit.call(this);
    this.signal = signal;
@@ -341,6 +371,9 @@ Abort.prototype.run = function() {
    if (this.res.set && this.sel_in.set && this.signal.set) {
       this.k[0].set = true;
       this.res_in.set = false;
+
+      for (var i = 1; i < this.k.length; i++)
+	 this.k[i].set = this.k_in[i].set;
    } else {
       this.go_in.set = this.go.set;
       this.res_in.set = this.res.set;
@@ -350,16 +383,21 @@ Abort.prototype.run = function() {
       this.sel_in.set = false;
       this.sel.set = false;
 
-      for (var i in this.k.length) {
-	 this.k[i].set  = false;
+      for (var i in this.k) {
+	 this.k[i].set = false;
 	 this.k_in[i].set = false;
       }
       this.go_in.stmt_out.run();
 
       this.sel.set = this.sel_in.set;
-      for (var i in this.k.length)
+      for (var i in this.k) {
 	 this.k[i].set = this.k_in[i].set;
+      }
    }
+}
+
+Abort.prototype.init_reg = function() {
+   this.go_in.stmt_out.init_reg();
 }
 
 exports.Signal = Signal;
