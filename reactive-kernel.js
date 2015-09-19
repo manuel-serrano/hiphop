@@ -380,13 +380,14 @@ Abort.prototype.run = function() {
       this.susp_in.set = this.susp.set;
       this.kill_in.set = this.kill.set;
 
+      /* Init return wire is really needed ? */
       this.sel_in.set = false;
       this.sel.set = false;
-
       for (var i in this.k) {
 	 this.k[i].set = false;
 	 this.k_in[i].set = false;
       }
+
       this.go_in.stmt_out.run();
 
       this.sel.set = this.sel_in.set;
@@ -400,6 +401,35 @@ Abort.prototype.init_reg = function() {
    this.go_in.stmt_out.init_reg();
 }
 
+function Await(signal) {
+   Circuit.call(this);
+   this.signal = signal;
+   var abort = new Abort(new Loop(new Pause()), this.signal);
+
+   this.go_in = abort.go = new Wire(this, abort);
+   this.res_in = abort.res = new Wire(this, abort);
+   this.susp_in = abort.susp = new Wire(this, abort);
+   this.kill_in = abort.kill = new Wire(this, abort);
+   this.sel_in = abort.sel = new Wire(abort, this);
+   this.k_in[0] = abort.k[0] = new Wire(abort, this);
+   this.k_in[1] = abort.k[1] = new Wire(abort, this);
+}
+
+Await.prototype = new Circuit();
+
+Await.prototype.run = function() {
+   this.go_in.set = this.go.set;
+   this.res_in.set = this.res.set;
+   this.susp.set = this.susp.set;
+   this.kill_in.set = this.kill.set;
+
+   this.go_in.stmt_out.run();
+
+   this.sel.set = this.sel_in.set;
+   this.k[0].set = this.k_in[0].set;
+   this.k[1].set = this.k_in[1].set;
+}
+
 exports.Signal = Signal;
 exports.Emit = Emit;
 exports.Pause = Pause;
@@ -407,4 +437,5 @@ exports.Present = Present;
 exports.Sequence = Sequence;
 exports.Loop = Loop;
 exports.Abort = Abort;
+exports.Await = Await;
 exports.ReactiveMachine = ReactiveMachine;
