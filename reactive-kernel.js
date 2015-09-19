@@ -289,8 +289,11 @@ function Loop(circuit) {
    this.susp_in = circuit.susp = new Wire(this, circuit);
    this.kill_in = circuit.kill = new Wire(this, circuit);
    this.sel_in = circuit.sel = new Wire(circuit, this);
-   for(var i in circuit.k)
+   for(var i in circuit.k) {
       this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
+      if (this.k[i] == undefined)
+	 this.k[i] = null;
+   }
 }
 
 Loop.prototype = new Circuit();
@@ -314,6 +317,36 @@ Loop.prototype.run = function() {
       this.k[0].set = false;
       for (var i = 1; i < this.k_in.length; i++)
 	 this.k[i].set = this.k_in[i].set;
+   }
+}
+
+function Abort(circuit, signal) {
+   Circuit.call(this);
+   this.signal = signal;
+   this.go_in = circuit.go = new Wire(this, circuit);
+   this.res_in = circuit.res = new Wire(this, circuit);
+   this.susp_in = circuit.susp = new Wire(this, circuit);
+   this.kill_in = circuit.kill = new Wire(this, circuit);
+   this.set_in = circuit.set  = new Wire(circuit, this);
+   for (var i in circuit.k) {
+      this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
+      if (this.k[i] == undefined)
+	 this.k[i] = null;
+   }
+}
+
+Abort.prototype = new Circuit();
+
+Abort.prototype.run = function() {
+   this.go_in.set = this.go.set;
+   this.susp_in.set = this.susp.set;
+   this.kill_in.set = this.kill.set;
+
+   if (this.res.set && this.sel_in.set && this.signal.set) {
+      this.k[0].set = true;
+      this.res_in.set = false;
+   } else {
+      this.
    }
 }
 
