@@ -327,7 +327,7 @@ function Abort(circuit, signal) {
    this.res_in = circuit.res = new Wire(this, circuit);
    this.susp_in = circuit.susp = new Wire(this, circuit);
    this.kill_in = circuit.kill = new Wire(this, circuit);
-   this.set_in = circuit.set  = new Wire(circuit, this);
+   this.sel_in = circuit.sel  = new Wire(circuit, this);
    for (var i in circuit.k) {
       this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
       if (this.k[i] == undefined)
@@ -338,15 +338,27 @@ function Abort(circuit, signal) {
 Abort.prototype = new Circuit();
 
 Abort.prototype.run = function() {
-   this.go_in.set = this.go.set;
-   this.susp_in.set = this.susp.set;
-   this.kill_in.set = this.kill.set;
-
    if (this.res.set && this.sel_in.set && this.signal.set) {
       this.k[0].set = true;
       this.res_in.set = false;
    } else {
-      this.
+      this.go_in.set = this.go.set;
+      this.res_in.set = this.res.set;
+      this.susp_in.set = this.susp.set;
+      this.kill_in.set = this.kill.set;
+
+      this.sel_in.set = false;
+      this.sel.set = false;
+
+      for (var i in this.k.length) {
+	 this.k[i].set  = false;
+	 this.k_in[i].set = false;
+      }
+      this.go_in.stmt_out.run();
+
+      this.sel.set = this.sel_in.set;
+      for (var i in this.k.length)
+	 this.k[i].set = this.k_in[i].set;
    }
 }
 
@@ -356,4 +368,5 @@ exports.Pause = Pause;
 exports.Present = Present;
 exports.Sequence = Sequence;
 exports.Loop = Loop;
+exports.Abort = Abort;
 exports.ReactiveMachine = ReactiveMachine;
