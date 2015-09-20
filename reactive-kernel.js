@@ -320,8 +320,9 @@ Sequence.prototype.init_reg = function() {
       this.go_in[i].stmt_out.init_reg();
 }
 
-function Loop(circuit) {
+function Loop(circuit, debug) {
    Circuit.call(this);
+   this.debug = debug == undefined ? false : true;
    this.go_in = circuit.go = new Wire(this, circuit);
    this.res_in = circuit.res = new Wire(this, circuit);
    this.susp_in = circuit.susp = new Wire(this, circuit);
@@ -361,17 +362,24 @@ Loop.prototype = new Circuit();
 Loop.prototype.run = function() {
    var stop = false;
 
+   this.res_in.set = this.res.set;
+   this.susp_in.set = this.susp.set;
+   this.kill_in.set = this.kill.set;
+
    while (!stop) {
+      if (this.debug)
+	 console.log(this.go_in.set,
+		     this.res_in.set,
+		     this.susp_in.set,
+		     this.kill_in.set);
       this.go_in.set = this.go.set || this.k_in[0].set;
-      this.res_in.set = this.res.set;
-      this.susp_in.set = this.susp.set;
-      this.kill_in.set = this.kill.set;
       this.go_in.stmt_out.run();
       this.sel.set = this.sel_in.set;
-      for (var i in this.k_in)
-	 this.k[i].set = this.k_in[i].set;
+      this.k[0].set = this.k_in[0].set;
       stop = !this.k_in[0].set;
    }
+   for (var i = 0; i < this.k_in.length; i++)
+      this.k[i].set = this.k_in[i].set;
 }
 
 Loop.prototype.init_reg = function() {
