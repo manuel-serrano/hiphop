@@ -127,25 +127,24 @@ Emit.prototype.run = function() {
 
 /* Pause - Figure 11.3 page 115 */
 
-function Pause() {
+function Pause(debug) {
    Statement.call(this);
    this.reg = false;
+   this.debug = debug == undefined ? false : true;
 }
 
 Pause.prototype = new Statement()
 
 Pause.prototype.run = function() {
    this.k[0].set = false;
-   this.k[1].set = false;
+   this.k[1].set = this.go.set;
    this.sel.set = this.reg;
 
    if (this.res.set && this.reg) {
       this.reg = false;
       this.k[0].set = true;
-   } else if (this.go.set) {
-      if (!this.kill.set)
-	 this.reg = true;
-      this.k[1].set = true;
+   } else if (this.go.set && !this.kill.set) {
+      this.reg = true;
    } else if (this.susp.set && this.sel.set && !this.kill.set)
       this.reg = true;
 }
@@ -194,6 +193,7 @@ Present.prototype.init_internal_wires = function(branch, circuit) {
 Present.prototype.run = function() {
    var branch;
 
+   this.k[0].set = false;
    if (!this.go.set)
       return;
 
@@ -371,6 +371,7 @@ Abort.prototype.run = function() {
    if (this.res.set && this.sel_in.set && this.signal.set) {
       this.k[0].set = true;
       this.res_in.set = false;
+      this.sel.set = this.sel_in.set;
 
       for (var i = 1; i < this.k.length; i++)
 	 this.k[i].set = this.k_in[i].set;
@@ -404,7 +405,7 @@ Abort.prototype.init_reg = function() {
 function Await(signal) {
    Circuit.call(this);
    this.signal = signal;
-   var abort = new Abort(new Loop(new Pause()), this.signal);
+   var abort = new Abort(new Halt(), this.signal);
 
    this.go_in = abort.go = new Wire(this, abort);
    this.res_in = abort.res = new Wire(this, abort);
@@ -430,6 +431,34 @@ Await.prototype.run = function() {
    this.k[1].set = this.k_in[1].set;
 }
 
+function Halt() {
+   Circuit.call(this);
+   var halt = new Loop(new Pause());
+
+   this.go_in = halt.go = new Wire(this, halt);
+   this.res_in = halt.res = new Wire(this, halt);
+   this.susp_in = halt.susp = new Wire(this, halt);
+   this.kill_in = halt.kill = new Wire(this, halt);
+   this.sel_in = halt.sel = new Wire(halt, this);
+   this.k_in[0] = halt.k[0] = new Wire(halt, this);
+   this.k_in[1] = halt.k[1] = new Wire(halt, this);
+}
+
+Halt.prototype = new Circuit();
+
+Halt.prototype.run = function() {
+   this.go_in.set = this.go.set;
+   this.res_in.set = this.res.set;
+   this.susp.set = this.susp.set;
+   this.kill_in.set = this.kill.set;
+
+   this.go_in.stmt_out.run();
+
+   this.sel.set = this.sel_in.set;
+   this.k[0].set = this.k_in[0].set;
+   this.k[1].set = this.k_in[1].set;
+}
+
 exports.Signal = Signal;
 exports.Emit = Emit;
 exports.Pause = Pause;
@@ -438,4 +467,5 @@ exports.Sequence = Sequence;
 exports.Loop = Loop;
 exports.Abort = Abort;
 exports.Await = Await;
+exports.Halt = Halt;
 exports.ReactiveMachine = ReactiveMachine;
