@@ -88,7 +88,7 @@ ReactiveMachine.prototype.react = function(seq) {
    }
 
    this.go_in.set = this.boot_reg;
-   this.res_in.set = true;
+   this.res_in.set = !this.boot_reg;
    this.susp_in.set = false;
    this.kill_in.set = false;
 
@@ -114,15 +114,19 @@ function Emit(signal) {
 Emit.prototype = new Statement();
 
 Emit.prototype.run = function() {
-   this.k[0].set = false;
-   this.signal.set = false;
-   if (!this.go.set)
-      return;
+   // this.k[0].set = false;
+   // this.signal.set = false;
+   // if (!this.go.set)
+   //    return;
 
-   this.signal.set = true;
-   if (this.signal.emit_cb)
+   // this.signal.set = true;
+   // if (this.signal.emit_cb)
+   //    this.signal.emit_cb();
+   // this.k[0].set = true;
+   this.k[0].set = this.go.set;
+   this.signal.set = this.go.set;
+   if (this.go.set)
       this.signal.emit_cb();
-   this.k[0].set = true;
 }
 
 /* Pause - Figure 11.3 page 115 */
@@ -136,17 +140,25 @@ function Pause(debug) {
 Pause.prototype = new Statement()
 
 Pause.prototype.run = function() {
-   this.k[0].set = false;
-   this.k[1].set = this.go.set;
-   this.sel.set = this.reg;
+   // this.k[0].set = false;
+   // this.k[1].set = this.go.set;
+   // this.sel.set = this.reg;
 
-   if (this.res.set && this.reg) {
-      this.reg = false;
-      this.k[0].set = true;
-   } else if (this.go.set && !this.kill.set) {
-      this.reg = true;
-   } else if (this.susp.set && this.sel.set && !this.kill.set)
-      this.reg = true;
+   // if (this.res.set && this.reg) {
+   //    this.reg = false;
+   //    this.k[0].set = true;
+   // } else if (this.go.set && !this.kill.set) {
+   //    this.reg = true;
+   //          this.sel.set = true;
+
+   // } else if (this.susp.set && this.sel.set && !this.kill.set)
+   //    this.reg = true;
+   var reg = (this.susp.set && this.reg && !this.kill.set)
+      || (this.go.set && !this.kill.set)
+   this.sel.set = reg;
+   this.k[1].set = this.go.set;
+   this.k[0].set = this.reg && this.res.set;
+   this.reg = reg;
 }
 
 Pause.prototype.init_reg = function() {
@@ -347,14 +359,19 @@ Loop.prototype = new Circuit();
 // }
 
 Loop.prototype.run = function() {
-   this.go_in.set = this.go.set || this.k_in[0].set;
-   this.res_in.set = this.res.set;
-   this.susp_in.set = this.susp.set;
-   this.kill_in.set = this.kill.set;
-   this.go_in.stmt_out.run();
-   this.sel.set = this.sel_in.set;
-   for (var i in this.k_in)
-      this.k[i].set = this.k_in.set;
+   var stop = false;
+
+   while (!stop) {
+      this.go_in.set = this.go.set || this.k_in[0].set;
+      this.res_in.set = this.res.set;
+      this.susp_in.set = this.susp.set;
+      this.kill_in.set = this.kill.set;
+      this.go_in.stmt_out.run();
+      this.sel.set = this.sel_in.set;
+      for (var i in this.k_in)
+	 this.k[i].set = this.k_in[i].set;
+      stop = !this.k_in[0].set;
+   }
 }
 
 Loop.prototype.init_reg = function() {
