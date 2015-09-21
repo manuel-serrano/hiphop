@@ -1,5 +1,6 @@
 "use strict"
 
+var DEBUG_FLAG = false;
 var THEN = 0;
 var ELSE = 1;
 
@@ -76,7 +77,9 @@ function ReactiveMachine(circuit) {
 ReactiveMachine.prototype = new Circuit();
 
 ReactiveMachine.prototype.react = function(seq) {
-   if (seq <= this.seq)
+   if (seq == undefined)
+      seq = "\b";
+   else if (seq <= this.seq)
       return;
 
    /* init any register in the machine */
@@ -160,7 +163,7 @@ Pause.prototype.run = function() {
    this.k[0].set = this.reg && this.res.set;
    this.reg = reg;
 
-   if (this.debug)
+   if (this.debug && DEBUG_FLAG)
       console.log(this.debug,
 		  "go:" + this.go.set,
 		  "res:" + this.res.set,
@@ -385,10 +388,11 @@ Loop.prototype.run = function() {
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
 
-   console.log("end loop",
-	       "sel:" + this.sel.set,
-	       "k0:" + this.k[0].set,
-	       "k1:" + this.k[1].set);
+   if (DEBUG_FLAG)
+      console.log("end loop",
+		  "sel:" + this.sel.set,
+		  "k0:" + this.k[0].set,
+		  "k1:" + this.k[1].set);
 }
 
 Loop.prototype.init_reg = function() {
@@ -490,11 +494,11 @@ Await.prototype.run = function() {
    this.k[0].set = this.k_in[0].set || (res && this.signal.set);
    this.k[1].set = this.k_in[1].set;
 
-   console.log("end await",
-	       "sel:" + this.sel.set,
-	       "k0:" + this.k[0].set,
-	       "k1:" + this.k[1].set);
-
+   if (DEBUG_FLAG)
+      console.log("end await",
+		  "sel:" + this.sel.set,
+		  "k0:" + this.k[0].set,
+		  "k1:" + this.k[1].set);
 }
 
 function Halt() {
@@ -524,10 +528,11 @@ Halt.prototype.run = function() {
    this.k[0].set = this.k_in[0].set;
    this.k[1].set = this.k_in[1].set;
 
-   console.log("end halt",
-	       "sel:" + this.sel.set,
-	       "k0:" + this.k[0].set,
-	       "k1:" + this.k[1].set);
+   if (DEBUG_FLAG)
+      console.log("end halt",
+		  "sel:" + this.sel.set,
+		  "k0:" + this.k[0].set,
+		  "k1:" + this.k[1].set);
 }
 
 exports.Signal = Signal;
