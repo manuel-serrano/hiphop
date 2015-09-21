@@ -134,7 +134,7 @@ Emit.prototype.run = function() {
 function Pause(debug) {
    Statement.call(this);
    this.reg = false;
-   this.debug = debug == undefined ? false : true;
+   this.debug = debug == undefined ? false : debug;
 }
 
 Pause.prototype = new Statement()
@@ -159,6 +159,15 @@ Pause.prototype.run = function() {
    this.k[1].set = this.go.set;
    this.k[0].set = this.reg && this.res.set;
    this.reg = reg;
+
+   if (this.debug)
+      console.log(this.debug,
+		  "go:" + this.go.set,
+		  "res:" + this.res.set,
+		  "sel:" + this.sel.set,
+		  "k0:" + this.k[0].set,
+		  "k1:" + this.k[1].set);
+
 }
 
 Pause.prototype.init_reg = function() {
@@ -320,9 +329,8 @@ Sequence.prototype.init_reg = function() {
       this.go_in[i].stmt_out.init_reg();
 }
 
-function Loop(circuit, debug) {
+function Loop(circuit) {
    Circuit.call(this);
-   this.debug = debug == undefined ? false : true;
    this.go_in = circuit.go = new Wire(this, circuit);
    this.res_in = circuit.res = new Wire(this, circuit);
    this.susp_in = circuit.susp = new Wire(this, circuit);
@@ -367,19 +375,20 @@ Loop.prototype.run = function() {
    this.kill_in.set = this.kill.set;
 
    while (!stop) {
-      if (this.debug)
-	 console.log(this.go_in.set,
-		     this.res_in.set,
-		     this.susp_in.set,
-		     this.kill_in.set);
       this.go_in.set = this.go.set || this.k_in[0].set;
       this.go_in.stmt_out.run();
       this.sel.set = this.sel_in.set;
       this.k[0].set = this.k_in[0].set;
       stop = !this.k_in[0].set;
    }
-   for (var i = 0; i < this.k_in.length; i++)
+
+   for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
+
+   console.log("end loop",
+	       "sel:" + this.sel.set,
+	       "k0:" + this.k[0].set,
+	       "k1:" + this.k[1].set);
 }
 
 Loop.prototype.init_reg = function() {
@@ -467,21 +476,30 @@ function Await(signal) {
 Await.prototype = new Circuit();
 
 Await.prototype.run = function() {
+   var res = this.res.set && this.sel.set;
+   var res_in = res && !this.signal.set;
+
    this.go_in.set = this.go.set;
-   this.res_in.set = this.res.set;
+   this.res_in.set = res_in;
    this.susp.set = this.susp.set;
    this.kill_in.set = this.kill.set;
 
    this.go_in.stmt_out.run();
 
    this.sel.set = this.sel_in.set;
-   this.k[0].set = this.k_in[0].set;
+   this.k[0].set = this.k_in[0].set || (res && this.signal.set);
    this.k[1].set = this.k_in[1].set;
+
+   console.log("end await",
+	       "sel:" + this.sel.set,
+	       "k0:" + this.k[0].set,
+	       "k1:" + this.k[1].set);
+
 }
 
 function Halt() {
    Circuit.call(this);
-   var halt = new Loop(new Pause());
+   var halt = new Loop(new Pause("pause halt"));
 
    this.go_in = halt.go = new Wire(this, halt);
    this.res_in = halt.res = new Wire(this, halt);
@@ -505,6 +523,11 @@ Halt.prototype.run = function() {
    this.sel.set = this.sel_in.set;
    this.k[0].set = this.k_in[0].set;
    this.k[1].set = this.k_in[1].set;
+
+   console.log("end halt",
+	       "sel:" + this.sel.set,
+	       "k0:" + this.k[0].set,
+	       "k1:" + this.k[1].set);
 }
 
 exports.Signal = Signal;
