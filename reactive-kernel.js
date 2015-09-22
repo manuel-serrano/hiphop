@@ -618,16 +618,19 @@ Parallel.prototype.topological_sort = function() {
    var rdeps = remove_duplicates(this.go_in[1].stmt_out.get_dependencies());
    var lfirst = false;
    var rfirst = false;
+   var ret = [];
 
    for (var i in ldeps)
       if (this.go_in[1].stmt_out.will_emit(ldeps[i])) {
 	 rfirst = true;
+	 ret = [1, 0];
 	 break;
       }
 
    for (var i in rdeps)
       if (this.go_in[0].stmt_out.will_emit(rdeps[i])) {
 	 lfirst = true;
+	 ret = [0, 1];
 	 break;
       }
 
@@ -635,6 +638,8 @@ Parallel.prototype.topological_sort = function() {
       console.log("*** CAUSALITY ERROR on", this.name, "at", this.loc, "***");
       process.exit(1);
    }
+
+   return ret;
 }
 
 Parallel.prototype.get_dependencies = function() {
