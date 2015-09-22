@@ -13,7 +13,7 @@ var DEBUG_PARALLEL = 256;
 var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_ALL = 0xFFFFFFFF;
 
-var DEBUG_FLAGS = DEBUG_PARALLEL | DEBUG_PARALLEL_SYNC;
+var DEBUG_FLAGS = DEBUG_PARALLEL_SYNC;
 
 var THEN = 0;
 var ELSE = 1;
@@ -542,6 +542,9 @@ Parallel.prototype.run = function() {
    this.synchronizer.rem = !(this.go.set || this.sel.set);
    this.synchronizer.run();
 
+   for (var i in this.synchronizer.k)
+      this.k[i].set = this.synchronizer.k[i].set;
+
    if (DEBUG_FLAGS & DEBUG_PARALLEL)
       this.debug();
 }
@@ -571,8 +574,11 @@ ParallelSynchronizer.prototype.init_internal_wires = function(i, circuit) {
 }
 
 ParallelSynchronizer.prototype.run = function() {
-   var state_left = [this.lem, this.k_in[0][0]];
-   var state_right = [this.rem, this.k_in[0][1]];
+   /* TODO: state of state_X when the two branches has different number
+      of completion code */
+
+   var state_left = [this.lem, this.k_in[0][0].set];
+   var state_right = [this.rem, this.k_in[0][1].set];
 
    for (var i in this.k) {
       var OR_left = state_left[0] || state_left[1];
@@ -584,9 +590,11 @@ ParallelSynchronizer.prototype.run = function() {
       state_left[0] = OR_left;
       state_right[0] = OR_right;
 
-      if (i - 1 < this.k.length) {
-	 state_left[1] = this.k_in[i + 1];
-	 state_right[1] = this.k_in[i + 1];
+      var x = i; /* just because of the wonderfull world of JavaScript... >< */
+      x++;
+      if (x < this.k.length) {
+	 state_left[1] = this.k_in[x][0].set;
+	 state_right[1] = this.k_in[x][1].set;
       }
    }
 
@@ -600,10 +608,10 @@ ParallelSynchronizer.prototype.debug = function() {
    var buf_return = "";
 
    for (var i in this.k_in) {
-      if (this.k[i][0] != undefined)
+      if (this.k_in[i][0] != undefined)
 	 buf_left += "K-LEFT" + i + ":" + this.k_in[i][0].set + " ";
 
-      if (this.k[i][1] != undefined)
+      if (this.k_in[i][1] != undefined)
 	 buf_right += "K-RIGHT" + i + ":" + this.k_in[i][1].set + " ";
 
       buf_return += "K" + i + ":" + this.k[i].set + " ";
