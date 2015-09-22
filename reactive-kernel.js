@@ -9,6 +9,7 @@ var DEBUG_LOOP = 16;
 var DEBUG_ABORT = 32;
 var DEBUG_HALT = 64;
 var DEBUG_AWAIT = 128;
+var DEBUG_PARALLEL = 256;
 var DEBUG_ALL = 0xFFFFFFFF;
 
 var DEBUG_FLAGS = DEBUG_NONE;
@@ -92,7 +93,7 @@ function Circuit(name) {
 Circuit.prototype = new Statement();
 
 function ReactiveMachine(circuit) {
-   Circuit.call(this, "REACTIVEMACHINE");
+   Circuit.call(this, "REACTIVE_MACHINE");
    this.seq = -1;
    this.boot_reg = true;
 
@@ -496,6 +497,93 @@ Halt.prototype.run = function() {
       this.debug();
 }
 
+/* Parallel - Figure 11.10 page 122 */
+
+function Parallel(branch1, branch2) {
+   Circuit.call(this, "PARALLEL");
+   this.synchronizer = new ParallelSynchronizer(branch1, branch2);
+
+   /* init wires fron parallel inputs to two parallel branch inputs and sel */
+   this.init_internal_wires(0, branch1);
+   this.init_internal_wires(1, branch2);
+
+   /* init wire from synchronizer outputs to parallel outputs */
+   for (var i = 0; i < this.synchronizer.k.length; i++)
+      this.k_in[i] = this.synchronizer.k[i] = new Wire(this.synchronizer, this);
+}
+
+Parallel.prototype = new Circuit();
+
+Parallel.prototype.init_internal_wires = function(i, circuit) {
+   this.go_in[i] = circuit.go = new Wire(this, circuit);
+   this.res_in[i] = circuit.res = new Wire(this, circuit);
+   this.susp_in[i] = circuit.susp = new Wire(this, circuit);
+   this.kill_in[i] = circuit.kill = new Wire(this, circuit);
+   this.sel_in[i] = circuit.sel = new Wire(circuit, this);
+}
+
+Parallel.prototype.run = function() {
+   this.go_in[0].set = this.go_in[1].set = this.go.set;
+   this.res_in[0].set = this.res_in[1].set = this.res.set;
+   this.susp_in[0].set = this.susp_in[1].set = this.susp.set;
+   this.kill_in[0].set = this.kill_in[1].set = this.kill.set;
+
+   this.go_in[0].stmt_out.run();
+   this.go_in[1].stmt_out.run();
+
+   this.sel.set = this.sel_in[0] || this.sel_in[1];
+   this.synchronizer.lem = this.go.set || this.k[0].sel.set;
+   this.synchronizer.rem = this.go.set || this.k[1].sel.set;
+   this.synchronizer.run();
+
+   if (DEBUG_FLAGS & DEBUG_PARALLEL)
+      this.debug();
+}
+
+/* Parallel synchronizer - Figure 11.11 page 122 */
+
+function ParallelSynchronizer(branch1, branch2) {
+   Circuit.call(this, "PARALLEL_SYNCHRONIZER");
+   this.lem = false;
+   this.rem = false;
+   this.init_internal_wires(0, branch1);
+   this.init_internal_wires(1, branch2);
+}
+
+ParallelSynchronizer.prototype = new Circuit();
+
+ParallelSynchronizer.prototype.init_internal_wires = function(i, circuit) {
+   for (var j in circuit.k) {
+      if (this.k_in[j] == undefined) {
+	 this.k_in[j] = null;
+	 this.k = null;
+      }
+
+      this.k_in[j][i] = circuit.k[j] = new Wire(circuit, this);
+   }
+}
+
+ParallelSynchronizer.prototype.run = function() {
+   var state_left = [this.lem, this.k_in[0][0]];
+   var state_right = [this.rem, this.k_in[0][1]];
+
+   for (var i in this.k) {
+      var OR_left = state_left[0] || state_left[1];
+      var OR_right = state_right[0] || state_right[1];
+      var OR_return = state_left[1] || state_right[1];
+
+      this.k[i].set = OR_return && OR_left && OR_right;
+
+      state_left[0] = OR_left;
+      state_right[0] = OR_right;
+
+      if (i - 1 < this.k.length) {
+	 state_left[1] = this.k_in[i + 1];
+	 state_right[1] = this.k_in[i + 1];
+      }
+   }
+}
+
 exports.Signal = Signal;
 exports.Emit = Emit;
 exports.Pause = Pause;
@@ -505,4 +593,5 @@ exports.Loop = Loop;
 exports.Abort = Abort;
 exports.Await = Await;
 exports.Halt = Halt;
+exports.Parallel = Parallel;
 exports.ReactiveMachine = ReactiveMachine;
