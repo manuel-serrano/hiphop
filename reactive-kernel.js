@@ -10,6 +10,7 @@ var DEBUG_ABORT = 32;
 var DEBUG_HALT = 64;
 var DEBUG_AWAIT = 128;
 var DEBUG_PARALLEL = 256;
+var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_ALL = 0xFFFFFFFF;
 
 var DEBUG_FLAGS = DEBUG_NONE;
@@ -536,9 +537,9 @@ Parallel.prototype.run = function() {
    this.go_in[0].stmt_out.run();
    this.go_in[1].stmt_out.run();
 
-   this.sel.set = this.sel_in[0] || this.sel_in[1];
-   this.synchronizer.lem = this.go.set || this.k[0].sel.set;
-   this.synchronizer.rem = this.go.set || this.k[1].sel.set;
+   this.sel.set = this.sel_in[0].set || this.sel_in[1].set;
+   this.synchronizer.lem = this.go.set || this.sel.set;
+   this.synchronizer.rem = this.go.set || this.sel.set;
    this.synchronizer.run();
 
    if (DEBUG_FLAGS & DEBUG_PARALLEL)
@@ -561,8 +562,8 @@ ParallelSynchronizer.prototype = new Circuit();
 ParallelSynchronizer.prototype.init_internal_wires = function(i, circuit) {
    for (var j in circuit.k) {
       if (this.k_in[j] == undefined) {
-	 this.k_in[j] = null;
-	 this.k = null;
+	 this.k_in[j] = [];
+	 this.k[j] = null;
       }
 
       this.k_in[j][i] = circuit.k[j] = new Wire(circuit, this);
