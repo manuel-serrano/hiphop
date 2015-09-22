@@ -80,6 +80,11 @@ Statement.prototype.get_dependencies = function() {
    return [];
 }
 
+/* Return true if the branch emit the `signal` signal */
+Statement.prototype.will_emit = function(signal) {
+   return false;
+};
+
 /* Root class of any circuit (construction with statements, or others
    circuits.
    `X_in` represent the connections of the circuit with subcircuit.
@@ -101,6 +106,10 @@ Circuit.prototype = new Statement();
 Circuit.prototype.get_dependencies = function() {
    return this.go_in.stmt_out.get_dependencies();
 }
+
+Circuit.prototype.will_emit = function(signal) {
+   return this.go_in.stmt_out.will_emit(signal);
+};
 
 function ReactiveMachine(circuit) {
    Circuit.call(this, "REACTIVE_MACHINE");
@@ -154,6 +163,10 @@ ReactiveMachine.prototype.get_dependencies = function() {
    return [];
 }
 
+ReactiveMachine.prototype.will_emit = function(signal) {
+   return false;
+};
+
 /* Emit = Figure 11.4 page 116 */
 
 function Emit(signal) {
@@ -172,6 +185,10 @@ Emit.prototype.run = function() {
    if (DEBUG_FLAGS & DEBUG_EMIT)
       this.debug();
 }
+
+Emit.prototype.will_emit = function(signal) {
+   return signal == this.signal;
+};
 
 /* Pause - Figure 11.3 page 115 */
 
@@ -277,6 +294,11 @@ Present.prototype.get_dependencies = function() {
       .concat(this.go_in[1].stmt_out.get_dependencies());
 }
 
+Present.prototype.will_emit = function(signal) {
+   return this.go_in[0].stmt_out.will_emit(signal)
+      || this.go_in[1].stmt_out.will_emit(signal);
+};
+
 /* Sequence - Figure 11.8 page 120 */
 
 function Sequence() {
@@ -372,6 +394,13 @@ Sequence.prototype.get_dependencies = function() {
    for (var i in this.go_in)
       deps = deps.concat(this.go_in[i].stmt_out.get_dependencies())
    return deps;
+}
+
+Sequence.prototype.will_emit = function(signal) {
+   for (var i in this.go_in)
+      if (this.go_in[i].stmt_out.will_emit(signal))
+	 return true;
+   return false;
 }
 
 /* Loop - Figure 11.9 page 121 */
@@ -587,14 +616,35 @@ Parallel.prototype.run = function() {
 Parallel.prototype.topological_sort = function() {
    var ldeps = remove_duplicates(this.go_in[0].stmt_out.get_dependencies());
    var rdeps = remove_duplicates(this.go_in[1].stmt_out.get_dependencies());
-   console.log(ldeps);
-   console.log(rdeps);
-   process.exit(1);
+   var lfirst = false;
+   var rfirst = false;
+
+   for (var i in ldeps)
+      if (this.go_in[1].stmt_out.will_emit(ldeps[i])) {
+	 rfirst = true;
+	 break;
+      }
+
+   for (var i in rdeps)
+      if (this.go_in[0].stmt_out.will_emit(rdeps[i])) {
+	 lfirst = true;
+	 break;
+      }
+
+   if (lfirst && rfirst) {
+      console.log("*** CAUSALITY ERROR on", this.name, "at", this.loc, "***");
+      process.exit(1);
+   }
 }
 
 Parallel.prototype.get_dependencies = function() {
    return this.go_in[0].stmt_out.get_dependencies()
       .concat(this.go_in[1].stmt_out.get_dependencies());
+}
+
+Parallel.prototype.will_emit = function(signal) {
+   return this.go_in[0].stmt_out.will_emit(signal)
+      || this.go_in[1].stmt_out.will_emit(signal);
 }
 
 /* Parallel synchronizer - Figure 11.11 page 122 */
