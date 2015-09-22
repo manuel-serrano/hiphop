@@ -13,7 +13,7 @@ var DEBUG_PARALLEL = 256;
 var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_ALL = 0xFFFFFFFF;
 
-var DEBUG_FLAGS = DEBUG_NONE;
+var DEBUG_FLAGS = DEBUG_PARALLEL | DEBUG_PARALLEL_SYNC;
 
 var THEN = 0;
 var ELSE = 1;
@@ -538,8 +538,8 @@ Parallel.prototype.run = function() {
    this.go_in[1].stmt_out.run();
 
    this.sel.set = this.sel_in[0].set || this.sel_in[1].set;
-   this.synchronizer.lem = this.go.set || this.sel.set;
-   this.synchronizer.rem = this.go.set || this.sel.set;
+   this.synchronizer.lem = !(this.go.set || this.sel.set);
+   this.synchronizer.rem = !(this.go.set || this.sel.set);
    this.synchronizer.run();
 
    if (DEBUG_FLAGS & DEBUG_PARALLEL)
@@ -589,6 +589,30 @@ ParallelSynchronizer.prototype.run = function() {
 	 state_right[1] = this.k_in[i + 1];
       }
    }
+
+   if (DEBUG_FLAGS & DEBUG_PARALLEL_SYNC)
+      this.debug();
+}
+
+ParallelSynchronizer.prototype.debug = function() {
+   var buf_left = "";
+   var buf_right = "";
+   var buf_return = "";
+
+   for (var i in this.k_in) {
+      if (this.k[i][0] != undefined)
+	 buf_left += "K-LEFT" + i + ":" + this.k_in[i][0].set + " ";
+
+      if (this.k[i][1] != undefined)
+	 buf_right += "K-RIGHT" + i + ":" + this.k_in[i][1].set + " ";
+
+      buf_return += "K" + i + ":" + this.k[i].set + " ";
+   }
+
+   console.log("*** DEBUG", this.name, "at", this.loc, "***");
+   console.log("   ", buf_left);
+   console.log("   ", buf_right);
+   console.log("   ", buf_return);
 }
 
 exports.Signal = Signal;
