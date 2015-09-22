@@ -1,6 +1,18 @@
 "use strict"
 
-var DEBUG_FLAG = false;
+var DEBUG_NONE = 0;
+var DEBUG_EMIT = 1;
+var DEBUG_PAUSE = 2;
+var DEBUG_PRESENT = 4;
+var DEBUG_SEQUENCE = 8;
+var DEBUG_LOOP = 16;
+var DEBUG_ABORT = 32;
+var DEBUG_HALT = 64;
+var DEBUG_AWAIT = 128;
+var DEBUG_ALL = 0xFFFFFFFF;
+
+var DEBUG_FLAGS = DEBUG_NONE;
+
 var THEN = 0;
 var ELSE = 1;
 
@@ -26,7 +38,9 @@ function Wire(stmt_in, stmt_out) {
 /* Root class of any kernel statement. Theses properties representes the
    connections to others circuits */
 
-function Statement() {
+function Statement(name) {
+   this.name = name;
+   this.loc = "--";
    this.go = null;
    this.res = null;
    this.susp = null;
@@ -41,14 +55,32 @@ Statement.prototype.run = function() { }
 
 Statement.prototype.init_reg = function() { }
 
+Statement.prototype.debug = function() {
+   var return_codes = "";
+
+   for (var i in this.k) {
+      return_codes += "K" + i + ":" + this.k[i].set;
+      if (i - 1 < this.k.length)
+	 return_codes += " ";
+   }
+
+   console.log("*** DEBUG", this.name, "at", this.loc, "*** \n   ",
+	       "GO:" + this.go.set,
+	       "RES:" + this.res.set,
+	       "SUSP:" + this.susp.set,
+	       "KILL:" + this.kill.set,
+	       "SEL:" + this.sel.set,
+	       return_codes);
+}
+
 /* Root class of any circuit (construction with statements, or others
    circuits.
    `X_in` represent the connections of the circuit with subcircuit.
    The relations between in/out wires (booleans doors, etc.) which are
    specifics to the circuit, are represented in the code of `run` functions. */
 
-function Circuit() {
-   Statement.call(this);
+function Circuit(name) {
+   Statement.call(this, name);
    this.go_in = null;
    this.res_in = null;
    this.susp_in = null;
@@ -60,7 +92,7 @@ function Circuit() {
 Circuit.prototype = new Statement();
 
 function ReactiveMachine(circuit) {
-   Circuit.call(this);
+   Circuit.call(this, "REACTIVEMACHINE");
    this.seq = -1;
    this.boot_reg = true;
 
@@ -110,7 +142,7 @@ ReactiveMachine.prototype.react = function(seq) {
 /* Emit = Figure 11.4 page 116 */
 
 function Emit(signal) {
-   Statement.call(this);
+   Statement.call(this, "EMIT");
    this.signal = signal;
 }
 
@@ -121,14 +153,16 @@ Emit.prototype.run = function() {
    this.signal.set = this.go.set;
    if (this.go.set)
       this.signal.emit_cb();
+
+   if (DEBUG_FLAGS & DEBUG_EMIT)
+      this.debug();
 }
 
 /* Pause - Figure 11.3 page 115 */
 
-function Pause(debug) {
-   Statement.call(this);
+function Pause() {
+   Statement.call(this, "PAUSE");
    this.reg = false;
-   this.debug = debug == undefined ? false : debug;
 }
 
 Pause.prototype = new Statement()
@@ -141,14 +175,8 @@ Pause.prototype.run = function() {
    this.k[0].set = this.reg && this.res.set;
    this.reg = reg;
 
-   if (this.debug && DEBUG_FLAG)
-      console.log(this.debug,
-		  "go:" + this.go.set,
-		  "res:" + this.res.set,
-		  "sel:" + this.sel.set,
-		  "k0:" + this.k[0].set,
-		  "k1:" + this.k[1].set);
-
+   if (DEBUG_FLAGS & DEBUG_PAUSE)
+      this.debug();
 }
 
 Pause.prototype.init_reg = function() {
@@ -161,7 +189,7 @@ Pause.prototype.init_reg = function() {
    It's allowed to have only a then branch */
 
 function Present(signal, then_branch, else_branch) {
-   Circuit.call(this);
+   Circuit.call(this, "PRESENT");
    this.signal = signal;
    this.go_in = [];
    this.res_in = [];
@@ -215,6 +243,9 @@ Present.prototype.run = function() {
    for (var i in this.k_in)
       this.k[i].set = (this.k_in[i][branch] == undefined ?
 		       false : this.k_in[i][branch].set);
+
+   if (DEBUG_FLAGS & DEBUG_PRESENT)
+      this.debug();
 }
 
 Present.prototype.init_reg = function() {
@@ -227,7 +258,7 @@ Present.prototype.init_reg = function() {
 /* Sequence - Figure 11.8 page 120 */
 
 function Sequence() {
-   Circuit.call(this);
+   Circuit.call(this, "SEQUENCE");
    this.seq_len = arguments.length;
    this.stmts = arguments;
 
@@ -303,6 +334,9 @@ Sequence.prototype.run = function() {
    }
 
    this.k[0].set = this.k_in[0].set;
+
+   if (DEBUG_FLAGS & DEBUG_SEQUENCE)
+      this.debug();
 }
 
 Sequence.prototype.init_reg = function() {
@@ -313,7 +347,7 @@ Sequence.prototype.init_reg = function() {
 /* Loop - Figure 11.9 page 121 */
 
 function Loop(circuit) {
-   Circuit.call(this);
+   Circuit.call(this, "LOOP");
    this.go_in = circuit.go = new Wire(this, circuit);
    this.res_in = circuit.res = new Wire(this, circuit);
    this.susp_in = circuit.susp = new Wire(this, circuit);
@@ -346,11 +380,8 @@ Loop.prototype.run = function() {
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
 
-   if (DEBUG_FLAG)
-      console.log("end loop",
-		  "sel:" + this.sel.set,
-		  "k0:" + this.k[0].set,
-		  "k1:" + this.k[1].set);
+   if (DEBUG_FLAGS & DEBUG_LOOP)
+      this.debug();
 }
 
 Loop.prototype.init_reg = function() {
@@ -360,7 +391,7 @@ Loop.prototype.init_reg = function() {
 /* Abort - Figure 11.7 page 120 */
 
 function Abort(circuit, signal) {
-   Circuit.call(this);
+   Circuit.call(this, "ABORT");
    this.signal = signal;
    this.go_in = circuit.go = new Wire(this, circuit);
    this.res_in = circuit.res = new Wire(this, circuit);
@@ -386,6 +417,9 @@ Abort.prototype.run = function() {
    this.k[0].set = (this.res.set && this.signal.set) || this.k_in[0].set;
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
+
+   if (DEBUG_FLAGS & DEBUG_ABORT)
+      this.debug();
 }
 
 Abort.prototype.init_reg = function() {
@@ -395,7 +429,7 @@ Abort.prototype.init_reg = function() {
 /* Await */
 
 function Await(signal) {
-   Circuit.call(this);
+   Circuit.call(this, "AWAIT");
    this.signal = signal;
    var abort = new Abort(new Halt(), this.signal);
 
@@ -425,18 +459,15 @@ Await.prototype.run = function() {
    this.k[0].set = this.k_in[0].set || (res && this.signal.set);
    this.k[1].set = this.k_in[1].set;
 
-   if (DEBUG_FLAG)
-      console.log("end await",
-		  "sel:" + this.sel.set,
-		  "k0:" + this.k[0].set,
-		  "k1:" + this.k[1].set);
+   if (DEBUG_FLAGS & DEBUG_AWAIT)
+      this.debug();
 }
 
 /* Halt */
 
 function Halt() {
-   Circuit.call(this);
-   var halt = new Loop(new Pause("pause halt"));
+   Circuit.call(this, "HALT");
+   var halt = new Loop(new Pause());
 
    this.go_in = halt.go = new Wire(this, halt);
    this.res_in = halt.res = new Wire(this, halt);
@@ -461,11 +492,8 @@ Halt.prototype.run = function() {
    this.k[0].set = this.k_in[0].set;
    this.k[1].set = this.k_in[1].set;
 
-   if (DEBUG_FLAG)
-      console.log("end halt",
-		  "sel:" + this.sel.set,
-		  "k0:" + this.k[0].set,
-		  "k1:" + this.k[1].set);
+   if (DEBUG_FLAGS & DEBUG_HALT)
+      this.debug();
 }
 
 exports.Signal = Signal;
