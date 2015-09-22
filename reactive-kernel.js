@@ -202,6 +202,7 @@ function Present(signal, then_branch, else_branch) {
    this.init_internal_wires(THEN, then_branch);
    if (else_branch != undefined)
       this.init_internal_wires(ELSE, else_branch);
+   else this.init_internal_wires(ELSE, new Nothing());
 }
 
 Present.prototype = new Circuit();
@@ -623,6 +624,17 @@ ParallelSynchronizer.prototype.debug = function() {
    console.log("   ", buf_return);
 }
 
+/* Nothing statement */
+function Nothing () {
+   Statement.call(this, "NOTHING")
+}
+
+Nothing.prototype = new Statement();
+
+Nothing.prototype.run = function() {
+   this.k[0].set = this.go.set;
+}
+
 exports.Signal = Signal;
 exports.Emit = Emit;
 exports.Pause = Pause;
@@ -633,4 +645,5 @@ exports.Abort = Abort;
 exports.Await = Await;
 exports.Halt = Halt;
 exports.Parallel = Parallel;
+exports.Nothing = Nothing;
 exports.ReactiveMachine = ReactiveMachine;
