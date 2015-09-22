@@ -504,6 +504,11 @@ function Parallel(branch1, branch2) {
    this.synchronizer = new ParallelSynchronizer(branch1, branch2);
 
    /* init wires fron parallel inputs to two parallel branch inputs and sel */
+   this.go_in = [];
+   this.res_in = [];
+   this.susp_in = [];
+   this.kill_in = [];
+   this.sel_in = [];
    this.init_internal_wires(0, branch1);
    this.init_internal_wires(1, branch2);
 
@@ -546,6 +551,7 @@ function ParallelSynchronizer(branch1, branch2) {
    Circuit.call(this, "PARALLEL_SYNCHRONIZER");
    this.lem = false;
    this.rem = false;
+   this.k_in = [];
    this.init_internal_wires(0, branch1);
    this.init_internal_wires(1, branch2);
 }
