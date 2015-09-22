@@ -75,6 +75,11 @@ Statement.prototype.debug = function() {
 	       return_codes);
 }
 
+/* Return an array of signal tested (present/await) */
+Statement.prototype.get_dependencies = function() {
+   return [];
+}
+
 /* Root class of any circuit (construction with statements, or others
    circuits.
    `X_in` represent the connections of the circuit with subcircuit.
@@ -92,6 +97,10 @@ function Circuit(name) {
 }
 
 Circuit.prototype = new Statement();
+
+Circuit.prototype.get_dependencies = function() {
+   return this.go_in.stmt_out.get_dependencies();
+}
 
 function ReactiveMachine(circuit) {
    Circuit.call(this, "REACTIVE_MACHINE");
@@ -139,6 +148,10 @@ ReactiveMachine.prototype.react = function(seq) {
    for (var i in this.k_in)
       buf += "K" + i + ":" + this.k_in[i].set + " ";
    console.log("---- SEL:" + this.sel_in.set + " " + buf + "----\n");
+}
+
+ReactiveMachine.prototype.get_dependencies = function() {
+   return [];
 }
 
 /* Emit = Figure 11.4 page 116 */
@@ -258,6 +271,12 @@ Present.prototype.init_reg = function() {
    this.k[0].stmt_out.init_reg();
 }
 
+Present.prototype.get_dependencies = function() {
+   return [ this.signal ]
+      .concat(this.go_in[0].stmt_out.get_dependencies())
+      .concat(this.go_in[1].stmt_out.get_dependencies());
+}
+
 /* Sequence - Figure 11.8 page 120 */
 
 function Sequence() {
@@ -345,6 +364,14 @@ Sequence.prototype.run = function() {
 Sequence.prototype.init_reg = function() {
    for (var i in this.go_in)
       this.go_in[i].stmt_out.init_reg();
+}
+
+Sequence.prototype.get_dependencies = function() {
+   var deps = [];
+
+   for (var i in this.go_in)
+      deps = deps.concat(this.go_in[i].stmt_out.get_dependencies())
+   return deps;
 }
 
 /* Loop - Figure 11.9 page 121 */
@@ -466,6 +493,10 @@ Await.prototype.run = function() {
       this.debug();
 }
 
+Await.prototype.get_dependencies = function() {
+   return [this.signal];
+}
+
 /* Halt */
 
 function Halt() {
@@ -530,13 +561,16 @@ Parallel.prototype.init_internal_wires = function(i, circuit) {
 }
 
 Parallel.prototype.run = function() {
+   var sort = null;
+
    this.go_in[0].set = this.go_in[1].set = this.go.set;
    this.res_in[0].set = this.res_in[1].set = this.res.set;
    this.susp_in[0].set = this.susp_in[1].set = this.susp.set;
    this.kill_in[0].set = this.kill_in[1].set = this.kill.set;
 
-   this.go_in[0].stmt_out.run();
-   this.go_in[1].stmt_out.run();
+   sort = this.topological_sort();
+   this.go_in[sort[0]].stmt_out.run();
+   this.go_in[sort[1]].stmt_out.run();
 
    this.sel.set = this.sel_in[0].set || this.sel_in[1].set;
    this.synchronizer.lem = !(this.go.set || this.sel.set);
@@ -548,6 +582,19 @@ Parallel.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_PARALLEL)
       this.debug();
+}
+
+Parallel.prototype.topological_sort = function() {
+   var ldeps = remove_duplicates(this.go_in[0].stmt_out.get_dependencies());
+   var rdeps = remove_duplicates(this.go_in[1].stmt_out.get_dependencies());
+   console.log(ldeps);
+   console.log(rdeps);
+   process.exit(1);
+}
+
+Parallel.prototype.get_dependencies = function() {
+   return this.go_in[0].stmt_out.get_dependencies()
+      .concat(this.go_in[1].stmt_out.get_dependencies());
 }
 
 /* Parallel synchronizer - Figure 11.11 page 122 */
@@ -633,6 +680,17 @@ Nothing.prototype = new Statement();
 
 Nothing.prototype.run = function() {
    this.k[0].set = this.go.set;
+}
+
+function remove_duplicates(arr) {
+   var seen = {};
+   var out = [];
+   for (var i = 0; i < arr.length; i++)
+      if (seen[arr[i]] != 1) {
+	 seen[arr[i]] = 1;
+	 out.push(arr[i]);
+      }
+   return out;
 }
 
 exports.Signal = Signal;

@@ -10,8 +10,10 @@ var sigJ = new reactive.Signal("J", false, function() {
 
 var emitI = new reactive.Emit(sigI);
 var emitJ = new reactive.Emit(sigJ);
+var awaitI = new reactive.Await(sigI);
 var present = new reactive.Present(sigI, emitJ);
-var par = new reactive.Parallel(present, emitI);
+var seq = new reactive.Sequence(awaitI, present);
+var par = new reactive.Parallel(seq, emitI);
 var machine = new reactive.ReactiveMachine(par);
 
 machine.react();
