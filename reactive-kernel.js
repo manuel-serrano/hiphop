@@ -299,12 +299,22 @@ Present.prototype.will_emit = function(signal) {
       || this.go_in[1].stmt_out.will_emit(signal);
 };
 
-/* Sequence - Figure 11.8 page 120 */
+/* Sequence - Figure 11.8 page 120
+   It can take either a variable list of argument, or only one argument
+   which is an array of statements */
 
 function Sequence() {
    Circuit.call(this, "SEQUENCE");
-   this.seq_len = arguments.length;
-   this.stmts = arguments;
+   this.seq_len = 0;
+   this.stmts = null;
+
+   if (arguments[0].constructor.name == 'Array') {
+      this.seq_len = arguments[0].length;
+      this.stmts = arguments[0];
+   } else {
+      this.seq_len = arguments.length;
+      this.stmts = arguments;
+   }
 
    if (this.seq_len == 0)
       return;
@@ -316,20 +326,20 @@ function Sequence() {
    this.sel_in = [];
    this.k_in = [null, []];
 
-   this.k_in[0] = arguments[this.seq_len - 1].k[0] =
-      new Wire(arguments[this.seq_len - 1], this);
+   this.k_in[0] = this.stmts[this.seq_len - 1].k[0] =
+      new Wire(this.stmts[this.seq_len - 1], this);
 
    for (var i = 0; i < this.seq_len; i++) {
-      var circuit_cur = arguments[i];
+      var circuit_cur = this.stmts[i];
 
       if (i == 0) {
 	 this.go_in[i] = circuit_cur.go = new Wire(this, circuit_cur);
       } else {
-	 var w = new Wire(arguments[i - 1], circuit_cur);
+	 var w = new Wire(this.stmts[i - 1], circuit_cur);
 
 	 this.go_in[i] = w;
 	 this.k_in[0][i - 1] = w;
-	 arguments[i - 1].k[0] = w;
+	 this.stmts[i - 1].k[0] = w;
 	 circuit_cur.go = w;
       }
       this.res_in[i] = circuit_cur.res = new Wire(this, circuit_cur);

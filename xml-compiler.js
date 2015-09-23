@@ -131,7 +131,7 @@ function SEQUENCE(attrs, raw_childs) {
 
    if (childs.length < 2)
       fatal("Sequence must have at least two childs.", attrs);
-   sequence = new reactive.Sequence();
+   sequence = new reactive.Sequence(childs);
    sequence.loc = format_loc(attrs);
    return sequence;
 }
