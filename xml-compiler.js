@@ -5,7 +5,13 @@ function format_loc(attrs) {
 }
 
 function get_childs(args) {
-   return Array.prototype.slice.call(args, 1, args.length);
+   var childs = [];
+   var raw_childs = Array.prototype.slice.call(args, 1, args.length);
+
+   for (var i in raw_childs)
+       if (typeof(raw_childs[i]) == 'object') /* `instanceof Object` */
+	 childs.push(raw_childs[i]);
+   return childs;
 }
 
 function check_signal(signal) {
@@ -19,15 +25,12 @@ function fatal(msg, attrs) {
 }
 
 function REACTIVEMACHINE(attrs, raw_childs) {
-   console.log(raw_childs);
-   console.log(attrs);
    var childs = get_childs(raw_childs);
    var machine = null;
 
-   console.log(childs);
    if (childs.length != 1)
-      fatal("ReactiveMachine must have exactly one child.", attrs);
-   machine = new reactive.ReactiveMachine(child[0]);
+      fatal("ReactiveMachime must have exactly one child.", attrs);
+   machine = new reactive.ReactiveMachine(childs[0]);
    machine.loc = format_loc(attrs);
    return machine;
 }
