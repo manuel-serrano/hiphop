@@ -614,6 +614,18 @@ Parallel.prototype.run = function() {
 }
 
 Parallel.prototype.topological_sort = function() {
+   /* TODO : inprove the sort. The example
+
+      present A then emit B end || emit A
+
+      works well, but the example
+
+      [ emit A; present B them emit C end ]
+      ||
+      [ present A then emit B end ]
+
+      will make a causality error, and it shouldn't. */
+
    var ldeps = remove_duplicates(this.go_in[0].stmt_out.get_dependencies());
    var rdeps = remove_duplicates(this.go_in[1].stmt_out.get_dependencies());
    var lfirst = false;
