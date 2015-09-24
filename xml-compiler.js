@@ -25,6 +25,9 @@ function fatal(msg, attrs) {
 }
 
 function REACTIVEMACHINE(attrs, raw_childs) {
+   for (var i in raw_childs)
+      console.log("child", i, ": [" + raw_childs[i] + "]");
+
    var childs = get_childs(raw_childs);
    var machine = null;
 
