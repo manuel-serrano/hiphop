@@ -111,7 +111,7 @@ function ABORT(attrs) {
       fatal("Abort must have a signal argument.", attrs);
    if (children.length != 1)
       fatal("Abort must have exactly one child.", attrs);
-   abort = new reactive.Abort(signal, children[0]);
+   abort = new reactive.Abort(children[0], signal);
    abort.loc = format_loc(attrs);
    return abort;
 }

@@ -10,6 +10,10 @@ var sigO = new rkernel.Signal("O", false, function() {
    console.log("EMIT O");
 });
 
+function init_sig() {
+   sigA.set = sigB.set = sigR.set = false;
+}
+
 var prg = <rjs.reactivemachine>
     <rjs.loop>
         <rjs.abort signal=${sigR}>
@@ -25,3 +29,44 @@ var prg = <rjs.reactivemachine>
 </rjs.reactivemachine>;
 
 prg.react();
+
+console.log("A & B");
+sigA.set = true;
+sigB.set = true;
+prg.react();
+init_sig();
+
+console.log("A ; A & B");
+sigA.set = true;
+prg.react();
+sigB.set = true;
+prg.react();
+init_sig();
+
+console.log("B ; A & B");
+sigB.set = true;
+prg.react();
+sigA.set = true;
+prg.react();
+init_sig();
+
+console.log("A & B");
+sigA.set = true;
+sigB.set = true;
+prg.react();
+init_sig();
+
+console.log("A & R ; B");
+sigA.set = true;
+sigR.set = true;
+prg.react();
+sigB.set = true;
+prg.react();
+init_sig();
+
+console.log("A & B & R");
+sigA.set = true;
+sigB.set = true;
+sigR.set = true;
+prg.react();
+init_sig();

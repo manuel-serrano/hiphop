@@ -661,6 +661,9 @@ Parallel.prototype.topological_sort = function() {
       process.exit(1);
    }
 
+   if (!lfirst && !rfirst)
+      ret = [0, 1];
+
    return ret;
 }
 
