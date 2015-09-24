@@ -75,15 +75,23 @@ Statement.prototype.debug = function() {
 	       return_codes);
 }
 
-/* Return an array of signal tested (present/await) */
+/* Return an array of signal tested (present/await)
+   TODO: remote it, use visitor instead */
 Statement.prototype.get_dependencies = function() {
    return [];
 }
 
-/* Return true if the branch emit the `signal` signal */
+/* Return true if the branch emit the `signal` signal
+   TODO: remot it, use visitor instead */
 Statement.prototype.will_emit = function(signal) {
    return false;
 };
+
+/* Visitor pattern for some stuff (init signals at the end of
+   computation, sorting, etc) */
+Statement.prototype.accept = function(visitor) {
+   visitor.visit(this);
+}
 
 /* Root class of any circuit (construction with statements, or others
    circuits.
@@ -109,6 +117,11 @@ Circuit.prototype.get_dependencies = function() {
 
 Circuit.prototype.will_emit = function(signal) {
    return this.go_in.stmt_out.will_emit(signal);
+};
+
+Circuit.prototype.accept = function(visitor) {
+   visitor.visit(this);
+   this.go_in.stmt_out.accept(visitor);
 };
 
 function ReactiveMachine(circuit) {
@@ -152,6 +165,7 @@ ReactiveMachine.prototype.react = function(seq) {
    this.go_in.stmt_out.run();
 
    this.boot_reg = this.k_in[0].set;
+   this.go_in.stmt_out.accept(new ResetSignalVisitor());
 
    var buf = "";
    for (var i in this.k_in)
@@ -165,7 +179,10 @@ ReactiveMachine.prototype.get_dependencies = function() {
 
 ReactiveMachine.prototype.will_emit = function(signal) {
    return false;
-};
+}
+
+ReactiveMachine.prototype.accept = function(visitor) {
+}
 
 /* Emit - Figure 11.4 page 116 */
 
@@ -188,7 +205,7 @@ Emit.prototype.run = function() {
 
 Emit.prototype.will_emit = function(signal) {
    return signal == this.signal;
-};
+}
 
 /* Pause - Figure 11.3 page 115 */
 
@@ -297,7 +314,13 @@ Present.prototype.get_dependencies = function() {
 Present.prototype.will_emit = function(signal) {
    return this.go_in[0].stmt_out.will_emit(signal)
       || this.go_in[1].stmt_out.will_emit(signal);
-};
+}
+
+Present.prototype.accept = function(visitor) {
+   visitor.visit(this);
+   this.go_in[0].stmt_out.accept(visitor);
+   this.go_in[1].stmt_out.accept(visitor);
+}
 
 /* Sequence - Figure 11.8 page 120
    It can take either a variable list of argument, or only one argument
@@ -411,6 +434,12 @@ Sequence.prototype.will_emit = function(signal) {
       if (this.go_in[i].stmt_out.will_emit(signal))
 	 return true;
    return false;
+}
+
+Sequence.prototype.accept = function(visitor) {
+   visitor.visit(this);
+   for (var i in this.go_in)
+      this.go_in[i].stmt_out.accept(visitor);
 }
 
 /* Loop - Figure 11.9 page 121 */
@@ -677,6 +706,12 @@ Parallel.prototype.will_emit = function(signal) {
       || this.go_in[1].stmt_out.will_emit(signal);
 }
 
+Parallel.prototype.accept = function(visitor) {
+   visitor.visit(this);
+   this.go_in[0].stmt_out.accept(visitor);
+   this.go_in[1].stmt_out.accept(visitor);
+}
+
 /* Parallel synchronizer - Figure 11.11 page 122 */
 
 function ParallelSynchronizer(branch1, branch2) {
@@ -771,6 +806,18 @@ function remove_duplicates(arr) {
 	 out.push(arr[i]);
       }
    return out;
+}
+
+/* Visitor usefull to reset signal state after reaction */
+function ResetSignalVisitor() {
+}
+
+ResetSignalVisitor.prototype.visit = function(stmt) {
+   if (stmt instanceof Emit
+       || stmt instanceof Await
+       || stmt instanceof Present
+       || stmt instanceof Abort)
+      stmt.signal.set = false;
 }
 
 exports.Signal = Signal;
