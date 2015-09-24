@@ -1,3 +1,5 @@
+"use hopscript"
+
 var rjs = require("./xml-compiler.js");
 var rkernel = require("./reactive-kernel.js");
 

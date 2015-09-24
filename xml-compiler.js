@@ -1,17 +1,19 @@
+"use hopscript"
+
 var reactive = require("./reactive-kernel.js");
 
 function format_loc(attrs) {
    return attrs["%location"].filename + ":" + attrs["%location"].pos;
 }
 
-function get_childs(args) {
-   var childs = [];
-   var raw_childs = Array.prototype.slice.call(args, 1, args.length);
+function get_children(args) {
+   var children = [];
+   var raw_children = Array.prototype.slice.call(args, 1, args.length);
 
-   for (var i in raw_childs)
-       if (typeof(raw_childs[i]) == 'object') /* `instanceof Object` */
-	 childs.push(raw_childs[i]);
-   return childs;
+   for (var i in raw_children)
+      if (typeof(raw_children[i]) == 'object') /*instanceof reactive.Statement*/
+	 children.push(raw_children[i]);
+   return children;
 }
 
 function check_signal(signal) {
@@ -24,16 +26,13 @@ function fatal(msg, attrs) {
    process.exit(1);
 }
 
-function REACTIVEMACHINE(attrs, raw_childs) {
-   for (var i in raw_childs)
-      console.log("child", i, ": [" + raw_childs[i] + "]");
-
-   var childs = get_childs(raw_childs);
+function REACTIVEMACHINE(attrs) {
+   var children = get_children(arguments);
    var machine = null;
 
-   if (childs.length != 1)
+   if (children.length != 1)
       fatal("ReactiveMachime must have exactly one child.", attrs);
-   machine = new reactive.ReactiveMachine(childs[0]);
+   machine = new reactive.ReactiveMachine(children[0]);
    machine.loc = format_loc(attrs);
    return machine;
 }
@@ -67,16 +66,16 @@ function HALT(attrs) {
    return halt;
 }
 
-function PRESENT(attrs, raw_childs) {
-   var childs = get_childs(raw_childs);
+function PRESENT(attrs) {
+   var children = get_children(arguments);
    var signal = attrs.signal;
    var present = null;
 
    if (!check_signal(signal))
       fatal("Present must have a signal argument.", attrs);
-   if (childs.length < 1)
+   if (children.length < 1)
       fatal("Present must have at least one child.", attrs);
-   present = new reactive.Present(signal, childs[0], childs[1]);
+   present = new reactive.Present(signal, children[0], children[1]);
    present.loc = format_loc(attrs);
    return present;
 }
@@ -92,49 +91,49 @@ function AWAIT(attrs) {
    return await;
 }
 
-function PARALLEL(attrs, raw_childs) {
-   var childs = get_childs(raw_childs);
+function PARALLEL(attrs) {
+   var children = get_children(arguments);
    var parallel = null;
 
-   if (childs != 2)
-      fatal("Parallel must have exactly two childs.", attrs);
-   parallel = new reactive.Parallel(childs[0], child[1]);
+   if (children.length != 2)
+      fatal("Parallel must have exactly two children.", attrs);
+   parallel = new reactive.Parallel(children[0], children[1]);
    parallel.loc = format_loc(attrs);
    return parallel;
 }
 
-function ABORT(attrs, raw_childs) {
-   var childs = get_childs(raw_childs);
+function ABORT(attrs) {
+   var children = get_children(arguments);
    var signal = attrs.signal;
    var abort = null;
 
    if (!check_signal(signal))
       fatal("Abort must have a signal argument.", attrs);
-   if (childs.length != 1)
+   if (children.length != 1)
       fatal("Abort must have exactly one child.", attrs);
-   abort = new reactive.Abort(signal, childs[0]);
+   abort = new reactive.Abort(signal, children[0]);
    abort.loc = format_loc(attrs);
    return abort;
 }
 
-function LOOP(attrs, raw_childs) {
-   var childs = get_childs(raw_childs);
+function LOOP(attrs) {
+   var children = get_children(arguments);
    var loop = null;
 
-   if (childs.length != 1)
+   if (children.length != 1)
       fatal("Loop must have exaclty one child.", attrs);
-   loop = new reactive.Loop(childs[0]);
+   loop = new reactive.Loop(children[0]);
    loop.loc = format_loc(attrs);
    return loop;
 }
 
-function SEQUENCE(attrs, raw_childs) {
-   var childs = get_childs(raw_childs);
+function SEQUENCE(attrs) {
+   var children = get_children(arguments);
    var sequence = null;
 
-   if (childs.length < 2)
-      fatal("Sequence must have at least two childs.", attrs);
-   sequence = new reactive.Sequence(childs);
+   if (children.length < 2)
+      fatal("Sequence must have at least two children.", attrs);
+   sequence = new reactive.Sequence(children);
    sequence.loc = format_loc(attrs);
    return sequence;
 }
