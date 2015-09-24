@@ -13,7 +13,7 @@ var DEBUG_PARALLEL = 256;
 var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_ALL = 0xFFFFFFFF;
 
-var DEBUG_FLAGS = DEBUG_ABORT;
+var DEBUG_FLAGS = DEBUG_NONE;
 
 var THEN = 0;
 var ELSE = 1;
@@ -75,18 +75,6 @@ Statement.prototype.debug = function() {
 	       return_codes);
 }
 
-/* Return an array of signal tested (present/await)
-   TODO: remote it, use visitor instead */
-Statement.prototype.get_dependencies = function() {
-   return [];
-}
-
-/* Return true if the branch emit the `signal` signal
-   TODO: remot it, use visitor instead */
-Statement.prototype.will_emit = function(signal) {
-   return false;
-};
-
 /* Visitor pattern for some stuff (init signals at the end of
    computation, sorting, etc) */
 Statement.prototype.accept = function(visitor) {
@@ -110,14 +98,6 @@ function Circuit(name) {
 }
 
 Circuit.prototype = new Statement();
-
-Circuit.prototype.get_dependencies = function() {
-   return this.go_in.stmt_out.get_dependencies();
-}
-
-Circuit.prototype.will_emit = function(signal) {
-   return this.go_in.stmt_out.will_emit(signal);
-};
 
 Circuit.prototype.accept = function(visitor) {
    visitor.visit(this);
@@ -173,14 +153,6 @@ ReactiveMachine.prototype.react = function(seq) {
    console.log("---- SEL:" + this.sel_in.set + " " + buf + "----\n");
 }
 
-ReactiveMachine.prototype.get_dependencies = function() {
-   return [];
-}
-
-ReactiveMachine.prototype.will_emit = function(signal) {
-   return false;
-}
-
 ReactiveMachine.prototype.accept = function(visitor) {
 }
 
@@ -201,10 +173,6 @@ Emit.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_EMIT)
       this.debug();
-}
-
-Emit.prototype.will_emit = function(signal) {
-   return signal == this.signal;
 }
 
 /* Pause - Figure 11.3 page 115 */
@@ -303,17 +271,6 @@ Present.prototype.init_reg = function() {
    if (this.go_in[ELSE] != undefined)
       this.go_in[ELSE].stmt_out.init_reg();
    this.k[0].stmt_out.init_reg();
-}
-
-Present.prototype.get_dependencies = function() {
-   return [ this.signal ]
-      .concat(this.go_in[0].stmt_out.get_dependencies())
-      .concat(this.go_in[1].stmt_out.get_dependencies());
-}
-
-Present.prototype.will_emit = function(signal) {
-   return this.go_in[0].stmt_out.will_emit(signal)
-      || this.go_in[1].stmt_out.will_emit(signal);
 }
 
 Present.prototype.accept = function(visitor) {
@@ -419,21 +376,6 @@ Sequence.prototype.run = function() {
 Sequence.prototype.init_reg = function() {
    for (var i in this.go_in)
       this.go_in[i].stmt_out.init_reg();
-}
-
-Sequence.prototype.get_dependencies = function() {
-   var deps = [];
-
-   for (var i in this.go_in)
-      deps = deps.concat(this.go_in[i].stmt_out.get_dependencies())
-   return deps;
-}
-
-Sequence.prototype.will_emit = function(signal) {
-   for (var i in this.go_in)
-      if (this.go_in[i].stmt_out.will_emit(signal))
-	 return true;
-   return false;
 }
 
 Sequence.prototype.accept = function(visitor) {
@@ -561,10 +503,6 @@ Await.prototype.run = function() {
       this.debug();
 }
 
-Await.prototype.get_dependencies = function() {
-   return [this.signal];
-}
-
 /* Halt */
 
 function Halt() {
@@ -636,9 +574,8 @@ Parallel.prototype.run = function() {
    this.susp_in[0].set = this.susp_in[1].set = this.susp.set;
    this.kill_in[0].set = this.kill_in[1].set = this.kill.set;
 
-   sort = this.topological_sort();
-   this.go_in[sort[0]].stmt_out.run();
-   this.go_in[sort[1]].stmt_out.run();
+   this.go_in[0].stmt_out.run();
+   this.go_in[1].stmt_out.run();
 
    this.sel.set = this.sel_in[0].set || this.sel_in[1].set;
    this.synchronizer.lem = !(this.go.set || this.sel.set);
@@ -650,60 +587,6 @@ Parallel.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_PARALLEL)
       this.debug();
-}
-
-Parallel.prototype.topological_sort = function() {
-   /* TODO : inprove the sort. The example
-
-      present A then emit B end || emit A
-
-      works well, but the example
-
-      [ emit A; present B them emit C end ]
-      ||
-      [ present A then emit B end ]
-
-      will make a causality error, and it shouldn't. */
-
-   var ldeps = remove_duplicates(this.go_in[0].stmt_out.get_dependencies());
-   var rdeps = remove_duplicates(this.go_in[1].stmt_out.get_dependencies());
-   var lfirst = false;
-   var rfirst = false;
-   var ret = [];
-
-   for (var i in ldeps)
-      if (this.go_in[1].stmt_out.will_emit(ldeps[i])) {
-	 rfirst = true;
-	 ret = [1, 0];
-	 break;
-      }
-
-   for (var i in rdeps)
-      if (this.go_in[0].stmt_out.will_emit(rdeps[i])) {
-	 lfirst = true;
-	 ret = [0, 1];
-	 break;
-      }
-
-   if (lfirst && rfirst) {
-      console.log("*** CAUSALITY ERROR on", this.name, "at", this.loc, "***");
-      process.exit(1);
-   }
-
-   if (!lfirst && !rfirst)
-      ret = [0, 1];
-
-   return ret;
-}
-
-Parallel.prototype.get_dependencies = function() {
-   return this.go_in[0].stmt_out.get_dependencies()
-      .concat(this.go_in[1].stmt_out.get_dependencies());
-}
-
-Parallel.prototype.will_emit = function(signal) {
-   return this.go_in[0].stmt_out.will_emit(signal)
-      || this.go_in[1].stmt_out.will_emit(signal);
 }
 
 Parallel.prototype.accept = function(visitor) {
