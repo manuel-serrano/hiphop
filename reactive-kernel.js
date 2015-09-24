@@ -167,7 +167,7 @@ ReactiveMachine.prototype.will_emit = function(signal) {
    return false;
 };
 
-/* Emit = Figure 11.4 page 116 */
+/* Emit - Figure 11.4 page 116 */
 
 function Emit(signal) {
    Statement.call(this, "EMIT");
