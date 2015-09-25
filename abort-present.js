@@ -36,4 +36,5 @@ var prg = <rjs.reactivemachine>
 
 prg.react();
 prg.react();
+sigI.set = true;
 prg.react();
