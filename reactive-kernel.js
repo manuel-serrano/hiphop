@@ -42,7 +42,7 @@ function Wire(stmt_in, stmt_out) {
 
 function Statement(name) {
    this.name = name;
-   this.loc = "--";
+   this.loc = "NESTED";
    this.go = null;
    this.res = null;
    this.susp = null;
@@ -270,7 +270,6 @@ Present.prototype.init_reg = function() {
    this.go_in[THEN].stmt_out.init_reg();
    if (this.go_in[ELSE] != undefined)
       this.go_in[ELSE].stmt_out.init_reg();
-   this.k[0].stmt_out.init_reg();
 }
 
 Present.prototype.accept = function(visitor) {
