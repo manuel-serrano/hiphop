@@ -13,7 +13,7 @@ var DEBUG_PARALLEL = 256;
 var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_ALL = 0xFFFFFFFF;
 
-var DEBUG_FLAGS = DEBUG_NONE;
+var DEBUG_FLAGS = DEBUG_ABORT;
 
 var THEN = 0;
 var ELSE = 1;
@@ -57,6 +57,8 @@ Statement.prototype.run = function() { }
 
 Statement.prototype.init_reg = function() { }
 
+/* Generic debug function can be called after the execution of a statement */
+
 Statement.prototype.debug = function() {
    var return_codes = "";
 
@@ -77,6 +79,7 @@ Statement.prototype.debug = function() {
 
 /* Visitor pattern for some stuff (init signals at the end of
    computation, sorting, etc) */
+
 Statement.prototype.accept = function(visitor) {
    visitor.visit(this);
 }
@@ -136,7 +139,7 @@ ReactiveMachine.prototype.react = function(seq) {
    }
 
    this.go_in.set = this.boot_reg;
-   this.res_in.set = !this.boot_reg;
+   this.res_in.set = true;
    this.susp_in.set = false;
    this.kill_in.set = false;
 
@@ -185,12 +188,17 @@ function Pause() {
 Pause.prototype = new Statement()
 
 Pause.prototype.run = function() {
-   var reg = (this.susp.set && this.reg && !this.kill.set)
-      || (this.go.set && !this.kill.set)
-   this.sel.set = reg;
-   this.k[1].set = this.go.set;
    this.k[0].set = this.reg && this.res.set;
-   this.reg = reg;
+   this.k[1].set = this.go.set;
+   this.sel.set = this.reg;
+   this.reg = (this.go.set || (this.susp.set && this.sel.set))
+      && !this.kill.set;
+   // var reg = (this.susp.set && this.reg && !this.kill.set)
+   //    || (this.go.set && !this.kill.set)
+   // this.sel.set = reg;
+   // this.k[1].set = this.go.set;
+   // this.k[0].set = this.reg && this.res.set;
+   // this.reg = reg;
 
    if (DEBUG_FLAGS & DEBUG_PAUSE)
       this.debug();
