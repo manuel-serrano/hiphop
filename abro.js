@@ -30,6 +30,7 @@ console.log("A & B");
 sigA.set = true;
 sigB.set = true;
 prg.react();
+prg.react();
 
 console.log("A ; A & B");
 sigA.set = true;
@@ -54,11 +55,11 @@ console.log("A & R ; B");
 sigA.set = true;
 sigR.set = true;
 prg.react();
-// sigB.set = true;
-// prg.react();
+sigB.set = true;
+prg.react();
 
-// console.log("A & B & R");
-// sigA.set = true;
-// sigB.set = true;
-// sigR.set = true;
-// prg.react();
+console.log("A & B & R");
+sigA.set = true;
+sigB.set = true;
+sigR.set = true;
+prg.react();
