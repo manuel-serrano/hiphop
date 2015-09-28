@@ -13,7 +13,7 @@ var DEBUG_PARALLEL = 256;
 var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_ALL = 0xFFFFFFFF;
 
-var DEBUG_FLAGS = DEBUG_NONE;
+var DEBUG_FLAGS = DEBUG_LOOP;
 
 var THEN = 0;
 var ELSE = 1;
@@ -105,7 +105,7 @@ Circuit.prototype = new Statement();
 Circuit.prototype.accept = function(visitor) {
    visitor.visit(this);
    this.go_in.stmt_out.accept(visitor);
-};
+}
 
 function ReactiveMachine(circuit) {
    Circuit.call(this, "REACTIVE_MACHINE");
@@ -190,7 +190,6 @@ Pause.prototype = new Statement()
 Pause.prototype.run = function() {
    this.k[0].set = this.reg && this.res.set;
    this.k[1].set = this.go.set;
-
    this.reg = (this.go.set || (this.susp.set && this.sel.set))
       && !this.kill.set;
    this.sel.set = this.reg;
@@ -462,7 +461,8 @@ Abort.prototype.run = function() {
    this.kill_in.set = this.kill.set;
    this.go_in.stmt_out.run();
    this.sel.set = this.sel_in.set;
-   this.k[0].set = (this.res.set && this.signal.set) || this.k_in[0].set;
+   this.k[0].set = (this.res.set && this.sel_in.set && this.signal.set)
+      || this.k_in[0].set;
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
 
