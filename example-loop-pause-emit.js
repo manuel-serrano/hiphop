@@ -19,11 +19,10 @@ machine.react();
 console.log("sigI set");
 sigI.set = true;
 machine.react();
+//sigI.set = true;
 machine.react();
+sigI.set = true;
 machine.react();
-
-console.log("sigI unset");
-sigI.set = false;
 machine.react();
 machine.react();
 machine.react();
