@@ -13,7 +13,7 @@ var DEBUG_PARALLEL = 256;
 var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_ALL = 0xFFFFFFFF;
 
-var DEBUG_FLAGS = DEBUG_LOOP | DEBUG_ABORT;
+var DEBUG_FLAGS = DEBUG_NONE;
 
 var THEN = 0;
 var ELSE = 1;
@@ -188,11 +188,22 @@ function Pause() {
 Pause.prototype = new Statement()
 
 Pause.prototype.run = function() {
+   /*
+   this.reg = (this.susp.set && this.reg && !this.kill.set) ||
+      (this.go.set && !this.kill.set);
+   this.sel.set = this.reg;
+   this.k[1].set = this.go.set;
+   this.k[0].set = this.reg && this.res.set;
+   */
+
    this.k[0].set = this.reg && this.res.set;
    this.k[1].set = this.go.set;
+   this.sel.set = this.reg;
    this.reg = (this.go.set || (this.susp.set && this.sel.set))
       && !this.kill.set;
-   this.sel.set = this.reg;
+
+
+
    // var reg = (this.susp.set && this.reg && !this.kill.set)
    //    || (this.go.set && !this.kill.set)
    // this.sel.set = reg;
@@ -421,7 +432,7 @@ Loop.prototype.run = function() {
       this.go_in.stmt_out.run();
       this.sel.set = this.sel_in.set;
       this.k[0].set = this.k_in[0].set;
-      stop = !this.k_in[0].set;
+      stop = !(this.k_in[0].set && (this.res_in.set && this.sel_in.set));
    }
 
    for (var i = 1; i < this.k_in.length; i++)
@@ -456,13 +467,18 @@ Abort.prototype = new Circuit();
 
 Abort.prototype.run = function() {
    this.go_in.set = this.go.set;
-   this.res_in.set = this.res.set && this.sel.set && !this.signal.set;
+   //this.res_in.set = this.res.set && this.sel.set && !this.signal.set;
+   this.res_in.set = this.res.set && !this.signal.set;
    this.susp_in.set = this.susp.set;
    this.kill_in.set = this.kill.set;
+
    this.go_in.stmt_out.run();
+
    this.sel.set = this.sel_in.set;
-   this.k[0].set = (this.res.set && this.sel_in.set && this.signal.set)
-      || this.k_in[0].set;
+   //   this.k[0].set = (this.res.set && this.sel_in.set && this.signal.set)
+   //|| this.k_in[0].set;
+   this.k[0].set = (this.res.set && this.signal.set) || this.k_in[0].set;
+
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
 
