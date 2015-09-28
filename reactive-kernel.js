@@ -13,7 +13,7 @@ var DEBUG_PARALLEL = 256;
 var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_ALL = 0xFFFFFFFF;
 
-var DEBUG_FLAGS = DEBUG_ABORT;
+var DEBUG_FLAGS = DEBUG_NONE;
 
 var THEN = 0;
 var ELSE = 1;
@@ -190,9 +190,10 @@ Pause.prototype = new Statement()
 Pause.prototype.run = function() {
    this.k[0].set = this.reg && this.res.set;
    this.k[1].set = this.go.set;
-   this.sel.set = this.reg;
+
    this.reg = (this.go.set || (this.susp.set && this.sel.set))
       && !this.kill.set;
+   this.sel.set = this.reg;
    // var reg = (this.susp.set && this.reg && !this.kill.set)
    //    || (this.go.set && !this.kill.set)
    // this.sel.set = reg;

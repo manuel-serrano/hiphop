@@ -46,7 +46,6 @@ for (var i = 0; i < 5; i++)
 
 sigA.set = true;
 machine.react(5);
-sigA.set = false;
 machine.react(6);
 machine.react(7);
 machine.react(8);
