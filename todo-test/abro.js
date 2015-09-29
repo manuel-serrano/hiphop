@@ -1,7 +1,7 @@
 "use hopscript"
 
-var rjs = require("./xml-compiler.js");
-var rkernel = require("./reactive-kernel.js");
+var rjs = require("../xml-compiler.js");
+var rkernel = require("../reactive-kernel.js");
 
 var sigA = new rkernel.Signal("A", false, null);
 var sigB = new rkernel.Signal("B", false, null);

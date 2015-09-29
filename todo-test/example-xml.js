@@ -1,7 +1,7 @@
 "use hopscript"
 
-var rjs = require("./xml-compiler.js");
-var rkernel = require("./reactive-kernel.js");
+var rjs = require("../xml-compiler.js");
+var rkernel = require("../reactive-kernel.js");
 
 var signal = new rkernel.Signal("S", false, function() {
    console.log("EMIT S");

@@ -1,0 +1,20 @@
+---- reaction  GO:true RES:true INIT ----
+EMIT I
+EMIT J
+---- SEL:false K0:true K1:true ----
+
+---- reaction  GO:true RES:true INIT ----
+EMIT I
+EMIT J
+---- SEL:true K0:true K1:true ----
+
+---- reaction  GO:true RES:true INIT ----
+EMIT I
+EMIT J
+---- SEL:true K0:true K1:true ----
+
+---- reaction  GO:true RES:true INIT ----
+EMIT I
+EMIT J
+---- SEL:true K0:true K1:true ----
+

@@ -1,0 +1,30 @@
+---- reaction 0 GO:true RES:true INIT ----
+---- SEL:false K0:false K1:true ----
+
+---- reaction 1 GO:false RES:true ----
+---- SEL:false K0:false K1:true ----
+
+---- reaction 5 GO:false RES:true ----
+EMIT S
+EMIT T
+---- SEL:true K0:false K1:true ----
+
+---- reaction 7 GO:false RES:true ----
+EMIT V
+---- SEL:false K0:false K1:true ----
+
+---- reaction 8 GO:false RES:true ----
+---- SEL:false K0:false K1:true ----
+
+---- reaction 9 GO:false RES:true ----
+---- SEL:false K0:false K1:true ----
+
+---- reaction 10 GO:false RES:true ----
+EMIT S
+EMIT T
+---- SEL:true K0:false K1:true ----
+
+---- reaction 11 GO:false RES:true ----
+EMIT V
+---- SEL:false K0:false K1:true ----
+

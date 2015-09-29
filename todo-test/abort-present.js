@@ -1,7 +1,7 @@
 "use hopscript"
 
-var rjs = require("./xml-compiler.js");
-var rkernel = require("./reactive-kernel.js");
+var rjs = require("../xml-compiler.js");
+var rkernel = require("../reactive-kernel.js");
 
 var sigI = new rkernel.Signal("I", false, null);
 var sigJ = new rkernel.Signal("J", false, function() {
@@ -36,6 +36,6 @@ var prg = <rjs.reactivemachine>
 
 sigI.set = true;
 prg.react();
-//prg.react();
-// sigI.set = true;
-// prg.react();
+prg.react();
+sigI.set = true;
+prg.react();

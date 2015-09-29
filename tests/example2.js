@@ -1,23 +1,19 @@
 "use strict"
 
-var reactive = require("./reactive-kernel.js");
+var reactive = require("../reactive-kernel.js");
 
 /*
   <ReactiveMachine>
-     <abort when=${a}>
-        <loop>
-           <emit signal=${s} />
-           <present signal=${s}>
-              <emit signal=${t} />
-           </present>
-           <pause />
-	   <emit signal=${v} />
-        </loop>
-     </abort>
+     <loop>
+        <emit signal=${s} />
+        <present signal=${s}>
+           <emit signal=${t} />
+        </present>
+        <pause />
+	<emit signal=${v} />
+     </loop>
   </ReactiveMachine>
 */
-
-var sigA = new reactive.Signal("A", false, null);
 
 var sigS = new reactive.Signal("S", false, function() {
    console.log("EMIT S");
@@ -38,14 +34,7 @@ var present = new reactive.Present(sigS, emitT);
 var pause = new reactive.Pause();
 var seq = new reactive.Sequence(emitS, present, pause, emitV);
 var loop = new reactive.Loop(seq);
-var abort = new reactive.Abort(loop, sigA);
-var machine = new reactive.ReactiveMachine(abort);
+var machine = new reactive.ReactiveMachine(loop);
 
 for (var i = 0; i < 5; i++)
    machine.react(i);
-
-sigA.set = true;
-machine.react(5);
-machine.react(6);
-machine.react(7);
-machine.react(8);

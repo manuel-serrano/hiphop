@@ -1,0 +1,34 @@
+#!/bin/bash
+
+basedir=$pwd
+hop=/usr/local/bin/hop
+output=/tmp/TEST-HOPJS.out
+
+success=0
+failure=0
+i=0
+
+run() {
+    i=`expr $i + 1`
+
+    echo -n "$i. $path ... "
+    $hop --no-server $* > $output 2>&1
+
+    if [ "$(diff $output $path.out)" != "" ]
+    then
+	echo "failure."
+	failure=`expr $failure + 1`
+    else
+	echo "ok.";
+	success=`expr $success + 1`
+    fi
+}
+
+for path in *.js
+do
+    run $path
+done
+
+echo "`expr $success + $failure` executed"
+echo "   $success success"
+echo "   $failure failure"

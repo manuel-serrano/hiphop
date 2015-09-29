@@ -1,6 +1,6 @@
 "use strict"
 
-var reactive = require("./reactive-kernel.js");
+var reactive = require("../reactive-kernel.js");
 
 /*
   <ReactiveMachine>

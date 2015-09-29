@@ -1,4 +1,4 @@
-var reactive = require("./reactive-kernel.js");
+var reactive = require("../reactive-kernel.js");
 
 var sigI = new reactive.Signal("I", false, function() {
    console.log("EMIT I");
