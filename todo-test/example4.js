@@ -4,23 +4,20 @@ var reactive = require("../reactive-kernel.js");
 
 /*
   <ReactiveMachine>
-     <abort when=${a}>
-        <loop>
-	   <await signal=${b} />
+     <loop>
+        <abort when=${a}>
            <emit signal=${s} />
            <present signal=${s}>
               <emit signal=${t} />
            </present>
            <pause />
 	   <emit signal=${v} />
-        </loop>
-     </abort>
+	</abort>
+     </loop>
   </ReactiveMachine>
 */
 
 var sigA = new reactive.Signal("A", false, null);
-
-var sigB = new reactive.Signal("B", false, null);
 
 var sigS = new reactive.Signal("S", false, function() {
    console.log("EMIT S");
@@ -34,33 +31,24 @@ var sigV = new reactive.Signal("V", false, function() {
    console.log("EMIT V");
 });
 
-var awaitB = new reactive.Await(sigB);
 var emitS = new reactive.Emit(sigS);
+emitS.loc = "emitS";
 var emitT = new reactive.Emit(sigT);
+emitT.loc = "emitT";
 var emitV = new reactive.Emit(sigV);
+emitV.loc = "emitV";
 var present = new reactive.Present(sigS, emitT);
-var pause = new reactive.Pause("ext pause");
-var seq = new reactive.Sequence(awaitB,
-				emitS,
-				present,
-				pause,
-				emitV);
-var loop = new reactive.Loop(seq);
-var abort = new reactive.Abort(loop, sigA);
-var machine = new reactive.ReactiveMachine(abort);
+var pause = new reactive.Pause();
+var seq = new reactive.Sequence(emitS, present, pause, emitV);
+var abort = new reactive.Abort(seq, sigA);
+var loop = new reactive.Loop(abort);
+var machine = new reactive.ReactiveMachine(loop);
 
-// for (var i = 0; i < 5; i++)
-//    machine.react(i);
+for (var i = 0; i < 5; i++)
+   machine.react(i);
 
-machine.react(0);
-machine.react(1);
-
-sigB.set = true;
+sigA.set = true;
 machine.react(5);
-sigB.set = false;
+machine.react(6);
 machine.react(7);
 machine.react(8);
-machine.react(9);
-sigB.set = true;
-machine.react(10);
-machine.react(11);
