@@ -16,12 +16,14 @@ run() {
 
     if [ "$(diff $output $path.out)" != "" ]
     then
-	echo "failure."
+	echo -en "\e[31m\e[1mfailure\e[0m"
 	failure=`expr $failure + 1`
     else
-	echo "ok.";
+	echo -en "\e[32m\e[1mok\e[0m";
 	success=`expr $success + 1`
     fi
+
+    echo ".";
 }
 
 for path in *.js
