@@ -138,6 +138,17 @@ function SEQUENCE(attrs) {
    return sequence;
 }
 
+function ATOM(attrs) {
+   var func = attrs.func;
+   var atom = null;
+
+   if (!(func instanceof Function))
+      fatal("Atom must have a func attribute which is a function.", attrs);
+   atom = new reactive.Atom(attrs.func);
+   atom.loc = format_loc(attrs);
+   return atom;
+}
+
 exports.REACTIVEMACHINE = REACTIVEMACHINE;
 exports.EMIT = EMIT;
 exports.NOTHING = NOTHING;
@@ -149,3 +160,4 @@ exports.PARALLEL = PARALLEL;
 exports.ABORT = ABORT;
 exports.LOOP = LOOP;
 exports.SEQUENCE = SEQUENCE;
+exports.ATOM = ATOM;

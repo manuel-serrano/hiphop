@@ -188,28 +188,11 @@ function Pause() {
 Pause.prototype = new Statement()
 
 Pause.prototype.run = function() {
-   /*
-   this.reg = (this.susp.set && this.reg && !this.kill.set) ||
-      (this.go.set && !this.kill.set);
-   this.sel.set = this.reg;
-   this.k[1].set = this.go.set;
-   this.k[0].set = this.reg && this.res.set;
-   */
-
    this.k[0].set = this.reg && this.res.set;
    this.k[1].set = this.go.set;
    this.sel.set = this.reg;
    this.reg = (this.go.set || (this.susp.set && this.sel.set))
       && !this.kill.set;
-
-
-
-   // var reg = (this.susp.set && this.reg && !this.kill.set)
-   //    || (this.go.set && !this.kill.set)
-   // this.sel.set = reg;
-   // this.k[1].set = this.go.set;
-   // this.k[0].set = this.reg && this.res.set;
-   // this.reg = reg;
 
    if (DEBUG_FLAGS & DEBUG_PAUSE)
       this.debug();
@@ -467,7 +450,6 @@ Abort.prototype = new Circuit();
 
 Abort.prototype.run = function() {
    this.go_in.set = this.go.set;
-   //this.res_in.set = this.res.set && this.sel.set && !this.signal.set;
    this.res_in.set = this.res.set && !this.signal.set;
    this.susp_in.set = this.susp.set;
    this.kill_in.set = this.kill.set;
@@ -475,9 +457,6 @@ Abort.prototype.run = function() {
    this.go_in.stmt_out.run();
 
    this.sel.set = this.sel_in.set;
-   //   this.k[0].set = (this.res.set && this.sel_in.set && this.signal.set)
-   //|| this.k_in[0].set;
-   //this.k[0].set = (this.res.set && this.signal.set) || this.k_in[0].set;
    this.k[0].set = (this.res.set && this.sel.set && this.signal.set) ||
       this.k_in[0].set;
 
@@ -511,20 +490,6 @@ function Await(signal) {
 Await.prototype = new Circuit();
 
 Await.prototype.run = function() {
-   // var res = this.res.set && this.sel.set;
-   // var res_in = res && !this.signal.set;
-
-   // this.go_in.set = this.go.set;
-   // this.res_in.set = res_in;
-   // this.susp_in.set = this.susp.set;
-   // this.kill_in.set = this.kill.set;
-
-   // this.go_in.stmt_out.run();
-
-   // this.sel.set = this.sel_in.set;
-   // this.k[0].set = this.k_in[0].set || (res && this.signal.set);
-   // this.k[1].set = this.k_in[1].set;
-
    this.go_in.set = this.go.set;
    this.res_in.set = this.res.set;
    this.susp_in.set = this.susp.set;
@@ -728,6 +693,20 @@ function remove_duplicates(arr) {
    return out;
 }
 
+/* Atom - execute an host function with no arguments */
+function Atom(func) {
+   this.func = func;
+}
+
+Atom.prototype = new Statement();
+
+Atom.prototype.run = function() {
+   this.k[0].set = this.go.set;
+   if (!this.go.set)
+      return;
+   this.func();
+}
+
 /* Visitor usefull to reset signal state after reaction */
 function ResetSignalVisitor() {
 }
@@ -751,4 +730,5 @@ exports.Await = Await;
 exports.Halt = Halt;
 exports.Parallel = Parallel;
 exports.Nothing = Nothing;
+exports.Atom = Atom;
 exports.ReactiveMachine = ReactiveMachine;
