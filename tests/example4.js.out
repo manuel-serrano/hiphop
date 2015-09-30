@@ -30,9 +30,10 @@ EMIT T
 ---- reaction 5 GO:false RES:true ----
 EMIT S
 EMIT T
----- SEL:false K0:true K1:true ----
+---- SEL:false K0:false K1:true ----
 
----- reaction 6 GO:true RES:true INIT ----
+---- reaction 6 GO:false RES:true ----
+EMIT V
 EMIT S
 EMIT T
 ---- SEL:false K0:false K1:true ----

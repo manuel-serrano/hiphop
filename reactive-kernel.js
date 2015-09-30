@@ -478,7 +478,8 @@ Abort.prototype.run = function() {
    //   this.k[0].set = (this.res.set && this.sel_in.set && this.signal.set)
    //|| this.k_in[0].set;
    //this.k[0].set = (this.res.set && this.signal.set) || this.k_in[0].set;
-   this.k[0].set = this.res.set && this.sel.set && this.signal.set;
+   this.k[0].set = (this.res.set && this.sel.set && this.signal.set) ||
+      this.k_in[0].set;
 
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
