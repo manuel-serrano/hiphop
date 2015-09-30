@@ -1,7 +1,7 @@
 "use strict"
 
 var reactive = require("./reactive-kernel.js");
-var stdin = process.openStdin();
+var fs = require("fs");
 
 var CMD_EXIT = "exit";
 var CMD_UP = "up";
@@ -50,6 +50,8 @@ Inspector.print_properties = function() {
 
 Inspector.prototype.prompt = function() {
    var input = "";
+   var buffer = new Buffer(32);
+   var read_sz = 0;
 
    print_tiny_separator();
    print_properties();
@@ -57,36 +59,34 @@ Inspector.prototype.prompt = function() {
 	       "   TOOGLE prop attr)" +
 	       "   <propertie id>");
    console.log("[" + this.level + "]> ");
-}
 
-/* second part of the prompt function. no way to have a simpler (synchrone)
-   access to stdin with nodejs... */
+   read_sz = fs.readSync(0, buffer, 0, 32);
+   input = buffer.toString("utf8", 0, read_sz);
 
-stdin.on("data", function(input) {
    if (is_integer(input)) {
       if (input < 0 || input >= this.properties.length)
 	 console.log("ERROR: out of bounds propertie access");
       else
 	 return input;
    } else {
-      var linput = input.toLowerCase();
+      input = input.toLowerCase();
 
-      if (linput == CMD_EXIT ||
-	  linput == CMD_UP ||
-	  linput == CMD_REACT)
-	 return linput;
+      if (input == CMD_EXIT ||
+	  input == CMD_UP ||
+	  input == CMD_REACT)
+	 return input;
       else {
-	 linput = linput.split(" ");
+	 input = input.split(" ");
 
-	 if (linput[0] == CMD_TOOGLE) {
-	    if ((linput[1] == "this" &&
-		 typeof(this.stmt[linput[2]]) == "boolean")) {
-	       this.stmt[linput[2]] == !this.stmt[linput[2]];
+	 if (input[0] == CMD_TOOGLE) {
+	    if ((input[1] == "this" &&
+		 typeof(this.stmt[input[2]]) == "boolean")) {
+	       this.stmt[input[2]] == !this.stmt[input[2]];
 	       this.read_properties();
-	    } else if (this.stmt[linput[1]] != undefined &&
-		       typeof(this.stmt[linput[1]][linput[2]]) == "boolean") {
-	       this.stmt[linput[1]][linput[2]] =
-		  !this.stmt[linput[1]][linput[2]];
+	    } else if (this.stmt[input[1]] != undefined &&
+		       typeof(this.stmt[input[1]][input[2]]) == "boolean") {
+	       this.stmt[input[1]][input[2]] =
+		  !this.stmt[input[1]][input[2]];
 	       this.read_properties();
 	    } else
 	       console.log("ERROR: invalid toogle syntax");

@@ -19,7 +19,7 @@ machine.react();
 console.log("sigI set");
 sigI.set = true;
 machine.react();
-//sigI.set = true; <--- ce truc doit marcher !!
+sigI.set = true;// <--- ce truc doit marcher !!
 machine.react();
 sigI.set = true;
 machine.react();
