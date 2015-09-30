@@ -23,7 +23,6 @@ function Inspector(stmt, level) {
    this.level = level == undefined ? 0 : level;
    this.stmt = stmt;
    this.properties = null;
-   this.max_prop_id = 0;
    this.read_properties();
 }
 
@@ -31,12 +30,9 @@ Inspector.prototype.read_properties = function() {
    this.properties = [];
 
    for (var prop in this) {
-      var p = {
-		name: prop,
+      var p = {	name: prop,
 		value: this.stmt[prop] };
-
-      if (p.value instanceof reactive.Statement)
-	 p.id = this.max_prop_id++;
+      this.properties.push(p);
    }
 }
 
@@ -45,15 +41,7 @@ Inspector.print_properties = function() {
 
    for (var prop in this.properties) {
       var p = this.properties[prop];
-      prop_buffer = "    ";
-
-      if (p.id != null)
-	 prop_buffer += "[" + p.id + "]\t";
-      else
-	 prop_buffer += "\t";
-
-      prop_buffer += p.name + "  =>  " + p.value;
-      console.log(prop_buffer);
+      console.log("    [" + prop + "]    " + p.name + "  =>  " + p.value);
    }
 }
 
@@ -72,8 +60,10 @@ Inspector.prototype.prompt = function() {
 
 stdin.on("data", function(input) {
    if (is_integer(input)) {
-      if (input < 0 || input >= this.max_prop_id)
+      if (input < 0 || input >= this.properties.length)
 	 console.log("ERROR: out of bounds propertie access");
+      else
+	 return input;
    } else {
       var linput = input.toLowerCase();
 
