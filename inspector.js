@@ -7,6 +7,9 @@ var CMD_EXIT = "exit";
 var CMD_UP = "up";
 var CMD_REACT = "react";
 
+/* set the value of a signal to true / false */
+var CMD_TOOGLE = "toogle";
+
 function print_separator() {
    console.log("------------------------------------------------------------");
 }
@@ -51,7 +54,8 @@ Inspector.prototype.prompt = function() {
    print_tiny_separator();
    print_properties();
    console.log("Usage: UP   EXIT   REACT (on reactive machine only)" +
-	       "<propertie id>");
+	       "   TOOGLE prop attr)" +
+	       "   <propertie id>");
    console.log("[" + this.level + "]> ");
 }
 
@@ -71,8 +75,23 @@ stdin.on("data", function(input) {
 	  linput == CMD_UP ||
 	  linput == CMD_REACT)
 	 return linput;
-      else
-	 console.log("ERROR: invalid command");
+      else {
+	 linput = linput.split(" ");
+
+	 if (linput[0] == CMD_TOOGLE) {
+	    if ((linput[1] == "this" &&
+		 typeof(this.stmt[linput[2]]) == "boolean")) {
+	       this.stmt[linput[2]] == !this.stmt[linput[2]];
+	       this.read_properties();
+	    } else if (this.stmt[linput[1]] != undefined &&
+		       typeof(this.stmt[linput[1]][linput[2]]) == "boolean") {
+	       this.stmt[linput[1]][linput[2]] =
+		  !this.stmt[linput[1]][linput[2]];
+	       this.read_properties();
+	    }
+	 } else
+	    console.log("ERROR: invalid command");
+      }
    }
 });
 
