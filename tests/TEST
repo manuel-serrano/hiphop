@@ -12,7 +12,7 @@ run() {
     i=`expr $i + 1`
 
     echo -n "$i. $path ... "
-    $hop --no-server $* > $output 2>&1
+    $hop -g --no-server $* > $output 2>&1
 
     if [ "$(diff $output $path.out)" != "" ]
     then

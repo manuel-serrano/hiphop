@@ -39,3 +39,4 @@ prg.react();
 prg.react();
 sigI.set = true;
 prg.react();
+prg.react();

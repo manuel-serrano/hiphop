@@ -31,6 +31,9 @@ sigA.set = true;
 sigB.set = true;
 prg.react();
 prg.react();
+sigR.set = true;
+prg.react();
+prg.react();
 
 console.log("A ; A & B");
 sigA.set = true;
