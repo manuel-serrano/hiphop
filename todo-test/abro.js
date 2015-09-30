@@ -20,6 +20,7 @@ var prg = <rjs.reactivemachine>
                     <rjs.await signal=${sigB} />
                 </rjs.parallel>
                 <rjs.emit signal=${sigO} />
+		<rjs.halt/>
             </rjs.sequence>
         </rjs.abort>
     </rjs.loop>
