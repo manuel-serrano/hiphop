@@ -13,7 +13,7 @@ var DEBUG_PARALLEL = 256;
 var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_ALL = 0xFFFFFFFF;
 
-var DEBUG_FLAGS = DEBUG_NONE | DEBUG_PAUSE | DEBUG_ABORT | DEBUG_AWAIT;
+var DEBUG_FLAGS = DEBUG_NONE;
 
 var THEN = 0;
 var ELSE = 1;
@@ -477,7 +477,8 @@ Abort.prototype.run = function() {
    this.sel.set = this.sel_in.set;
    //   this.k[0].set = (this.res.set && this.sel_in.set && this.signal.set)
    //|| this.k_in[0].set;
-   this.k[0].set = (this.res.set && this.signal.set) || this.k_in[0].set;
+   //this.k[0].set = (this.res.set && this.signal.set) || this.k_in[0].set;
+   this.k[0].set = this.res.set && this.sel.set && this.signal.set;
 
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
@@ -531,7 +532,7 @@ Await.prototype.run = function() {
    this.go_in.stmt_out.run();
 
    this.sel.set = this.sel_in.set;
-   this.k[0].set = this.k_in[0].set || this.signal.set;
+   this.k[0].set = this.k_in[0].set;
    this.k[1].set = this.k_in[1].set;
 
    if (DEBUG_FLAGS & DEBUG_AWAIT)
