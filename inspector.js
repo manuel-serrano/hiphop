@@ -88,7 +88,8 @@ stdin.on("data", function(input) {
 	       this.stmt[linput[1]][linput[2]] =
 		  !this.stmt[linput[1]][linput[2]];
 	       this.read_properties();
-	    }
+	    } else
+	       console.log("ERROR: invalid toogle syntax");
 	 } else
 	    console.log("ERROR: invalid command");
       }
