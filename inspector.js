@@ -5,6 +5,7 @@ var fs = require("fs");
 
 var CMD_EXIT = "exit";
 var CMD_UP = "up";
+var CMD_TOP = "top";
 var CMD_REACT = "react";
 
 /* set the value of a signal to true / false */
@@ -33,6 +34,7 @@ function Inspector(stmt, level) {
 
    if (this.level == 0) {
       console.log("Usage: UP\n" +
+		  "       TOP\n" +
 		  "       EXIT\n" +
 		  "       REACT (on reactive machine only)\n" +
 		  "       TOOGLE <prop> <attr>\n" +
@@ -91,6 +93,7 @@ Inspector.prototype.prompt = function() {
 
       if (input == CMD_EXIT ||
 	  input == CMD_UP ||
+	  input == CMD_TOP ||
 	  input == CMD_REACT)
 	 return input;
       else {
@@ -126,11 +129,11 @@ Inspector.prototype.inspect = function() {
 	    console.log("ERROR: "
 			+ "can't react on non reactive machine statement.");
 	 }
-      } else if (cmd == CMD_UP) {
+      } else if (cmd == CMD_UP || cmd == CMD_TOP) {
 	 if (this.level == 0)
 	    console.log("ERROR: already on top level.");
 	 else
-	    return CMD_UP;
+	    return cmd;
       } else if (cmd == CMD_EXIT) {
 	 return CMD_EXIT;
       } else if (is_integer(cmd)) {
@@ -143,6 +146,8 @@ Inspector.prototype.inspect = function() {
 				 this.level + 1).inspect());
 	    if (cmd == CMD_EXIT)
 	       return CMD_EXIT;
+	    else if (cmd == CMD_TOP && this.level > 0)
+	       return CMD_TOP;
 	 }
       }
 
