@@ -26,6 +26,7 @@ function Signal(name, value, emit_cb) {
    this.set = false;
    this.value = false;
    this.emit_cb = emit_cb == undefined ? null : emit_cb;
+   this.emitters = 0;
 }
 
 /* A wire connect two statements.
@@ -164,6 +165,7 @@ ReactiveMachine.prototype.accept = function(visitor) {
 function Emit(signal) {
    Statement.call(this, "EMIT");
    this.signal = signal;
+   signal.emitters++;
 }
 
 Emit.prototype = new Statement();
