@@ -26,7 +26,37 @@ function Signal(name, value, emit_cb) {
    this.set = false;
    this.value = false;
    this.emit_cb = emit_cb == undefined ? null : emit_cb;
-   this.emitters = 0;
+   this.emitters = 0; /* number of emitters in the program code */
+   this.waiting = 0; /* number of waiting emitters for the current reaction */
+}
+
+/* 2: the signal is set and its value is ready to read
+   1: the signal is set
+   0: the value is unkown
+   -1: the value is unset */
+
+Signal.prototype.get_state = function() {
+   if (this.waiting == 0 && this.set)
+      return 2;
+   if (this.set)
+      return 1;
+   if (this.waiting > 0)
+      return 0;
+   return -1;
+}
+
+/* Set the value of a signal from host language, before the begining
+   of an execution */
+
+Signal.prototype.set_from_host = function (set, value) {
+   if (value != null || value != undefined) {
+      this.value = value;
+      this.set = set;
+      this.waiting = this.emitters;
+   } else {
+      this.set = set;
+      this.waiting = 0;
+   }
 }
 
 /* A wire connect two statements.
