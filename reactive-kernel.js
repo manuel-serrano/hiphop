@@ -273,28 +273,21 @@ Present.prototype.init_internal_wires = function(branch, circuit) {
 }
 
 Present.prototype.run = function() {
-   var branch;
+   this.go_in[0].set = this.go.set && this.signal.get_state() > 0;
+   this.go_in[1].set = this.go.set && !(this.signal.get_state() > 0);
 
-   this.k[0].set = false;
-   if (!this.go.set)
-      return;
+   for (var branch = 0; branch < 2; branch++) {
+      this.res_in[branch].set = this.res.set;
+      this.susp_in[branch].set = this.susp.set;
+      this.kill_in[branch].set = this.kill.set;
 
-   if (this.signal.set)
-      branch = THEN;
-   else
-      branch = ELSE;
+      this.go_in[branch].stmt_out.run();
 
-   this.go_in[branch].set = this.go.set;
-   this.res_in[branch].set = this.res.set;
-   this.susp_in[branch].set = this.susp.set;
-   this.kill_in[branch].set = this.kill.set;
-
-   this.go_in[branch].stmt_out.run();
-
-   this.sel.set = this.sel_in[branch].set;
-   for (var i in this.k_in)
-      this.k[i].set = (this.k_in[i][branch] == undefined ?
-		       false : this.k_in[i][branch].set);
+      this.sel.set = this.sel_in[branch].set;
+      for (var i in this.k_in)
+	 this.k[i].set = (this.k_in[i][branch] == undefined ?
+			  false : this.k_in[i][branch].set);
+   }
 
    if (DEBUG_FLAGS & DEBUG_PRESENT)
       this.debug();
@@ -489,8 +482,10 @@ Abort.prototype.run = function() {
    this.go_in.stmt_out.run();
 
    this.sel.set = this.sel_in.set;
-   this.k[0].set = (this.res.set && this.sel.set && this.signal.set) ||
-      this.k_in[0].set;
+   this.k[0].set = ((this.res.set &&
+		     this.sel.set &&
+		     this.signal.get_state() > 0) ||
+		    this.k_in[0].set);
 
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
