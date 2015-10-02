@@ -196,15 +196,19 @@ function Emit(signal) {
    Statement.call(this, "EMIT");
    this.signal = signal;
    signal.emitters++;
+   signal.waiting = signal.emitters;
 }
 
 Emit.prototype = new Statement();
 
 Emit.prototype.run = function() {
    this.k[0].set = this.go.set;
-   this.signal.set = this.go.set;
-   if (this.go.set)
+   if (this.waiting > 0)
+      this.waiting--;
+   if (this.go.set) {
       this.signal.emit_cb();
+      this.signal.set = true;
+   }
 
    if (DEBUG_FLAGS & DEBUG_EMIT)
       this.debug();
@@ -285,8 +289,9 @@ Present.prototype.run = function() {
 
       this.sel.set = this.sel_in[branch].set;
       for (var i in this.k_in)
-	 this.k[i].set = (this.k_in[i][branch] == undefined ?
-			  false : this.k_in[i][branch].set);
+	 this.k[i].set = (this.k[i].set ||
+			  (this.k_in[i][branch] == undefined ?
+			   false : this.k_in[i][branch].set));
    }
 
    if (DEBUG_FLAGS & DEBUG_PRESENT)
@@ -742,8 +747,10 @@ ResetSignalVisitor.prototype.visit = function(stmt) {
    if (stmt instanceof Emit
        || stmt instanceof Await
        || stmt instanceof Present
-       || stmt instanceof Abort)
+       || stmt instanceof Abort) {
       stmt.signal.set = false;
+      stmt.signal.waiting = stmt.signal.emitters;
+   }
 }
 
 exports.Signal = Signal;

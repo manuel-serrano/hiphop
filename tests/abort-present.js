@@ -34,9 +34,9 @@ var prg = <rjs.reactivemachine>
   </rjs.loop>
 </rjs.reactivemachine>
 
-sigI.set = true;
+sigI.set_from_host(true, null);
 prg.react();
 prg.react();
-sigI.set = true;
+sigI.set_from_host(true, null);
 prg.react();
 prg.react();

@@ -44,7 +44,7 @@ var machine = new reactive.ReactiveMachine(abort);
 for (var i = 0; i < 5; i++)
    machine.react(i);
 
-sigA.set = true;
+sigA.set_from_host(true, null);
 machine.react(5);
 machine.react(6);
 machine.react(7);

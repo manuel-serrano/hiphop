@@ -17,18 +17,18 @@ var machine = new reactive.ReactiveMachine(loop);
 machine.react();
 
 console.log("sigI set");
-sigI.set = true;
+sigI.set_from_host(true, null);
 machine.react();
-sigI.set = true;// <--- ce truc doit marcher !!
+sigI.set_from_host(true, null);// <--- ce truc doit marcher !!
 machine.react();
-sigI.set = true;
+sigI.set_from_host(true, null);
 machine.react();
 machine.react();
 machine.react();
 machine.react();
 
 console.log("sigI set");
-sigI.set = true;
+sigI.set_from_host(true, null);
 machine.react();
 machine.react();
 machine.react();
