@@ -2,6 +2,7 @@
 
 var rjs = require("../xml-compiler.js");
 var rkernel = require("../reactive-kernel.js");
+var inspector = require("../inspector.js");
 
 var sigI = new rkernel.Signal("I", false, null);
 var sigJ = new rkernel.Signal("J", false, function() {
@@ -37,6 +38,7 @@ var prg = <rjs.reactivemachine>
 sigI.set_from_host(true, null);
 prg.react();
 prg.react();
+//(new inspector.Inspector(prg)).inspect();
 sigI.set_from_host(true, null);
 prg.react();
 prg.react();

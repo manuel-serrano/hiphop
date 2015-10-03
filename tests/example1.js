@@ -1,6 +1,7 @@
 "use strict"
 
 var reactive = require("../reactive-kernel.js");
+var inspector = require("../inspector.js");
 
 /*
   <ReactiveMachine>
@@ -27,6 +28,7 @@ var pause = new reactive.Pause();
 var seq = new reactive.Sequence(pause, emitS, present);
 var machine = new reactive.ReactiveMachine(seq);
 
+//(new inspector.Inspector(machine)).inspect();
 for (var i = 0; i < 5; i++)
    machine.react(i);
 

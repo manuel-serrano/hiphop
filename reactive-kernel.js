@@ -13,7 +13,7 @@ var DEBUG_PARALLEL = 256;
 var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_ALL = 0xFFFFFFFF;
 
-var DEBUG_FLAGS = DEBUG_NONE;
+var DEBUG_FLAGS = DEBUG_NONE //|DEBUG_ABORT |DEBUG_PRESENT| DEBUG_PAUSE;
 
 var THEN = 0;
 var ELSE = 1;
@@ -85,6 +85,8 @@ function Statement(name) {
 }
 
 Statement.prototype.run = function() { }
+
+/* TODO: use a visitor for init_reg !! */
 
 Statement.prototype.init_reg = function() { }
 
@@ -277,8 +279,14 @@ Present.prototype.init_internal_wires = function(branch, circuit) {
 }
 
 Present.prototype.run = function() {
-   this.go_in[0].set = this.go.set && this.signal.get_state() > 0;
-   this.go_in[1].set = this.go.set && !(this.signal.get_state() > 0);
+   var sig_set = this.signal.get_state() > 0;
+   this.go_in[0].set = this.go.set && sig_set;
+   this.go_in[1].set = this.go.set && !sig_set;
+
+   /* initialize states of k outputs of present from the previous reaction */
+   
+   for (var i in this.k)
+      this.k[i].set = false;
 
    for (var branch = 0; branch < 2; branch++) {
       this.res_in[branch].set = this.res.set;
@@ -287,7 +295,7 @@ Present.prototype.run = function() {
 
       this.go_in[branch].stmt_out.run();
 
-      this.sel.set = this.sel_in[branch].set;
+      this.sel.set = this.sel.set || this.sel_in[branch].set;
       for (var i in this.k_in)
 	 this.k[i].set = (this.k[i].set ||
 			  (this.k_in[i][branch] == undefined ?
@@ -300,8 +308,7 @@ Present.prototype.run = function() {
 
 Present.prototype.init_reg = function() {
    this.go_in[THEN].stmt_out.init_reg();
-   if (this.go_in[ELSE] != undefined)
-      this.go_in[ELSE].stmt_out.init_reg();
+   this.go_in[ELSE].stmt_out.init_reg();
 }
 
 Present.prototype.accept = function(visitor) {
