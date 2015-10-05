@@ -13,9 +13,10 @@ var DEBUG_PARALLEL = 256;
 var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_ALL = 0xFFFFFFFF;
 
-var DEBUG_FLAGS = DEBUG_NONE// | DEBUG_PARALLEL_SYNC;
-
-// |DEBUG_PARALLEL |DEBUG_PARALLEL_SYNC |DEBUG_ABORT |DEBUG_EMIT// |DEBUG_PRESENT |DEBUG_PAUSE;
+var DEBUG_FLAGS = DEBUG_NONE;
+//var DEBUG_FLAGS = DEBUG_FLAGS | DEBUG_PARALLEL_SYNC;
+//var DEBUG_FLAGS = DEBUG_FLAGS | DEBUG_ABORT;
+//var DEBUG_FLAGS = DEBUG_FLAGS | DEBUG_AWAIT;
 
 var THEN = 0;
 var ELSE = 1;
@@ -696,8 +697,8 @@ Parallel.prototype.run = function() {
    }
 
    this.sel.set = this.sel_in[0].set || this.sel_in[1].set;
-   this.synchronizer.lem = !(this.go.set || this.sel.set);
-   this.synchronizer.rem = !(this.go.set || this.sel.set);
+   this.synchronizer.lem = !(this.go.set || this.sel_in[0].set);
+   this.synchronizer.rem = !(this.go.set || this.sel_in[1].set);
    this.synchronizer.run();
 
    for (var i in this.synchronizer.k)
