@@ -543,7 +543,7 @@ Abort.prototype = new Circuit();
 Abort.prototype.run = function() {
    if (!this.blocked_by_signal) {
       this.go_in.set = this.go.set;
-      this.res_in.set = this.res.set && !this.signal.set;
+      this.res_in.set = this.res.set && !this.signal.set; // && this.sel.in !?
       this.susp_in.set = this.susp.set;
       this.kill_in.set = this.kill.set;
 
