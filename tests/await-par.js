@@ -37,3 +37,10 @@ prg.react();
 console.log("B;");
 sigB.set_from_host(true, null);
 prg.react();
+prg.react();
+prg.react();
+
+console.log("A;");
+sigA.set_from_host(true, null);
+prg.react();
+prg.react();

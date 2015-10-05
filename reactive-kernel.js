@@ -14,7 +14,7 @@ var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_ALL = 0xFFFFFFFF;
 
 var DEBUG_FLAGS = DEBUG_NONE;
- DEBUG_FLAGS |= DEBUG_PARALLEL_SYNC;
+// DEBUG_FLAGS |= DEBUG_PARALLEL_SYNC;
 // DEBUG_FLAGS |= DEBUG_PARALLEL;
 // DEBUG_FLAGS |= DEBUG_ABORT;
 // DEBUG_FLAGS |= DEBUG_AWAIT;
@@ -750,24 +750,34 @@ ParallelSynchronizer.prototype.run = function() {
    /* TODO: state of state_X when the two branches has different number
       of completion code */
 
-   var state_left = [this.lem, this.k_in[0][0].set];
-   var state_right = [this.rem, this.k_in[0][1].set];
+   var max_code = 0;
 
-   for (var i = 0; i < this.k.length; i++) {
-      var OR_left = state_left[0] || state_left[1];
-      var OR_right = state_right[0] || state_right[1];
-      var OR_return = state_left[1] || state_right[1];
-
-      this.k[i].set = OR_return && OR_left && OR_right;
-
-      state_left[0] = OR_left;
-      state_right[0] = OR_right;
-
-      if (i + 1 < this.k.length) {
-	 state_left[1] = this.k_in[i + 1][0].set;
-	 state_right[1] = this.k_in[i + 1][1].set;
-      }
+   for (var i in this.k) {
+      if (this.k_in[i][0].set || this.k_in[i][1].set)
+   	 max_code = parseInt(i);
+      this.k[i].set = false;
    }
+
+   this.k[max_code].set = true;
+
+   // var state_left = [this.lem, this.k_in[0][0].set];
+   // var state_right = [this.rem, this.k_in[0][1].set];
+
+   // for (var i = 0; i < this.k.length; i++) {
+   //    var OR_left = state_left[0] || state_left[1];
+   //    var OR_right = state_right[0] || state_right[1];
+   //    var OR_return = state_left[1] || state_right[1];
+
+   //    this.k[i].set = OR_return && OR_left && OR_right;
+
+   //    state_left[0] = OR_left;
+   //    state_right[0] = OR_right;
+
+   //    if (i + 1 < this.k.length) {
+   // 	 state_left[1] = this.k_in[i + 1][0].set;
+   // 	 state_right[1] = this.k_in[i + 1][1].set;
+   //    }
+   // }
 
    if (DEBUG_FLAGS & DEBUG_PARALLEL_SYNC)
       this.debug();
