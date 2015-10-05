@@ -13,7 +13,7 @@ var DEBUG_PARALLEL = 256;
 var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_ALL = 0xFFFFFFFF;
 
-var DEBUG_FLAGS = DEBUG_NONE //|DEBUG_ABORT |DEBUG_PRESENT |DEBUG_PAUSE |DEBUG_EMIT;
+var DEBUG_FLAGS = DEBUG_NONE// |DEBUG_ABORT |DEBUG_PRESENT |DEBUG_PAUSE |DEBUG_EMIT;
 
 var THEN = 0;
 var ELSE = 1;
@@ -297,10 +297,8 @@ Present.prototype.run = function() {
    var signal_state = this.signal.get_state();
 
    if (this.blocked == -1) {
-      if (signal_state == 0) {
-	 console.log("err");
+      if (signal_state == 0)
 	 return false;
-      }
 
       this.go_in[0].set = this.go.set && signal_state > 0;
       this.go_in[1].set = this.go.set && !(signal_state > 0);
