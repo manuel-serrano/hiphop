@@ -1,4 +1,5 @@
 var reactive = require("../reactive-kernel.js");
+var inspector = require("../inspector.js");
 
 var sigI = new reactive.Signal("I", false, function() {
    console.log("EMIT I");
@@ -16,6 +17,7 @@ var par = new reactive.Parallel(emitI, seq);
 var machine = new reactive.ReactiveMachine(par);
 
 machine.react();
+//(new inspector.Inspector(machine)).inspect();
 machine.react();
 machine.react();
 machine.react();
