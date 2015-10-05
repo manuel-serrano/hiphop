@@ -13,7 +13,7 @@ var DEBUG_PARALLEL = 256;
 var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_ALL = 0xFFFFFFFF;
 
-var DEBUG_FLAGS = DEBUG_NONE //|DEBUG_ABORT |DEBUG_PRESENT| DEBUG_PAUSE;
+var DEBUG_FLAGS = DEBUG_NONE //|DEBUG_ABORT |DEBUG_PRESENT |DEBUG_PAUSE |DEBUG_EMIT;
 
 var THEN = 0;
 var ELSE = 1;
@@ -84,7 +84,10 @@ function Statement(name) {
    this.k = [null, null];
 }
 
-Statement.prototype.run = function() { }
+/* Standard terminaison of run(): true
+   Blocked on signal test: false */
+
+Statement.prototype.run = function() { return true }
 
 /* TODO: use a visitor for init_reg !! */
 
@@ -178,7 +181,11 @@ ReactiveMachine.prototype.react = function(seq) {
 
    console.log("---- reaction " + seq + " GO:" + this.go_in.set + " RES:"
 	       + this.res_in.set + buf_init + " ----");
-   this.go_in.stmt_out.run();
+
+   if (!this.go_in.stmt_out.run()) {
+      console.log("*** CAUSALITY ERROR (sequential) ***");
+      process.exit(1);
+   }
 
    this.boot_reg = this.k_in[0].set;
    this.go_in.stmt_out.accept(new ResetSignalVisitor());
@@ -205,8 +212,8 @@ Emit.prototype = new Statement();
 
 Emit.prototype.run = function() {
    this.k[0].set = this.go.set;
-   if (this.waiting > 0)
-      this.waiting--;
+   if (this.signal.waiting > 0)
+      this.signal.waiting--;
    if (this.go.set) {
       this.signal.emit_cb();
       this.signal.set = true;
@@ -214,6 +221,8 @@ Emit.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_EMIT)
       this.debug();
+
+   return true;
 }
 
 /* Pause - Figure 11.3 page 115 */
@@ -234,6 +243,8 @@ Pause.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_PAUSE)
       this.debug();
+
+   return true;
 }
 
 Pause.prototype.init_reg = function() {
@@ -258,6 +269,9 @@ function Present(signal, then_branch, else_branch) {
    if (else_branch != undefined)
       this.init_internal_wires(ELSE, else_branch);
    else this.init_internal_wires(ELSE, new Nothing());
+
+   /* set to 0 or 1 is the branch 0|1 was blocked on signal test */
+   this.blocked = -1;
 }
 
 Present.prototype = new Circuit();
@@ -279,21 +293,35 @@ Present.prototype.init_internal_wires = function(branch, circuit) {
 }
 
 Present.prototype.run = function() {
-   var sig_set = this.signal.get_state() > 0;
-   this.go_in[0].set = this.go.set && sig_set;
-   this.go_in[1].set = this.go.set && !sig_set;
+   var branch = 0;
+   var signal_state = this.signal.get_state();
 
-   /* initialize states of k outputs of present from the previous reaction */
-   
-   for (var i in this.k)
-      this.k[i].set = false;
+   if (this.blocked == -1) {
+      if (signal_state == 0) {
+	 console.log("err");
+	 return false;
+      }
 
-   for (var branch = 0; branch < 2; branch++) {
+      this.go_in[0].set = this.go.set && signal_state > 0;
+      this.go_in[1].set = this.go.set && !(signal_state > 0);
+
+      /* initialize states of k outputs of present from the previous reaction */
+      for (var i in this.k)
+	 this.k[i].set = false;
+   } else {
+      branch = this.blocked;
+      this.blocked = -1;
+   }
+
+   for (; branch < 2; branch++) {
       this.res_in[branch].set = this.res.set;
       this.susp_in[branch].set = this.susp.set;
       this.kill_in[branch].set = this.kill.set;
 
-      this.go_in[branch].stmt_out.run();
+      if (!this.go_in[branch].stmt_out.run()) {
+	 this.blocked = branch;
+	 return false;
+      }
 
       this.sel.set = this.sel.set || this.sel_in[branch].set;
       for (var i in this.k_in)
@@ -304,6 +332,8 @@ Present.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_PRESENT)
       this.debug();
+
+   return true;
 }
 
 Present.prototype.init_reg = function() {
@@ -325,6 +355,7 @@ function Sequence() {
    Circuit.call(this, "SEQUENCE");
    this.seq_len = 0;
    this.stmts = null;
+   this.blocked = -1 /* same semantic that present blocked attribute */
 
    if (arguments[0].constructor.name == 'Array') {
       this.seq_len = arguments[0].length;
@@ -380,19 +411,29 @@ function Sequence() {
 Sequence.prototype = new Circuit();
 
 Sequence.prototype.run = function() {
-   /* init circuits outputs */
-   this.sel.set = false;
-   for (var i in this.k)
-      this.k[i].set = false;
+   var s = 0;
 
-   for (var s in this.stmts) {
+   if (this.blocked == -1) {
+      /* init circuits outputs */
+      this.sel.set = false;
+      for (var i in this.k)
+	 this.k[i].set = false;
+   } else {
+      s = this.blocked;
+      this.blocked = -1;
+   }
+
+   for (; s < this.stmts.length; s++) {
       /* init subcircuits inputs */
       this.go_in[s].set = s == 0 ? this.go.set : this.k_in[0][s - 1].set;
       this.res_in[s].set = this.res.set;
       this.susp_in[s].set = this.susp.set;
       this.kill_in[s].set = this.kill.set;
 
-      this.go_in[s].stmt_out.run();
+      if (!this.go_in[s].stmt_out.run()) {
+	 this.blocked = s;
+	 return false;
+      }
    }
 
    /* boolean OR of return codes > 0 and sel */
@@ -409,6 +450,8 @@ Sequence.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_SEQUENCE)
       this.debug();
+
+   return true;
 }
 
 Sequence.prototype.init_reg = function() {
@@ -449,7 +492,8 @@ Loop.prototype.run = function() {
 
    while (!stop) {
       this.go_in.set = this.go.set || this.k_in[0].set;
-      this.go_in.stmt_out.run();
+      if (!this.go_in.stmt_out.run())
+	 return false;
       this.sel.set = this.sel_in.set;
       this.k[0].set = this.k_in[0].set;
       stop = !(this.k_in[0].set && (this.res_in.set && this.sel_in.set));
@@ -460,6 +504,8 @@ Loop.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_LOOP)
       this.debug();
+
+   return true;
 }
 
 Loop.prototype.init_reg = function() {
@@ -481,22 +527,41 @@ function Abort(circuit, signal) {
       if (this.k[i] == undefined)
 	 this.k[i] = null;
    }
+
+   /* true if abord is blocked by its own signal test, NOT by its
+      embeded instruction */
+   this.blocked_by_signal = false;
 }
 
 Abort.prototype = new Circuit();
 
 Abort.prototype.run = function() {
-   this.go_in.set = this.go.set;
-   this.res_in.set = this.res.set && !this.signal.set;
-   this.susp_in.set = this.susp.set;
-   this.kill_in.set = this.kill.set;
+   if (!this.blocked_by_signal) {
+      this.go_in.set = this.go.set;
+      this.res_in.set = this.res.set && !this.signal.set;
+      this.susp_in.set = this.susp.set;
+      this.kill_in.set = this.kill.set;
 
-   this.go_in.stmt_out.run();
+      if (!this.go_in.stmt_out.run()) {
+	 this.blocked = true;
+	 return false;
+      }
 
-   this.sel.set = this.sel_in.set;
+      this.sel.set = this.sel_in.set;
+   } else {
+      this.blocked_by_signal = false;
+   }
+
+   var signal_state = this.signal.get_state();
+
+   if (signal_state == 0) {
+      this.blocked_by_signal = true;
+      return false;
+   }
+
    this.k[0].set = ((this.res.set &&
 		     this.sel.set &&
-		     this.signal.get_state() > 0) ||
+		     signal_state > 0) ||
 		    this.k_in[0].set);
 
    for (var i = 1; i < this.k_in.length; i++)
@@ -504,6 +569,8 @@ Abort.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_ABORT)
       this.debug();
+
+   return true;
 }
 
 Abort.prototype.init_reg = function() {
@@ -534,7 +601,8 @@ Await.prototype.run = function() {
    this.susp_in.set = this.susp.set;
    this.kill_in.set = this.kill.set;
 
-   this.go_in.stmt_out.run();
+   if (!this.go_in.stmt_out.run())
+      return false;
 
    this.sel.set = this.sel_in.set;
    this.k[0].set = this.k_in[0].set;
@@ -542,6 +610,8 @@ Await.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_AWAIT)
       this.debug();
+
+   return true;
 }
 
 /* Halt */
@@ -575,6 +645,8 @@ Halt.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_HALT)
       this.debug();
+
+   return true;
 }
 
 /* Parallel - Figure 11.10 page 122 */
@@ -608,15 +680,20 @@ Parallel.prototype.init_internal_wires = function(i, circuit) {
 }
 
 Parallel.prototype.run = function() {
-   var sort = null;
+   var lend = false;
+   var rend = false;
 
    this.go_in[0].set = this.go_in[1].set = this.go.set;
    this.res_in[0].set = this.res_in[1].set = this.res.set;
    this.susp_in[0].set = this.susp_in[1].set = this.susp.set;
    this.kill_in[0].set = this.kill_in[1].set = this.kill.set;
 
-   this.go_in[0].stmt_out.run();
-   this.go_in[1].stmt_out.run();
+   while (!lend || !rend) {
+      if (!lend)
+	 lend = this.go_in[0].stmt_out.run();
+      if (!rend)
+      	 rend = this.go_in[1].stmt_out.run();
+   }
 
    this.sel.set = this.sel_in[0].set || this.sel_in[1].set;
    this.synchronizer.lem = !(this.go.set || this.sel.set);
@@ -628,6 +705,8 @@ Parallel.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_PARALLEL)
       this.debug();
+
+   return true;
 }
 
 Parallel.prototype.accept = function(visitor) {
@@ -687,6 +766,8 @@ ParallelSynchronizer.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_PARALLEL_SYNC)
       this.debug();
+
+   return true;
 }
 
 ParallelSynchronizer.prototype.debug = function() {
@@ -719,6 +800,7 @@ Nothing.prototype = new Statement();
 
 Nothing.prototype.run = function() {
    this.k[0].set = this.go.set;
+   return true;
 }
 
 function remove_duplicates(arr) {
@@ -741,9 +823,9 @@ Atom.prototype = new Statement();
 
 Atom.prototype.run = function() {
    this.k[0].set = this.go.set;
-   if (!this.go.set)
-      return;
-   this.func();
+   if (this.go.set)
+      this.func();
+   return true;
 }
 
 /* Visitor usefull to reset signal state after reaction */

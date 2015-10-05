@@ -37,8 +37,8 @@ var prg = <rjs.reactivemachine>
 
 sigI.set_from_host(true, null);
 prg.react();
-prg.react();
 //(new inspector.Inspector(prg)).inspect();
+prg.react();
 sigI.set_from_host(true, null);
 prg.react();
 prg.react();
