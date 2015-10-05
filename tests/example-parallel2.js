@@ -13,6 +13,7 @@ var emitI = new reactive.Emit(sigI);
 var emitJ = new reactive.Emit(sigJ);
 var present = new reactive.Present(sigI, emitJ);
 var par = new reactive.Parallel(present, emitI);
+//var par = new reactive.Parallel(emitI, present);
 var machine = new reactive.ReactiveMachine(par);
 
 machine.react();
