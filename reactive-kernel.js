@@ -14,7 +14,7 @@ var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_ALL = 0xFFFFFFFF;
 
 var DEBUG_FLAGS = DEBUG_NONE;
-// DEBUG_FLAGS |= DEBUG_PARALLEL_SYNC;
+ DEBUG_FLAGS |= DEBUG_PARALLEL_SYNC;
 // DEBUG_FLAGS |= DEBUG_PARALLEL;
 // DEBUG_FLAGS |= DEBUG_ABORT;
 // DEBUG_FLAGS |= DEBUG_AWAIT;
@@ -189,10 +189,8 @@ ReactiveMachine.prototype.react = function(seq) {
    console.log("---- reaction " + seq + " GO:" + this.go_in.set + " RES:"
 	       + this.res_in.set + buf_init + " ----");
 
-   if (!this.go_in.stmt_out.run()) {
-      console.log("*** CAUSALITY ERROR (sequential) ***");
-      process.exit(1);
-   }
+   if (!this.go_in.stmt_out.run())
+      fatal_error("sequential causality");
 
    this.boot_reg = this.k_in[0].set;
    this.go_in.stmt_out.accept(new ResetSignalVisitor());
@@ -575,6 +573,8 @@ Abort.prototype.run = function() {
    if (DEBUG_FLAGS & DEBUG_ABORT)
       this.debug();
 
+   assert_completion_code(this);
+
    return true;
 }
 
@@ -711,6 +711,8 @@ Parallel.prototype.run = function() {
    if (DEBUG_FLAGS & DEBUG_PARALLEL)
       this.debug();
 
+   assert_completion_code(this);
+
    return true;
 }
 
@@ -843,6 +845,26 @@ ResetSignalVisitor.prototype.visit = function(stmt) {
       stmt.signal.set = false;
       stmt.signal.waiting = stmt.signal.emitters;
    }
+}
+
+/* Assert that only one completion wire is on */
+
+function assert_completion_code(stmt) {
+   var set = false;
+
+   for (var i in stmt.k)
+      if (set && stmt.k[i].set)
+	 fatal_error("more that one completion code in " + stmt.name);
+      else if (stmt.k[i].set)
+	 set = true;
+
+   // if (!set && (stmt.go.set || stmt.res.set))
+   //    fatal_error("no complection code in " + stmt.name);
+}
+
+function fatal_error(msg) {
+   console.log("*** ERROR:", msg, "***");
+   process.exit(1);
 }
 
 exports.Signal = Signal;

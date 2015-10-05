@@ -26,7 +26,6 @@ var prg = <rjs.reactivemachine>
     </rjs.loop>
 </rjs.reactivemachine>;
 
-//(new inspector.Inspector(prg)).inspect();
 prg.react();
 
 console.log("A B");
@@ -57,6 +56,8 @@ console.log("R");
 sigR.set_from_host(true, null);
 prg.react();
 
+// (new inspector.Inspector(prg)).inspect();
+
 console.log("B ; A");
 sigB.set_from_host(true, null);
 prg.react();
@@ -64,9 +65,9 @@ sigA.set_from_host(true, null);
 prg.react();
 
 // console.log("A ; B");
-// sigA.set = true;
+// sigA.set_from_host(true, null);
 // prg.react();
-// sigB.set = true;
+// sigB.set_from_host(true, null);
 // prg.react();
 
 // console.log("R B ; A");
