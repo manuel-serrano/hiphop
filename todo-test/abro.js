@@ -26,47 +26,52 @@ var prg = <rjs.reactivemachine>
     </rjs.loop>
 </rjs.reactivemachine>;
 
-(new inspector.Inspector(prg)).inspect();
-
+//(new inspector.Inspector(prg)).inspect();
 prg.react();
 
-console.log("A & B");
-sigA.set = true;
-sigB.set = true;
-prg.react();
-prg.react();
-sigR.set = true;
-prg.react();
+console.log("A B");
+sigA.set_from_host(true, null);
+sigB.set_from_host(true, null);
 prg.react();
 
-console.log("A ; A & B");
-sigA.set = true;
-prg.react();
-sigB.set = true;
-prg.react();
-
-console.log("B ; A & B");
-sigB.set = true;
-prg.react();
-sigA.set = true;
+console.log("A B");
+sigA.set_from_host(true, null);
+sigB.set_from_host(true, null);
 prg.react();
 
-console.log("A & B");
-sigA.set = true;
-sigB.set = true;
-prg.react();
-prg.react();
+console.log("R");
+sigR.set_from_host(true, null);
 prg.react();
 
-console.log("A & R ; B");
-sigA.set = true;
-sigR.set = true;
-prg.react();
-sigB.set = true;
+console.log("A B");
+sigA.set_from_host(true, null);
+sigB.set_from_host(true, null);
 prg.react();
 
-console.log("A & B & R");
-sigA.set = true;
-sigB.set = true;
-sigR.set = true;
+console.log("R A B");
+sigA.set_from_host(true, null);
+sigB.set_from_host(true, null);
 prg.react();
+
+console.log("R");
+sigR.set_from_host(true, null);
+prg.react();
+
+console.log("B ; A");
+sigB.set_from_host(true, null);
+prg.react();
+sigA.set_from_host(true, null);
+prg.react();
+
+// console.log("A ; B");
+// sigA.set = true;
+// prg.react();
+// sigB.set = true;
+// prg.react();
+
+// console.log("R B ; A");
+// sigR.set = true;
+// sigB.set = true;
+// prg.react();
+// sigA.set = true;
+// prg.react();
