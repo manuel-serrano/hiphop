@@ -21,6 +21,7 @@ var DEBUG_FLAGS = DEBUG_NONE;
 // DEBUG_FLAGS |= DEBUG_LOOP;
 // DEBUG_FLAGS |= DEBUG_PRESENT;
 // DEBUG_FLAGS |= DEBUG_PAUSE;
+// DEBUG_FLAGS |= DEBUG_HALT;
 
 var THEN = 0;
 var ELSE = 1;
@@ -248,6 +249,8 @@ Pause.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_PAUSE)
       this.debug();
+
+   assert_completion_code(this);
 
    return true;
 }
@@ -541,7 +544,7 @@ Abort.prototype = new Circuit();
 Abort.prototype.run = function() {
    if (!this.blocked_by_signal) {
       this.go_in.set = this.go.set;
-      this.res_in.set = this.res.set && !this.signal.set; // && this.sel.in !?
+      this.res_in.set = this.res.set && !this.signal.set;// && this.sel_in.set;
       this.susp_in.set = this.susp.set;
       this.kill_in.set = this.kill.set;
 
@@ -868,7 +871,7 @@ function assert_completion_code(stmt) {
       else if (stmt.k[i].set)
 	 set = true;
 
-   // if (!set && (stmt.go.set || stmt.res.set))
+   // if (!set)
    //    fatal_error("no complection code in " + stmt.name);
 }
 
