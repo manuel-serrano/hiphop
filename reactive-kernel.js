@@ -750,10 +750,8 @@ ParallelSynchronizer.prototype.init_internal_wires = function(i, circuit) {
 }
 
 ParallelSynchronizer.prototype.run = function() {
-   /* TODO: state of state_X when the two branches has different number
-      of completion code */
-
-   var max_code = 0;
+   /* TODO: circuit simulation totaly broken here. Rewrite it! */
+   var max_code = -1;
 
    for (var i in this.k) {
       if (this.k_in[i][0].set || this.k_in[i][1].set)
@@ -761,7 +759,8 @@ ParallelSynchronizer.prototype.run = function() {
       this.k[i].set = false;
    }
 
-   this.k[max_code].set = true;
+   if (max_code > -1)
+   	this.k[max_code].set = true;
 
    // var state_left = [this.lem, this.k_in[0][0].set];
    // var state_right = [this.rem, this.k_in[0][1].set];

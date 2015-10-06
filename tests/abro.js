@@ -71,8 +71,14 @@ sigB.set_from_host(true, null);
 prg.react();
 
 console.log("R B ; A");
-sigR.set = true;
-sigB.set = true;
+sigR.set_from_host(true, null);
+sigB.set_from_host(true, null);
 prg.react();
-sigA.set = true;
+sigA.set_from_host(true, null);
 prg.react();
+prg.react();
+
+console.log("B;");
+sigB.set_from_host(true, null);
+prg.react();
+
