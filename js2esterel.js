@@ -35,8 +35,11 @@ reactive.Present.prototype.esterel_code = function(indent) {
 
    buf += apply_indent(indent, "if " + this.signal.name + " then");
    buf += this.go_in[0].stmt_out.esterel_code(indent + INDENT_LEVEL);
-   buf += apply_indent(indent, "else");
-   buf += this.go_in[1].stmt_out.esterel_code(indent + INDENT_LEVEL);
+
+   if (!(this.go_in[1].stmt_out instanceof reactive.Nothing)) {
+      buf += apply_indent(indent, "else");
+      buf += this.go_in[1].stmt_out.esterel_code(indent + INDENT_LEVEL);
+   }
    buf += apply_indent(indent, "end if;");
 
    return buf;

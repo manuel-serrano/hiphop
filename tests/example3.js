@@ -49,3 +49,5 @@ machine.react(5);
 machine.react(6);
 machine.react(7);
 machine.react(8);
+
+exports.machine = machine;

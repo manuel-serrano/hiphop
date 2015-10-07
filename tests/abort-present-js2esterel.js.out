@@ -1,0 +1,29 @@
+---- reaction  GO:true RES:true INIT ----
+EMIT J
+---- SEL:false K0:false K1:true ----
+
+---- reaction  GO:false RES:true ----
+EMIT V
+---- SEL:true K0:false K1:true ----
+
+---- reaction  GO:false RES:true ----
+EMIT K
+EMIT J
+---- SEL:false K0:false K1:true ----
+
+---- reaction  GO:false RES:true ----
+EMIT V
+---- SEL:true K0:false K1:true ----
+
+
+loop
+        abort
+                emit J;
+                pause;
+                emit V;
+                pause;
+        when I;
+        if I then
+            emit K;
+        end if;
+end loop;

@@ -21,3 +21,5 @@ machine.react();
 machine.react();
 machine.react();
 machine.react();
+
+exports.par = machine;

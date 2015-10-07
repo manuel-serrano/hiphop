@@ -42,3 +42,5 @@ prg.react();
 sigI.set_from_host(true, null);
 prg.react();
 prg.react();
+
+exports.prg = prg;
