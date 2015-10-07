@@ -49,7 +49,7 @@ reactive.Sequence.prototype.esterel_code = function(indent) {
    var buf = "";
 
    for (var i in this.go_in)
-      buf += this.go_in[i].stmt_out.esterel_code(indent + INDENT_LEVEL);
+      buf += this.go_in[i].stmt_out.esterel_code(indent);
 
    return buf;
 }
@@ -84,12 +84,33 @@ reactive.Halt.prototype.esterel_code = function(indent) {
 
 reactive.Parallel.prototype.esterel_code = function(indent) {
    var buf = "";
-   // var branch_buf =  "";
-   // var branch_indent = 0;
+   var branch_indent = indent + INDENT_LEVEL;
+   var branch_seq = false;
 
-   buf += this.go_in[0].stmt_out.esterel_code(indent + INDENT_LEVEL);
+   if (this.go_in[0].stmt_out instanceof reactive.Sequence) {
+      buf += apply_indent(indent + INDENT_LEVEL, "[ ");
+      branch_indent += 2;
+      branch_seq = true;
+   }
+
+   buf += this.go_in[0].stmt_out.esterel_code(branch_indent);
+   if (branch_seq) {
+      buf += " ]";
+      branch_indent = indent + INDENT_LEVEL;
+      branch_seq = false;
+   }
+
    buf += apply_indent(indent, "||");
+
+   if (this.go_in[1].stmt_out instanceof reactive.Sequence) {
+      buf += apply_indent(indent + INDENT_LEVEL, "[ ");
+      branch_indent += 2;
+      branch_seq = true;
+   }
+
    buf += this.go_in[1].stmt_out.esterel_code(indent + INDENT_LEVEL);
+   if (branch_seq)
+      buf += " ]";
 
    return buf;
 }

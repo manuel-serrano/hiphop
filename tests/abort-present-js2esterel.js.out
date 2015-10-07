@@ -17,13 +17,13 @@ EMIT V
 
 
 loop
-        abort
-                emit J;
-                pause;
-                emit V;
-                pause;
-        when I;
-        if I then
-            emit K;
-        end if;
+    abort
+        emit J;
+        pause;
+        emit V;
+        pause;
+    when I;
+    if I then
+        emit K;
+    end if;
 end loop;
