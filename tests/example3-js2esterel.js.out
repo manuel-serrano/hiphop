@@ -47,14 +47,13 @@ EMIT S
 EMIT T
 ---- SEL:false K0:false K1:true ----
 
-
 abort
     loop
         emit S;
         if S then
-            emit T;
+            emit T
         end if;
         pause;
-        emit V;
-    end loop;
-when A;
+        emit V
+    end loop
+when A

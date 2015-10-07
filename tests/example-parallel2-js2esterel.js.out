@@ -18,9 +18,8 @@ EMIT I
 EMIT J
 ---- SEL:false K0:true K1:false ----
 
-
     if I then
-        emit J;
-    end if;
+        emit J
+    end if
 ||
-    emit I;
+    emit I

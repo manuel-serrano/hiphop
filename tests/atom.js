@@ -17,3 +17,5 @@ var prg = <rjs.ReactiveMachine>
 
 for (var i = 0; i < 15; i++)
    prg.react();
+
+exports.prg = prg;
