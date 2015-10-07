@@ -82,3 +82,4 @@ console.log("B;");
 sigB.set_from_host(true, null);
 prg.react();
 
+exports.abro = prg;

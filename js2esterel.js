@@ -1,32 +1,36 @@
 "use strict"
 
-var reactive = require("reactive-kernel.js");
+var reactive = require("./reactive-kernel.js");
 
 var INDENT_LEVEL = 4;
 
-function apply_indent(indent, stnt) {
+function apply_indent(indent, stmt) {
    var buf = "\n";
 
-   for (var i in indent)
+   for (var i = 0; i < indent; i++)
       buf += " ";
-   buf += stmt
+   buf += stmt;
 
    return buf;
 }
 
-ReactiveMachine.prototype.esterel_code = function(indent) {
+reactive._Statement.prototype.esterel_code = function(indent) {
+   return apply_indent(indent, this.name + " NYI");
+}
+
+reactive.ReactiveMachine.prototype.esterel_code = function(indent) {
    return this.go_in.stmt_out.esterel_code(0);
 }
 
-Emit.prototype.esterel_code = function(indent) {
+reactive.Emit.prototype.esterel_code = function(indent) {
    return apply_indent(indent, "emit " + this.signal.name + ";");
 }
 
-Pause.prototype.esterel_code = function(indent) {
+reactive.Pause.prototype.esterel_code = function(indent) {
    return apply_indent(indent, "pause;");
 }
 
-Present.prototype.esterel_code = function(indent) {
+reactive.Present.prototype.esterel_code = function(indent) {
    var buf = "";
 
    buf += apply_indent(indent, "if " + this.signal.name + " then");
@@ -38,7 +42,7 @@ Present.prototype.esterel_code = function(indent) {
    return buf;
 }
 
-Sequence.prototype.esterel_code = function(indent) {
+reactive.Sequence.prototype.esterel_code = function(indent) {
    var buf = "";
 
    for (var i in this.go_in)
@@ -47,7 +51,7 @@ Sequence.prototype.esterel_code = function(indent) {
    return buf;
 }
 
-Loop.prototype.esterel_code = function(indent) {
+reactive.Loop.prototype.esterel_code = function(indent) {
    var buf = "";
 
    buf += apply_indent(indent, "loop");
@@ -57,7 +61,7 @@ Loop.prototype.esterel_code = function(indent) {
    return buf;
 }
 
-Abort.prototype.esterel_code = function(indent) {
+reactive.Abort.prototype.esterel_code = function(indent) {
    var buf = "";
 
    buf += apply_indent(indent, "abort");
@@ -67,20 +71,30 @@ Abort.prototype.esterel_code = function(indent) {
    return buf;
 }
 
-Await.prototype.esterel_code = function(indent) {
+reactive.Await.prototype.esterel_code = function(indent) {
    return apply_indent(indent, "await " + this.signal.name + ";");
 }
 
-Halt.prototype.esterel_code = function(indent) {
+reactive.Halt.prototype.esterel_code = function(indent) {
    return apply_indent(indent, "halt;");
 }
 
-// penser à mettre [] dans par si sequence
+reactive.Parallel.prototype.esterel_code = function(indent) {
+   var buf = "";
+   // var branch_buf =  "";
+   // var branch_indent = 0;
 
-Nothing.prototype.esterel_code = function(indent) {
+   buf += this.go_in[0].stmt_out.esterel_code(indent + INDENT_LEVEL);
+   buf += apply_indent(indent, "||");
+   buf += this.go_in[1].stmt_out.esterel_code(indent + INDENT_LEVEL);
+
+   return buf;
+}
+
+reactive.Nothing.prototype.esterel_code = function(indent) {
    return apply_indent(indent, "nothing;");
 }
 
-Atom.prototype.esterel_code = function(indent) {
-   return apply_indent(indent, "atom;"); // todo give host function name
+reactive.Atom.prototype.esterel_code = function(indent) {
+   return apply_indent(indent, "atom " + this.func.name + ";");
 }

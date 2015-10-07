@@ -892,3 +892,4 @@ exports.Parallel = Parallel;
 exports.Nothing = Nothing;
 exports.Atom = Atom;
 exports.ReactiveMachine = ReactiveMachine;
+exports._Statement = Statement;

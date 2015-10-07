@@ -1,0 +1,69 @@
+---- reaction  GO:true RES:true INIT ----
+---- SEL:false K0:false K1:true ----
+
+A B
+---- reaction  GO:false RES:true ----
+EMIT O
+---- SEL:true K0:false K1:true ----
+
+A B
+---- reaction  GO:false RES:true ----
+---- SEL:false K0:false K1:true ----
+
+R
+---- reaction  GO:false RES:true ----
+---- SEL:false K0:false K1:true ----
+
+A B
+---- reaction  GO:false RES:true ----
+EMIT O
+---- SEL:true K0:false K1:true ----
+
+R A B
+---- reaction  GO:false RES:true ----
+---- SEL:false K0:false K1:true ----
+
+R
+---- reaction  GO:false RES:true ----
+---- SEL:false K0:false K1:true ----
+
+B ; A
+---- reaction  GO:false RES:true ----
+---- SEL:true K0:false K1:true ----
+
+---- reaction  GO:false RES:true ----
+EMIT O
+---- SEL:true K0:false K1:true ----
+
+A ; B
+---- reaction  GO:false RES:true ----
+---- SEL:false K0:false K1:true ----
+
+---- reaction  GO:false RES:true ----
+---- SEL:false K0:false K1:true ----
+
+R B ; A
+---- reaction  GO:false RES:true ----
+---- SEL:false K0:false K1:true ----
+
+---- reaction  GO:false RES:true ----
+---- SEL:true K0:false K1:true ----
+
+---- reaction  GO:false RES:true ----
+---- SEL:false K0:false K1:true ----
+
+B;
+---- reaction  GO:false RES:true ----
+EMIT O
+---- SEL:true K0:false K1:true ----
+
+
+loop
+    abort
+                await A;
+            ||
+                await B;
+            emit O;
+            halt;
+    when R;
+end loop;
