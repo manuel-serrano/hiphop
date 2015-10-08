@@ -116,6 +116,20 @@ function ABORT(attrs) {
    return abort;
 }
 
+function SUSPEND(attrs) {
+   var children = get_children(arguments);
+   var signal = attrs.signal;
+   var suspend = null;
+
+   if (!check_signal(signal))
+      fatal("Suspend must have a signal argument.", attrs);
+   if (children.length != 1)
+      fatal("Suspend must have exactly one child.", attrs);
+   suspend = new reactive.Suspend(children[0], signal);
+   suspend.loc = format_loc(attrs);
+   return suspend;
+}
+
 function LOOP(attrs) {
    var children = get_children(arguments);
    var loop = null;
@@ -161,3 +175,4 @@ exports.ABORT = ABORT;
 exports.LOOP = LOOP;
 exports.SEQUENCE = SEQUENCE;
 exports.ATOM = ATOM;
+exports.SUSPEND = SUSPEND;

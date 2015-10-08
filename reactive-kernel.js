@@ -5,8 +5,6 @@
    - sel status of Loop should be `this.sel.set || this.set_in.set` ?
    - Max circuit simulation totaly broken here. Rewrite it!
    - factorize circuit builder (the same code is repeated at every constructor)
-   - abort: use of signal.set that could be wrong when undefined signal
-   - bug in abort-par.js (because of abort bug with signal?)
    - finish suspend statement
 */
 
@@ -540,10 +538,6 @@ function Abort(circuit, signal) {
       if (this.k[i] == undefined)
 	 this.k[i] = null;
    }
-
-   /* true if abord is blocked by its own signal test, NOT by its
-      embeded instruction */
-   this.blocked_by_signal = false;
 }
 
 Abort.prototype = new Circuit();
@@ -569,15 +563,12 @@ Abort.prototype.run = function() {
 		     this.sel.set &&
 		     signal_state > 0) ||
 		    this.k_in[0].set);
-
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
 
    if (DEBUG_FLAGS & DEBUG_ABORT)
       this.debug();
-
    assert_completion_code(this);
-
    return true;
 }
 
@@ -859,39 +850,40 @@ function Suspend(circuit, signal) {
    for (var i in circuit.k) {
       this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
    }
-
-   /* true if abord is blocked by its own signal test, NOT by its
-      embeded instruction */
-   this.blocked_by_signal = false;
 }
 
 Suspend.prototype = new Circuit();
 
 Suspend.prototype.run = function() {
-   var signal_state;
+   var signal_state = this.signal.get_state();
 
-   if (!this.blocked_by_signal) {
-      signal_state = this.signal.get_state();
-
-      if (signal_state == 0) {
-	 this.blocked_by_signal = true;
-	 return false;
-      }
-
-      this.go_in.set = this.go.set;
-      this.res_in.set = this.res.set && !(signal_state > 0);
-      this.susp_in.set = this.susp.set || (this.res.set &&
-					   this.sel.set &&
-					   signal_state > 0);
-      this.kill_in.set = this.kill.set;
-   } else {
+   if (signal_state == 0) {
+      this.blocked_by_signal = true;
+      return false;
    }
+
+   this.go_in.set = this.go.set;
+   this.res_in.set = this.res.set && !(signal_state > 0);
+   this.susp_in.set = this.susp.set || (this.res.set &&
+					this.sel.set &&
+					signal_state > 0);
+   this.kill_in.set = this.kill.set;
+
+   if (!this.go_in.stmt_out.run())
+      return false;
+
+   this.sel.set = this.sel_in.set;
+   this.k[0].set = this.k_in[0].set;
+   this.k[1].set = ((this.res.set &&
+		     this.sel.set &&
+		     signal_state > 0) ||
+		    this.k_in[1].set);
+   for (var i = 2; i < this.k_in.length; i++)
+      this.k[i].set = this.k_in[i].set;
 
    if (DEBUG_FLAGS & DEBUG_SUSPEND)
       this.debug();
-
    assert_completion_code(this);
-
    return true;
 }
 

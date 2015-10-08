@@ -101,6 +101,16 @@ reactive.Abort.prototype.esterel_code = function(indent) {
    return buf;
 }
 
+reactive.Suspend.prototype.esterel_code = function(indent) {
+   var buf = "";
+
+   buf += apply_indent(indent) + "suspend\n";
+   buf += this.go_in.stmt_out.esterel_code(indent + INDENT_LEVEL);
+   buf += "\n" + apply_indent(indent) + "when " + this.signal.name;
+
+   return buf;
+}
+
 reactive.Await.prototype.esterel_code = function(indent) {
    return apply_indent(indent) + "await " + this.signal.name;
 }
