@@ -500,11 +500,11 @@ Loop.prototype.run = function() {
       this.go_in.set = this.go.set || this.k_in[0].set;
       if (!this.go_in.stmt_out.run())
 	 return false;
-      this.sel.set = this.sel_in.set;
-      this.k[0].set = this.k_in[0].set;
+      this.sel.set = this.sel_in.set; // TODO: this.sel.set || this.set_in.set?
       stop = !(this.k_in[0].set && (this.res_in.set && this.sel_in.set));
    }
 
+   this.k[0].set = false;
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
 
