@@ -5,6 +5,7 @@
    - sel status of Loop should be `this.sel.set || this.set_in.set` ?
    - Max circuit simulation totaly broken here. Rewrite it!
    - factorize circuit builder (the same code is repeated at every constructor)
+   - abort: use of signal.set that could be wrong when undefined signal
 */
 
 var DEBUG_NONE = 0;
@@ -861,11 +862,33 @@ function Suspend(circuit, signal) {
    for (var i in circuit.k) {
       this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
    }
+
+   /* true if abord is blocked by its own signal test, NOT by its
+      embeded instruction */
+   this.blocked_by_signal = false;
 }
 
 Suspend.prototype = new Circuit();
 
 Suspend.prototype.run = function() {
+   var signal_state;
+
+   if (!this.blocked_by_signal) {
+      signal_state = this.signal.get_state();
+
+      if (signal_state == 0) {
+	 this.blocked_by_signal = true;
+	 return false;
+      }
+
+      this.go_in.set = this.go.set;
+      this.res_in.set = this.res.set && !(signal_state > 0);
+      this.susp_in.set = this.susp.set || (this.res.set &&
+					   this.sel.set &&
+					   signal_state > 0);
+      this.kill_in.set = this.kill.set;
+   } else {
+   }
 }
 
 /* Visitor usefull to reset signal state after reaction */
@@ -915,5 +938,6 @@ exports.Halt = Halt;
 exports.Parallel = Parallel;
 exports.Nothing = Nothing;
 exports.Atom = Atom;
+exports.Suspend = Suspend;
 exports.ReactiveMachine = ReactiveMachine;
 exports._Statement = Statement;
