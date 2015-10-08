@@ -1,5 +1,12 @@
 "use strict"
 
+/* TODO
+   - use a visitor for init_reg
+   - sel status of Loop should be `this.sel.set || this.set_in.set` ?
+   - Max circuit simulation totaly broken here. Rewrite it!
+   - factorize circuit builder (the same code is repeated at every constructor)
+*/
+
 var DEBUG_NONE = 0;
 var DEBUG_EMIT = 1;
 var DEBUG_PAUSE = 2;
@@ -93,8 +100,6 @@ function Statement(name) {
    Blocked on signal test: false */
 
 Statement.prototype.run = function() { return true }
-
-/* TODO: use a visitor for init_reg !! */
 
 Statement.prototype.init_reg = function() { }
 
@@ -497,7 +502,7 @@ Loop.prototype.run = function() {
       this.go_in.set = this.go.set || this.k_in[0].set;
       if (!this.go_in.stmt_out.run())
 	 return false;
-      this.sel.set = this.sel_in.set; // TODO: this.sel.set || this.set_in.set?
+      this.sel.set = this.sel_in.set;
       stop = !(this.k_in[0].set && (this.res_in.set && this.sel_in.set));
    }
 
@@ -747,7 +752,6 @@ ParallelSynchronizer.prototype.init_internal_wires = function(i, circuit) {
 }
 
 ParallelSynchronizer.prototype.run = function() {
-   /* TODO: circuit simulation totaly broken here. Rewrite it! */
    var max_code = -1;
 
    for (var i in this.k) {
@@ -806,6 +810,7 @@ ParallelSynchronizer.prototype.debug = function() {
 }
 
 /* Nothing statement */
+
 function Nothing () {
    Statement.call(this, "NOTHING")
 }
@@ -829,6 +834,7 @@ function remove_duplicates(arr) {
 }
 
 /* Atom - execute an host function with no arguments */
+
 function Atom(func) {
    this.func = func;
 }
@@ -842,7 +848,28 @@ Atom.prototype.run = function() {
    return true;
 }
 
+/* Suspend - Figure 11.6 */
+
+function Suspend(circuit, signal) {
+   Circuit.call(this, "SUSPEND");
+   this.signal = signal;
+   this.go_in = circuit.go = new Wire(this, circuit);
+   this.res_in = circuit.res = new Wire(this, circuit);
+   this.susp_in = circuit.susp = new Wire(this, circuit);
+   this.kill_in = circuit.kill = new Wire(this. circuit);
+   this.sel_in = circuit.sel = new Wire(circuit, this);
+   for (var i in circuit.k) {
+      this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
+   }
+}
+
+Suspend.prototype = new Circuit();
+
+Suspend.prototype.run = function() {
+}
+
 /* Visitor usefull to reset signal state after reaction */
+
 function ResetSignalVisitor() {
 }
 
