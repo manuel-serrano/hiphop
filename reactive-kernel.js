@@ -6,7 +6,6 @@
    - Max circuit simulation totaly broken here. Rewrite it!
    - factorize circuit builder (the same code is repeated at every constructor)
    - test suspend statement
-   - debug abort-par js2esterel
 */
 
 var DEBUG_NONE = 0;

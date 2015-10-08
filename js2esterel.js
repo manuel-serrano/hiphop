@@ -146,7 +146,7 @@ reactive.Parallel.prototype.esterel_code = function(indent) {
       branch_seq = true;
    }
 
-   buf += this.go_in[1].stmt_out.esterel_code(indent + INDENT_LEVEL);
+   branch_buf += this.go_in[1].stmt_out.esterel_code(branch_indent);
    if (branch_seq) {
       branch_buf = branch_buf.replace_char(indent + INDENT_LEVEL, "[");
       branch_buf += " ]";
