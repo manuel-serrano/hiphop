@@ -5,8 +5,8 @@
         end loop
     when L
 ||
-    [ await I;
-      emit L ]
+    await I;
+    emit L[ ]
 ---- reaction  GO:true RES:true INIT ----
 EMIT O
 ---- SEL:false K0:false K1:true ----

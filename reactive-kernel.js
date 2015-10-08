@@ -549,22 +549,6 @@ function Abort(circuit, signal) {
 Abort.prototype = new Circuit();
 
 Abort.prototype.run = function() {
-   if (!this.blocked_by_signal) {
-      this.go_in.set = this.go.set;
-      this.res_in.set = this.res.set && !this.signal.set;// && this.sel_in.set;
-      this.susp_in.set = this.susp.set;
-      this.kill_in.set = this.kill.set;
-
-      if (!this.go_in.stmt_out.run()) {
-	 this.blocked = true;
-	 return false;
-      }
-
-      this.sel.set = this.sel_in.set;
-   } else {
-      this.blocked_by_signal = false;
-   }
-
    var signal_state = this.signal.get_state();
 
    if (signal_state == 0) {
@@ -572,6 +556,15 @@ Abort.prototype.run = function() {
       return false;
    }
 
+   this.go_in.set = this.go.set;
+   this.res_in.set = this.res.set && !(signal_state > 0);// && this.sel_in.set;
+   this.susp_in.set = this.susp.set;
+   this.kill_in.set = this.kill.set;
+
+   if (!this.go_in.stmt_out.run())
+      return false;
+
+   this.sel.set = this.sel_in.set;
    this.k[0].set = ((this.res.set &&
 		     this.sel.set &&
 		     signal_state > 0) ||
