@@ -7,6 +7,7 @@
    - factorize circuit builder (the same code is repeated at every constructor)
    - abort: use of signal.set that could be wrong when undefined signal
    - bug in abort-par.js (because of abort bug with signal?)
+   - finish suspend statement
 */
 
 var DEBUG_NONE = 0;
