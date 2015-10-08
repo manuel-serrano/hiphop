@@ -6,6 +6,7 @@
    - Max circuit simulation totaly broken here. Rewrite it!
    - factorize circuit builder (the same code is repeated at every constructor)
    - abort: use of signal.set that could be wrong when undefined signal
+   - bug in abort-par.js (because of abort bug with signal?)
 */
 
 var DEBUG_NONE = 0;
@@ -19,6 +20,7 @@ var DEBUG_HALT = 64;
 var DEBUG_AWAIT = 128;
 var DEBUG_PARALLEL = 256;
 var DEBUG_PARALLEL_SYNC = 512;
+var DEBUG_SUSPEND = 1024;
 var DEBUG_ALL = 0xFFFFFFFF;
 
 var DEBUG_FLAGS = DEBUG_NONE;
@@ -30,6 +32,7 @@ var DEBUG_FLAGS = DEBUG_NONE;
 // DEBUG_FLAGS |= DEBUG_PRESENT;
 // DEBUG_FLAGS |= DEBUG_PAUSE;
 // DEBUG_FLAGS |= DEBUG_HALT;
+// DEBUG_FLAGS |= DEBUG_SUSPEND;
 
 function Signal(name, value, emit_cb) {
    /* value == false: pure signal
@@ -889,6 +892,13 @@ Suspend.prototype.run = function() {
       this.kill_in.set = this.kill.set;
    } else {
    }
+
+   if (DEBUG_FLAGS & DEBUG_SUSPEND)
+      this.debug();
+
+   assert_completion_code(this);
+
+   return true;
 }
 
 /* Visitor usefull to reset signal state after reaction */
