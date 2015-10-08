@@ -23,9 +23,6 @@ var DEBUG_FLAGS = DEBUG_NONE;
 // DEBUG_FLAGS |= DEBUG_PAUSE;
 // DEBUG_FLAGS |= DEBUG_HALT;
 
-var THEN = 0;
-var ELSE = 1;
-
 function Signal(name, value, emit_cb) {
    /* value == false: pure signal
       value != false: valued signal */
@@ -260,8 +257,8 @@ Pause.prototype.init_reg = function() {
 }
 
 /* Present test - Figure 11.5 page 117
-   X_in[THEN] represent X_in of then branch
-   X_in[ELSE] represent X_in of else branch
+   X_in[0] represent X_in of then branch
+   X_in[1] represent X_in of else branch
    It's allowed to have only a then branch */
 
 function Present(signal, then_branch, else_branch) {
@@ -273,10 +270,10 @@ function Present(signal, then_branch, else_branch) {
    this.kill_in = [];
    this.sel_in = [];
    this.k_in = [];
-   this.init_internal_wires(THEN, then_branch);
+   this.init_internal_wires(0, then_branch);
    if (else_branch != undefined)
-      this.init_internal_wires(ELSE, else_branch);
-   else this.init_internal_wires(ELSE, new Nothing());
+      this.init_internal_wires(1, else_branch);
+   else this.init_internal_wires(1, new Nothing());
 
    /* set to 0 or 1 is the branch 0|1 was blocked on signal test */
    this.blocked = -1;
@@ -343,8 +340,8 @@ Present.prototype.run = function() {
 }
 
 Present.prototype.init_reg = function() {
-   this.go_in[THEN].stmt_out.init_reg();
-   this.go_in[ELSE].stmt_out.init_reg();
+   this.go_in[0].stmt_out.init_reg();
+   this.go_in[1].stmt_out.init_reg();
 }
 
 Present.prototype.accept = function(visitor) {
