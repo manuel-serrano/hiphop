@@ -5,7 +5,8 @@
    - sel status of Loop should be `this.sel.set || this.set_in.set` ?
    - Max circuit simulation totaly broken here. Rewrite it!
    - factorize circuit builder (the same code is repeated at every constructor)
-   - finish suspend statement
+   - test suspend statement
+   - debug abort-par js2esterel
 */
 
 var DEBUG_NONE = 0;
