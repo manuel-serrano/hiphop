@@ -249,6 +249,9 @@ Pause.prototype.run = function() {
    this.k[0].set = this.reg && this.res.set;
    this.k[1].set = this.go.set;
    this.sel.set = this.reg;
+
+   /* the register takes the values of the previous instant, so we
+      initialize it at the end of reaction */
    this.reg = (this.go.set || (this.susp.set && this.sel.set))
       && !this.kill.set;
 
@@ -505,10 +508,10 @@ Loop.prototype.run = function() {
       this.go_in.set = this.go.set || this.k_in[0].set;
       if (!this.go_in.stmt_out.run())
 	 return false;
-      this.sel.set = this.sel_in.set;
       stop = !(this.k_in[0].set && (this.res_in.set && this.sel_in.set));
    }
 
+   this.sel.set = this.sel_in.set;
    this.k[0].set = false;
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
@@ -551,7 +554,7 @@ Abort.prototype.run = function() {
    }
 
    this.go_in.set = this.go.set;
-   this.res_in.set = this.res.set && !(signal_state > 0);// && this.sel_in.set;
+   this.res_in.set = this.res.set && !(signal_state > 0)// && this.sel_in.set;
    this.susp_in.set = this.susp.set;
    this.kill_in.set = this.kill.set;
 
