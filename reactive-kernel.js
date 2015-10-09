@@ -2,10 +2,9 @@
 
 /* TODO
    - use a visitor for init_reg
-   - sel status of Loop should be `this.sel.set || this.set_in.set` ?
-   - Max circuit simulation totaly broken here. Rewrite it!
    - factorize circuit builder (the same code is repeated at every constructor)
    - test suspend statement
+   - fix abort problem with SEL
 */
 
 var DEBUG_NONE = 0;
@@ -249,10 +248,7 @@ Pause.prototype.run = function() {
    this.k[0].set = this.reg && this.res.set;
    this.k[1].set = this.go.set;
    this.sel.set = this.reg;
-
-   /* the register takes the values of the previous instant, so we
-      initialize it at the end of reaction */
-   this.reg = (this.go.set || (this.susp.set && this.sel.set))
+   this.reg = (this.go.set || (this.susp.set && this.reg))
       && !this.kill.set;
 
    if (DEBUG_FLAGS & DEBUG_PAUSE)
@@ -554,7 +550,7 @@ Abort.prototype.run = function() {
    }
 
    this.go_in.set = this.go.set;
-   this.res_in.set = this.res.set && !(signal_state > 0)// && this.sel_in.set;
+   this.res_in.set = this.res.set && !(signal_state > 0);// && this.sel_in.set;
    this.susp_in.set = this.susp.set;
    this.kill_in.set = this.kill.set;
 
