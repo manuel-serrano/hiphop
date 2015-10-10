@@ -4,8 +4,10 @@
    - use a visitor for init_reg
    - factorize circuit builder (the same code is repeated at every constructor)
    - test suspend statement
-   - fix abort problem with SEL
    - remove ParallelSynchronizer since it's just a max calcul of Kx
+   - disable auto reset machine
+   - remove this.name, except for the machine (we must can get it by objet type)
+   - make a batch interpreter (that use a debug mode)
 */
 
 var DEBUG_NONE = 0;

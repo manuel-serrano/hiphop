@@ -17,10 +17,10 @@ EMIT S
 ---- SEL:false K0:false K1:true ----
 
 ---- reaction  GO:false RES:true ----
----- SEL:false K0:false K1:true ----
+---- SEL:true K0:false K1:true ----
 
 ---- reaction  GO:false RES:true ----
----- SEL:false K0:false K1:true ----
+---- SEL:true K0:false K1:true ----
 
 sigI set
 ---- reaction  GO:false RES:true ----
@@ -31,5 +31,5 @@ EMIT S
 ---- SEL:false K0:false K1:true ----
 
 ---- reaction  GO:false RES:true ----
----- SEL:false K0:false K1:true ----
+---- SEL:true K0:false K1:true ----
 
