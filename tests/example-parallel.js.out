@@ -3,11 +3,11 @@ EMIT I
 ---- SEL:false K0:false K1:true ----
 
 ---- reaction  GO:false RES:true ----
----- SEL:false K0:false K1:true ----
+---- SEL:true K0:false K1:true ----
 
 ---- reaction  GO:false RES:true ----
----- SEL:false K0:false K1:true ----
+---- SEL:true K0:false K1:true ----
 
 ---- reaction  GO:false RES:true ----
----- SEL:false K0:false K1:true ----
+---- SEL:true K0:false K1:true ----
 

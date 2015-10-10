@@ -7,25 +7,25 @@ EMIT T
 EMIT V
 EMIT S
 EMIT T
----- SEL:false K0:false K1:true ----
+---- SEL:true K0:false K1:true ----
 
 ---- reaction 2 GO:false RES:true ----
 EMIT V
 EMIT S
 EMIT T
----- SEL:false K0:false K1:true ----
+---- SEL:true K0:false K1:true ----
 
 ---- reaction 3 GO:false RES:true ----
 EMIT V
 EMIT S
 EMIT T
----- SEL:false K0:false K1:true ----
+---- SEL:true K0:false K1:true ----
 
 ---- reaction 4 GO:false RES:true ----
 EMIT V
 EMIT S
 EMIT T
----- SEL:false K0:false K1:true ----
+---- SEL:true K0:false K1:true ----
 
 ---- reaction 5 GO:false RES:true ----
 ---- SEL:true K0:true K1:false ----
@@ -39,11 +39,11 @@ EMIT T
 EMIT V
 EMIT S
 EMIT T
----- SEL:false K0:false K1:true ----
+---- SEL:true K0:false K1:true ----
 
 ---- reaction 8 GO:false RES:true ----
 EMIT V
 EMIT S
 EMIT T
----- SEL:false K0:false K1:true ----
+---- SEL:true K0:false K1:true ----
 
