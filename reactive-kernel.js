@@ -5,6 +5,7 @@
    - factorize circuit builder (the same code is repeated at every constructor)
    - test suspend statement
    - fix abort problem with SEL
+   - remove ParallelSynchronizer since it's just a max calcul of Kx
 */
 
 var DEBUG_NONE = 0;
@@ -231,7 +232,6 @@ Emit.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_EMIT)
       this.debug();
-
    return true;
 }
 
@@ -240,22 +240,22 @@ Emit.prototype.run = function() {
 function Pause() {
    Statement.call(this, "PAUSE");
    this.reg = false;
+   this.old_reg = false;
 }
 
 Pause.prototype = new Statement()
 
 Pause.prototype.run = function() {
-   this.k[0].set = this.reg && this.res.set;
-   this.k[1].set = this.go.set;
-   this.sel.set = this.reg;
+   this.old_reg = this.reg;
    this.reg = (this.go.set || (this.susp.set && this.reg))
       && !this.kill.set;
+   this.sel.set = this.reg;
+   this.k[0].set = this.old_reg && this.res.set;
+   this.k[1].set = this.go.set;
 
    if (DEBUG_FLAGS & DEBUG_PAUSE)
       this.debug();
-
    assert_completion_code(this);
-
    return true;
 }
 
@@ -342,7 +342,6 @@ Present.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_PRESENT)
       this.debug();
-
    return true;
 }
 
@@ -460,7 +459,6 @@ Sequence.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_SEQUENCE)
       this.debug();
-
    return true;
 }
 
@@ -527,6 +525,7 @@ Loop.prototype.init_reg = function() {
 function Abort(circuit, signal) {
    Circuit.call(this, "ABORT");
    this.signal = signal;
+   this.new_sel = false; /* SEL state for next reaction */
    this.go_in = circuit.go = new Wire(this, circuit);
    this.res_in = circuit.res = new Wire(this, circuit);
    this.susp_in = circuit.susp = new Wire(this, circuit);
@@ -542,6 +541,7 @@ function Abort(circuit, signal) {
 Abort.prototype = new Circuit();
 
 Abort.prototype.run = function() {
+   this.sel.set = this.new_sel;
    var signal_state = this.signal.get_state();
 
    if (signal_state == 0) {
@@ -550,14 +550,14 @@ Abort.prototype.run = function() {
    }
 
    this.go_in.set = this.go.set;
-   this.res_in.set = this.res.set && !(signal_state > 0);// && this.sel_in.set;
+   this.res_in.set = this.res.set && this.sel.set && !(signal_state > 0);
    this.susp_in.set = this.susp.set;
    this.kill_in.set = this.kill.set;
 
    if (!this.go_in.stmt_out.run())
       return false;
 
-   this.sel.set = this.sel_in.set;
+   this.new_sel = this.sel_in.set;
    this.k[0].set = ((this.res.set &&
 		     this.sel.set &&
 		     signal_state > 0) ||
@@ -608,7 +608,6 @@ Await.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_AWAIT)
       this.debug();
-
    return true;
 }
 
@@ -643,7 +642,6 @@ Halt.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_HALT)
       this.debug();
-
    return true;
 }
 
@@ -703,9 +701,7 @@ Parallel.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_PARALLEL)
       this.debug();
-
    assert_completion_code(this);
-
    return true;
 }
 
@@ -772,7 +768,6 @@ ParallelSynchronizer.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_PARALLEL_SYNC)
       this.debug();
-
    return true;
 }
 
