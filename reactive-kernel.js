@@ -19,9 +19,12 @@ var DEBUG_AWAIT = 128;
 var DEBUG_PARALLEL = 256;
 var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_SUSPEND = 1024;
+var DEBUG_REACT = 2048;
+var DEBUG_REACT_COMPAT = 4096; // debug compatible with esterel batch
 var DEBUG_ALL = 0xFFFFFFFF;
 
 var DEBUG_FLAGS = DEBUG_NONE;
+var DEBUG_FLAGS = DEBUG_REACT;
 // DEBUG_FLAGS |= DEBUG_PARALLEL_SYNC;
 // DEBUG_FLAGS |= DEBUG_PARALLEL;
 // DEBUG_FLAGS |= DEBUG_ABORT;
@@ -31,6 +34,8 @@ var DEBUG_FLAGS = DEBUG_NONE;
 // DEBUG_FLAGS |= DEBUG_PAUSE;
 // DEBUG_FLAGS |= DEBUG_HALT;
 // DEBUG_FLAGS |= DEBUG_SUSPEND;
+
+// DEBUG_FLAGS = DEBUG_REACT_COMPAT;
 
 function Signal(name, value, emit_cb) {
    /* value == false: pure signal
@@ -159,6 +164,10 @@ function ReactiveMachine(circuit) {
    Circuit.call(this, "REACTIVE_MACHINE");
    this.seq = -1;
    this.boot_reg = true;
+   this.machine_name = "";
+
+   /* used to display input signal which are set on DEBUG_REACT_COMPAT mode */
+   this.signals = [];
 
    this.go_in = circuit.go = new Wire(this, circuit);
    this.res_in = circuit.res = new Wire(this, circuit);
@@ -173,6 +182,9 @@ function ReactiveMachine(circuit) {
 ReactiveMachine.prototype = new Circuit();
 
 ReactiveMachine.prototype.react = function(seq) {
+   var debug_react = DEBUG_FLAGS & DEBUG_REACT;
+   var debug_compat = DEBUG_FLAGS == DEBUG_REACT_COMPAT;
+
    if (seq == undefined)
       seq = "\b";
    else if (seq <= this.seq)
@@ -191,22 +203,54 @@ ReactiveMachine.prototype.react = function(seq) {
    this.susp_in.set = false;
    this.kill_in.set = false;
 
-   console.log("---- reaction " + seq + " GO:" + this.go_in.set + " RES:"
-	       + this.res_in.set + buf_init + " ----");
+   if (debug_react)
+      console.log("---- reaction " + seq + " GO:" + this.go_in.set + " RES:"
+		  + this.res_in.set + buf_init + " ----");
 
    if (!this.go_in.stmt_out.run())
       fatal_error("sequential causality");
 
    this.boot_reg = this.k_in[0].set;
-   this.go_in.stmt_out.accept(new ResetSignalVisitor());
 
-   var buf = "";
-   for (var i in this.k_in)
-      buf += "K" + i + ":" + this.k_in[i].set + " ";
-   console.log("---- SEL:" + this.sel_in.set + " " + buf + "----\n");
+   if (debug_react) {
+      var buf = "";
+      for (var i in this.k_in)
+	 buf += "K" + i + ":" + this.k_in[i].set + " ";
+      console.log("---- SEL:" + this.sel_in.set + " " + buf + "----\n");
+   }
+
+   if (debug_compat) {
+      var buf_in = this.machine_name + ">";
+      var buf_out = "--- Output:";
+      var semicolon_space = " ";
+
+      for (var i in this.signals) {
+	 var sig = this.signals[i];
+
+	 if (sig.set) {
+	    if (sig.emitters == 0) {
+	       buf_in += " " + sig.name;
+	       semicolon_space = "";
+	    }
+	    if (sig.emitters > 0 && sig.waiting == 0)
+	       buf_out += " " + sig.name;
+	 }
+      }
+      buf_in += semicolon_space + ";"
+      console.log(buf_in);
+      console.log(buf_out);
+   }
+
+   this.go_in.stmt_out.accept(new ResetSignalVisitor());
 }
 
-ReactiveMachine.prototype.accept = function(visitor) {
+/* Get all signal which are used inside this reactive machine,
+   this is usefull only for debug */
+
+ReactiveMachine.prototype.catch_signals = function() {
+   var visitor = new EmbeddedSignals();
+   this.accept(visitor);
+   this.signals = visitor.signals;
 }
 
 /* Emit - Figure 11.4 page 116 */
@@ -225,7 +269,8 @@ Emit.prototype.run = function() {
    if (this.signal.waiting > 0)
       this.signal.waiting--;
    if (this.go.set) {
-      this.signal.emit_cb();
+      if (DEBUG_FLAGS != DEBUG_REACT_COMPAT)
+	 this.signal.emit_cb();
       this.signal.set = true;
    }
 
@@ -253,9 +298,7 @@ Pause.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_PAUSE)
       this.debug();
-
    assert_completion_code(this);
-
    return true;
 }
 
@@ -901,6 +944,22 @@ ResetSignalVisitor.prototype.visit = function(stmt) {
    }
 }
 
+/* Visitor that return all signal embeded */
+
+function EmbeddedSignals() {
+   this.signals = [];
+}
+
+EmbeddedSignals.prototype.visit = function(stmt) {
+   if (stmt instanceof Emit
+       || stmt instanceof Await
+       || stmt instanceof Present
+       || stmt instanceof Abort) {
+      if (this.signals.indexOf(stmt.signal) < 0)
+	 this.signals.push(stmt.signal);
+   }
+}
+
 /* Assert that only one completion wire is on */
 
 function assert_completion_code(stmt) {
@@ -911,9 +970,6 @@ function assert_completion_code(stmt) {
 	 fatal_error("more that one completion code in " + stmt.name);
       else if (stmt.k[i].set)
 	 set = true;
-
-   // if (!set)
-   //    fatal_error("no complection code in " + stmt.name);
 }
 
 function fatal_error(msg) {
