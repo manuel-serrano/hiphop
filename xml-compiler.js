@@ -34,6 +34,8 @@ function REACTIVEMACHINE(attrs) {
       fatal("ReactiveMachime must have exactly one child.", attrs);
    machine = new reactive.ReactiveMachine(children[0]);
    machine.loc = format_loc(attrs);
+   machine.machine_name = attrs.name;
+   machine.catch_signals();
    return machine;
 }
 

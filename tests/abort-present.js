@@ -17,7 +17,7 @@ var sigV = new rkernel.Signal("V", false, function() {
    console.log("EMIT V");
 });
 
-var prg = <rjs.reactivemachine>
+var prg = <rjs.reactivemachine name="abortpresent">
   <rjs.loop>
     <rjs.sequence>
       <rjs.abort signal=${sigI}>
