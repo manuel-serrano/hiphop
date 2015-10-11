@@ -35,7 +35,7 @@ var DEBUG_FLAGS = DEBUG_REACT;
 // DEBUG_FLAGS |= DEBUG_HALT;
 // DEBUG_FLAGS |= DEBUG_SUSPEND;
 
-// DEBUG_FLAGS = DEBUG_REACT_COMPAT;
+ DEBUG_FLAGS = DEBUG_REACT_COMPAT;
 
 function Signal(name, value, emit_cb) {
    /* value == false: pure signal
@@ -47,6 +47,7 @@ function Signal(name, value, emit_cb) {
    this.emit_cb = emit_cb == undefined ? null : emit_cb;
    this.emitters = 0; /* number of emitters in the program code */
    this.waiting = 0; /* number of waiting emitters for the current reaction */
+   this.local = false; /* usefull for debug with esterel compat only */
 }
 
 /* 2: the signal is set and its value is ready to read
@@ -232,7 +233,7 @@ ReactiveMachine.prototype.react = function(seq) {
 	       buf_in += " " + sig.name;
 	       semicolon_space = "";
 	    }
-	    if (sig.emitters > 0 && sig.waiting == 0)
+	    if (sig.emitters > 0 && sig.waiting == 0 && !sig.local)
 	       buf_out += " " + sig.name;
 	 }
       }
