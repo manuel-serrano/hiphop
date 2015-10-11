@@ -4,11 +4,12 @@ require("../js2esterel.js");
 
 var sigI = new rk.Signal("I", false, null);
 var sigL = new rk.Signal("L", false, function() {});
+sigL.local = true;
 var sigO = new rk.Signal("O", false, function () {
    console.log("EMIT O");
 });
 
-var prg = <rjs.reactivemachine>
+var prg = <rjs.reactivemachine name="abort-par">
     <rjs.parallel>
       <rjs.abort signal=${sigL}>
 	<rjs.loop>
