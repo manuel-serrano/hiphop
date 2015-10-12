@@ -1,22 +1,21 @@
 var reactive = require("../reactive-kernel.js");
+var rjs = require("../xml-compiler.js");
 
-var sigI = new reactive.Signal("I", false, function() {});
+var sigI = new reactive.Signal("I", false);
+var sigS = new reactive.Signal("S", false);
 
-var sigS = new reactive.Signal("S", false, function() {
-   console.log("EMIT S");
-});
-
-var emitS = new reactive.Emit(sigS);
-var awaitI = new reactive.Await(sigI);
-var pause = new reactive.Pause();
-var loop = new reactive.Loop(new reactive.Sequence(awaitI,
-						   pause,
-						   emitS));
-var machine = new reactive.ReactiveMachine(loop);
+var machine = <rjs.ReactiveMachine name="loop-pause-emit">
+  <rjs.loop>
+    <rjs.Sequence>
+      <rjs.await signal=${sigI}/>
+      <rjs.pause/>
+      <rjs.emit signal=${sigS}/>
+    </rjs.Sequence>
+  </rjs.loop>
+</rjs.ReactiveMachine>;
 
 machine.react();
 
-console.log("sigI set");
 sigI.set_from_host(true, null);
 machine.react();
 sigI.set_from_host(true, null);// <--- ce truc doit marcher !!
@@ -27,7 +26,6 @@ machine.react();
 machine.react();
 machine.react();
 
-console.log("sigI set");
 sigI.set_from_host(true, null);
 machine.react();
 machine.react();

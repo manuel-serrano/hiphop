@@ -1,20 +1,8 @@
----- reaction  GO:true RES:true INIT ----
-EMIT I
-EMIT J
----- SEL:false K0:true K1:false ----
-
----- reaction  GO:true RES:true INIT ----
-EMIT I
-EMIT J
----- SEL:false K0:true K1:false ----
-
----- reaction  GO:true RES:true INIT ----
-EMIT I
-EMIT J
----- SEL:false K0:true K1:false ----
-
----- reaction  GO:true RES:true INIT ----
-EMIT I
-EMIT J
----- SEL:false K0:true K1:false ----
-
+parallel2> ;
+--- Output: J
+parallel2> ;
+--- Output:
+parallel2> ;
+--- Output:
+parallel2> ;
+--- Output: J
