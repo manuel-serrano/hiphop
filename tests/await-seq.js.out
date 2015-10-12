@@ -1,25 +1,32 @@
----- reaction  GO:true RES:true INIT ----
----- SEL:false K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
----- SEL:true K0:false K1:true ----
-
-B;
----- reaction  GO:false RES:true ----
----- SEL:true K0:false K1:true ----
-
-A;
----- reaction  GO:false RES:true ----
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
----- SEL:true K0:false K1:true ----
-
-B;
----- reaction  GO:false RES:true ----
-EMIT O
----- SEL:true K0:true K1:false ----
-
+await-seq> ;
+--- Output:
+await-seq> ;
+--- Output:
+await-seq> B;
+--- Output:
+await-seq> A;
+--- Output:
+await-seq> ;
+--- Output:
+await-seq> ;
+--- Output:
+await-seq> B;
+--- Output: O
+await-seq> ;
+--- Output:
+await-seq> ;
+--- Output:
+await-seq> ;
+--- Output:
+await-seq> B;
+--- Output:
+await-seq> A;
+--- Output:
+await-seq> ;
+--- Output:
+await-seq> ;
+--- Output:
+await-seq> B;
+--- Output: O
+await-seq> ;
+--- Output:

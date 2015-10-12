@@ -1,7 +1,6 @@
 "use strict"
 
 /* TODO
-   - use a visitor for init_reg
    - factorize circuit builder (the same code is repeated at every constructor)
    - test suspend statement
    - remove ParallelSynchronizer since it's just a max calcul of Kx
@@ -109,8 +108,6 @@ function Statement(name) {
 
 Statement.prototype.run = function() { return true; }
 
-Statement.prototype.init_reg = function() { }
-
 /* Generic debug function can be called after the execution of a statement */
 
 Statement.prototype.debug = function() {
@@ -189,7 +186,8 @@ ReactiveMachine.prototype.react = function(seq) {
       return;
 
    if (this.boot_reg) {
-      this.go_in.stmt_out.init_reg();
+      var visitor = new ResetRegisterVisitor();
+      this.accept(visitor);
       go = this.boot_reg;
       this.boot_reg = false;
    }
@@ -286,10 +284,6 @@ Pause.prototype.run = function() {
    return true;
 }
 
-Pause.prototype.init_reg = function() {
-   this.reg = false;
-}
-
 /* Present test - Figure 11.5 page 117
    X_in[0] represent X_in of then branch
    X_in[1] represent X_in of else branch
@@ -370,11 +364,6 @@ Present.prototype.run = function() {
    if (DEBUG_FLAGS & DEBUG_PRESENT)
       this.debug();
    return true;
-}
-
-Present.prototype.init_reg = function() {
-   this.go_in[0].stmt_out.init_reg();
-   this.go_in[1].stmt_out.init_reg();
 }
 
 Present.prototype.accept = function(visitor) {
@@ -489,11 +478,6 @@ Sequence.prototype.run = function() {
    return true;
 }
 
-Sequence.prototype.init_reg = function() {
-   for (var i in this.go_in)
-      this.go_in[i].stmt_out.init_reg();
-}
-
 Sequence.prototype.accept = function(visitor) {
    visitor.visit(this);
    for (var i in this.go_in)
@@ -542,10 +526,6 @@ Loop.prototype.run = function() {
       this.debug();
 
    return true;
-}
-
-Loop.prototype.init_reg = function() {
-   this.go_in.stmt_out.init_reg();
 }
 
 /* Abort - Figure 11.7 page 120 */
@@ -598,10 +578,6 @@ Abort.prototype.run = function() {
       this.debug();
    assert_completion_code(this);
    return true;
-}
-
-Abort.prototype.init_reg = function() {
-   this.go_in.stmt_out.init_reg();
 }
 
 /* Await */
@@ -912,7 +888,7 @@ function EmbeddedSignalsVisitor() {
    this.signals = [];
 }
 
-EmbeddedSignalsVisotor.prototype.visit = function(stmt) {
+EmbeddedSignalsVisitor.prototype.visit = function(stmt) {
    if (stmt instanceof Emit
        || stmt instanceof Await
        || stmt instanceof Present

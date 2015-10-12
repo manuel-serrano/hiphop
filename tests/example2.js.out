@@ -1,29 +1,20 @@
----- reaction 0 GO:true RES:true INIT ----
-EMIT S
-EMIT T
----- SEL:true K0:false K1:true ----
-
----- reaction 1 GO:false RES:true ----
-EMIT V
-EMIT S
-EMIT T
----- SEL:true K0:false K1:true ----
-
----- reaction 2 GO:false RES:true ----
-EMIT V
-EMIT S
-EMIT T
----- SEL:true K0:false K1:true ----
-
----- reaction 3 GO:false RES:true ----
-EMIT V
-EMIT S
-EMIT T
----- SEL:true K0:false K1:true ----
-
----- reaction 4 GO:false RES:true ----
-EMIT V
-EMIT S
-EMIT T
----- SEL:true K0:false K1:true ----
-
+example2> ;
+--- Output: T
+example2> ;
+--- Output: T V
+example2> ;
+--- Output: T V
+example2> ;
+--- Output: T V
+example2> ;
+--- Output: T V
+example2> ;
+--- Output: T
+example2> ;
+--- Output: T V
+example2> ;
+--- Output: T V
+example2> ;
+--- Output: T V
+example2> ;
+--- Output: T V

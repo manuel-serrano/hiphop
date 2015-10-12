@@ -18,7 +18,6 @@ var prg = <rjs.reactivemachine name="await-par">
   </rjs.sequence>
 </rjs.reactivemachine>;
 
-//(new inspector.Inspector(prg)).inspect();
 prg.react();
 prg.react();
 
@@ -37,7 +36,7 @@ sigA.set_from_host(true, null);
 prg.react();
 
 prg.reset();
-
+//(new inspector.Inspector(prg)).inspect();
 sigA.set_from_host(true, null);
 prg.react();
 

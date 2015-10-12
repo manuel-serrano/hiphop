@@ -1,52 +1,33 @@
----- reaction 0 GO:true RES:true INIT ----
-EMIT S
-EMIT T
----- SEL:false K0:false K1:true ----
-
----- reaction 1 GO:false RES:true ----
-EMIT V
-EMIT S
-EMIT T
----- SEL:true K0:false K1:true ----
-
----- reaction 2 GO:false RES:true ----
-EMIT V
-EMIT S
-EMIT T
----- SEL:true K0:false K1:true ----
-
----- reaction 3 GO:false RES:true ----
-EMIT V
-EMIT S
-EMIT T
----- SEL:true K0:false K1:true ----
-
----- reaction 4 GO:false RES:true ----
-EMIT V
-EMIT S
-EMIT T
----- SEL:true K0:false K1:true ----
-
----- reaction 5 GO:false RES:true ----
----- SEL:true K0:true K1:false ----
-
----- reaction 6 GO:true RES:true INIT ----
-EMIT S
-EMIT T
----- SEL:false K0:false K1:true ----
-
----- reaction 7 GO:false RES:true ----
-EMIT V
-EMIT S
-EMIT T
----- SEL:true K0:false K1:true ----
-
----- reaction 8 GO:false RES:true ----
-EMIT V
-EMIT S
-EMIT T
----- SEL:true K0:false K1:true ----
-
+example3> ;
+--- Output: T
+example3> ;
+--- Output: T V
+example3> ;
+--- Output: T V
+example3> ;
+--- Output: T V
+example3> ;
+--- Output: T V
+example3> A;
+--- Output:
+example3> ;
+--- Output:
+example3> ;
+--- Output:
+example3> ;
+--- Output:
+example3> ;
+--- Output:
+example3> ;
+--- Output: T
+example3> ;
+--- Output: T V
+example3> ;
+--- Output: T V
+example3> ;
+--- Output: T V
+example3> ;
+--- Output: T V
 abort
     loop
         emit S;
