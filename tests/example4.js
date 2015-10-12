@@ -11,8 +11,8 @@ var sigT = new reactive.Signal("T", false);
 var sigV = new reactive.Signal("V", false);
 
 var prg = <rjs.reactivemachine name="example4">
-  <rjs.abort signal=${sigA}>
-    <rjs.loop>
+  <rjs.loop>
+    <rjs.abort signal=${sigA}>
       <rjs.sequence>
 	<rjs.emit signal=${sigS}/>
 	<rjs.present signal=${sigS}>
@@ -21,8 +21,8 @@ var prg = <rjs.reactivemachine name="example4">
 	<rjs.pause/>
 	<rjs.emit signal=${sigV}/>
       </rjs.sequence>
-    </rjs.loop>
-  </rjs.abort>
+    </rjs.abort>
+  </rjs.loop>
 </rjs.ReactiveMachine>
 
 for (var i = 0; i < 5; i++)
@@ -37,5 +37,3 @@ prg.reset();
 
 for (var i = 0; i < 5; i++)
    prg.react(i);
-
-exports.machine = prg;
