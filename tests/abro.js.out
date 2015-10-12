@@ -1,59 +1,30 @@
----- reaction  GO:true RES:true INIT ----
----- SEL:false K0:false K1:true ----
-
-A B
----- reaction  GO:false RES:true ----
-EMIT O
----- SEL:true K0:false K1:true ----
-
-A B
----- reaction  GO:false RES:true ----
----- SEL:false K0:false K1:true ----
-
-R
----- reaction  GO:false RES:true ----
----- SEL:false K0:false K1:true ----
-
-A B
----- reaction  GO:false RES:true ----
-EMIT O
----- SEL:true K0:false K1:true ----
-
-R A B
----- reaction  GO:false RES:true ----
----- SEL:false K0:false K1:true ----
-
-R
----- reaction  GO:false RES:true ----
----- SEL:false K0:false K1:true ----
-
-B ; A
----- reaction  GO:false RES:true ----
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
-EMIT O
----- SEL:true K0:false K1:true ----
-
-A ; B
----- reaction  GO:false RES:true ----
----- SEL:false K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
----- SEL:false K0:false K1:true ----
-
-R B ; A
----- reaction  GO:false RES:true ----
----- SEL:false K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
----- SEL:false K0:false K1:true ----
-
-B;
----- reaction  GO:false RES:true ----
-EMIT O
----- SEL:true K0:false K1:true ----
-
+ABRO> ;
+--- Output:
+ABRO> A B;
+--- Output: O
+ABRO> A B;
+--- Output:
+ABRO> R;
+--- Output:
+ABRO> A B;
+--- Output: O
+ABRO> A B;
+--- Output:
+ABRO> R;
+--- Output:
+ABRO> B;
+--- Output:
+ABRO> A;
+--- Output: O
+ABRO> A;
+--- Output:
+ABRO> B;
+--- Output:
+ABRO> R B;
+--- Output:
+ABRO> A;
+--- Output:
+ABRO> ;
+--- Output:
+ABRO> B;
+--- Output: O

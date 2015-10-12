@@ -24,11 +24,10 @@ var DEBUG_PARALLEL = 256;
 var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_SUSPEND = 1024;
 var DEBUG_REACT = 2048;
-var DEBUG_REACT_COMPAT = 4096; // debug compatible with esterel batch
 var DEBUG_ALL = 0xFFFFFFFF;
-
 var DEBUG_FLAGS = DEBUG_NONE;
-var DEBUG_FLAGS = DEBUG_REACT;
+
+DEBUG_FLAGS |= DEBUG_REACT;
 // DEBUG_FLAGS |= DEBUG_PARALLEL_SYNC;
 // DEBUG_FLAGS |= DEBUG_PARALLEL;
 // DEBUG_FLAGS |= DEBUG_ABORT;
@@ -39,19 +38,16 @@ var DEBUG_FLAGS = DEBUG_REACT;
 // DEBUG_FLAGS |= DEBUG_HALT;
 // DEBUG_FLAGS |= DEBUG_SUSPEND;
 
-// DEBUG_FLAGS = DEBUG_REACT_COMPAT;
-
-function Signal(name, value, emit_cb) {
+function Signal(name, value) {
    /* value == false: pure signal
       value != false: valued signal */
 
    this.name = name;
    this.set = false;
    this.value = false;
-   this.emit_cb = emit_cb == undefined ? null : emit_cb;
    this.emitters = 0; /* number of emitters in the program code */
    this.waiting = 0; /* number of waiting emitters for the current reaction */
-   this.local = false; /* usefull for debug with esterel compat only */
+   this.local = false; /* usefull for DEBUG_REACT only */
 }
 
 /* 2: the signal is set and its value is ready to read
@@ -187,44 +183,26 @@ function ReactiveMachine(circuit) {
 ReactiveMachine.prototype = new Circuit();
 
 ReactiveMachine.prototype.react = function(seq) {
-   var debug_react = DEBUG_FLAGS & DEBUG_REACT;
-   var debug_compat = DEBUG_FLAGS == DEBUG_REACT_COMPAT;
+   var go = false;
 
-   if (seq == undefined)
-      seq = "\b";
-   else if (seq <= this.seq)
+   if (seq != undefined && seq <= this.seq)
       return;
 
-   /* init any register in the machine */
-   var buf_init = "";
-
    if (this.boot_reg) {
-      buf_init = " INIT";
       this.go_in.stmt_out.init_reg();
+      go = this.boot_reg;
+      this.boot_reg = false;
    }
 
-   this.go_in.set = this.boot_reg;
+   this.go_in.set = go;
    this.res_in.set = true;
    this.susp_in.set = false;
    this.kill_in.set = false;
 
-   if (debug_react)
-      console.log("---- reaction " + seq + " GO:" + this.go_in.set + " RES:"
-		  + this.res_in.set + buf_init + " ----");
-
    if (!this.go_in.stmt_out.run())
       fatal_error("sequential causality");
 
-   this.boot_reg = this.k_in[0].set;
-
-   if (debug_react) {
-      var buf = "";
-      for (var i in this.k_in)
-	 buf += "K" + i + ":" + this.k_in[i].set + " ";
-      console.log("---- SEL:" + this.sel_in.set + " " + buf + "----\n");
-   }
-
-   if (debug_compat) {
+   if (DEBUG_FLAGS & DEBUG_REACT) {
       var buf_in = this.machine_name + ">";
       var buf_out = "--- Output:";
       var semicolon_space = " ";
@@ -258,6 +236,10 @@ ReactiveMachine.prototype.catch_signals = function() {
    this.signals = visitor.signals;
 }
 
+ReactiveMachine.prototype.reset = function() {
+   this.boot_reg = true;
+}
+
 /* Emit - Figure 11.4 page 116 */
 
 function Emit(signal) {
@@ -273,11 +255,8 @@ Emit.prototype.run = function() {
    this.k[0].set = this.go.set;
    if (this.signal.waiting > 0)
       this.signal.waiting--;
-   if (this.go.set) {
-      if (DEBUG_FLAGS != DEBUG_REACT_COMPAT)
-	 this.signal.emit_cb();
+   if (this.go.set)
       this.signal.set = true;
-   }
 
    if (DEBUG_FLAGS & DEBUG_EMIT)
       this.debug();
@@ -796,25 +775,6 @@ ParallelSynchronizer.prototype.run = function() {
 
    if (max_code > -1)
    	this.k[max_code].set = true;
-
-   // var state_left = [this.lem, this.k_in[0][0].set];
-   // var state_right = [this.rem, this.k_in[0][1].set];
-
-   // for (var i = 0; i < this.k.length; i++) {
-   //    var OR_left = state_left[0] || state_left[1];
-   //    var OR_right = state_right[0] || state_right[1];
-   //    var OR_return = state_left[1] || state_right[1];
-
-   //    this.k[i].set = OR_return && OR_left && OR_right;
-
-   //    state_left[0] = OR_left;
-   //    state_right[0] = OR_right;
-
-   //    if (i + 1 < this.k.length) {
-   // 	 state_left[1] = this.k_in[i + 1][0].set;
-   // 	 state_right[1] = this.k_in[i + 1][1].set;
-   //    }
-   // }
 
    if (DEBUG_FLAGS & DEBUG_PARALLEL_SYNC)
       this.debug();

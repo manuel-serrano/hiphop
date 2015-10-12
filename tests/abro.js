@@ -4,14 +4,12 @@ var rjs = require("../xml-compiler.js");
 var rkernel = require("../reactive-kernel.js");
 var inspector = require("../inspector.js");
 
-var sigA = new rkernel.Signal("A", false, null);
-var sigB = new rkernel.Signal("B", false, null);
-var sigR = new rkernel.Signal("R", false, null);
-var sigO = new rkernel.Signal("O", false, function() {
-   console.log("EMIT O");
-});
+var sigA = new rkernel.Signal("A", false);
+var sigB = new rkernel.Signal("B", false);
+var sigR = new rkernel.Signal("R", false);
+var sigO = new rkernel.Signal("O", false);
 
-var prg = <rjs.reactivemachine>
+var prg = <rjs.reactivemachine name="ABRO">
     <rjs.loop>
         <rjs.abort signal=${sigR}>
             <rjs.sequence>
@@ -28,49 +26,40 @@ var prg = <rjs.reactivemachine>
 
 prg.react();
 
-console.log("A B");
 sigA.set_from_host(true, null);
 sigB.set_from_host(true, null);
 prg.react();
 
-console.log("A B");
 sigA.set_from_host(true, null);
 sigB.set_from_host(true, null);
 prg.react();
 
-console.log("R");
 sigR.set_from_host(true, null);
 prg.react();
 
-console.log("A B");
 sigA.set_from_host(true, null);
 sigB.set_from_host(true, null);
 prg.react();
 
-console.log("R A B");
 sigA.set_from_host(true, null);
 sigB.set_from_host(true, null);
 prg.react();
 
-console.log("R");
 sigR.set_from_host(true, null);
 prg.react();
 
 // (new inspector.Inspector(prg)).inspect();
 
-console.log("B ; A");
 sigB.set_from_host(true, null);
 prg.react();
 sigA.set_from_host(true, null);
 prg.react();
 
-console.log("A ; B");
 sigA.set_from_host(true, null);
 prg.react();
 sigB.set_from_host(true, null);
 prg.react();
 
-console.log("R B ; A");
 sigR.set_from_host(true, null);
 sigB.set_from_host(true, null);
 prg.react();
@@ -78,7 +67,6 @@ sigA.set_from_host(true, null);
 prg.react();
 prg.react();
 
-console.log("B;");
 sigB.set_from_host(true, null);
 prg.react();
 
