@@ -6,7 +6,6 @@
    - remove ParallelSynchronizer since it's just a max calcul of Kx
    - remove this.name, except for the machine (we must can get it by objet type)
    - make a batch interpreter (that use a debug mode)
-   - pause: remove old_reg and put k0 affect at begining
 */
 
 var DEBUG_NONE = 0;
