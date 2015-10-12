@@ -265,17 +265,15 @@ Emit.prototype.run = function() {
 function Pause() {
    Statement.call(this, "PAUSE");
    this.reg = false;
-   this.old_reg = false;
 }
 
 Pause.prototype = new Statement()
 
 Pause.prototype.run = function() {
-   this.old_reg = this.reg;
+   this.k[0].set = this.reg && this.res.set;
+   this.k[1].set = this.go.set;
    this.reg = (this.go.set || (this.susp.set && this.reg)) && !this.kill.set;
    this.sel.set = this.reg;
-   this.k[0].set = this.old_reg && this.res.set;
-   this.k[1].set = this.go.set;
 
    if (DEBUG_FLAGS & DEBUG_PAUSE)
       this.debug();
@@ -532,7 +530,6 @@ Loop.prototype.run = function() {
 function Abort(circuit, signal) {
    Circuit.call(this, "ABORT");
    this.signal = signal;
-   this.new_sel = false; /* SEL state for next reaction */
    this.go_in = circuit.go = new Wire(this, circuit);
    this.res_in = circuit.res = new Wire(this, circuit);
    this.susp_in = circuit.susp = new Wire(this, circuit);
@@ -548,7 +545,6 @@ function Abort(circuit, signal) {
 Abort.prototype = new Circuit();
 
 Abort.prototype.run = function() {
-   this.sel.set = this.new_sel;
    var signal_state = this.signal.get_state();
 
    if (signal_state == 0) {
@@ -564,12 +560,13 @@ Abort.prototype.run = function() {
    if (!this.go_in.stmt_out.run())
       return false;
 
-   this.new_sel = this.sel_in.set;
+   var new_sel = this.sel_in.set;
+
    this.k[0].set = ((this.res.set &&
 		     this.sel.set &&
 		     signal_state > 0) ||
 		    this.k_in[0].set);
-   this.sel.set = this.new_sel;
+   this.sel.set = new_sel;
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
 
@@ -905,7 +902,13 @@ function ResetRegisterVisitor() {
 ResetRegisterVisitor.prototype.visit = function(stmt) {
    if (stmt instanceof Pause) {
       stmt.reg = false;
-      stmt.old_reg = false;
+   }
+
+   /* The SEL wire of Abort could be setted by a Pause for the next reaction
+      (the new value given by the register, on next clock), so we must
+      reset it */
+   if (stmt instanceof Abort) {
+      stmt.sel.set = false;
    }
 }
 
