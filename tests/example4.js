@@ -10,7 +10,7 @@ sigS.local = true;
 var sigT = new reactive.Signal("T", false);
 var sigV = new reactive.Signal("V", false);
 
-var prg = <rjs.reactivemachine name="example3">
+var prg = <rjs.reactivemachine name="example4">
   <rjs.abort signal=${sigA}>
     <rjs.loop>
       <rjs.sequence>
