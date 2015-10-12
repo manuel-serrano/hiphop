@@ -8,6 +8,7 @@
    - disable auto reset machine
    - remove this.name, except for the machine (we must can get it by objet type)
    - make a batch interpreter (that use a debug mode)
+   - pause: remove old_reg and put k0 affect at begining
 */
 
 var DEBUG_NONE = 0;
@@ -38,7 +39,7 @@ var DEBUG_FLAGS = DEBUG_REACT;
 // DEBUG_FLAGS |= DEBUG_HALT;
 // DEBUG_FLAGS |= DEBUG_SUSPEND;
 
- DEBUG_FLAGS = DEBUG_REACT_COMPAT;
+// DEBUG_FLAGS = DEBUG_REACT_COMPAT;
 
 function Signal(name, value, emit_cb) {
    /* value == false: pure signal
@@ -610,6 +611,7 @@ Abort.prototype.run = function() {
 		     this.sel.set &&
 		     signal_state > 0) ||
 		    this.k_in[0].set);
+   this.sel.set = this.new_sel;
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
 
