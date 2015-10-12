@@ -2,12 +2,10 @@ var rjs = require("../xml-compiler.js");
 var rk = require("../reactive-kernel.js");
 require("../js2esterel.js");
 
-var sigI = new rk.Signal("I", false, null);
-var sigL = new rk.Signal("L", false, function() {});
+var sigI = new rk.Signal("I", false);
+var sigL = new rk.Signal("L", false);
 sigL.local = true;
-var sigO = new rk.Signal("O", false, function () {
-   console.log("EMIT O");
-});
+var sigO = new rk.Signal("O", false);
 
 var prg = <rjs.reactivemachine name="abort-par">
     <rjs.parallel>
@@ -32,4 +30,7 @@ prg.react();
 prg.react();
 sigI.set_from_host(true, null);
 prg.react();
+prg.react();
+
+prg.reset();
 prg.react();

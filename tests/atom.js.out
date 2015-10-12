@@ -1,59 +1,44 @@
----- reaction  GO:true RES:true INIT ----
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
+atom> ;
+--- Output:
 atom works!
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
+atom> ;
+--- Output:
 atom works!
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
+atom> ;
+--- Output:
 atom works!
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
+atom> ;
+--- Output:
 atom works!
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
+atom> ;
+--- Output:
 atom works!
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
+atom> ;
+--- Output:
 atom works!
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
+atom> ;
+--- Output:
 atom works!
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
+atom> ;
+--- Output:
 atom works!
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
+atom> ;
+--- Output:
 atom works!
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
+atom> ;
+--- Output:
 atom works!
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
+atom> ;
+--- Output:
 atom works!
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
+atom> ;
+--- Output:
 atom works!
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
+atom> ;
+--- Output:
 atom works!
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
+atom> ;
+--- Output:
 atom works!
----- SEL:true K0:false K1:true ----
-
+atom> ;
+--- Output:

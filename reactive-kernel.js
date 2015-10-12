@@ -231,7 +231,7 @@ ReactiveMachine.prototype.react = function(seq) {
    this is usefull only for debug */
 
 ReactiveMachine.prototype.catch_signals = function() {
-   var visitor = new EmbeddedSignals();
+   var visitor = new EmbeddedSignalsVisitor();
    this.accept(visitor);
    this.signals = visitor.signals;
 }
@@ -908,17 +908,29 @@ ResetSignalVisitor.prototype.visit = function(stmt) {
 
 /* Visitor that return all signal embeded */
 
-function EmbeddedSignals() {
+function EmbeddedSignalsVisitor() {
    this.signals = [];
 }
 
-EmbeddedSignals.prototype.visit = function(stmt) {
+EmbeddedSignalsVisotor.prototype.visit = function(stmt) {
    if (stmt instanceof Emit
        || stmt instanceof Await
        || stmt instanceof Present
        || stmt instanceof Abort) {
       if (this.signals.indexOf(stmt.signal) < 0)
 	 this.signals.push(stmt.signal);
+   }
+}
+
+/* Visitor that reset register */
+
+function ResetRegisterVisitor() {
+}
+
+ResetRegisterVisitor.prototype.visit = function(stmt) {
+   if (stmt instanceof Pause) {
+      stmt.reg = false;
+      stmt.old_reg = false;
    }
 }
 

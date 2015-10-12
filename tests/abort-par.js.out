@@ -7,18 +7,13 @@
 ||
     [ await I;
       emit L ]
----- reaction  GO:true RES:true INIT ----
-EMIT O
----- SEL:false K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
-EMIT O
----- SEL:true K0:false K1:true ----
-
----- reaction  GO:false RES:true ----
----- SEL:true K0:true K1:false ----
-
----- reaction  GO:true RES:true INIT ----
-EMIT O
----- SEL:false K0:false K1:true ----
-
+abort-par> ;
+--- Output: O
+abort-par> ;
+--- Output: O
+abort-par> I;
+--- Output:
+abort-par> ;
+--- Output:
+abort-par> ;
+--- Output: O

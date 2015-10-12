@@ -4,20 +4,12 @@ var rjs = require("../xml-compiler.js");
 var rkernel = require("../reactive-kernel.js");
 var inspector = require("../inspector.js");
 
-var sigI = new rkernel.Signal("I", false, null);
-var sigJ = new rkernel.Signal("J", false, function() {
-   console.log("EMIT J");
-});
+var sigI = new rkernel.Signal("I", false);
+var sigJ = new rkernel.Signal("J", false);
+var sigK = new rkernel.Signal("K", false);
+var sigV = new rkernel.Signal("V", false);
 
-var sigK = new rkernel.Signal("K", false, function() {
-   console.log("EMIT K");
-});
-
-var sigV = new rkernel.Signal("V", false, function() {
-   console.log("EMIT V");
-});
-
-var prg = <rjs.reactivemachine name="abortpresent">
+var prg = <rjs.reactivemachine name="abort-present">
   <rjs.loop>
     <rjs.sequence>
       <rjs.abort signal=${sigI}>

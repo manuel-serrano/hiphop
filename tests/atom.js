@@ -6,7 +6,7 @@ var func = function() {
    console.log("atom works!");
 }
 
-var prg = <rjs.ReactiveMachine>
+var prg = <rjs.ReactiveMachine name="atom">
   <rjs.loop>
     <rjs.sequence>
       <rjs.pause/>
