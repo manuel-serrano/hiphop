@@ -21,6 +21,9 @@ function set_signal(sig_list, sig_name) {
 }
 
 function interpreter(prg) {
+   /* For esterel batch compatibility */
+   process.stdout.write("\x1B[3;J\x1b[H\x1B[2J");
+
    process.stdin.on("data", function(buffer) {
       var raw = buffer.toString("utf8", 0);
       var i_sc = -1;
