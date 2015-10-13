@@ -1,11 +1,3 @@
-abort-present> I;
---- Output: J
-abort-present> ;
---- Output: V
-abort-present> I;
---- Output: J K
-abort-present> ;
---- Output: V
 loop
     abort
         emit J;

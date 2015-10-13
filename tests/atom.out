@@ -27,22 +27,3 @@ atom> ;
 atom works!
 atom> ;
 --- Output:
-atom works!
-atom> ;
---- Output:
-atom works!
-atom> ;
---- Output:
-atom works!
-atom> ;
---- Output:
-atom works!
-atom> ;
---- Output:
-atom works!
-atom> ;
---- Output:
-loop
-    pause;
-    atom
-end loop

@@ -28,9 +28,16 @@ batch.interpreter(example.prg);
 EOF
 
     $hop -g --no-server $batch < $file.in > $output_hop
-    batch_esterel $file < $file.in > $output_est
 
-    if [ "$(diff -Z $output_hop $output_est)" != "" ]
+    if [ -f "$file.strl" ]
+    then
+	batch_esterel $file < $file.in > $output_est
+	diff_out=$(diff -Z $output_hop $output_est)
+    else
+	buff_out=$(diff $output_hop $file.out)
+    fi
+
+    if [ "$diff_out" != "" ]
     then
 	echo -en "\e[31m\e[1mfailure\e[0m"
 	failure=`expr $failure + 1`
@@ -91,12 +98,20 @@ then
     exit 1
 fi
 
+if [[ "$1" != "" && -f $1.in ]]
+then
+    file=$1
+    echo "*** DEBUG BATCH TEST FOR $file. TMP FILES WILL NOT BE REMOVED ***"
+    run_kernel_test
+    exit 0
+fi
+
 init_stats
 echo -e "\e[1mkernel tests...\e[0m"
 for file in *.in
 do
     file=${file%.*}
-    run_kernel_test $file
+    run_kernel_test
 done
 print_stats
 
@@ -105,7 +120,7 @@ echo -e "\n\e[1mjs2esterel tests...\e[0m"
 for file in *-js2esterel.out
 do
     file=${file%-js2esterel.out}
-    run_js2esterel_test $file
+    run_js2esterel_test
 done
 print_stats
 

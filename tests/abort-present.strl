@@ -1,0 +1,18 @@
+module abortpresent:
+
+input I;
+output J, V, K;
+
+loop
+	abort
+		emit J;
+		pause;
+		emit V;
+		pause;
+	when I;
+	present I then
+		emit K
+	end;
+end loop
+
+end module

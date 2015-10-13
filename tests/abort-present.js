@@ -9,7 +9,7 @@ var sigJ = new rkernel.Signal("J", false);
 var sigK = new rkernel.Signal("K", false);
 var sigV = new rkernel.Signal("V", false);
 
-var prg = <rjs.reactivemachine name="abort-present">
+var prg = <rjs.reactivemachine name="abortpresent">
   <rjs.loop>
     <rjs.sequence>
       <rjs.abort signal=${sigI}>
@@ -26,13 +26,5 @@ var prg = <rjs.reactivemachine name="abort-present">
     </rjs.sequence>
   </rjs.loop>
 </rjs.reactivemachine>
-
-sigI.set_from_host(true, null);
-prg.react();
-//(new inspector.Inspector(prg)).inspect();
-prg.react();
-sigI.set_from_host(true, null);
-prg.react();
-prg.react();
 
 exports.prg = prg;
