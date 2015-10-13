@@ -16,35 +16,4 @@ var prg = <rjs.reactivemachine name="await-seq">
   </rjs.sequence>
 </rjs.reactivemachine>;
 
-//(new inspector.Inspector(prg)).inspect();
-prg.react();
-prg.react();
-
-sigB.set_from_host(true, null);
-prg.react();
-
-sigA.set_from_host(true, null);
-prg.react();
-prg.react();
-prg.react();
-
-sigB.set_from_host(true, null);
-prg.react();
-prg.react();
-
-prg.reset();
-
-prg.react();
-prg.react();
-
-sigB.set_from_host(true, null);
-prg.react();
-
-sigA.set_from_host(true, null);
-prg.react();
-prg.react();
-prg.react();
-
-sigB.set_from_host(true, null);
-prg.react();
-prg.react();
+exports.prg = prg;

@@ -18,30 +18,4 @@ var prg = <rjs.reactivemachine name="await-par">
   </rjs.sequence>
 </rjs.reactivemachine>;
 
-sigA.set_from_host(true, null);
-prg.react();
-prg.react();
-
-sigB.set_from_host(true, null);
-prg.react();
-
-sigA.set_from_host(true, null);
-prg.react();
-prg.react();
-prg.react();
-
-sigB.set_from_host(true, null);
-prg.react();
-
-sigA.set_from_host(true, null);
-prg.react();
-
-prg.reset();
-prg.react();
-//(new inspector.Inspector(prg)).inspect();
-sigA.set_from_host(true, null);
-prg.react();
-
-sigB.set_from_host(true, null);
-prg.react();
-prg.react();
+exports.prg = prg;
