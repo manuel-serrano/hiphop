@@ -22,12 +22,12 @@ run_kernel_test() {
     echo -n "$i. $file ... "
 
     cat <<EOF > $batch
-var batch = require("$pwd/../batch-interpreter.js");
-var example = require("$pwd/$file.js");
-batch.interperter(prg);
+var batch = require("$dir/../batch-interpreter.js");
+var example = require("$dir/$file.js");
+batch.interpreter(example.prg);
 EOF
 
-    $hop -g --no-server $file.js < $file.in > $output_hop
+    $hop -g --no-server $batch < $file.in > $output_hop
     batch_esterel $file < $file.in > $output_est
 
     if [ "$(diff -Z $output_hop $output_est)" != "" ]
@@ -48,14 +48,14 @@ run_js2esterel_test() {
     echo -n "$i. $file ... "
 
     cat <<EOF > $js2esterel
-var js2esterel = require("$pwd/../js2esterel.js");
-var example = require("$pwd/$file.js");
+var js2esterel = require("$dir/../js2esterel.js");
+var example = require("$dir/$file.js");
 console.log(example.prg.esterel_code());
 EOF
 
-    $hop -g --no-server $file.js < ${file%-js2esterel}.in > $output_hop
+    $hop -g --no-server $js2esterel < $file.in > $output_hop
 
-    if [ "$(diff -Z $output_hop $file.out)" != "" ]
+    if [ "$(diff -Z $output_hop $file-js2esterel.out)" != "" ]
     then
 	echo -en "\e[31m\e[1mfailure\e[0m"
 	failure=`expr $failure + 1`
@@ -104,7 +104,7 @@ init_stats
 echo -e "\n\e[1mjs2esterel tests...\e[0m"
 for file in *-js2esterel.out
 do
-    file=${file%.*}
+    file=${file%-js2esterel.out}
     run_js2esterel_test $file
 done
 print_stats

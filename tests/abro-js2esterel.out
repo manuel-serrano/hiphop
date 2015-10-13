@@ -7,33 +7,3 @@ loop
         halt
     when R
 end loop
-ABRO> ;
---- Output:
-ABRO> A B;
---- Output: O
-ABRO> A B;
---- Output:
-ABRO> R;
---- Output:
-ABRO> A B;
---- Output: O
-ABRO> A B;
---- Output:
-ABRO> R;
---- Output:
-ABRO> B;
---- Output:
-ABRO> A;
---- Output: O
-ABRO> A;
---- Output:
-ABRO> B;
---- Output:
-ABRO> R B;
---- Output:
-ABRO> A;
---- Output:
-ABRO> ;
---- Output:
-ABRO> B;
---- Output: O
