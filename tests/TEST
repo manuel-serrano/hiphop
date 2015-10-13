@@ -108,3 +108,8 @@ do
     run_js2esterel_test $file
 done
 print_stats
+
+rm $batch
+rm $js2esterel
+rm $output_est
+rm $output_hop
