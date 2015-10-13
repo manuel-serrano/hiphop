@@ -1,13 +1,13 @@
 var rjs = require("../xml-compiler.js");
 var rk = require("../reactive-kernel.js");
-require("../js2esterel.js");
+var batch = require("../batch-interpreter.js");
 
 var sigI = new rk.Signal("I", false);
 var sigL = new rk.Signal("L", false);
 sigL.local = true;
 var sigO = new rk.Signal("O", false);
 
-var prg = <rjs.reactivemachine name="abort-par">
+var prg = <rjs.reactivemachine name="abortpar">
     <rjs.parallel>
       <rjs.abort signal=${sigL}>
 	<rjs.loop>
@@ -24,13 +24,5 @@ var prg = <rjs.reactivemachine name="abort-par">
     </rjs.parallel>
 </rjs.reactivemachine>;
 
-console.log(prg.esterel_code());
-
-prg.react();
-prg.react();
-sigI.set_from_host(true, null);
-prg.react();
-prg.react();
-
-prg.reset();
-prg.react();
+exports.prg = prg;
+batch.interpreter(prg);

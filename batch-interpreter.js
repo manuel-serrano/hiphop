@@ -3,15 +3,16 @@
 function configure(prg, cmd) {
    if (cmd == "!reset") {
       prg.reset();
-      return;
+      return false;
    }
 
    if (cmd[0] == "%" || cmd[0] == "!")
-      return;
+      return false;
 
    var sig_name = cmd.split(" ");
    for (var i in sig_name)
       set_signal(prg.signals, sig_name[i]);
+   return true;
 }
 
 function set_signal(sig_list, sig_name) {
@@ -31,8 +32,8 @@ function interpreter(prg) {
 	 if (cmd[0] == "\n")
 	    cmd = cmd.substr(1, cmd.length);
 	 raw = raw.substr(i_sc + 1, raw.length);
-	 configure(prg, cmd);
-	 prg.react();
+	 if(configure(prg, cmd))
+	    prg.react();
       }
    });
 }

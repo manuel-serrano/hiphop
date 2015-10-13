@@ -1,9 +1,9 @@
 "use hopscript"
 
-var rjs = require("../../xml-compiler.js");
-var rkernel = require("../../reactive-kernel.js");
-var inspector = require("../../inspector.js");
-var batch = require("../../batch-interpreter.js");
+var rjs = require("../xml-compiler.js");
+var rkernel = require("../reactive-kernel.js");
+var inspector = require("../inspector.js");
+var batch = require("../batch-interpreter.js");
 
 var sigA = new rkernel.Signal("A", false);
 var sigB = new rkernel.Signal("B", false);
@@ -26,4 +26,4 @@ var prg = <rjs.reactivemachine name="ABRO">
 </rjs.reactivemachine>;
 
 batch.interpreter(prg);
-exports.abro = prg;
+exports.prg = prg;

@@ -1,0 +1,18 @@
+module abortpar:
+
+input I;
+output O;
+
+signal L in
+	       abort
+			loop
+				emit O;
+				pause;
+			end
+	       when L
+	||
+		[ await I;
+		  emit L; ]
+end signal
+
+end module

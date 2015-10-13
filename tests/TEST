@@ -34,6 +34,20 @@ run_kernel_test() {
 
 run_js2esterel_test() {
     i=$((i + 1))
+
+    echo -n "$i. $file ... "
+    $hop -g --no-server $file.js < ${file%-js2esterel}.in > $output_hop
+
+    if [ "$(diff -Z $output_hop $file.out)" != "" ]
+    then
+	echo -en "\e[31m\e[1mfailure\e[0m"
+	failure=`expr $failure + 1`
+    else
+	echo -en "\e[32m\e[1mok\e[0m"
+	success=`expr $success + 1`
+    fi
+
+    echo ".";
 }
 
 init_stats() {
@@ -56,7 +70,7 @@ fi
 
 init_stats
 echo -e "\e[1mkernel tests...\e[0m"
-for file in *.in *-js2esterel.js.out
+for file in *.in
 do
     file=${file%.*}
     run_kernel_test $file
@@ -65,4 +79,9 @@ print_stats
 
 init_stats
 echo -e "\n\e[1mjs2esterel tests...\e[0m"
+for file in *-js2esterel.out
+do
+    file=${file%.*}
+    run_js2esterel_test $file
+done
 print_stats

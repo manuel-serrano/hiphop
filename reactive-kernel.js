@@ -162,7 +162,7 @@ function ReactiveMachine(circuit) {
    this.boot_reg = true;
    this.machine_name = "";
 
-   /* used to display input signal which are set on DEBUG_REACT_COMPAT mode */
+   /* used to display input signal which are set on DEBUG_REACT mode */
    this.signals = [];
 
    this.go_in = circuit.go = new Wire(this, circuit);
@@ -215,12 +215,14 @@ ReactiveMachine.prototype.react = function(seq) {
 	       buf_out += " " + sig.name;
 	 }
       }
+
       buf_in += semicolon_space + ";"
       console.log(buf_in);
       console.log(buf_out);
    }
 
    this.go_in.stmt_out.accept(new ResetSignalVisitor());
+   this.reset_react = false;
 }
 
 /* Get all signal which are used inside this reactive machine,
@@ -234,6 +236,10 @@ ReactiveMachine.prototype.catch_signals = function() {
 
 ReactiveMachine.prototype.reset = function() {
    this.boot_reg = true;
+   if (DEBUG_FLAGS & DEBUG_REACT) {
+      console.log(this.machine_name + "> !reset;");
+      console.log("--- Automaton", this.machine_name, "reset");
+   }
 }
 
 /* Emit - Figure 11.4 page 116 */
