@@ -25,5 +25,4 @@ var prg = <rjs.reactivemachine name="ABRO">
     </rjs.loop>
 </rjs.reactivemachine>;
 
-batch.interpreter(prg);
 exports.prg = prg;

@@ -25,4 +25,3 @@ var prg = <rjs.reactivemachine name="abortpar">
 </rjs.reactivemachine>;
 
 exports.prg = prg;
-batch.interpreter(prg);
