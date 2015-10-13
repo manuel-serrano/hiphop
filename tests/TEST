@@ -1,34 +1,51 @@
 #!/bin/bash
 
-basedir=$pwd
 hop=/usr/local/bin/hop
-output=/tmp/TEST-HOPJS.out
+CC=/usr/bin/gcc
+output_hop=/tmp/TEST-HOPJS.out
+output_est=/tmp/TEST-EST.out
 
 success=0
 failure=0
 i=0
 
+batch_esterel() {
+    $ESTEREL/bin/esterel -simul $file.strl -D /tmp/ \
+    	&& $CC /tmp/$file.c $ESTEREL/lib/libcoresim.a \
+    	       -o /tmp/$file \
+	&& /tmp/$file \
+    	&& rm /tmp/$file /tmp/$file.c
+}
+
 run() {
     i=`expr $i + 1`
 
-    echo -n "$i. $path ... "
-    $hop -g --no-server $* > $output 2>&1
+    echo -n "$i. $file ... "
+    $hop -g --no-server $file.js < $file.in > $output_hop 2>&1
+    batch_esterel $file < $file.in > $output_est 2>&1
 
-    if [ "$(diff $output $path.out)" != "" ]
+    if [ "$(diff -Z $output_hop $output_est)" != "" ]
     then
 	echo -en "\e[31m\e[1mfailure\e[0m"
 	failure=`expr $failure + 1`
     else
-	echo -en "\e[32m\e[1mok\e[0m";
+	echo -en "\e[32m\e[1mok\e[0m"
 	success=`expr $success + 1`
     fi
 
     echo ".";
 }
 
-for path in *.js
+if [ -z $ESTEREL ]
+then
+    echo "ERROR: Esterel needs to be installed."
+    exit 1
+fi
+
+for file in *.in
 do
-    run $path
+    file=${file%.*}
+    run $file
 done
 
 echo "`expr $success + $failure` executed"
