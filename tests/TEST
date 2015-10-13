@@ -5,10 +5,6 @@ CC=/usr/bin/gcc
 output_hop=/tmp/TEST-HOPJS.out
 output_est=/tmp/TEST-EST.out
 
-success=0
-failure=0
-i=0
-
 batch_esterel() {
     $ESTEREL/bin/esterel -simul $file.strl -D /tmp/ \
     	&& $CC /tmp/$file.c $ESTEREL/lib/libcoresim.a \
@@ -17,12 +13,12 @@ batch_esterel() {
     	&& rm /tmp/$file /tmp/$file.c
 }
 
-run() {
-    i=`expr $i + 1`
+run_kernel_test() {
+    i=$((i + 1))
 
     echo -n "$i. $file ... "
-    $hop -g --no-server $file.js < $file.in > $output_hop 2>&1
-    batch_esterel $file < $file.in > $output_est 2>&1
+    $hop -g --no-server $file.js < $file.in > $output_hop
+    batch_esterel $file < $file.in > $output_est
 
     if [ "$(diff -Z $output_hop $output_est)" != "" ]
     then
@@ -36,18 +32,37 @@ run() {
     echo ".";
 }
 
+run_js2esterel_test() {
+    i=$((i + 1))
+}
+
+init_stats() {
+    i=0
+    success=0
+    failure=0
+}
+
+print_stats() {
+    echo "`expr $success + $failure` executed"
+    echo "   $success success"
+    echo "   $failure failure"
+}
+
 if [ -z $ESTEREL ]
 then
     echo "ERROR: Esterel needs to be installed."
     exit 1
 fi
 
-for file in *.in
+init_stats
+echo -e "\e[1mkernel tests...\e[0m"
+for file in *.in *-js2esterel.js.out
 do
     file=${file%.*}
-    run $file
+    run_kernel_test $file
 done
+print_stats
 
-echo "`expr $success + $failure` executed"
-echo "   $success success"
-echo "   $failure failure"
+init_stats
+echo -e "\n\e[1mjs2esterel tests...\e[0m"
+print_stats
