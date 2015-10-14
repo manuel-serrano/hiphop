@@ -25,15 +25,4 @@ var prg = <rjs.reactivemachine name="example4">
   </rjs.loop>
 </rjs.ReactiveMachine>
 
-for (var i = 0; i < 5; i++)
-   prg.react(i);
-
-sigA.set_from_host(true, false);
-
-for (var i = 0; i < 5; i++)
-   prg.react(i);
-
-prg.reset();
-
-for (var i = 0; i < 5; i++)
-   prg.react(i);
+exports.prg = prg;

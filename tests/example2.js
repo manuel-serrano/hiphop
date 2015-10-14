@@ -22,10 +22,4 @@ var prg = <rjs.reactivemachine name="example2">
   </rjs.loop>
 </rjs.ReactiveMachine>
 
-for (var i = 0; i < 5; i++)
-   prg.react(i);
-
-prg.reset();
-
-for (var i = 0; i < 5; i++)
-   prg.react(i);
+exports.prg = prg;

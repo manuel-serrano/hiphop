@@ -8,7 +8,7 @@ var sigA = new rkernel.Signal("A", false);
 var sigB = new rkernel.Signal("B", false);
 var sigO = new rkernel.Signal("O", false);
 
-var prg = <rjs.reactivemachine name="await-seq">
+var prg = <rjs.reactivemachine name="awaitseq">
   <rjs.sequence>
     <rjs.await signal=${sigA} />
     <rjs.await signal=${sigB} />

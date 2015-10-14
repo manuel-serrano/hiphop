@@ -1,0 +1,10 @@
+module awaitseq:
+
+input A, B;
+output O;
+
+await A;
+await B;
+emit O
+
+end module

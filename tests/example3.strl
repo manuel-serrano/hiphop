@@ -1,0 +1,17 @@
+module example3:
+
+input A;
+output T, V;
+
+signal S in
+       abort
+	       loop
+	       		emit S;
+	       		present S then emit T end;
+	       		pause;
+	       		emit V
+	       end loop
+       when A
+end signal
+
+end module

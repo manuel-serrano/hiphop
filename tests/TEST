@@ -98,11 +98,16 @@ then
     exit 1
 fi
 
-if [[ "$1" != "" && -f $1.in ]]
+if [[ "$1" != "" && -f $1.in && ("$2" == "kernel" || "$2" == "js2esterel") ]]
 then
     file=$1
-    echo "*** DEBUG BATCH TEST FOR $file. TMP FILES WILL NOT BE REMOVED ***"
-    run_kernel_test
+    echo "*** DEBUG $2 TEST FOR $file. TMP FILES WILL NOT BE REMOVED ***"
+    if [ "$2" == "kernel" ]
+    then
+	run_kernel_test
+    else
+	run_js2esterel_test
+    fi
     exit 0
 fi
 

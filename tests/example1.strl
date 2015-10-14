@@ -1,0 +1,11 @@
+module example1:
+
+output T;
+
+signal S in
+      pause;
+      emit S;
+      present S then emit T end;
+end signal
+
+end module

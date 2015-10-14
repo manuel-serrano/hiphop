@@ -1,0 +1,10 @@
+abort
+    loop
+        emit S;
+        if S then
+            emit T
+        end if;
+        pause;
+        emit V
+    end loop
+when A

@@ -8,7 +8,7 @@ var sigA = new rkernel.Signal("A", false);
 var sigB = new rkernel.Signal("B", false);
 var sigO = new rkernel.Signal("O", false);
 
-var prg = <rjs.reactivemachine name="await-par">
+var prg = <rjs.reactivemachine name="awaitpar">
   <rjs.sequence>
     <rjs.parallel>
       <rjs.await signal=${sigA} />
