@@ -835,6 +835,7 @@ function Suspend(circuit, signal) {
 Suspend.prototype = new Circuit();
 
 Suspend.prototype.run = function() {
+   /* TODO: make same hack that abort */
    var signal_state = this.signal.get_state();
 
    if (signal_state == 0) {
@@ -865,16 +866,6 @@ Suspend.prototype.run = function() {
       this.debug();
    assert_completion_code(this);
    return true;
-}
-
-/* Run an nested reactive machine */
-function Run() {
-}
-
-Run.prototype = new Statement();
-
-Run.prototype.run = function() {
-
 }
 
 /* Visitor usefull to reset signal state after reaction */
