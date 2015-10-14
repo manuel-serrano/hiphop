@@ -5,7 +5,6 @@
    - test suspend statement
    - remove ParallelSynchronizer since it's just a max calcul of Kx
    - remove this.name, except for the machine (we must can get it by objet type)
-   - make a batch interpreter (that use a debug mode)
 */
 
 var DEBUG_NONE = 0;

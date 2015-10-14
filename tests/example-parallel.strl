@@ -1,0 +1,9 @@
+module parallel:
+
+output J;
+
+signal I in
+      emit I || [ await I; emit J ]
+end signal
+
+end module

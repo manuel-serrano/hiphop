@@ -15,11 +15,4 @@ var machine = <rjs.ReactiveMachine name="parallel2">
   </rjs.Parallel>
 </rjs.ReactiveMachine>;
 
-machine.react();
-//(new inspector.Inspector(machine)).inspect();
-machine.react();
-machine.react();
-machine.reset();
-machine.react();
-
-exports.par = machine;
+exports.prg = machine;

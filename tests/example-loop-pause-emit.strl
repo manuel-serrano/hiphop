@@ -1,0 +1,12 @@
+module looppauseemit:
+
+input I;
+output S;
+
+loop
+	await I;
+	pause;
+	emit S;
+end loop
+
+end module

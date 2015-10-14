@@ -98,6 +98,8 @@ then
     exit 1
 fi
 
+clear
+
 if [[ "$1" != "" && -f $1.in && ("$2" == "kernel" || "$2" == "js2esterel") ]]
 then
     file=$1

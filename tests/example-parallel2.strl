@@ -1,0 +1,9 @@
+module parallel2:
+
+output J;
+
+signal I in
+       present I then emit J end || emit I
+end signal
+
+end module

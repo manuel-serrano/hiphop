@@ -16,9 +16,4 @@ var machine = <rjs.reactivemachine name="parallel">
   </rjs.parallel>
 </rjs.reactivemachine>;
 
-machine.react();
-//(new inspector.Inspector(machine)).inspect();
-machine.react();
-machine.reset();
-machine.react();
-machine.react();
+exports.prg = machine;
