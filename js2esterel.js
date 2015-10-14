@@ -166,3 +166,17 @@ reactive.Nothing.prototype.esterel_code = function(indent) {
 reactive.Atom.prototype.esterel_code = function(indent) {
    return apply_indent(indent) + "atom";
 }
+
+reactive.Exit.prototype.esterel_code = function(indent) {
+   return apply_indent(indent) + "exit " + this.trapid.name;
+}
+
+reactive.Trap.prototype.esterel_code = function(indent) {
+   var buf = "";
+
+   buf += apply_indent(indent) + "trap " + this.trapid.name + "\n";
+   buf += this.go_in.stmt_out.esterel_code(indent + INDENT_LEVEL);
+   buf += "\n" + apply_indent(indent) + "end trap";
+
+   return buf;
+}
