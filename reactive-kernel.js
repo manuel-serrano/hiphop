@@ -75,6 +75,14 @@ Signal.prototype.set_from_host = function (set, value) {
    }
 }
 
+/* An identifier which refers to a trap, and make the link between an exit
+   statement and a trap statement */
+
+function TrapId(name) {
+   this.name = name;
+   this.trap = null;
+}
+
 /* A wire connect two statements.
    The `set` attribute, contains the status (1 or 0) of the wire */
 
@@ -868,6 +876,56 @@ Suspend.prototype.run = function() {
    return true;
 }
 
+/* Trap - Figure 11.12 page 124
+   When we'll support parallel traps, trapid could be a list of trapid */
+
+function Trap(circuit, trapid) {
+   Circuit.call(this, "TRAP");
+   this.trapid = trapid;
+   trapid.trap = this;
+
+   this.go_in = circuit.go = new Wire(this, circuit);
+   this.res_in = circuit.res = new Wire(this, circuit);
+   this.susp_in = circuit.susp = new Wire(this, circuit);
+   this.kill_in = circuit.kill = new Wire(this, circuit);
+   this.sel_in = circuit.sel = new Wire(circuit, this);
+   for (var i in circuit.k)
+      this.k_in[i] = this.k[i] = new Wire(circuit, this);
+}
+
+Trap.prototype = new Circuit();
+
+Trap.prototype.run = function() {
+   this.go_in.set = this.go.set;
+   this.res_in.set = this.res.set;
+   this.susp_in.set = this.susp.set;
+   this.kill_in.set = this.kill.set || this.k_in[2].set;
+
+   this.go_in.stmt_out.run();
+
+   this.sel.set = this.sel_in.set;
+   this.k[0].set = this.k_in[0].set || this.k_in[2].set
+   this.k[1].set = this.k_in[1].set;
+   for (var i = 2; i < this.k.length; i++)
+      this.k[i].set = this.k_in[i + 1].set;
+}
+
+/* Exit of a trap */
+
+function Exit(trapid) {
+   Statement.call(this, "EXIT");
+   this.trapid = trapid;
+   this.k[2] = null;
+}
+
+Exit.prototype = new Statement();
+
+Exit.prototype.run = function() {
+   this.k[0].set = false;
+   this.k[1].set = false;
+   this.trapid.trap.k_in[2].set = this.go.set;
+}
+
 /* Visitor usefull to reset signal state after reaction */
 
 function ResetSignalVisitor() {
@@ -978,3 +1036,6 @@ exports.Atom = Atom;
 exports.Suspend = Suspend;
 exports.ReactiveMachine = ReactiveMachine;
 exports._Statement = Statement;
+exports.Trap = Trap;
+exports.TrapId = TrapId;
+exports.Exit = Exit;

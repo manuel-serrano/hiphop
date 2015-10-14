@@ -165,6 +165,32 @@ function ATOM(attrs) {
    return atom;
 }
 
+function TRAP(attrs) {
+   var children = get_children(arguments);
+   var trapid = attrs.trapid;
+   var trap = null;
+
+   if (children.length != 1)
+      fatal("Trap must embeded one child.", attrs);
+
+   if (!(trapid instanceof reactive.TrapId))
+      fatal("Trap must had at least one TrapId attribute.", attrs);
+   trap = new reactive.Trap(children[0], trapid);
+   trap.loc = format_loc(attrs);
+   return trap;
+}
+
+function EXIT(attrs) {
+   var trapid = attrs.trapid;
+   var exit = null;
+
+   if (!(trapid instanceof reactive.TrapId))
+      fatal("Exit must had one TrapId attribute.", attrs);
+   exit = new reactive.Exit(trapid);
+   exit.loc = format_loc(attrs);
+   return exit;
+}
+
 exports.REACTIVEMACHINE = REACTIVEMACHINE;
 exports.EMIT = EMIT;
 exports.NOTHING = NOTHING;
@@ -178,3 +204,5 @@ exports.LOOP = LOOP;
 exports.SEQUENCE = SEQUENCE;
 exports.ATOM = ATOM;
 exports.SUSPEND = SUSPEND;
+exports.TRAP = TRAP;
+exports.EXIT = EXIT;
