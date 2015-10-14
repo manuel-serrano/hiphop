@@ -174,7 +174,7 @@ reactive.Exit.prototype.esterel_code = function(indent) {
 reactive.Trap.prototype.esterel_code = function(indent) {
    var buf = "";
 
-   buf += apply_indent(indent) + "trap " + this.trapid.name + "\n";
+   buf += apply_indent(indent) + "trap " + this.trapid.name + " in\n";
    buf += this.go_in.stmt_out.esterel_code(indent + INDENT_LEVEL);
    buf += "\n" + apply_indent(indent) + "end trap";
 

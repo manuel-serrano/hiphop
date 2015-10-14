@@ -20,6 +20,7 @@ var prg = <rjs.reactivemachine name="trapnested1">
 	    <rjs.emit signal=${sigB}/>
 	  </rjs.sequence>
 	</rjs.trap>
+	<rjs.exit trapid=${tU}/>
 	<rjs.emit signal=${sigC}/>
       </rjs.sequence>
     </rjs.trap>
