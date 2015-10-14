@@ -470,11 +470,13 @@ Sequence.prototype.run = function() {
       }
    }
 
-   /* boolean OR of return codes > 0 and sel */
+   /* boolean OR of return codes > 0 and sel
+      `i` is an id of statement
+      `j` is an id of return code */
    for (var i = 0; i < this.seq_len; i++) {
       this.sel.set = this.sel.set || this.sel_in[i].set;
       for (var j = 1; j < this.k_in.length; j++) {
-	 if (this.k[j] != undefined) {
+	 if (this.k[j] != undefined && this.k[j][i] != undefined) {
 	    this.k[j].set = this.k[j].set || this.k_in[j][i].set;
 	 }
       }
@@ -890,7 +892,7 @@ function Trap(circuit, trapid) {
    this.kill_in = circuit.kill = new Wire(this, circuit);
    this.sel_in = circuit.sel = new Wire(circuit, this);
    for (var i in circuit.k)
-      this.k_in[i] = this.k[i] = new Wire(circuit, this);
+      this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
 }
 
 Trap.prototype = new Circuit();
@@ -908,6 +910,8 @@ Trap.prototype.run = function() {
    this.k[1].set = this.k_in[1].set;
    for (var i = 2; i < this.k.length; i++)
       this.k[i].set = this.k_in[i + 1].set;
+
+   return true;
 }
 
 /* Exit of a trap */
@@ -924,6 +928,8 @@ Exit.prototype.run = function() {
    this.k[0].set = false;
    this.k[1].set = false;
    this.trapid.trap.k_in[2].set = this.go.set;
+
+   return true;
 }
 
 /* Visitor usefull to reset signal state after reaction */
