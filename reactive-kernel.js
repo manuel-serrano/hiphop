@@ -1002,17 +1002,12 @@ function ResetSignalVisitor() {
 }
 
 ResetSignalVisitor.prototype.visit = function(stmt) {
-   var is_emit = false;
-
-   if ((is_emit = stmt instanceof Emit)
+   if (stmt instanceof Emit
        || stmt instanceof Await
        || stmt instanceof Present
        || stmt instanceof Abort) {
-      if (stmt.signal == this.sig_old) {
-	 stmt.signal = this.sig_new;
-	 if (is_emit)
-	    this.sig_new.emitters++;
-      }
+      stmt.signal.set = false;
+      stmt.signal.waiting = stmt.signal.emitters;
    }
 }
 
