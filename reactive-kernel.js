@@ -284,7 +284,7 @@ function Pause() {
 Pause.prototype = new Statement()
 
 Pause.prototype.run = function() {
-   this.k[0].set = this.reg && this.res.set;
+   this.k[0].set = this.reg && this.res.set && !this.kill.set;
    this.k[1].set = this.go.set;
    this.reg = (this.go.set || (this.susp.set && this.reg)) && !this.kill.set;
    this.sel.set = this.reg;
@@ -754,7 +754,6 @@ ParallelSynchronizer.prototype.init_internal_wires = function(i, circuit) {
 
 ParallelSynchronizer.prototype.run = function() {
    var max_code = -1;
-
    for (var i in this.k) {
       if (this.k_in[i][0].set || this.k_in[i][1].set)
    	 max_code = parseInt(i);
@@ -928,7 +927,6 @@ Trap.prototype.run = function() {
 function Exit(trapid) {
    Statement.call(this, "EXIT");
    this.trapid = trapid;
-   this.k[2] = null;
 }
 
 Exit.prototype = new Statement();

@@ -1,0 +1,14 @@
+module trappar:
+
+output A, B, C;
+
+trap T in
+        [ emit A;
+          exit T ]
+    ||
+        [ emit B;
+          pause;
+          emit C ]
+end trap
+
+end module
