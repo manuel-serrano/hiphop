@@ -955,8 +955,8 @@ function Run(machine, sig_list_caller, sig_list_callee) {
    for (var i in circuit.k)
       this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
    for (var i in sig_list_caller) {
-      var visitor = OverrideSignalVisitor(sig_list_caller[i],
-					  sig_list_callee[i]);
+      var visitor = new OverrideSignalVisitor(sig_list_caller[i],
+					      sig_list_callee[i]);
       this.go_in.stmt_out.accept(visitor);
    }
 }
@@ -984,16 +984,16 @@ function OverrideSignalVisitor(sig_new, sig_old) {
 
 OverrideSignalVisitor.prototype.visit = function(stmt) {
    var is_emit = false;
-
    if ((is_emit = stmt instanceof Emit)
        || stmt instanceof Await
        || stmt instanceof Present
        || stmt instanceof Abort) {
-      if (stmt.signal == this.sig_old) {
+      if (stmt.signal.name == this.sig_old.name) {
 	 stmt.signal = this.sig_new;
 	 if (is_emit)
 	    this.sig_new.emitters++;
       }
+   }
 }
 
 /* Visitor usefull to reset signal state after reaction */

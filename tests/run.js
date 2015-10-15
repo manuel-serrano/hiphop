@@ -28,3 +28,7 @@ var m2 = <rjs.reactivemachine name="m2">
 </rjs.reactivemachine>;
 
 exports.prg = m2;
+
+m2.react();
+m2.react();
+

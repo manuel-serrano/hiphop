@@ -212,7 +212,7 @@ function RUN(attrs) {
 
    if (!(machine instanceof reactive.ReactiveMachine))
       fatal("Run must had machine attribute.", attrs);
-   run = new reactive.Run(machine, sig_list_caller, sig_list_caller);
+   run = new reactive.Run(machine, sig_list_caller, sig_list_callee);
    run.loc = format_loc(attrs);
    return run;
 }
