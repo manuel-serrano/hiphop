@@ -880,7 +880,7 @@ Suspend.prototype.run = function() {
    return true;
 }
 
-/* Trap - Figure 11.12 page 124
+/* Trap/Shift - Figure 11.12/11.13 page 124
    When we'll support parallel traps, trapid could be a list of trapid */
 
 function Trap(circuit, trapid) {
@@ -893,8 +893,12 @@ function Trap(circuit, trapid) {
    this.susp_in = circuit.susp = new Wire(this, circuit);
    this.kill_in = circuit.kill = new Wire(this, circuit);
    this.sel_in = circuit.sel = new Wire(circuit, this);
-   for (var i in circuit.k)
-      this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
+
+   this.k_in[0] = circuit.k[0] = new Wire(circuit, this);
+   this.k_in[1] = circuit.k[1] = new Wire(circuit, this);
+   this.k_in[2] = new Wire(null, null); // exit use it to make the trap
+   for (var i = 2; i < circuit.k.length; i++)
+      this.k_in[i + 1] = circuit.k[i] = new Wire(circuit, this);
 }
 
 Trap.prototype = new Circuit();
@@ -944,16 +948,7 @@ Exit.prototype = new Statement();
 Exit.prototype.run = function() {
    this.k[0].set = false;
    this.k[1].set = false;
-
-   var trap = this.trapid.trap;
-
-   /* In the case or the exit statement is in a deeper bloc */
-   if (trap.k_in[2] == undefined)
-      trap.kill.set = this.go.set;
-   else
-      this.trapid.trap.k_in[2].set = this.go.set;
-
-
+   this.trapid.trap.k_in[2].set = this.go.set;
    return true;
 }
 
