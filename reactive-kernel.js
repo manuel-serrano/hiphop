@@ -904,27 +904,15 @@ function Trap(circuit, trapid) {
 Trap.prototype = new Circuit();
 
 Trap.prototype.run = function() {
-   var k2_state = false;
-   var k2_wired = false;
-
-   /* avoid crash if trap without exit */
-   if (this.k_in[2] != undefined) {
-      k2_wired = true;
-      k2_state = this.k_in[2].set;
-   }
-
    this.go_in.set = this.go.set;
    this.res_in.set = this.res.set;
    this.susp_in.set = this.susp.set;
-   this.kill_in.set = this.kill.set || k2_state;
+   this.kill_in.set = this.kill.set || this.k_in[2].set;
 
    this.go_in.stmt_out.run();
 
-   if (k2_wired)
-      k2_state = this.k_in[2].set;
-
    this.sel.set = this.sel_in.set;
-   this.k[0].set = this.k_in[0].set || k2_state;
+   this.k[0].set = this.k_in[0].set || this.k_in[2].set;
    this.k[1].set = this.k_in[1].set;
    for (var i = 2; i < this.k.length; i++)
       this.k[i].set = this.k_in[i + 1].set;
