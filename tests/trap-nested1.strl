@@ -1,0 +1,16 @@
+module trapnested1:
+
+output A, B, C, D;
+
+emit A;
+trap U in
+     trap T in
+     	  exit T;
+	  emit B;
+     end trap;
+     exit U;
+     emit C;
+end trap;
+emit D;
+
+end module

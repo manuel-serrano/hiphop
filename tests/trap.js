@@ -6,7 +6,7 @@ var sigB = new reactive.Signal("B", false);
 var sigC = new reactive.Signal("C", false);
 var tid = new reactive.TrapId("T");
 
-var prg = <rjs.reactivemachine name="trap">
+var prg = <rjs.reactivemachine name="trapsimple">
   <rjs.sequence>
     <rjs.emit signal=${sigA}/>
     <rjs.trap trapid=${tid}>
@@ -20,6 +20,3 @@ var prg = <rjs.reactivemachine name="trap">
 </rjs.reactivemachine>;
 
 exports.prg = prg;
-
-prg.react();
-prg.react();

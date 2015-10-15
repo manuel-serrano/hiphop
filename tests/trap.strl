@@ -1,0 +1,12 @@
+module trapsimple:
+
+output A, B, C;
+
+emit A;
+trap T in
+     exit T;
+     emit B;
+end trap;
+emit C;
+
+end module

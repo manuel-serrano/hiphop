@@ -29,6 +29,3 @@ var prg = <rjs.reactivemachine name="trapnested1">
 </rjs.reactivemachine>;
 
 exports.prg = prg;
-console.log(prg.esterel_code());
-prg.react();
-prg.react();
