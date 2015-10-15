@@ -191,6 +191,36 @@ function EXIT(attrs) {
    return exit;
 }
 
+function RUN(attrs) {
+   var machine = attrs.machine;
+   var children = get_children(arguments);
+   var run = null;
+   var sig_list_caller = [];
+   var sig_list_callee = [];
+
+   for (var i in children) {
+      var child = children[i];
+
+      if (!(child.caller instanceof reactive.Signal)
+	  || !(child.callee instanceof reactive.Signal))
+	 fatal("MergeSignal must had caller and callee arguments as signal.",
+	       attrs);
+
+      sig_list_caller[i] = child.caller;
+      sig_list_callee[i] = child.callee;
+   }
+
+   if (!(machine instanceof reactive.ReactiveMachine))
+      fatal("Run must had machine attribute.", attrs);
+   run = new reactive.Run(machine, sig_list_caller, sig_list_caller);
+   run.loc = format_loc(attrs);
+   return run;
+}
+
+function MERGESIGNAL(attrs) {
+   return attrs;
+}
+
 exports.REACTIVEMACHINE = REACTIVEMACHINE;
 exports.EMIT = EMIT;
 exports.NOTHING = NOTHING;
@@ -206,3 +236,5 @@ exports.ATOM = ATOM;
 exports.SUSPEND = SUSPEND;
 exports.TRAP = TRAP;
 exports.EXIT = EXIT;
+exports.RUN = RUN;
+exports.MERGESIGNAL = MERGESIGNAL;

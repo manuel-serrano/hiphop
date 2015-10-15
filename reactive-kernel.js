@@ -938,18 +938,81 @@ Exit.prototype.run = function() {
    return true;
 }
 
+/* Run statement
+   Its just forward in/out to/from the nested reactive machine
+   We have to replace the signal sig_list_callee[i] in the subcircuit by
+   the caller signal sig_list_caller[i] */
+
+function Run(machine, sig_list_caller, sig_list_callee) {
+   Circuit.call(this, "RUN");
+   var circuit = deep_clone(machine.go_in.stmt_out);
+
+   this.go_in = circuit.go = new Wire(this, circuit);
+   this.res_in = circuit.res = new Wire(this, circuit);
+   this.susp_in = circuit.susp = new Wire(this, circuit);
+   this.kill_in = circuit.kill = new Wire(this, circuit);
+   this.sel_in = circuit.sel = new Wire(this, circuit);
+   for (var i in circuit.k)
+      this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
+   for (var i in sig_list_caller) {
+      var visitor = OverrideSignalVisitor(sig_list_caller[i],
+					  sig_list_callee[i]);
+      this.go_in.stmt_out.accept(visitor);
+   }
+}
+
+Run.prototype = new Circuit();
+
+Run.prototype.run = function() {
+   this.go_in.set = this.go.set;
+   this.res_in.set = this.res.set;
+   this.susp_in.set = this.susp.set;
+   this.kill_in.set = this.kill.set;
+   this.go_in.stmt_out.run();
+   this.sel.set = this.sel_in.set;
+   for (var i in this.k_in)
+      this.k[i].set = this.k_in[i].set;
+   return true;
+}
+
+/* Visitor that override the signal sig_old by the signal sig_new */
+
+function OverrideSignalVisitor(sig_new, sig_old) {
+   this.sig_new = sig_new;
+   this.sig_old = sig_old;
+}
+
+OverrideSignalVisitor.prototype.visit = function(stmt) {
+   var is_emit = false;
+
+   if ((is_emit = stmt instanceof Emit)
+       || stmt instanceof Await
+       || stmt instanceof Present
+       || stmt instanceof Abort) {
+      if (stmt.signal == this.sig_old) {
+	 stmt.signal = this.sig_new;
+	 if (is_emit)
+	    this.sig_new.emitters++;
+      }
+}
+
 /* Visitor usefull to reset signal state after reaction */
 
 function ResetSignalVisitor() {
 }
 
 ResetSignalVisitor.prototype.visit = function(stmt) {
-   if (stmt instanceof Emit
+   var is_emit = false;
+
+   if ((is_emit = stmt instanceof Emit)
        || stmt instanceof Await
        || stmt instanceof Present
        || stmt instanceof Abort) {
-      stmt.signal.set = false;
-      stmt.signal.waiting = stmt.signal.emitters;
+      if (stmt.signal == this.sig_old) {
+	 stmt.signal = this.sig_new;
+	 if (is_emit)
+	    this.sig_new.emitters++;
+      }
    }
 }
 
@@ -1051,3 +1114,4 @@ exports._Statement = Statement;
 exports.Trap = Trap;
 exports.TrapId = TrapId;
 exports.Exit = Exit;
+exports.Run = Run;
