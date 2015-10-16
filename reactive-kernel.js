@@ -142,6 +142,20 @@ Statement.prototype.accept = function(visitor) {
    visitor.visit(this);
 }
 
+Statement.prototype.assert_completion_code = function() {
+   var set = false;
+
+   for (var i in this.k)
+      if (set && this.k[i].set)
+	 fatal_error("more that one completion code in " + this.name);
+      else if (this.k[i].set)
+	 set = true;
+}
+
+Statement.prototype.get_debug_bit = function() {
+   return (function(context) { return this["DEBUG_" + context.name] })(this);
+}
+
 /* Root class of any circuit (construction with statements, or others
    circuits.
    `X_in` represent the connections of the circuit with subcircuit.
@@ -182,6 +196,30 @@ Circuit.prototype.build_out_wires = function(circuit) {
 	 this.k[i] = null;
       this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
    }
+}
+
+Circuit.prototype.run = function() {
+   this.set_subcircuit_in();
+   if (!this.go_in.stmt_out.run())
+      return false;
+   this.set_subcircuit_out();
+   // if (DEBUG_FLAGS & this.get_debug_bit())
+   //    this.debug();
+   this.assert_completion_code();
+   return true;
+}
+
+Circuit.prototype.set_subcircuit_in = function() {
+   this.go_in.set = this.go.set;
+   this.res_in.set = this.res.set;
+   this.susp.set = this.susp.set;
+   this.kill_in.set = this.kill.set;
+}
+
+Circuit.prototype.set_subcircuit_out = function() {
+   this.sel.set = this.sel_in.set;
+   for (var i in this.k)
+      this.k[i].set = this.k_in[i].set;
 }
 
 /* Circuits with more than one nested subcircuit */
@@ -301,6 +339,10 @@ ReactiveMachine.prototype.reset = function() {
    }
 }
 
+ReactiveMachine.prototype.run = function() {
+   fatal_error("call run() on ReactiveMachine");
+}
+
 /* Emit - Figure 11.4 page 116 */
 
 function Emit(signal) {
@@ -341,7 +383,7 @@ Pause.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_PAUSE)
       this.debug();
-   assert_completion_code(this);
+   this.assert_completion_code();
    return true;
 }
 
@@ -594,7 +636,7 @@ Abort.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_ABORT)
       this.debug();
-   assert_completion_code(this);
+   this.assert_completion_code();
    return true;
 }
 
@@ -608,24 +650,6 @@ function Await(signal) {
 
 Await.prototype = new Circuit();
 
-Await.prototype.run = function() {
-   this.go_in.set = this.go.set;
-   this.res_in.set = this.res.set;
-   this.susp_in.set = this.susp.set;
-   this.kill_in.set = this.kill.set;
-
-   if (!this.go_in.stmt_out.run())
-      return false;
-
-   this.sel.set = this.sel_in.set;
-   this.k[0].set = this.k_in[0].set;
-   this.k[1].set = this.k_in[1].set;
-
-   if (DEBUG_FLAGS & DEBUG_AWAIT)
-      this.debug();
-   return true;
-}
-
 /* Halt */
 
 function Halt() {
@@ -634,23 +658,6 @@ function Halt() {
 }
 
 Halt.prototype = new Circuit();
-
-Halt.prototype.run = function() {
-   this.go_in.set = this.go.set;
-   this.res_in.set = this.res.set;
-   this.susp.set = this.susp.set;
-   this.kill_in.set = this.kill.set;
-
-   this.go_in.stmt_out.run();
-
-   this.sel.set = this.sel_in.set;
-   this.k[0].set = this.k_in[0].set;
-   this.k[1].set = this.k_in[1].set;
-
-   if (DEBUG_FLAGS & DEBUG_HALT)
-      this.debug();
-   return true;
-}
 
 /* Parallel - Figure 11.10 page 122 */
 
@@ -698,7 +705,7 @@ Parallel.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_PARALLEL)
       this.debug();
-   assert_completion_code(this);
+   this.assert_completion_code();
    return true;
 }
 
@@ -786,7 +793,7 @@ Suspend.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_SUSPEND)
       this.debug();
-   assert_completion_code(this);
+   this.assert_completion_code();
    return true;
 }
 
@@ -827,7 +834,7 @@ Trap.prototype.run = function() {
 
    if (DEBUG_FLAGS & DEBUG_TRAP)
       this.debug();
-   assert_completion_code(this);
+   this.assert_completion_code();
    return true;
 }
 
@@ -864,18 +871,6 @@ function Run(machine, sig_list_caller, sig_list_callee) {
 }
 
 Run.prototype = new Circuit();
-
-Run.prototype.run = function() {
-   this.go_in.set = this.go.set;
-   this.res_in.set = this.res.set;
-   this.susp_in.set = this.susp.set;
-   this.kill_in.set = this.kill.set;
-   this.go_in.stmt_out.run();
-   this.sel.set = this.sel_in.set;
-   for (var i in this.k_in)
-      this.k[i].set = this.k_in[i].set;
-   return true;
-}
 
 /* Visitor that override the signal sig_old by the signal sig_new */
 
@@ -945,18 +940,6 @@ ResetRegisterVisitor.prototype.visit = function(stmt) {
    if (stmt instanceof Abort) {
       stmt.sel.set = false;
    }
-}
-
-/* Assert that only one completion wire is on */
-
-function assert_completion_code(stmt) {
-   var set = false;
-
-   for (var i in stmt.k)
-      if (set && stmt.k[i].set)
-	 fatal_error("more that one completion code in " + stmt.name);
-      else if (stmt.k[i].set)
-	 set = true;
 }
 
 function fatal_error(msg) {
