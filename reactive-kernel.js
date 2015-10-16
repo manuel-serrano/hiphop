@@ -99,6 +99,7 @@ function Wire(stmt_in, stmt_out) {
 
 function Statement(name) {
    this.name = name;
+   this.debug_code;
    this.loc = "NESTED";
    this.go = null;
    this.res = null;
@@ -152,10 +153,6 @@ Statement.prototype.assert_completion_code = function() {
 	 set = true;
 }
 
-Statement.prototype.get_debug_bit = function() {
-   return (function(context) { return this["DEBUG_" + context.name] })(this);
-}
-
 /* Root class of any circuit (construction with statements, or others
    circuits.
    `X_in` represent the connections of the circuit with subcircuit.
@@ -203,8 +200,8 @@ Circuit.prototype.run = function() {
    if (!this.go_in.stmt_out.run())
       return false;
    this.set_subcircuit_out();
-   // if (DEBUG_FLAGS & this.get_debug_bit())
-   //    this.debug();
+   if (DEBUG_FLAGS & this.debug_code)
+      this.debug();
    this.assert_completion_code();
    return true;
 }
@@ -347,6 +344,7 @@ ReactiveMachine.prototype.run = function() {
 
 function Emit(signal) {
    Statement.call(this, "EMIT");
+   this.debug_code = DEBUG_EMIT;
    this.signal = signal;
    signal.emitters++;
    signal.waiting = signal.emitters;
@@ -370,6 +368,7 @@ Emit.prototype.run = function() {
 
 function Pause() {
    Statement.call(this, "PAUSE");
+   this.debug_code = DEBUG_PAUSE;
    this.reg = false;
 }
 
@@ -396,6 +395,7 @@ function Present(signal, then_branch, else_branch) {
    if (!(else_branch instanceof Statement))
       else_branch = new Nothing();
    MultipleCircuit.call(this, "PRESENT", [then_branch, else_branch]);
+   this.debug_code = DEBUG_PRESENT;
    this.signal = signal;
 
    /* set to 0 or 1 is the branch 0|1 was blocked on signal test */
@@ -469,6 +469,7 @@ function Sequence() {
       subcircuits = arguments;
    }
    MultipleCircuit.call(this, "SEQUENCE", subcircuits);
+   this.debug_code = DEBUG_SEQUENCE;
 }
 
 Sequence.prototype = new MultipleCircuit();
@@ -569,6 +570,7 @@ Sequence.prototype.accept = function(visitor) {
 
 function Loop(circuit) {
    Circuit.call(this, "LOOP", circuit);
+   this.debug_code = DEBUG_LOOP;
 }
 
 Loop.prototype = new Circuit();
@@ -603,6 +605,7 @@ Loop.prototype.run = function() {
 
 function Abort(circuit, signal) {
    Circuit.call(this, "ABORT", circuit);
+   this.debug_code = DEBUG_ABORT;
    this.signal = signal;
 }
 
@@ -646,6 +649,7 @@ function Await(signal) {
    this.signal = signal;
    var abort = new Abort(new Halt(), this.signal);
    Circuit.call(this, "AWAIT", abort);
+   this.debug_code = DEBUG_AWAIT;
 }
 
 Await.prototype = new Circuit();
@@ -655,6 +659,7 @@ Await.prototype = new Circuit();
 function Halt() {
    var halt = new Loop(new Pause());
    Circuit.call(this, "HALT", halt);
+   this.debug_code = DEBUG_HALT;
 }
 
 Halt.prototype = new Circuit();
@@ -663,6 +668,7 @@ Halt.prototype = new Circuit();
 
 function Parallel(branch1, branch2) {
    MultipleCircuit.call(this, "PARALLEL", [branch1, branch2]);
+   this.debug_code = DEBUG_PARALLEL;
 }
 
 Parallel.prototype = new MultipleCircuit();
@@ -718,7 +724,7 @@ Parallel.prototype.accept = function(visitor) {
 /* Nothing statement */
 
 function Nothing () {
-   Statement.call(this, "NOTHING")
+   Statement.call(this, "NOTHING");
 }
 
 Nothing.prototype = new Statement();
@@ -758,6 +764,7 @@ Atom.prototype.run = function() {
 
 function Suspend(circuit, signal) {
    Circuit.call(this, "SUSPEND", circuit);
+   this.debug_code = DEBUG_SUSPEND;
    this.signal = signal;
 }
 
@@ -802,6 +809,7 @@ Suspend.prototype.run = function() {
 
 function Trap(circuit, trapid) {
    Circuit.call(this, "TRAP", circuit);
+   this.debug_code = DEBUG_TRAP;
    this.trapid = trapid;
    trapid.trap = this;
 }
