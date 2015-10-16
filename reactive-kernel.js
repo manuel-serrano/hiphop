@@ -1,10 +1,12 @@
 "use strict"
 
 /* TODO
-   - factorize circuit builder (the same code is repeated at every constructor)
+   - factorize circuit run (assignment are very often the sames)
    - test suspend statement
-   - remove ParallelSynchronizer since it's just a max calcul of Kx
    - remove this.name, except for the machine (we must can get it by objet type)
+   - TRAP: check missing K[x]
+   - RUN: make clone that support same signal name, rename it, replace it
+          so that avoid using a visitor after it to replace signal
 */
 
 var DEBUG_NONE = 0;
@@ -17,7 +19,6 @@ var DEBUG_ABORT = 32;
 var DEBUG_HALT = 64;
 var DEBUG_AWAIT = 128;
 var DEBUG_PARALLEL = 256;
-var DEBUG_PARALLEL_SYNC = 512;
 var DEBUG_SUSPEND = 1024;
 var DEBUG_REACT = 2048;
 var DEBUG_TRAP = 4096;
@@ -25,7 +26,6 @@ var DEBUG_ALL = 0xFFFFFFFF;
 var DEBUG_FLAGS = DEBUG_NONE;
 
  DEBUG_FLAGS |= DEBUG_REACT;
-// DEBUG_FLAGS |= DEBUG_PARALLEL_SYNC;
 // DEBUG_FLAGS |= DEBUG_PARALLEL;
 // DEBUG_FLAGS |= DEBUG_ABORT;
 // DEBUG_FLAGS |= DEBUG_AWAIT;
@@ -148,14 +148,11 @@ Statement.prototype.accept = function(visitor) {
    The relations between in/out wires (booleans doors, etc.) which are
    specifics to the circuit, are represented in the code of `run` functions. */
 
-function Circuit(name) {
+function Circuit(name, subcircuit) {
    Statement.call(this, name);
-   this.go_in = null;
-   this.res_in = null;
-   this.susp_in = null;
-   this.kill_in = null;
-   this.sel_in = null;
-   this.k_in = [null, null];
+
+   if (subcircuit != undefined) // because the inheritance of prototypes
+      this.build_wires(subcircuit);
 }
 
 Circuit.prototype = new Statement();
@@ -165,23 +162,76 @@ Circuit.prototype.accept = function(visitor) {
    this.go_in.stmt_out.accept(visitor);
 }
 
+Circuit.prototype.build_wires = function(circuit) {
+   this.build_in_wires(circuit);
+   this.build_out_wires(circuit);
+}
+
+Circuit.prototype.build_in_wires = function(circuit) {
+   this.go_in = circuit.go = new Wire(this, circuit);
+   this.res_in = circuit.res = new Wire(this, circuit);
+   this.susp_in = circuit.susp = new Wire(this, circuit);
+   this.kill_in = circuit.kill = new Wire(this, circuit);
+}
+
+Circuit.prototype.build_out_wires = function(circuit) {
+   this.sel_in = circuit.sel = new Wire(circuit, this);
+   this.k_in = [];
+   for (var i in circuit.k) {
+      if (this.k[i] == undefined)
+	 this.k[i] = null;
+      this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
+   }
+}
+
+/* Circuits with more than one nested subcircuit */
+
+function MultipleCircuit(name, subcircuits) {
+   Circuit.call(this, name, subcircuits);
+}
+
+MultipleCircuit.prototype = new Circuit();
+
+MultipleCircuit.prototype.build_wires = function(subcircuits) {
+   this.go_in = [];
+   this.res_in = [];
+   this.susp_in = [];
+   this.kill_in = [];
+   this.sel_in = [];
+   this.k_in = [];
+
+   for (var i in subcircuits) {
+      this.build_in_wires(subcircuits[i], i);
+      this.build_out_wires(subcircuits[i], i);
+   }
+}
+
+MultipleCircuit.prototype.build_in_wires = function(circuit, i) {
+   this.go_in[i] = circuit.go = new Wire(this, circuit);
+   this.res_in[i] = circuit.res = new Wire(this, circuit);
+   this.susp_in[i] = circuit.susp = new Wire(this, circuit);
+   this.kill_in[i] = circuit.kill = new Wire(this, circuit);
+}
+
+MultipleCircuit.prototype.build_out_wires = function(circuit, j) {
+   this.sel_in[j] = circuit.sel = new Wire(circuit, this);
+   for (var i in circuit.k) {
+      if (this.k_in[i] == undefined)
+	 this.k_in[i] = [];
+      if (this.k[i] == undefined)
+	 this.k[i] = null;
+      this.k_in[i][j] = circuit.k[i] = new Wire(circuit, this);
+   }
+}
+
 function ReactiveMachine(circuit) {
-   Circuit.call(this, "REACTIVE_MACHINE");
+   Circuit.call(this, "REACTIVE_MACHINE", circuit);
    this.seq = -1;
    this.boot_reg = true;
    this.machine_name = "";
 
    /* used to display input signal which are set on DEBUG_REACT mode */
    this.signals = [];
-
-   this.go_in = circuit.go = new Wire(this, circuit);
-   this.res_in = circuit.res = new Wire(this, circuit);
-   this.susp_in = circuit.susp = new Wire(this, circuit);
-   this.kill_in = circuit.kill = new Wire(this, circuit);
-   this.sel_in = circuit.sel = new Wire(circuit, this);
-
-   for (var i in circuit.k)
-      this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
 }
 
 ReactiveMachine.prototype = new Circuit();
@@ -301,40 +351,16 @@ Pause.prototype.run = function() {
    It's allowed to have only a then branch */
 
 function Present(signal, then_branch, else_branch) {
-   Circuit.call(this, "PRESENT");
+   if (!(else_branch instanceof Statement))
+      else_branch = new Nothing();
+   MultipleCircuit.call(this, "PRESENT", [then_branch, else_branch]);
    this.signal = signal;
-   this.go_in = [];
-   this.res_in = [];
-   this.susp_in = [];
-   this.kill_in = [];
-   this.sel_in = [];
-   this.k_in = [];
-   this.init_internal_wires(0, then_branch);
-   if (else_branch != undefined)
-      this.init_internal_wires(1, else_branch);
-   else this.init_internal_wires(1, new Nothing());
 
    /* set to 0 or 1 is the branch 0|1 was blocked on signal test */
    this.blocked = -1;
 }
 
-Present.prototype = new Circuit();
-
-Present.prototype.init_internal_wires = function(branch, circuit) {
-   this.go_in[branch] = circuit.go = new Wire(this, circuit);
-   this.res_in[branch] = circuit.res = new Wire(this, circuit);
-   this.susp_in[branch] = circuit.susp = new Wire(this, circuit);
-   this.kill_in[branch] = circuit.kill = new Wire(this, circuit);
-   this.sel_in[branch] = circuit.sel = new Wire(circuit, this);
-
-   for (var i in circuit.k) {
-      if (this.k_in[i] == undefined)
-	 this.k_in[i] = [];
-      if (this.k[i] == undefined)
-	 this.k[i] = [];
-      this.k_in[i][branch] = circuit.k[i] = new Wire(circuit, this);
-   }
-}
+Present.prototype = new MultipleCircuit();
 
 Present.prototype.run = function() {
    var branch = 0;
@@ -388,22 +414,24 @@ Present.prototype.accept = function(visitor) {
    which is an array of statements */
 
 function Sequence() {
-   Circuit.call(this, "SEQUENCE");
+   var subcircuits = null;
+
    this.seq_len = 0;
-   this.stmts = null;
    this.blocked = -1 /* same semantic that present blocked attribute */
 
    if (arguments[0].constructor.name == 'Array') {
       this.seq_len = arguments[0].length;
-      this.stmts = arguments[0];
+      subcircuits = arguments[0];
    } else {
       this.seq_len = arguments.length;
-      this.stmts = arguments;
+      subcircuits = arguments;
    }
+   MultipleCircuit.call(this, "SEQUENCE", subcircuits);
+}
 
-   if (this.seq_len == 0)
-      return;
+Sequence.prototype = new MultipleCircuit();
 
+Sequence.prototype.build_wires = function(subcircuits) {
    this.go_in = [];
    this.res_in = [];
    this.susp_in = [];
@@ -411,20 +439,20 @@ function Sequence() {
    this.sel_in = [];
    this.k_in = [null, []];
 
-   this.k_in[0] = this.stmts[this.seq_len - 1].k[0] =
-      new Wire(this.stmts[this.seq_len - 1], this);
+   this.k_in[0] = subcircuits[this.seq_len - 1].k[0] =
+      new Wire(subcircuits[this.seq_len - 1], this);
 
    for (var i = 0; i < this.seq_len; i++) {
-      var circuit_cur = this.stmts[i];
+      var circuit_cur = subcircuits[i];
 
       if (i == 0) {
 	 this.go_in[i] = circuit_cur.go = new Wire(this, circuit_cur);
       } else {
-	 var w = new Wire(this.stmts[i - 1], circuit_cur);
+	 var w = new Wire(subcircuits[i - 1], circuit_cur);
 
 	 this.go_in[i] = w;
 	 this.k_in[0][i - 1] = w;
-	 this.stmts[i - 1].k[0] = w;
+	 subcircuits[i - 1].k[0] = w;
 	 circuit_cur.go = w;
       }
       this.res_in[i] = circuit_cur.res = new Wire(this, circuit_cur);
@@ -444,8 +472,6 @@ function Sequence() {
    }
 }
 
-Sequence.prototype = new Circuit();
-
 Sequence.prototype.run = function() {
    var s = 0;
 
@@ -459,7 +485,7 @@ Sequence.prototype.run = function() {
       this.blocked = -1;
    }
 
-   for (; s < this.stmts.length; s++) {
+   for (; s < this.seq_len; s++) {
       /* init subcircuits inputs */
       this.go_in[s].set = s == 0 ? this.go.set : this.k_in[0][s - 1].set;
       this.res_in[s].set = this.res.set;
@@ -500,17 +526,7 @@ Sequence.prototype.accept = function(visitor) {
 /* Loop - Figure 11.9 page 121 */
 
 function Loop(circuit) {
-   Circuit.call(this, "LOOP");
-   this.go_in = circuit.go = new Wire(this, circuit);
-   this.res_in = circuit.res = new Wire(this, circuit);
-   this.susp_in = circuit.susp = new Wire(this, circuit);
-   this.kill_in = circuit.kill = new Wire(this, circuit);
-   this.sel_in = circuit.sel = new Wire(circuit, this);
-   for(var i in circuit.k) {
-      this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
-      if (this.k[i] == undefined)
-	 this.k[i] = null;
-   }
+   Circuit.call(this, "LOOP", circuit);
 }
 
 Loop.prototype = new Circuit();
@@ -544,18 +560,8 @@ Loop.prototype.run = function() {
 /* Abort - Figure 11.7 page 120 */
 
 function Abort(circuit, signal) {
-   Circuit.call(this, "ABORT");
+   Circuit.call(this, "ABORT", circuit);
    this.signal = signal;
-   this.go_in = circuit.go = new Wire(this, circuit);
-   this.res_in = circuit.res = new Wire(this, circuit);
-   this.susp_in = circuit.susp = new Wire(this, circuit);
-   this.kill_in = circuit.kill = new Wire(this, circuit);
-   this.sel_in = circuit.sel  = new Wire(circuit, this);
-   for (var i in circuit.k) {
-      this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
-      if (this.k[i] == undefined)
-	 this.k[i] = null;
-   }
 }
 
 Abort.prototype = new Circuit();
@@ -595,17 +601,9 @@ Abort.prototype.run = function() {
 /* Await */
 
 function Await(signal) {
-   Circuit.call(this, "AWAIT");
    this.signal = signal;
    var abort = new Abort(new Halt(), this.signal);
-
-   this.go_in = abort.go = new Wire(this, abort);
-   this.res_in = abort.res = new Wire(this, abort);
-   this.susp_in = abort.susp = new Wire(this, abort);
-   this.kill_in = abort.kill = new Wire(this, abort);
-   this.sel_in = abort.sel = new Wire(abort, this);
-   this.k_in[0] = abort.k[0] = new Wire(abort, this);
-   this.k_in[1] = abort.k[1] = new Wire(abort, this);
+   Circuit.call(this, "AWAIT", abort);
 }
 
 Await.prototype = new Circuit();
@@ -631,16 +629,8 @@ Await.prototype.run = function() {
 /* Halt */
 
 function Halt() {
-   Circuit.call(this, "HALT");
    var halt = new Loop(new Pause());
-
-   this.go_in = halt.go = new Wire(this, halt);
-   this.res_in = halt.res = new Wire(this, halt);
-   this.susp_in = halt.susp = new Wire(this, halt);
-   this.kill_in = halt.kill = new Wire(this, halt);
-   this.sel_in = halt.sel = new Wire(halt, this);
-   this.k_in[0] = halt.k[0] = new Wire(halt, this);
-   this.k_in[1] = halt.k[1] = new Wire(halt, this);
+   Circuit.call(this, "HALT", halt);
 }
 
 Halt.prototype = new Circuit();
@@ -665,24 +655,10 @@ Halt.prototype.run = function() {
 /* Parallel - Figure 11.10 page 122 */
 
 function Parallel(branch1, branch2) {
-   Circuit.call(this, "PARALLEL");
-   this.synchronizer = new ParallelSynchronizer(branch1, branch2);
-
-   /* init wires fron parallel inputs to two parallel branch inputs and sel */
-   this.go_in = [];
-   this.res_in = [];
-   this.susp_in = [];
-   this.kill_in = [];
-   this.sel_in = [];
-   this.init_internal_wires(0, branch1);
-   this.init_internal_wires(1, branch2);
-
-   /* init wire from synchronizer outputs to parallel outputs */
-   for (var i = 0; i < this.synchronizer.k.length; i++)
-      this.k_in[i] = this.synchronizer.k[i] = new Wire(this.synchronizer, this);
+   MultipleCircuit.call(this, "PARALLEL", [branch1, branch2]);
 }
 
-Parallel.prototype = new Circuit();
+Parallel.prototype = new MultipleCircuit();
 
 Parallel.prototype.init_internal_wires = function(i, circuit) {
    this.go_in[i] = circuit.go = new Wire(this, circuit);
@@ -709,12 +685,16 @@ Parallel.prototype.run = function() {
    }
 
    this.sel.set = this.sel_in[0].set || this.sel_in[1].set;
-   this.synchronizer.lem = !(this.go.set || this.sel_in[0].set);
-   this.synchronizer.rem = !(this.go.set || this.sel_in[1].set);
-   this.synchronizer.run();
 
-   for (var i in this.synchronizer.k)
-      this.k[i].set = this.synchronizer.k[i].set;
+   var max_code = -1;
+   for (var i in this.k) {
+      if (this.k_in[i][0].set || this.k_in[i][1].set)
+   	 max_code = parseInt(i);
+      this.k[i].set = false;
+   }
+
+   if (max_code > -1)
+   	this.k[max_code].set = true;
 
    if (DEBUG_FLAGS & DEBUG_PARALLEL)
       this.debug();
@@ -726,67 +706,6 @@ Parallel.prototype.accept = function(visitor) {
    visitor.visit(this);
    this.go_in[0].stmt_out.accept(visitor);
    this.go_in[1].stmt_out.accept(visitor);
-}
-
-/* Parallel synchronizer - Figure 11.11 page 122 */
-
-function ParallelSynchronizer(branch1, branch2) {
-   Circuit.call(this, "PARALLEL_SYNCHRONIZER");
-   this.lem = false;
-   this.rem = false;
-   this.k_in = [];
-   this.init_internal_wires(0, branch1);
-   this.init_internal_wires(1, branch2);
-}
-
-ParallelSynchronizer.prototype = new Circuit();
-
-ParallelSynchronizer.prototype.init_internal_wires = function(i, circuit) {
-   for (var j in circuit.k) {
-      if (this.k_in[j] == undefined) {
-	 this.k_in[j] = [];
-	 this.k[j] = null;
-      }
-
-      this.k_in[j][i] = circuit.k[j] = new Wire(circuit, this);
-   }
-}
-
-ParallelSynchronizer.prototype.run = function() {
-   var max_code = -1;
-   for (var i in this.k) {
-      if (this.k_in[i][0].set || this.k_in[i][1].set)
-   	 max_code = parseInt(i);
-      this.k[i].set = false;
-   }
-
-   if (max_code > -1)
-   	this.k[max_code].set = true;
-
-   if (DEBUG_FLAGS & DEBUG_PARALLEL_SYNC)
-      this.debug();
-   return true;
-}
-
-ParallelSynchronizer.prototype.debug = function() {
-   var buf_left = "";
-   var buf_right = "";
-   var buf_return = "";
-
-   for (var i in this.k_in) {
-      if (this.k_in[i][0] != undefined)
-	 buf_left += "K-LEFT" + i + ":" + this.k_in[i][0].set + " ";
-
-      if (this.k_in[i][1] != undefined)
-	 buf_right += "K-RIGHT" + i + ":" + this.k_in[i][1].set + " ";
-
-      buf_return += "K" + i + ":" + this.k[i].set + " ";
-   }
-
-   console.log("*** DEBUG", this.name, "at", this.loc, "***");
-   console.log("   ", buf_left);
-   console.log("   ", buf_right);
-   console.log("   ", buf_return);
 }
 
 /* Nothing statement */
@@ -831,16 +750,8 @@ Atom.prototype.run = function() {
 /* Suspend - Figure 11.6 */
 
 function Suspend(circuit, signal) {
-   Circuit.call(this, "SUSPEND");
+   Circuit.call(this, "SUSPEND", circuit);
    this.signal = signal;
-   this.go_in = circuit.go = new Wire(this, circuit);
-   this.res_in = circuit.res = new Wire(this, circuit);
-   this.susp_in = circuit.susp = new Wire(this, circuit);
-   this.kill_in = circuit.kill = new Wire(this. circuit);
-   this.sel_in = circuit.sel = new Wire(circuit, this);
-   for (var i in circuit.k) {
-      this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
-   }
 }
 
 Suspend.prototype = new Circuit();
@@ -883,24 +794,22 @@ Suspend.prototype.run = function() {
    When we'll support parallel traps, trapid could be a list of trapid */
 
 function Trap(circuit, trapid) {
-   Circuit.call(this, "TRAP");
+   Circuit.call(this, "TRAP", circuit);
    this.trapid = trapid;
    trapid.trap = this;
+}
 
-   this.go_in = circuit.go = new Wire(this, circuit);
-   this.res_in = circuit.res = new Wire(this, circuit);
-   this.susp_in = circuit.susp = new Wire(this, circuit);
-   this.kill_in = circuit.kill = new Wire(this, circuit);
+Trap.prototype = new Circuit();
+
+Trap.prototype.build_out_wires = function(circuit) {
    this.sel_in = circuit.sel = new Wire(circuit, this);
-
+   this.k_in = [];
    this.k_in[0] = circuit.k[0] = new Wire(circuit, this);
    this.k_in[1] = circuit.k[1] = new Wire(circuit, this);
    this.k_in[2] = new Wire(null, null); // exit use it to make the trap
    for (var i = 2; i < circuit.k.length; i++)
       this.k_in[i + 1] = circuit.k[i] = new Wire(circuit, this);
 }
-
-Trap.prototype = new Circuit();
 
 Trap.prototype.run = function() {
    this.go_in.set = this.go.set;
@@ -944,16 +853,9 @@ Exit.prototype.run = function() {
    the caller signal sig_list_caller[i] */
 
 function Run(machine, sig_list_caller, sig_list_callee) {
-   Circuit.call(this, "RUN");
    var circuit = deep_clone(machine.go_in.stmt_out);
+   Circuit.call(this, "RUN", circuit);
 
-   this.go_in = circuit.go = new Wire(this, circuit);
-   this.res_in = circuit.res = new Wire(this, circuit);
-   this.susp_in = circuit.susp = new Wire(this, circuit);
-   this.kill_in = circuit.kill = new Wire(this, circuit);
-   this.sel_in = circuit.sel = new Wire(this, circuit);
-   for (var i in circuit.k)
-      this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
    for (var i in sig_list_caller) {
       var visitor = new OverrideSignalVisitor(sig_list_caller[i],
 					      sig_list_callee[i]);
