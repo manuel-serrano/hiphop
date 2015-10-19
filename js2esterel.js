@@ -17,7 +17,7 @@ String.prototype.replace_char = function(index, chr) {
    return this.substr(0, index) + chr + this.substr(index + 1);
 }
 
-reactive._Statement.prototype.esterel_code = function(indent) {
+reactive.Statement.prototype.esterel_code = function(indent) {
    return apply_indent(indent) + this.name + " NYI";
 }
 
@@ -179,4 +179,22 @@ reactive.Trap.prototype.esterel_code = function(indent) {
    buf += "\n" + apply_indent(indent) + "end trap";
 
    return buf;
+}
+
+reactive.Run.prototype.esterel_code = function(indent) {
+   var buf = "run " + this.callee_name;
+   var len = this.sig_list_caller.length;
+
+   if (len > 0) {
+      buf += " [ signal ";
+      for (var i = 0; i < len; i++) {
+	 buf += this.sig_list_caller[i].name + " / "
+	    + this.sig_list_callee[i].name;
+	 if (i + 1 < len)
+	    buf += ", ";
+      }
+      buf += " ]";
+   }
+
+   return apply_indent(indent) + buf;
 }

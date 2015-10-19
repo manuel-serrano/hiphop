@@ -862,6 +862,9 @@ Exit.prototype.run = function() {
 
 function Run(machine, sig_list_caller, sig_list_callee) {
    var circuit = deep_clone(machine.go_in.stmt_out);
+   this.callee_name = machine.machine_name;
+   this.sig_list_caller = sig_list_caller;
+   this.sig_list_callee = sig_list_callee;
    Circuit.call(this, "RUN", circuit);
 
    for (var i in sig_list_caller) {
@@ -991,7 +994,7 @@ exports.Nothing = Nothing;
 exports.Atom = Atom;
 exports.Suspend = Suspend;
 exports.ReactiveMachine = ReactiveMachine;
-exports._Statement = Statement;
+exports.Statement = Statement;
 exports.Trap = Trap;
 exports.TrapId = TrapId;
 exports.Exit = Exit;

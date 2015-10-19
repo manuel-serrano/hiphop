@@ -2,6 +2,7 @@
 
 var rjs = require("../xml-compiler.js");
 var reactive = require("../reactive-kernel.js");
+require("../js2esterel.js");
 
 var sigT = new reactive.Signal("T", false);
 sigT.local = true;
@@ -32,3 +33,4 @@ exports.prg = m2;
 m2.react();
 m2.react();
 
+console.log(m2.esterel_code());
