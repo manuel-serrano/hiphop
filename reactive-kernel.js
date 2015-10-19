@@ -1,10 +1,8 @@
 "use strict"
 
 /* TODO
-   - factorize circuit run (assignment are very often the sames)
    - test suspend statement
    - remove this.name, except for the machine (we must can get it by objet type)
-   - TRAP: check missing K[x]
    - RUN: make clone that support same signal name, rename it, replace it
           so that avoid using a visitor after it to replace signal
 */
@@ -673,14 +671,6 @@ function Parallel(branch1, branch2) {
 
 Parallel.prototype = new MultipleCircuit();
 
-Parallel.prototype.init_internal_wires = function(i, circuit) {
-   this.go_in[i] = circuit.go = new Wire(this, circuit);
-   this.res_in[i] = circuit.res = new Wire(this, circuit);
-   this.susp_in[i] = circuit.susp = new Wire(this, circuit);
-   this.kill_in[i] = circuit.kill = new Wire(this, circuit);
-   this.sel_in[i] = circuit.sel = new Wire(circuit, this);
-}
-
 Parallel.prototype.run = function() {
    var lend = false;
    var rend = false;
@@ -822,8 +812,11 @@ Trap.prototype.build_out_wires = function(circuit) {
    this.k_in[0] = circuit.k[0] = new Wire(circuit, this);
    this.k_in[1] = circuit.k[1] = new Wire(circuit, this);
    this.k_in[2] = new Wire(null, null); // exit use it to make the trap
-   for (var i = 2; i < circuit.k.length; i++)
+   for (var i = 2; i < circuit.k.length; i++) {
+      if (this.k[i - 1] == undefined)
+	 this.k[i - 1] = null;
       this.k_in[i + 1] = circuit.k[i] = new Wire(circuit, this);
+   }
 }
 
 Trap.prototype.run = function() {
