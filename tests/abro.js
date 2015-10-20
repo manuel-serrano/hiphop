@@ -11,18 +11,22 @@ var sigR = new rkernel.Signal("R", false);
 var sigO = new rkernel.Signal("O", false);
 
 var prg = <rjs.reactivemachine name="ABRO">
-    <rjs.loop>
-        <rjs.abort signal=${sigR}>
-            <rjs.sequence>
-                <rjs.parallel>
-                    <rjs.await signal=${sigA} />
-                    <rjs.await signal=${sigB} />
-                </rjs.parallel>
-                <rjs.emit signal=${sigO} />
-		<rjs.halt/>
-            </rjs.sequence>
-        </rjs.abort>
-    </rjs.loop>
+  <rjs.inputsignal ref=${sigR}/>
+  <rjs.inputsignal ref=${sigA}/>
+  <rjs.inputsignal ref=${sigB}/>
+  <rjs.outputsignal ref=${sigO}/>
+  <rjs.loop>
+    <rjs.abort signal_name="R">
+      <rjs.sequence>
+        <rjs.parallel>
+          <rjs.await signal_name="A" />
+          <rjs.await signal_name="B" />
+        </rjs.parallel>
+        <rjs.emit signal_name="O" />
+	<rjs.halt/>
+      </rjs.sequence>
+    </rjs.abort>
+  </rjs.loop>
 </rjs.reactivemachine>;
 
 exports.prg = prg;

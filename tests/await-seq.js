@@ -9,10 +9,13 @@ var sigB = new rkernel.Signal("B", false);
 var sigO = new rkernel.Signal("O", false);
 
 var prg = <rjs.reactivemachine name="awaitseq">
+  <rjs.inputsignal ref=${sigA}/>
+  <rjs.inputsignal ref=${sigB}/>
+  <rjs.outputsignal ref=${sigO}/>
   <rjs.sequence>
-    <rjs.await signal=${sigA} />
-    <rjs.await signal=${sigB} />
-    <rjs.emit signal=${sigO} />
+    <rjs.await signal_name="A"/>
+    <rjs.await signal_name="B"/>
+    <rjs.emit signal_name="O"/>
   </rjs.sequence>
 </rjs.reactivemachine>;
 

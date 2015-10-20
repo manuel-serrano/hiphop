@@ -277,6 +277,7 @@ ReactiveMachine.prototype.react = function(seq) {
       return;
 
    if (this.boot_reg) {
+      this.go_in.stmt_out.accept(new ResetRegisterVisitor());
       go = this.boot_reg;
       this.boot_reg = false;
    }
