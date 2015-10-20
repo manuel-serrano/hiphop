@@ -41,7 +41,6 @@ function Signal(name, value) {
    this.value = false;
    this.emitters = 0; /* number of emitters in the program code */
    this.waiting = 0; /* number of waiting emitters for the current reaction */
-   this.local = false; /* usefull for DEBUG_REACT only */
 }
 
 /* 2: the signal is set and its value is ready to read
@@ -307,7 +306,7 @@ ReactiveMachine.prototype.react = function(seq) {
       for (var i in this.output_signals) {
 	 var sig = this.output_signals[i];
 
-	 if (sig.waiting == 0)
+	 if (sig.waiting == 0 && sig.set)
 	       buf_out += " " + sig.name;
       }
 
@@ -652,7 +651,10 @@ Abort.prototype.run = function() {
 
 function Await(machine, loc, signal_name) {
    this.signal_name = signal_name;
-   var abort = new Abort(machine, loc, new Halt(machine, loc), this.signal_name);
+   var abort = new Abort(machine,
+			 loc,
+			 new Halt(machine, loc),
+			 this.signal_name);
    Circuit.call(this, machine, loc, "AWAIT", abort);
    this.debug_code = DEBUG_AWAIT;
 }

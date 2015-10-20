@@ -25,10 +25,10 @@ Context.prototype.assert_free_trap_name = function(trap_name, attrs) {
 }
 
 Context.prototype.lazymake_local_signal = function(signal_name) {
-   if (compile_context.is_free_signal_name(signal_name)
-      && compile_context.machine.local_signals[signal_name] == undefined)
-      compile_context.machine.local_signals[signal_name] = [
-	 new reactive.Signal(signal_name) ];
+   if (this.is_free_signal_name(signal_name)
+       && this.machine.local_signals[signal_name] == undefined)
+      this.machine.local_signals[signal_name] =
+      [ new reactive.Signal(signal_name) ];
 }
 
 var compile_context = new Context();
