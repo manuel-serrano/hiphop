@@ -75,14 +75,6 @@ Signal.prototype.set_from_host = function (set, value) {
    }
 }
 
-/* An identifier which refers to a trap, and make the link between an exit
-   statement and a trap statement */
-
-function TrapId(name) {
-   this.name = name;
-   this.trap = null;
-}
-
 /* A wire connect two statements.
    The `set` attribute, contains the status (1 or 0) of the wire */
 
@@ -160,7 +152,7 @@ Statement.prototype.assert_completion_code = function() {
 function Circuit(name, subcircuit) {
    Statement.call(this, name);
 
-   if (subcircuit != undefined) // because the inheritance of prototypes
+   if (subcircuit != undefined || subcircuit != null)
       this.build_wires(subcircuit);
 }
 
@@ -257,14 +249,15 @@ MultipleCircuit.prototype.build_out_wires = function(circuit, j) {
    }
 }
 
-function ReactiveMachine(circuit) {
-   Circuit.call(this, "REACTIVE_MACHINE", circuit);
+function ReactiveMachine() {
+   Circuit.call(this, "REACTIVE_MACHINE", null);
    this.seq = -1;
    this.boot_reg = true;
    this.machine_name = "";
-
-   /* used to display input signal which are set on DEBUG_REACT mode */
-   this.signals = [];
+   this.local_signals = {};
+   this.input_signals = {};
+   this.output_signals = {};
+   this.traps = {}
 }
 
 ReactiveMachine.prototype = new Circuit();
@@ -317,15 +310,6 @@ ReactiveMachine.prototype.react = function(seq) {
    this.reset_react = false;
 }
 
-/* Get all signal which are used inside this reactive machine,
-   this is usefull only for debug */
-
-ReactiveMachine.prototype.catch_signals = function() {
-   var visitor = new EmbeddedSignalsVisitor();
-   this.accept(visitor);
-   this.signals = visitor.signals;
-}
-
 ReactiveMachine.prototype.reset = function() {
    this.boot_reg = true;
    if (DEBUG_FLAGS & DEBUG_REACT) {
@@ -338,24 +322,34 @@ ReactiveMachine.prototype.run = function() {
    fatal_error("call run() on ReactiveMachine");
 }
 
+ReactiveMachine.prototype.get_signal(name) {
+   if (this.local_signals[name])
+      return this.local_signals[name][0];
+   if (this.input_signals[name])
+      return this.input_signals[name];
+   if (this.output_signals[name])
+      return this.output_signals[name];
+   fatal_error("Unkown signal " + name);
+}
+
 /* Emit - Figure 11.4 page 116 */
 
-function Emit(signal) {
+function Emit(signal_name) {
    Statement.call(this, "EMIT");
    this.debug_code = DEBUG_EMIT;
-   this.signal = signal;
-   signal.emitters++;
-   signal.waiting = signal.emitters;
+   this.signal_name = signal_name;
 }
 
 Emit.prototype = new Statement();
 
 Emit.prototype.run = function() {
+   var signal = this.machine.get_signal(this.signal_name);
+
    this.k[0].set = this.go.set;
-   if (this.signal.waiting > 0)
-      this.signal.waiting--;
+   if (signal.waiting > 0)
+      signal.waiting--;
    if (this.go.set)
-      this.signal.set = true;
+      signal.set = true;
 
    if (DEBUG_FLAGS & DEBUG_EMIT)
       this.debug();
