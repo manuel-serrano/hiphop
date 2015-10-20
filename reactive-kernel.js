@@ -1,10 +1,8 @@
-"use strict"
+"use hopscript"
 
 /* TODO
    - test suspend statement
    - remove this.name, except for the machine (we must can get it by objet type)
-   - RUN: make clone that support same signal name, rename it, replace it
-          so that avoid using a visitor after it to replace signal
 */
 
 var DEBUG_NONE = 0;
@@ -328,7 +326,7 @@ ReactiveMachine.prototype.run = function() {
    fatal_error("call run() on ReactiveMachine");
 }
 
-ReactiveMachine.prototype.get_signal(name) {
+ReactiveMachine.prototype.get_signal = function(name) {
    if (this.local_signals[name])
       return this.local_signals[name][0];
    if (this.input_signals[name])
@@ -455,19 +453,9 @@ Present.prototype.accept = function(visitor) {
    It can take either a variable list of argument, or only one argument
    which is an array of statements */
 
-function Sequence(machine, loc) {
-   var subcircuits = null;
-
-   this.seq_len = 0;
+function Sequence(machine, loc, subcircuits) {
+   this.seq_len = subcircuits.length;
    this.blocked = -1 /* same semantic that present blocked attribute */
-
-   if (arguments[0].constructor.name == 'Array') {
-      this.seq_len = arguments[0].length;
-      subcircuits = arguments[0];
-   } else {
-      this.seq_len = arguments.length;
-      subcircuits = arguments;
-   }
    MultipleCircuit.call(this, machine, loc, "SEQUENCE", subcircuits);
    this.debug_code = DEBUG_SEQUENCE;
 }
@@ -926,5 +914,4 @@ exports.Suspend = Suspend;
 exports.ReactiveMachine = ReactiveMachine;
 exports.Statement = Statement;
 exports.Trap = Trap;
-exports.TrapId = TrapId;
 exports.Exit = Exit;
