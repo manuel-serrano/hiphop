@@ -82,11 +82,13 @@ function REACTIVEMACHINE(attrs) {
    return machine;
 }
 
-function EMIT(machine, attrs) {
+function EMIT(attrs) {
    var signal_name = attrs.signal_name;
 
    compile_context.assert_signal_bounded(signal_name, attrs);
-   return new reactive.Emit(machine, format_loc, attrs.signal_name);
+   return new reactive.Emit(compile_context.machine,
+			    format_loc,
+			    attrs.signal_name);
 }
 
 function NOTHING(attrs) {
@@ -224,8 +226,8 @@ function INPUTSIGNAL(attrs) {
    if (!(ref instanceof reactive.Signal))
       fatal("InputSignal must had a ref argument as signal.", attrs);
    compile_context.assert_free_signal_name(ref.name, attrs);
-   compile_context.used_signal_names.push(ref.name);
-   compile_context.input_signals[ref.name] = ref;
+   compile_context.machine.input_signals[ref.name] = ref;
+   return ref;
 }
 
 function OUTPUTSIGNAL(attrs) {
@@ -234,21 +236,20 @@ function OUTPUTSIGNAL(attrs) {
    if (!(ref instanceof reactive.Signal))
       fatal("OutputSignal must had a ref argument as signal.", attrs);
    compile_context.assert_free_signal_name(ref.name, attrs);
-   compile_context.used_signal_names.push(ref.name);
-   compile_context.output_signals[ref.name] = ref;
+   compile_context.machine.output_signals[ref.name] = ref;
+   return ref;
 }
 
 function LOCALSIGNAL(attrs) {
-   var name = attrs.name;
+   var signal_name = attrs.signal_name;
    var sigs = [];
-
-   if (typeof(name) != 'string')
+   if (typeof(signal_name) != 'string')
       fatal("LocalSignal must had a name argument as string.", attrs);
-   compile_context.assert_free_signal_name(name, attrs);
-   compile_context.used_signal_names.push(name);
-   compile_context.local_signals[name] = sigs;
+   compile_context.assert_free_signal_name(signal_name, attrs);
+   compile_context.machine.local_signals[signal_name] = sigs;
    for (var i = 0; i <= compile_context.incarnation_lvl; i++)
-      sigs[i] = new reactive.Signal(name, null);
+      sigs[i] = new reactive.Signal(signal_name, null);
+   return get_children(arguments);
 }
 
 exports.REACTIVEMACHINE = REACTIVEMACHINE;
