@@ -403,13 +403,13 @@ Pause.prototype.run = function() {
    X_in[1] represent X_in of else branch
    It's allowed to have only a then branch */
 
-function Present(machine, loc, signal, then_branch, else_branch) {
+function Present(machine, loc, signal_name, then_branch, else_branch) {
    if (!(else_branch instanceof Statement))
       else_branch = new Nothing();
    MultipleCircuit.call(this, machine, loc, "PRESENT",
 			[then_branch, else_branch]);
    this.debug_code = DEBUG_PRESENT;
-   this.signal = signal;
+   this.signal_name = signal_name;
 
    /* set to 0 or 1 is the branch 0|1 was blocked on signal test */
    this.blocked = -1;
@@ -419,7 +419,8 @@ Present.prototype = new MultipleCircuit();
 
 Present.prototype.run = function() {
    var branch = 0;
-   var signal_state = this.signal.get_state();
+   var signal = this.machine.get_signal(this.signal_name);
+   var signal_state = signal.get_state();
 
    if (this.blocked == -1) {
       if (signal_state == 0)
