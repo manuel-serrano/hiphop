@@ -75,6 +75,11 @@ Signal.prototype.set_from_host = function (set, value) {
    }
 }
 
+Signal.prototype.incr_emitters = function() {
+   this.emitters++;
+   this.waiting = this.emitters;
+}
+
 /* A wire connect two statements.
    The `set` attribute, contains the status (1 or 0) of the wire */
 
@@ -87,10 +92,11 @@ function Wire(stmt_in, stmt_out) {
 /* Root class of any kernel statement. Theses properties representes the
    connections to others circuits */
 
-function Statement(name) {
+function Statement(machine, loc, name) {
    this.name = name;
    this.debug_code;
-   this.loc = "NESTED";
+   this.loc = loc;
+   this.machine = machine;
    this.go = null;
    this.res = null;
    this.susp = null;
@@ -149,8 +155,8 @@ Statement.prototype.assert_completion_code = function() {
    The relations between in/out wires (booleans doors, etc.) which are
    specifics to the circuit, are represented in the code of `run` functions. */
 
-function Circuit(name, subcircuit) {
-   Statement.call(this, name);
+function Circuit(machine, loc, name, subcircuit) {
+   Statement.call(this, machine, loc, name);
 
    if (subcircuit != undefined || subcircuit != null)
       this.build_wires(subcircuit);
@@ -211,8 +217,8 @@ Circuit.prototype.set_subcircuit_out = function() {
 
 /* Circuits with more than one nested subcircuit */
 
-function MultipleCircuit(name, subcircuits) {
-   Circuit.call(this, name, subcircuits);
+function MultipleCircuit(machine, loc, name, subcircuits) {
+   Circuit.call(this, machine, loc, name, subcircuits);
 }
 
 MultipleCircuit.prototype = new Circuit();
@@ -250,7 +256,7 @@ MultipleCircuit.prototype.build_out_wires = function(circuit, j) {
 }
 
 function ReactiveMachine() {
-   Circuit.call(this, "REACTIVE_MACHINE", null);
+   Circuit.call(this, null, "", "REACTIVE_MACHINE", null);
    this.seq = -1;
    this.boot_reg = true;
    this.machine_name = "";
@@ -334,10 +340,11 @@ ReactiveMachine.prototype.get_signal(name) {
 
 /* Emit - Figure 11.4 page 116 */
 
-function Emit(signal_name) {
-   Statement.call(this, "EMIT");
+function Emit(machine, loc, signal_name) {
+   Statement.call(this, machine, loc, "EMIT");
    this.debug_code = DEBUG_EMIT;
    this.signal_name = signal_name;
+   this.machine.get_signal(signal_name).incr_emitters();
 }
 
 Emit.prototype = new Statement();
@@ -358,8 +365,8 @@ Emit.prototype.run = function() {
 
 /* Pause - Figure 11.3 page 115 */
 
-function Pause() {
-   Statement.call(this, "PAUSE");
+function Pause(machine, loc) {
+   Statement.call(this, machine, loc, "PAUSE");
    this.debug_code = DEBUG_PAUSE;
    this.reg = false;
 }
@@ -383,10 +390,11 @@ Pause.prototype.run = function() {
    X_in[1] represent X_in of else branch
    It's allowed to have only a then branch */
 
-function Present(signal, then_branch, else_branch) {
+function Present(machine, loc, signal, then_branch, else_branch) {
    if (!(else_branch instanceof Statement))
       else_branch = new Nothing();
-   MultipleCircuit.call(this, "PRESENT", [then_branch, else_branch]);
+   MultipleCircuit.call(this, machine, loc, "PRESENT",
+			[then_branch, else_branch]);
    this.debug_code = DEBUG_PRESENT;
    this.signal = signal;
 
@@ -447,7 +455,7 @@ Present.prototype.accept = function(visitor) {
    It can take either a variable list of argument, or only one argument
    which is an array of statements */
 
-function Sequence() {
+function Sequence(machine, loc) {
    var subcircuits = null;
 
    this.seq_len = 0;
@@ -460,7 +468,7 @@ function Sequence() {
       this.seq_len = arguments.length;
       subcircuits = arguments;
    }
-   MultipleCircuit.call(this, "SEQUENCE", subcircuits);
+   MultipleCircuit.call(this, machine, loc, "SEQUENCE", subcircuits);
    this.debug_code = DEBUG_SEQUENCE;
 }
 
@@ -560,8 +568,8 @@ Sequence.prototype.accept = function(visitor) {
 
 /* Loop - Figure 11.9 page 121 */
 
-function Loop(circuit) {
-   Circuit.call(this, "LOOP", circuit);
+function Loop(machine, loc, circuit) {
+   Circuit.call(this, machine, loc, "LOOP", circuit);
    this.debug_code = DEBUG_LOOP;
 }
 
@@ -595,16 +603,17 @@ Loop.prototype.run = function() {
 
 /* Abort - Figure 11.7 page 120 */
 
-function Abort(circuit, signal) {
-   Circuit.call(this, "ABORT", circuit);
+function Abort(machine, loc, circuit, signal_name) {
+   Circuit.call(this, machine, loc, "ABORT", circuit);
    this.debug_code = DEBUG_ABORT;
-   this.signal = signal;
+   this.signal_name = signal_name;
 }
 
 Abort.prototype = new Circuit();
 
 Abort.prototype.run = function() {
-   var signal_state = this.signal.get_state();
+   var signal = this.machine.get_signal(this.signal_name);
+   var signal_state = signal.get_state();
 
    if (signal_state == 0) {
       this.blocked_by_signal = true;
@@ -637,10 +646,10 @@ Abort.prototype.run = function() {
 
 /* Await */
 
-function Await(signal) {
-   this.signal = signal;
-   var abort = new Abort(new Halt(), this.signal);
-   Circuit.call(this, "AWAIT", abort);
+function Await(machine, loc, signal_name) {
+   this.signal_name = signal_name;
+   var abort = new Abort(machine, loc, new Halt(machine, loc), this.signal_name);
+   Circuit.call(this, machine, loc, "AWAIT", abort);
    this.debug_code = DEBUG_AWAIT;
 }
 
@@ -648,9 +657,9 @@ Await.prototype = new Circuit();
 
 /* Halt */
 
-function Halt() {
-   var halt = new Loop(new Pause());
-   Circuit.call(this, "HALT", halt);
+function Halt(machine, loc) {
+   var halt = new Loop(machine, loc, new Pause(machine, loc));
+   Circuit.call(this, machine, loc, "HALT", halt);
    this.debug_code = DEBUG_HALT;
 }
 
@@ -658,8 +667,8 @@ Halt.prototype = new Circuit();
 
 /* Parallel - Figure 11.10 page 122 */
 
-function Parallel(branch1, branch2) {
-   MultipleCircuit.call(this, "PARALLEL", [branch1, branch2]);
+function Parallel(machine, loc, branch1, branch2) {
+   MultipleCircuit.call(this, machine, loc, "PARALLEL", [branch1, branch2]);
    this.debug_code = DEBUG_PARALLEL;
 }
 
@@ -707,8 +716,8 @@ Parallel.prototype.accept = function(visitor) {
 
 /* Nothing statement */
 
-function Nothing () {
-   Statement.call(this, "NOTHING");
+function Nothing (machine, loc) {
+   Statement.call(this, machine, loc, "NOTHING");
 }
 
 Nothing.prototype = new Statement();
@@ -731,7 +740,8 @@ function remove_duplicates(arr) {
 
 /* Atom - execute an host function with no arguments */
 
-function Atom(func) {
+function Atom(machine, loc, func) {
+   Statement.call(this, machine, loc, "ATOM");
    this.func = func;
 }
 
@@ -746,17 +756,18 @@ Atom.prototype.run = function() {
 
 /* Suspend - Figure 11.6 */
 
-function Suspend(circuit, signal) {
-   Circuit.call(this, "SUSPEND", circuit);
+function Suspend(machine, loc, circuit, signal_name) {
+   Circuit.call(this, machine, loc, "SUSPEND", circuit);
    this.debug_code = DEBUG_SUSPEND;
-   this.signal = signal;
+   this.signal_name = signal_name;
 }
 
 Suspend.prototype = new Circuit();
 
 Suspend.prototype.run = function() {
    /* TODO: make same hack that abort */
-   var signal_state = this.signal.get_state();
+   var signal = this.machine.get_signal(this.signal_name);
+   var signal_state = signal.get_state();
 
    if (signal_state == 0) {
       this.blocked_by_signal = true;
@@ -791,11 +802,9 @@ Suspend.prototype.run = function() {
 /* Trap/Shift - Figure 11.12/11.13 page 124
    When we'll support parallel traps, trapid could be a list of trapid */
 
-function Trap(circuit, trapid) {
-   Circuit.call(this, "TRAP", circuit);
+function Trap(machine, loc, circuit, trap_name) {
+   Circuit.call(this, machine, loc, "TRAP", circuit);
    this.debug_code = DEBUG_TRAP;
-   this.trapid = trapid;
-   trapid.trap = this;
 }
 
 Trap.prototype = new Circuit();
@@ -835,9 +844,9 @@ Trap.prototype.run = function() {
 
 /* Exit of a trap */
 
-function Exit(trapid) {
-   Statement.call(this, "EXIT");
-   this.trapid = trapid;
+function Exit(machine, loc, trap_name) {
+   Statement.call(this, machine, loc, "EXIT");
+   this.trap_name = trap_name;
 }
 
 Exit.prototype = new Statement();
@@ -845,81 +854,8 @@ Exit.prototype = new Statement();
 Exit.prototype.run = function() {
    this.k[0].set = false;
    this.k[1].set = false;
-   this.trapid.trap.k_in[2].set = this.go.set;
+   this.machine.traps[this.trap_name].k_in[2].set = this.go.set;
    return true;
-}
-
-/* Run statement
-   Its just forward in/out to/from the nested reactive machine
-   We have to replace the signal sig_list_callee[i] in the subcircuit by
-   the caller signal sig_list_caller[i] */
-
-function Run(machine, sig_list_caller, sig_list_callee) {
-   var circuit = deep_clone(machine.go_in.stmt_out);
-   this.callee_name = machine.machine_name;
-   this.sig_list_caller = sig_list_caller;
-   this.sig_list_callee = sig_list_callee;
-   Circuit.call(this, "RUN", circuit);
-
-   for (var i in sig_list_caller) {
-      var visitor = new OverrideSignalVisitor(sig_list_caller[i],
-					      sig_list_callee[i]);
-      this.go_in.stmt_out.accept(visitor);
-   }
-}
-
-Run.prototype = new Circuit();
-
-/* Visitor that override the signal sig_old by the signal sig_new */
-
-function OverrideSignalVisitor(sig_new, sig_old) {
-   this.sig_new = sig_new;
-   this.sig_old = sig_old;
-}
-
-OverrideSignalVisitor.prototype.visit = function(stmt) {
-   var is_emit = false;
-   if ((is_emit = stmt instanceof Emit)
-       || stmt instanceof Await
-       || stmt instanceof Present
-       || stmt instanceof Abort) {
-      if (stmt.signal.name == this.sig_old.name) {
-	 stmt.signal = this.sig_new;
-	 if (is_emit)
-	    this.sig_new.emitters++;
-      }
-   }
-}
-
-/* Visitor usefull to reset signal state after reaction */
-
-function ResetSignalVisitor() {
-}
-
-ResetSignalVisitor.prototype.visit = function(stmt) {
-   if (stmt instanceof Emit
-       || stmt instanceof Await
-       || stmt instanceof Present
-       || stmt instanceof Abort) {
-      stmt.signal.set = false;
-      stmt.signal.waiting = stmt.signal.emitters;
-   }
-}
-
-/* Visitor that return all signal embeded */
-
-function EmbeddedSignalsVisitor() {
-   this.signals = [];
-}
-
-EmbeddedSignalsVisitor.prototype.visit = function(stmt) {
-   if (stmt instanceof Emit
-       || stmt instanceof Await
-       || stmt instanceof Present
-       || stmt instanceof Abort) {
-      if (this.signals.indexOf(stmt.signal) < 0)
-	 this.signals.push(stmt.signal);
-   }
 }
 
 /* Visitor that reset register */
@@ -992,4 +928,3 @@ exports.Statement = Statement;
 exports.Trap = Trap;
 exports.TrapId = TrapId;
 exports.Exit = Exit;
-exports.Run = Run;

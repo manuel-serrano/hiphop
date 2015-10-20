@@ -82,39 +82,23 @@ function REACTIVEMACHINE(attrs) {
    return machine;
 }
 
-function EMIT(attrs) {
+function EMIT(machine, attrs) {
    var signal_name = attrs.signal_name;
-   var signal = null;
-   var emit = null;
 
    compile_context.assert_signal_bounded(signal_name, attrs);
-   signal = compile_context.machine.get_signal
-   emit = new reactive.Emit(attrs.signal_name);
-   emit.loc = format_loc(attrs);
-   emit.machine = compile_context.machine;
-   return emit;
-
-//      -   signal.emitters++;
-//-   signal.waiting = signal.emitters;
-
+   return new reactive.Emit(machine, format_loc, attrs.signal_name);
 }
 
 function NOTHING(attrs) {
-   var nothing = new reactive.Nothing();
-   nothing.loc = format_loc(attrs);
-   return nothing;
+   return new reactive.Nothing(compile_context.machine, format_loc(attrs));
 }
 
 function PAUSE(attrs) {
-   var pause = new reactive.Pause();
-   pause.loc = format_loc(attrs);
-   return pause;
+   return new reactive.Pause(compile_context.machine, format_loc(attrs));
 }
 
 function HALT(attrs) {
-   var halt = new reactive.Halt();
-   halt.loc = format_loc(attrs);
-   return halt;
+   return new reactive.Halt(compile_context.machine, format_loc(attrs));
 }
 
 function PRESENT(attrs) {
@@ -125,9 +109,11 @@ function PRESENT(attrs) {
    compile_context.assert_signal_bounded(signal_name, attrs);
    if (children.length < 1)
       fatal("Present must have at least one child.", attrs);
-   present = new reactive.Present(signal_name, children[0], children[1]);
-   present.loc = format_loc(attrs);
-   return present;
+   return new reactive.Present(compile_context.machine,
+			       format_loc(attrs),
+			       signal_name,
+			       children[0],
+			       children[1]);
 }
 
 function AWAIT(attrs) {
@@ -135,79 +121,76 @@ function AWAIT(attrs) {
    var await = null;
 
    compile_context.assert_signal_bounded(signal_name, attrs);
-   await = new reactive.Await(signal_name);
-   await.loc = format_loc(attrs);
-   return await;
+   return new reactive.Await(compile_context.machine,
+			     format_loc(attrs),
+			     signal_name);
 }
 
 function PARALLEL(attrs) {
    var children = get_children(arguments);
-   var parallel = null;
 
    if (children.length != 2)
       fatal("Parallel must have exactly two children.", attrs);
-   parallel = new reactive.Parallel(children[0], children[1]);
-   parallel.loc = format_loc(attrs);
-   return parallel;
+   return new reactive.Parallel(compile_context.machine,
+				format_loc(attrs),
+				children[0],
+				children[1]);
 }
 
 function ABORT(attrs) {
    var children = get_children(arguments);
    var signal_name = attrs.signal_name;
-   var abort = null;
 
    compile_context.assert_signal_bounded(signal_name, attrs);
    if (children.length != 1)
       fatal("Abort must have exactly one child.", attrs);
-   abort = new reactive.Abort(children[0], signal_name);
-   abort.loc = format_loc(attrs);
-   return abort;
+   return new reactive.Abort(compile_context.machine,
+			     format_loc(attrs),
+			     children[0],
+			     signal_name);
 }
 
 function SUSPEND(attrs) {
    var children = get_children(arguments);
    var signal_name = attrs.signal_name;
-   var suspend = null;
 
    compile_context.assert_signal_bounded(signal_name, attrs);
    if (children.length != 1)
       fatal("Suspend must have exactly one child.", attrs);
-   suspend = new reactive.Suspend(children[0], signal);
-   suspend.loc = format_loc(attrs);
-   return suspend;
+   return new reactive.Suspend(compile_context.machime,
+			       format_loc(attrs),
+			       children[0],
+			       signal);
 }
 
 function LOOP(attrs) {
    var children = get_children(arguments);
-   var loop = null;
 
    if (children.length != 1)
       fatal("Loop must have exaclty one child.", attrs);
-   loop = new reactive.Loop(children[0]);
-   loop.loc = format_loc(attrs);
-   return loop;
+   return new reactive.Loop(compile_context.machine,
+			    format_loc(attrs),
+			    children[0]);
 }
 
 function SEQUENCE(attrs) {
    var children = get_children(arguments);
-   var sequence = null;
 
    if (children.length < 2)
       fatal("Sequence must have at least two children.", attrs);
-   sequence = new reactive.Sequence(children);
-   sequence.loc = format_loc(attrs);
-   return sequence;
+   return new reactive.Sequence(compile_context.machine,
+				format_loc(attrs),
+				children);
 }
 
 function ATOM(attrs) {
    var func = attrs.func;
-   var atom = null;
 
    if (!(func instanceof Function))
       fatal("Atom must have a func attribute which is a function.", attrs);
-   atom = new reactive.Atom(attrs.func);
-   atom.loc = format_loc(attrs);
-   return atom;
+   return new reactive.Atom(compile_context.machine,
+			    format_loc(attrs),
+			    attrs.func);
 }
 
 function TRAP(attrs) {
@@ -218,50 +201,21 @@ function TRAP(attrs) {
    if (children.length != 1)
       fatal("Trap must embeded one child.", attrs);
    compile_context.assert_free_trap_name(trap_name, attrs);
-   trap = new reactive.Trap(children[0], trap_name);
-   trap.loc = format_loc(attrs);
+   trap = new reactive.Trap(compile_context.machine,
+			    format_loc(attrs),
+			    children[0],
+			    trap_name);
    compile_context.traps[trap_name] = trap;
    return trap;
 }
 
 function EXIT(attrs) {
    var trap_name = attrs.trap_name;
-   var exit = null;
 
    compile_context.assert_trap_bounded(trap_name, attrs);
-   exit = new reactive.Exit(trap_name);
-   exit.loc = format_loc(attrs);
-   return exit;
-}
-
-function RUN(attrs) {
-   var machine = attrs.machine;
-   var children = get_children(arguments);
-   var run = null;
-   var sig_list_caller = [];
-   var sig_list_callee = [];
-
-   for (var i in children) {
-      var child = children[i];
-
-      if (!(child.caller instanceof reactive.Signal)
-	  || !(child.callee instanceof reactive.Signal))
-	 fatal("MergeSignal must had caller and callee arguments as signal.",
-	       attrs);
-
-      sig_list_caller[i] = child.caller;
-      sig_list_callee[i] = child.callee;
-   }
-
-   if (!(machine instanceof reactive.ReactiveMachine))
-      fatal("Run must had machine attribute.", attrs);
-   run = new reactive.Run(machine, sig_list_caller, sig_list_callee);
-   run.loc = format_loc(attrs);
-   return run;
-}
-
-function MERGESIGNAL(attrs) {
-   return attrs;
+   return new reactive.Exit(compile_context.machine,
+			    format_loc(attrs),
+			    trap_name);
 }
 
 function INPUTSIGNAL(attrs) {
@@ -312,8 +266,6 @@ exports.ATOM = ATOM;
 exports.SUSPEND = SUSPEND;
 exports.TRAP = TRAP;
 exports.EXIT = EXIT;
-exports.RUN = RUN;
-exports.MERGESIGNAL = MERGESIGNAL;
 exports.LOCALSIGNAL = LOCALSIGNAL;
 exports.INPUTSIGNAL = INPUTSIGNAL;
 exports.OUTPUTSIGNAL = OUTPUTSIGNAL;
