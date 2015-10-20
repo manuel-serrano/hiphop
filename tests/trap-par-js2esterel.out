@@ -1,3 +1,5 @@
+module trappar:
+output A, B, C;
 trap T in
         [ emit A;
           exit T ]
@@ -6,3 +8,4 @@ trap T in
           pause;
           emit C ]
 end trap
+end module

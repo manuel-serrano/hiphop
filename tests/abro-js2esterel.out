@@ -1,3 +1,6 @@
+module ABRO:
+input R, A, B;
+output O;
 loop
     abort
         [     await A
@@ -7,3 +10,4 @@ loop
         halt
     when R
 end loop
+end module

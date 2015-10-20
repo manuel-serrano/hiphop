@@ -807,12 +807,12 @@ Suspend.prototype.run = function() {
    return true;
 }
 
-/* Trap/Shift - Figure 11.12/11.13 page 124
-   When we'll support parallel traps, trapid could be a list of trapid */
+/* Trap/Shift - Figure 11.12/11.13 page 124 */
 
 function Trap(machine, loc, circuit, trap_name) {
    Circuit.call(this, machine, loc, "TRAP", circuit);
    this.debug_code = DEBUG_TRAP;
+   this.trap_name = trap_name;
 }
 
 Trap.prototype = new Circuit();

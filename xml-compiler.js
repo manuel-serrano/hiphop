@@ -18,7 +18,7 @@ Context.prototype.assert_free_signal_name = function(signal_name, attrs) {
 }
 
 Context.prototype.assert_free_trap_name = function(trap_name, attrs) {
-   if (typeof(trap_name != 'string'))
+   if (typeof(trap_name) != 'string')
       fatal("trap_name not a string.", attrs);
    if (this.machine.traps[trap_name] != undefined)
       fatal("Trap " + trap_name + " already used.", attrs);
@@ -200,7 +200,7 @@ function TRAP(attrs) {
 			    format_loc(attrs),
 			    children[0],
 			    trap_name);
-   compile_context.traps[trap_name] = trap;
+   compile_context.machine.traps[trap_name] = trap;
    return trap;
 }
 

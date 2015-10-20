@@ -4,18 +4,20 @@ var reactive = require("../reactive-kernel.js");
 var sigA = new reactive.Signal("A", false);
 var sigB = new reactive.Signal("B", false);
 var sigC = new reactive.Signal("C", false);
-var tid = new reactive.TrapId("T");
 
 var prg = <rjs.reactivemachine name="trapsimple">
+  <rjs.outputsignal ref=${sigA}/>
+  <rjs.outputsignal ref=${sigB}/>
+  <rjs.outputsignal ref=${sigC}/>
   <rjs.sequence>
-    <rjs.emit signal=${sigA}/>
-    <rjs.trap trapid=${tid}>
+    <rjs.emit signal_name="A"/>
+    <rjs.trap trap_name="T">
       <rjs.sequence>
-	<rjs.exit trapid=${tid}/>
-	<rjs.emit signal=${sigB}/>
+	<rjs.exit trap_name="T"/>
+	<rjs.emit signal_name="B"/>
       </rjs.sequence>
     </rjs.trap>
-    <rjs.emit signal=${sigC}/>
+    <rjs.emit signal_name="C"/>
   </rjs.sequence>
 </rjs.reactivemachine>;
 

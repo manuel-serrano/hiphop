@@ -1,3 +1,6 @@
+module abortpresent:
+input I;
+output J, K, V;
 loop
     abort
         emit J;
@@ -5,7 +8,8 @@ loop
         emit V;
         pause
     when I;
-    if I then
+    present I then
         emit K
-    end if
+    end present
 end loop
+end module

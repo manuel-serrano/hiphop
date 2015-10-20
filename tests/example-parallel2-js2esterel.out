@@ -1,5 +1,10 @@
-    if I then
-        emit J
-    end if
-||
-    emit I
+module parallel2:
+output J;
+signal I in
+        present I then
+            emit J
+        end present
+    ||
+        emit I
+end signal
+end module

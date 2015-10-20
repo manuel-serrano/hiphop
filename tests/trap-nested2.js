@@ -6,24 +6,26 @@ var sigA = new reactive.Signal("A", false);
 var sigB = new reactive.Signal("B", false);
 var sigC = new reactive.Signal("C", false);
 var sigD = new reactive.Signal("D", false);
-var tU = new reactive.TrapId("U");
-var tT = new reactive.TrapId("T");
 
 var prg = <rjs.reactivemachine name="trapnested2">
+  <rjs.outputsignal ref=${sigA}/>
+  <rjs.outputsignal ref=${sigB}/>
+  <rjs.outputsignal ref=${sigC}/>
+  <rjs.outputsignal ref=${sigD}/>
   <rjs.sequence>
-    <rjs.emit signal=${sigA}/>
-    <rjs.trap trapid=${tU}>
+    <rjs.emit signal_name="A"/>
+    <rjs.trap trap_name="U">
       <rjs.sequence>
-	<rjs.trap trapid=${tT}>
+	<rjs.trap trap_name="T">
 	  <rjs.sequence>
-	    <rjs.exit trapid=${tU}/>
-	    <rjs.emit signal=${sigB}/>
+	    <rjs.exit trap_name="U"/>
+	    <rjs.emit signal_name="B"/>
 	  </rjs.sequence>
 	</rjs.trap>
-	<rjs.emit signal=${sigC}/>
+	<rjs.emit signal_name="C"/>
       </rjs.sequence>
     </rjs.trap>
-    <rjs.emit signal=${sigD}/>
+    <rjs.emit signal_name="D"/>
   </rjs.sequence>
 </rjs.reactivemachine>;
 

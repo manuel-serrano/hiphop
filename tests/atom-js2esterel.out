@@ -1,4 +1,0 @@
-loop
-    pause;
-    atom
-end loop

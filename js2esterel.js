@@ -33,7 +33,7 @@ reactive.ReactiveMachine.prototype.esterel_code = function(indent) {
       for (var i in this.input_signals) {
 	 count++;
 	 buf += this.input_signals[i].name;
-	 buf += count == len ? ";\n" : " ";
+	 buf += count == len ? ";\n" : ", ";
       }
    }
 
@@ -44,7 +44,7 @@ reactive.ReactiveMachine.prototype.esterel_code = function(indent) {
       for (var i in this.output_signals) {
 	 count++;
 	 buf += this.output_signals[i].name;
-	 buf += count == len ? ";\n" : " ";
+	 buf += count == len ? ";\n" : ", ";
       }
    }
 
@@ -65,14 +65,14 @@ reactive.Pause.prototype.esterel_code = function(indent) {
 reactive.Present.prototype.esterel_code = function(indent) {
    var buf = "";
 
-   buf += apply_indent(indent) + "if " + this.signal_name + " then\n";
+   buf += apply_indent(indent) + "present " + this.signal_name + " then\n";
    buf += this.go_in[0].stmt_out.esterel_code(indent + INDENT_LEVEL);
 
    if (!(this.go_in[1].stmt_out instanceof reactive.Nothing)) {
       buf += "\n" + apply_indent(indent) + "else\n";
       buf += this.go_in[1].stmt_out.esterel_code(indent + INDENT_LEVEL);
    }
-   buf += "\n" + apply_indent(indent) + "end if";
+   buf += "\n" + apply_indent(indent) + "end present";
 
    return buf;
 }
@@ -197,13 +197,13 @@ reactive.Atom.prototype.esterel_code = function(indent) {
 }
 
 reactive.Exit.prototype.esterel_code = function(indent) {
-   return apply_indent(indent) + "exit " + this.trapid.name;
+   return apply_indent(indent) + "exit " + this.trap_name;
 }
 
 reactive.Trap.prototype.esterel_code = function(indent) {
    var buf = "";
 
-   buf += apply_indent(indent) + "trap " + this.trapid.name + " in\n";
+   buf += apply_indent(indent) + "trap " + this.trap_name + " in\n";
    buf += this.go_in.stmt_out.esterel_code(indent + INDENT_LEVEL);
    buf += "\n" + apply_indent(indent) + "end trap";
 

@@ -1,4 +1,6 @@
+module nothingpar:
     [ nothing;
       pause ]
 ||
     nothing
+end module
