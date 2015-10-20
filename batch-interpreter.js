@@ -1,4 +1,4 @@
-"use strict"
+"use hopscript"
 
 function configure(prg, cmd) {
    if (cmd == "!reset") {
@@ -11,7 +11,7 @@ function configure(prg, cmd) {
 
    var sig_name = cmd.split(" ");
    for (var i in sig_name)
-      set_signal(prg.signals, sig_name[i]);
+      set_signal(prg.input_signals, sig_name[i]);
    return true;
 }
 
@@ -33,7 +33,7 @@ function interpreter(prg) {
 	    cmd = cmd.substr(1, cmd.length);
 	 raw = raw.substr(i_sc + 1, raw.length);
 	 if(configure(prg, cmd))
-	    prg.react();
+	    prg.react(prg.seq + 1);
       }
    });
 }

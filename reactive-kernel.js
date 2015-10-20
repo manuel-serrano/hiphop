@@ -78,6 +78,11 @@ Signal.prototype.incr_emitters = function() {
    this.waiting = this.emitters;
 }
 
+Signal.prototype.reset = function() {
+   this.set = false;
+   this.waiting = this.emitters;
+}
+
 /* A wire connect two statements.
    The `set` attribute, contains the status (1 or 0) of the wire */
 
@@ -156,7 +161,7 @@ Statement.prototype.assert_completion_code = function() {
 function Circuit(machine, loc, name, subcircuit) {
    Statement.call(this, machine, loc, name);
 
-   if (subcircuit != undefined || subcircuit != null)
+   if (subcircuit != undefined && subcircuit != null)
       this.build_wires(subcircuit);
 }
 
@@ -269,12 +274,10 @@ ReactiveMachine.prototype = new Circuit();
 ReactiveMachine.prototype.react = function(seq) {
    var go = false;
 
-   if (seq != undefined && seq <= this.seq)
+   if (seq <= this.seq)
       return;
 
    if (this.boot_reg) {
-      var visitor = new ResetRegisterVisitor();
-      this.accept(visitor);
       go = this.boot_reg;
       this.boot_reg = false;
    }
@@ -292,17 +295,20 @@ ReactiveMachine.prototype.react = function(seq) {
       var buf_out = "--- Output:";
       var semicolon_space = " ";
 
-      for (var i in this.signals) {
-	 var sig = this.signals[i];
+      for (var i in this.input_signals) {
+	 var sig = this.input_signals[i];
 
 	 if (sig.set) {
-	    if (sig.emitters == 0) {
 	       buf_in += " " + sig.name;
 	       semicolon_space = "";
-	    }
-	    if (sig.emitters > 0 && sig.waiting == 0 && !sig.local)
-	       buf_out += " " + sig.name;
 	 }
+      }
+
+      for (var i in this.output_signals) {
+	 var sig = this.output_signals[i];
+
+	 if (sig.waiting == 0)
+	       buf_out += " " + sig.name;
       }
 
       buf_in += semicolon_space + ";"
@@ -310,12 +316,22 @@ ReactiveMachine.prototype.react = function(seq) {
       console.log(buf_out);
    }
 
-   this.go_in.stmt_out.accept(new ResetSignalVisitor());
+   for (var i in this.input_signals)
+      this.input_signals[i].reset();
+
+   for (var i in this.output_signals)
+      this.output_signals[i].reset();
+
+   for (var i in this.local_signals)
+      for (var j in this.local_signals[i])
+	 this.local_signals[i][j].reset();
+
    this.reset_react = false;
 }
 
 ReactiveMachine.prototype.reset = function() {
    this.boot_reg = true;
+
    if (DEBUG_FLAGS & DEBUG_REACT) {
       console.log(this.machine_name + "> !reset;");
       console.log("--- Automaton", this.machine_name, "reset");
@@ -846,6 +862,14 @@ Exit.prototype.run = function() {
    return true;
 }
 
+/* Local signal idenfifier (not instances) which embeded circutis */
+function LocalSignalIdentifier(machine, loc, subcircuit, signal_name) {
+   Circuit.call(this, machine, loc, "LOCALSIGNALIDENTIFIER", subcircuit);
+   this.signal_name = signal_name;
+}
+
+LocalSignalIdentifier.prototype = new Circuit();
+
 /* Visitor that reset register */
 
 function ResetRegisterVisitor() {
@@ -915,3 +939,4 @@ exports.ReactiveMachine = ReactiveMachine;
 exports.Statement = Statement;
 exports.Trap = Trap;
 exports.Exit = Exit;
+exports.LocalSignalIdentifier = LocalSignalIdentifier;

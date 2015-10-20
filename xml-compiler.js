@@ -7,20 +7,14 @@ function Context() {
    this.incarnation_lvl = 0;
 }
 
-Context.prototype.assert_free_signal_name = function(signal_name, attrs) {
-   if (this.machine.local_signals[signal_name] != undefined
-       || this.machine.input_signals[signal_name] != undefined
-       || this.machine.output_signals[signal_name] != undefined)
-      fatal("Name " + signal_name + " already used.", attrs);
+Context.prototype.is_free_signal_name = function(signal_name) {
+   return (this.machine.input_signals[signal_name] == undefined
+	   && this.machine.output_signals[signal_name] == undefined)
 }
 
-Context.prototype.assert_signal_bounded = function(signal_name, attrs) {
-   if (typeof(signal_name) != 'string')
-      fatal("signal_name not a string.", attrs);
-   if (this.machine.local_signals[signal_name] == undefined
-       && this.machine.input_signals[signal_name] == undefined
-       && this.machine.output_signals[signal_name] == undefined)
-      fatal("Signal " + signal_name + " is unknown.", attrs);
+Context.prototype.assert_free_signal_name = function(signal_name, attrs) {
+   if (!this.is_free_signal_name(signal_name))
+      fatal("Name " + signal_name + " already used.", attrs);
 }
 
 Context.prototype.assert_free_trap_name = function(trap_name, attrs) {
@@ -30,11 +24,11 @@ Context.prototype.assert_free_trap_name = function(trap_name, attrs) {
       fatal("Trap " + trap_name + " already used.", attrs);
 }
 
-Context.prototype.assert_trap_bounded = function(trap_name, attrs) {
-   if (typeof(trap_name != 'string'))
-      fatal("trap_name not a string.", attrs);
-   if (this.machine.traps[trap_name] == undefined)
-      fatal("Trap " + trap_name + " is unknown.", attrs);
+Context.prototype.lazymake_local_signal = function(signal_name) {
+   if (compile_context.is_free_signal_name(signal_name)
+      && compile_context.machine.local_signals[signal_name] == undefined)
+      compile_context.machine.local_signals[signal_name] = [
+	 new reactive.Signal(signal_name) ];
 }
 
 var compile_context = new Context();
@@ -65,12 +59,11 @@ function REACTIVEMACHINE(attrs) {
    var len = children.length;
    var machine = null;
 
-   if (!(children[len - 1] instanceof Statement))
+   if (!(children[len - 1] instanceof reactive.Statement))
       fatal("ReactiveMachime last child must be a statement", attrs);
 
    for (var i = 0; i < len - 2; i++)
-      if (!((children[i] instanceof INPUTSIGNAL)
-	    || (children[i] instanceof OUTPUTSIGNAL)))
+      if (!(children[i] instanceof reactive.Signal))
 	 fatal("ReactiveMachine child " + i
 	       + " is not an input or output signal.", attrs);
 
@@ -85,7 +78,7 @@ function REACTIVEMACHINE(attrs) {
 function EMIT(attrs) {
    var signal_name = attrs.signal_name;
 
-   compile_context.assert_signal_bounded(signal_name, attrs);
+   compile_context.lazymake_local_signal(signal_name);
    return new reactive.Emit(compile_context.machine,
 			    format_loc,
 			    attrs.signal_name);
@@ -108,7 +101,7 @@ function PRESENT(attrs) {
    var signal_name = attrs.signal_name;
    var present = null;
 
-   compile_context.assert_signal_bounded(signal_name, attrs);
+   compile_context.lazymake_local_signal(signal_name);
    if (children.length < 1)
       fatal("Present must have at least one child.", attrs);
    return new reactive.Present(compile_context.machine,
@@ -122,7 +115,7 @@ function AWAIT(attrs) {
    var signal_name = attrs.signal_name;
    var await = null;
 
-   compile_context.assert_signal_bounded(signal_name, attrs);
+   compile_context.lazymake_local_signal(signal_name);
    return new reactive.Await(compile_context.machine,
 			     format_loc(attrs),
 			     signal_name);
@@ -143,7 +136,7 @@ function ABORT(attrs) {
    var children = get_children(arguments);
    var signal_name = attrs.signal_name;
 
-   compile_context.assert_signal_bounded(signal_name, attrs);
+   compile_context.lazymake_local_signal(signal_name);
    if (children.length != 1)
       fatal("Abort must have exactly one child.", attrs);
    return new reactive.Abort(compile_context.machine,
@@ -156,7 +149,7 @@ function SUSPEND(attrs) {
    var children = get_children(arguments);
    var signal_name = attrs.signal_name;
 
-   compile_context.assert_signal_bounded(signal_name, attrs);
+   compile_context.lazymake_local_signal(signal_name);
    if (children.length != 1)
       fatal("Suspend must have exactly one child.", attrs);
    return new reactive.Suspend(compile_context.machime,
@@ -212,12 +205,9 @@ function TRAP(attrs) {
 }
 
 function EXIT(attrs) {
-   var trap_name = attrs.trap_name;
-
-   compile_context.assert_trap_bounded(trap_name, attrs);
    return new reactive.Exit(compile_context.machine,
 			    format_loc(attrs),
-			    trap_name);
+			    attrs.trap_name);
 }
 
 function INPUTSIGNAL(attrs) {
@@ -241,15 +231,27 @@ function OUTPUTSIGNAL(attrs) {
 }
 
 function LOCALSIGNAL(attrs) {
+   var localsignal = null;
    var signal_name = attrs.signal_name;
+   var machine = compile_context.machine;
    var sigs = [];
+   var children = get_children(arguments);
    if (typeof(signal_name) != 'string')
       fatal("LocalSignal must had a name argument as string.", attrs);
+
    compile_context.assert_free_signal_name(signal_name, attrs);
-   compile_context.machine.local_signals[signal_name] = sigs;
-   for (var i = 0; i <= compile_context.incarnation_lvl; i++)
-      sigs[i] = new reactive.Signal(signal_name, null);
-   return get_children(arguments);
+   if (machine.local_signals[signal_name] == undefined) {
+      compile_context.machine.local_signals[signal_name] = sigs;
+      for (var i = 0; i <= compile_context.incarnation_lvl; i++)
+	 sigs[i] = new reactive.Signal(signal_name, null);
+   }
+
+   if (children.length != 1)
+      fatal("LocalSignalIdentifier must have only one statement child.", attrs);
+   return new reactive.LocalSignalIdentifier(compile_context.machine,
+					     format_loc(attrs),
+					     children[0],
+					     signal_name);
 }
 
 exports.REACTIVEMACHINE = REACTIVEMACHINE;

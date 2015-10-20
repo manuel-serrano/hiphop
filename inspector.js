@@ -1,4 +1,4 @@
-"use strict"
+"use hopscript"
 
 var reactive = require("./reactive-kernel.js");
 var fs = require("fs");
@@ -26,8 +26,8 @@ function print_no_newline(buf) {
    fs.fsyncSync(1);
 }
 
-function Inspector(stmt, level) {
-   this.level = level == undefined ? 0 : level;
+function Inspector(stmt, level = 0) {
+   this.level = level;
    this.stmt = stmt;
    this.properties = null;
    this.read_properties();
