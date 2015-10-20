@@ -44,4 +44,3 @@ var m2 = <rjs.reactivemachine name="run2">
 </rjs.reactivemachine>;
 
 exports.prg = m2;
-console.log(m2.esterel_code());
