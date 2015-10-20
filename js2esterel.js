@@ -22,11 +22,40 @@ reactive.Statement.prototype.esterel_code = function(indent) {
 }
 
 reactive.ReactiveMachine.prototype.esterel_code = function(indent) {
-   return this.go_in.stmt_out.esterel_code(0);
+   var buf = "module " + this.machine_name + ":\n";
+   var len;
+   var count;
+
+   len = Object.keys(this.input_signals).length;
+   if (len > 0) {
+      buf += "input ";
+      count = 0;
+      for (var i in this.input_signals) {
+	 count++;
+	 buf += this.input_signals[i].name;
+	 buf += count == len ? ";\n" : " ";
+      }
+   }
+
+   len = Object.keys(this.output_signals).length;
+   if (len > 0) {
+      buf += "output ";
+      count = 0;
+      for (var i in this.output_signals) {
+	 count++;
+	 buf += this.output_signals[i].name;
+	 buf += count == len ? ";\n" : " ";
+      }
+   }
+
+   buf += this.go_in.stmt_out.esterel_code(0);
+   buf += "\nend module";
+
+   return buf;
 }
 
 reactive.Emit.prototype.esterel_code = function(indent) {
-   return apply_indent(indent) + "emit " + this.signal.name;
+   return apply_indent(indent) + "emit " + this.signal_name;
 }
 
 reactive.Pause.prototype.esterel_code = function(indent) {
@@ -36,7 +65,7 @@ reactive.Pause.prototype.esterel_code = function(indent) {
 reactive.Present.prototype.esterel_code = function(indent) {
    var buf = "";
 
-   buf += apply_indent(indent) + "if " + this.signal.name + " then\n";
+   buf += apply_indent(indent) + "if " + this.signal_name + " then\n";
    buf += this.go_in[0].stmt_out.esterel_code(indent + INDENT_LEVEL);
 
    if (!(this.go_in[1].stmt_out instanceof reactive.Nothing)) {
@@ -96,7 +125,7 @@ reactive.Abort.prototype.esterel_code = function(indent) {
 
    buf += apply_indent(indent) + "abort\n";
    buf += this.go_in.stmt_out.esterel_code(indent + INDENT_LEVEL);
-   buf += "\n" + apply_indent(indent) + "when " + this.signal.name;
+   buf += "\n" + apply_indent(indent) + "when " + this.signal_name;
 
    return buf;
 }
@@ -106,13 +135,13 @@ reactive.Suspend.prototype.esterel_code = function(indent) {
 
    buf += apply_indent(indent) + "suspend\n";
    buf += this.go_in.stmt_out.esterel_code(indent + INDENT_LEVEL);
-   buf += "\n" + apply_indent(indent) + "when " + this.signal.name;
+   buf += "\n" + apply_indent(indent) + "when " + this.signal_name;
 
    return buf;
 }
 
 reactive.Await.prototype.esterel_code = function(indent) {
-   return apply_indent(indent) + "await " + this.signal.name;
+   return apply_indent(indent) + "await " + this.signal_name;
 }
 
 reactive.Halt.prototype.esterel_code = function(indent) {
@@ -181,20 +210,12 @@ reactive.Trap.prototype.esterel_code = function(indent) {
    return buf;
 }
 
-reactive.Run.prototype.esterel_code = function(indent) {
-   var buf = "run " + this.callee_name;
-   var len = this.sig_list_caller.length;
+reactive.LocalSignalIdentifier.prototype.esterel_code = function(indent) {
+   var buf = "";
 
-   if (len > 0) {
-      buf += " [ signal ";
-      for (var i = 0; i < len; i++) {
-	 buf += this.sig_list_caller[i].name + " / "
-	    + this.sig_list_callee[i].name;
-	 if (i + 1 < len)
-	    buf += ", ";
-      }
-      buf += " ]";
-   }
+   buf += apply_indent(indent) + "signal " + this.signal_name + " in\n";
+   buf += this.go_in.stmt_out.esterel_code(indent + INDENT_LEVEL);
+   buf += "\n" + apply_indent(indent) + "end signal";
 
-   return apply_indent(indent) + buf;
+   return buf;
 }
