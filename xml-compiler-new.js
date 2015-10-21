@@ -80,7 +80,8 @@ function REACTIVEMACHINE(attrs) {
 				     children[len - 1]);
    machine.accept(new BuildTreeVisitor(machine));
    machine.accept_auto(new CheckNamesVisitor(sig_names));
-   //machine.accept(new PrintTreeVisitor(machine));
+   machine.accept(new SetIncarnationLevelVisitor());
+   machine.accept(new PrintTreeVisitor(machine));
    return machine;
 }
 
@@ -243,7 +244,11 @@ PrintTreeVisitor.prototype.visit = function(node) {
    else if (node instanceof ast.Trap || node instanceof ast.Exit)
       buf = buf + " " + node.trap_name;
 
-   console.log(buf + " [parent: " + buf_parent + "]");
+   console.log(buf
+	       + " [parent: "
+	       + buf_parent
+	       + " / lvl: "
+	       + node.incarnation_lvl + "]");
 
    if (node instanceof ast.Circuit) {
       var prev_indent = this.indent;
@@ -278,6 +283,42 @@ CheckNamesVisitor.prototype.visit = function(node) {
 	      || node instanceof ast.Present)
       if (this.used_names.indexOf(node.signal_name) < 0)
 	 unknown_name_error(node.signal_name, node.loc);
+}
+
+function SetIncarnationLevelVisitor() {
+   this.in_loop = 0;
+   this.lvl = 0;
+}
+
+SetIncarnationLevelVisitor.prototype.visit = function(node) {
+   if (node instanceof ast.Circuit) {
+      var node_is_loop = false;
+      var node_must_incr = false;
+
+      if ((node instanceof ast.LocalSignal
+	   || node instanceof ast.Parallel)
+	  && this.in_loop > 0) {
+	 this.lvl++;
+	 node_must_incr = true;
+      } else if (node instanceof ast.Loop) {
+	 this.in_loop++;
+	 node_is_loop = true;
+      }
+
+      node.incarnation_lvl = this.lvl;
+      for (var i in node.subcircuit) {
+	 node.subcircuit[i].accept(this);
+      }
+
+      if (node_is_loop)
+	 this.in_loop--;
+
+      if (node_must_incr)
+	 this.lvl--;
+   } else if (node instanceof ast.Statement)
+      node.incarnation_lvl = this.lvl;
+   else
+      fatal("Inconsitant state", node.loc);
 }
 
 exports.REACTIVEMACHINE = REACTIVEMACHINE;

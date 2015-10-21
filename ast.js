@@ -16,7 +16,7 @@ exports.ASTNode = ASTNode;
 
 function Statement(name, loc) {
    ASTNode.call(this, name, loc);
-   this.incarnation_lvl;
+   this.incarnation_lvl = 0;
 }
 Statement.prototype = new ASTNode();
 exports.Statement = Statement;
