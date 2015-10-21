@@ -164,7 +164,7 @@ InputSignal.prototype = new Signal();
 exports.InputSignal = InputSignal;
 
 function OutputSignal(loc, signal_ref) {
-   ASTNode.call(this, "OUTPUTSIGNAL", loc, signal_ref);
+   Signal.call(this, "OUTPUTSIGNAL", loc, signal_ref);
 }
 OutputSignal.prototype = new Signal();
 exports.OutputSignal = OutputSignal;
