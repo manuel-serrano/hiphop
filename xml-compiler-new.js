@@ -84,10 +84,10 @@ function REACTIVEMACHINE(attrs) {
    ast_machine.accept_auto(new CheckNamesVisitor(sig_names));
    ast_machine.accept(new SetIncarnationLevelVisitor());
    ast_machine.accept(new SetExitReturnCodeVisitor());
-   ast_machine.accept_auto(new SetLocalSignalsVisitor(ast_machine, machine));
-//   machime.accept_auto(new MakeCircuitVisitor(ast_machine, machine));
-   ast_machine.accept(new PrintTreeVisitor(ast_machine));
-   console.log(machine);
+   ast_machine.accept_auto(new SetLocalSignalsVisitor(machine));
+   ast_machime.accept_auto(new BuildCircuitVisitor(machine));
+   //ast_machine.accept(new PrintTreeVisitor(ast_machine));
+   //console.log(machine);
    return machine;
 }
 
@@ -354,8 +354,7 @@ SetExitReturnCodeVisitor.prototype.visit = function(node) {
    }
 }
 
-function SetLocalSignalsVisitor(ast_machine, machine) {
-   this.ast_machine = ast_machine;
+function SetLocalSignalsVisitor(machine) {
    this.machine = machine;
 }
 
@@ -368,6 +367,13 @@ SetLocalSignalsVisitor.prototype.visit = function(node) {
       for (var i = 0; i < node.incarnation_lvl; i++)
 	 sigs[name][i] = new reactive.Signal(name, false);
    }
+}
+
+function BuildCircuitVisitor(machine) {
+   this.machine = machine;
+}
+
+BuildCircuitVisitor.prototype.visit = function(node) {
 }
 
 exports.REACTIVEMACHINE = REACTIVEMACHINE;
