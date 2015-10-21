@@ -254,7 +254,7 @@ function LOCALSIGNAL(attrs) {
    var machine = compile_context.machine;
    var sigs = [];
    var children = get_children(arguments);
-   
+
    check_signal_name(signal_name, attrs);
    compile_context.assert_free_signal_name(signal_name, attrs);
    if (machine.local_signals[signal_name] == undefined) {
