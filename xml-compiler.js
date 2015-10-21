@@ -54,6 +54,16 @@ function fatal(msg, attrs) {
    process.exit(1);
 }
 
+function check_signal_name(signal_name, attrs) {
+   if (typeof(signal_name) != 'string' || signal_name.length <= 0)
+      fatal("signal_name not a string.", attrs);
+}
+
+function check_trap_name(trap_name, attrs) {
+   if (typeof(trap_name) != 'string' || trap_name.length <= 0)
+      fatal("trap_name not a string.", attrs);
+}
+
 function REACTIVEMACHINE(attrs) {
    var children = get_children(arguments);
    var len = children.length;
@@ -78,6 +88,7 @@ function REACTIVEMACHINE(attrs) {
 function EMIT(attrs) {
    var signal_name = attrs.signal_name;
 
+   check_signal_name(signal_name, attrs);
    compile_context.lazymake_local_signal(signal_name);
    return new reactive.Emit(compile_context.machine,
 			    format_loc,
@@ -101,6 +112,7 @@ function PRESENT(attrs) {
    var signal_name = attrs.signal_name;
    var present = null;
 
+   check_signal_name(signal_name, attrs);
    compile_context.lazymake_local_signal(signal_name);
    if (children.length < 1)
       fatal("Present must have at least one child.", attrs);
@@ -115,6 +127,7 @@ function AWAIT(attrs) {
    var signal_name = attrs.signal_name;
    var await = null;
 
+   check_signal_name(signal_name, attrs);
    compile_context.lazymake_local_signal(signal_name);
    return new reactive.Await(compile_context.machine,
 			     format_loc(attrs),
@@ -136,6 +149,7 @@ function ABORT(attrs) {
    var children = get_children(arguments);
    var signal_name = attrs.signal_name;
 
+   check_signal_name(signal_name, attrs);
    compile_context.lazymake_local_signal(signal_name);
    if (children.length != 1)
       fatal("Abort must have exactly one child.", attrs);
@@ -149,6 +163,7 @@ function SUSPEND(attrs) {
    var children = get_children(arguments);
    var signal_name = attrs.signal_name;
 
+   check_signal_name(signal_name, attrs);
    compile_context.lazymake_local_signal(signal_name);
    if (children.length != 1)
       fatal("Suspend must have exactly one child.", attrs);
@@ -193,6 +208,7 @@ function TRAP(attrs) {
    var trap_name = attrs.trap_name;
    var trap = null;
 
+   check_trap_name(trap_name, attrs);
    if (children.length != 1)
       fatal("Trap must embeded one child.", attrs);
    compile_context.assert_free_trap_name(trap_name, attrs);
@@ -205,6 +221,7 @@ function TRAP(attrs) {
 }
 
 function EXIT(attrs) {
+   check_trap_name(attrs.trap_name, attrs);
    return new reactive.Exit(compile_context.machine,
 			    format_loc(attrs),
 			    attrs.trap_name);
@@ -236,9 +253,8 @@ function LOCALSIGNAL(attrs) {
    var machine = compile_context.machine;
    var sigs = [];
    var children = get_children(arguments);
-   if (typeof(signal_name) != 'string')
-      fatal("LocalSignal must had a name argument as string.", attrs);
-
+   
+   check_signal_name(signal_name, attrs);
    compile_context.assert_free_signal_name(signal_name, attrs);
    if (machine.local_signals[signal_name] == undefined) {
       compile_context.machine.local_signals[signal_name] = sigs;
