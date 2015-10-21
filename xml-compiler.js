@@ -1,5 +1,6 @@
 "use hopscript"
 
+var ast = require("./ast.js");
 var reactive = require("./reactive-kernel.js");
 
 function Context() {
