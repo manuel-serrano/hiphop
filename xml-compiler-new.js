@@ -44,7 +44,8 @@ function check_trap_name(trap_name, attrs) {
 function REACTIVEMACHINE(attrs) {
    var children = get_children(arguments);
    var len = children.length;
-   var machine = null;
+   var ast_machine = null;
+   var machine = new reactive.ReactiveMachine(format_loc(attrs), attrs.name);
    var inputs = [];
    var outputs = [];
    var sig_names = [];
@@ -52,7 +53,6 @@ function REACTIVEMACHINE(attrs) {
    if (!(children[len - 1] instanceof ast.Statement))
       fatal("ReactiveMachime last child must be a statement",
 	    format_loc(attrs));
-
 
    for (var i = 0; i < len - 1; i++) {
       var child = children[i];
@@ -64,27 +64,30 @@ function REACTIVEMACHINE(attrs) {
 	 if (sig_names.indexOf(child.signal_ref.name) > -1)
 	    already_used_name_error(child.signal_ref.name, format_loc(attrs));
 	 inputs.push(child);
+	 machine.input_signals[child.signal_ref.name] = child.signal_ref;
 	 sig_names.push(child.signal_ref.name);
       } else {
 	 if (sig_names.indexOf(child.signal_ref.name) > -1)
 	    already_used_name_error(child.signal_ref.name, format_loc(attrs));
 	 outputs.push(child);
+	 machine.output_signals[child.signal_ref.name] = child.signal_ref;
 	 sig_names.push(child.signal_ref.name);
       }
    }
 
-   machine = new ast.ReactiveMachine(format_loc(attrs),
+   ast_machine = new ast.ReactiveMachine(format_loc(attrs),
 				     attrs.name,
 				     inputs,
 				     outputs,
 				     children[len - 1]);
-   machine.accept(new BuildTreeVisitor(machine));
-   machine.accept_auto(new CheckNamesVisitor(sig_names));
-   machine.accept(new SetIncarnationLevelVisitor());
-   machine.accept(new SetExitReturnCodeVisitor());
-//   machine.accept(new SetIdentifiersVisitor());
-//   machime.accept(new MakeCircuitVisitor());
-   machine.accept(new PrintTreeVisitor(machine));
+   ast_machine.accept(new BuildTreeVisitor(ast_machine));
+   ast_machine.accept_auto(new CheckNamesVisitor(sig_names));
+   ast_machine.accept(new SetIncarnationLevelVisitor());
+   ast_machine.accept(new SetExitReturnCodeVisitor());
+   ast_machine.accept_auto(new SetLocalSignalsVisitor(ast_machine, machine));
+//   machime.accept_auto(new MakeCircuitVisitor(ast_machine, machine));
+   ast_machine.accept(new PrintTreeVisitor(ast_machine));
+   console.log(machine);
    return machine;
 }
 
@@ -348,6 +351,22 @@ SetExitReturnCodeVisitor.prototype.visit = function(node) {
       var offset = this.trap_stack.length
 	  - this.trap_stack.indexOf(node.trap_name) - 1;
       node.return_code = 2 + offset;
+   }
+}
+
+function SetLocalSignalsVisitor(ast_machine, machine) {
+   this.ast_machine = ast_machine;
+   this.machine = machine;
+}
+
+SetLocalSignalsVisitor.prototype.visit = function(node) {
+   if (node instanceof ast.LocalSignal) {
+      var name = node.signal_name;
+      var sigs = this.machine.local_signals;
+
+      sigs[name] = [];
+      for (var i = 0; i < node.incarnation_lvl; i++)
+	 sigs[name][i] = new reactive.Signal(name, false);
    }
 }
 

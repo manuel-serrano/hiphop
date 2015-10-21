@@ -257,15 +257,14 @@ MultipleCircuit.prototype.build_out_wires = function(circuit, j) {
    }
 }
 
-function ReactiveMachine() {
-   Circuit.call(this, null, "", "REACTIVE_MACHINE", null);
+function ReactiveMachine(loc, machine_name) {
+   Circuit.call(this, null, loc, "REACTIVE_MACHINE", null);
    this.seq = -1;
    this.boot_reg = true;
-   this.machine_name = "";
+   this.machine_name = machine_name;
    this.local_signals = {};
    this.input_signals = {};
    this.output_signals = {};
-   this.traps = {}
 }
 
 ReactiveMachine.prototype = new Circuit();
@@ -862,7 +861,7 @@ Exit.prototype = new Statement();
 Exit.prototype.run = function() {
    this.k[0].set = false;
    this.k[1].set = false;
-   this.machine.traps[this.trap_name].k_in[2].set = this.go.set;
+   this.k[this.return_code].set = true;
    return true;
 }
 
