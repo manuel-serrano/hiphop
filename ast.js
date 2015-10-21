@@ -24,6 +24,7 @@ exports.Statement = Statement;
 function Emit(loc, signal_name) {
    Statement.call(this, "EMIT", loc);
    this.signal_name = signal_name;
+   this.return_code = 2;
 }
 Emit.prototype = new Statement();
 exports.Emit = Emit;
