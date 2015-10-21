@@ -1,0 +1,35 @@
+module trappar3:
+output S1_and_S2, S1_and_not_S2, not_S1_and_S2, not_S1_and_not_S2;
+signal S1 in
+    signal S2 in
+        loop
+            trap T1 in
+                    [ emit S1;
+                      pause;
+                      exit T1 ]
+                ||
+                    trap T2 in
+                            [ emit S2;
+                              pause;
+                              exit T2 ]
+                        ||
+                            [ present S1 then
+                                  present S2 then
+                                      emit S1_and_S2
+                                  else
+                                      emit S1_and_not_S2
+                                  end present
+                              else
+                                  present S2 then
+                                      emit not_S1_and_S2
+                                  else
+                                      emit not_S1_and_not_S2
+                                  end present
+                              end present;
+                              pause ]
+                    end trap
+            end trap
+        end loop
+    end signal
+end signal
+end module
