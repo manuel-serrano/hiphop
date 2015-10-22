@@ -3,9 +3,6 @@
 var rk = require("./reactive-kernel.js");
 
 function ASTNode(name, loc) {
-   /* `machine` is ast.ReactiveMachine when building the AST and work on it,
-      but it must be changed by a rk.ReactiveMachine when factory() is called */
-
    this.name = name
    this.loc = loc;
    this.machine = null;
@@ -15,16 +12,19 @@ ASTNode.prototype.accept = function(visitor) {
    visitor.visit(this);
 }
 ASTNode.prototype.accept_auto = ASTNode.prototype.accept;
-ASTNode.prototype.factory = function() { /* Return program node of this */ }
 exports.ASTNode = ASTNode;
 
 /* Statements nodes */
 
 function Statement(name, loc) {
+   /* `machine` is ast.ReactiveMachine when building the AST and work on it,
+      but it must be changed by a rk.ReactiveMachine when factory() is called */
+
    ASTNode.call(this, name, loc);
    this.incarnation_lvl = 0;
 }
 Statement.prototype = new ASTNode();
+Statement.prototype.factory = function() { /* Return program node of this */ }
 exports.Statement = Statement;
 
 function Emit(loc, signal_name) {
@@ -90,6 +90,9 @@ function Await(loc, signal_name) {
    this.signal_name = signal_name;
 }
 Await.prototype = new Statement();
+Await.prototype.factory = function() {
+   return new rk.Await(this.machine, this.loc, this.signal_name);
+}
 exports.Await = Await;
 
 /* Circuit nodes */
@@ -113,6 +116,12 @@ function Trap(loc, trap_name, subcircuit) {
    this.trap_name = trap_name;
 }
 Trap.prototype = new Circuit();
+Trap.prototype.factory = function() {
+   return new rk.Trap(this.machine,
+		      this.loc,
+		      this.subcircuit[0],
+		      this.trap_name)
+}
 exports.Trap = Trap;
 
 function ReactiveMachine(loc,
@@ -133,12 +142,21 @@ function Abort(loc, signal_name, subcircuit) {
    this.signal_name = signal_name;
 }
 Abort.prototype = new Circuit();
+Abort.prototype.factory = function() {
+   return new rk.Abort(this.machine,
+		       this.loc,
+		       this.subcircuit[0],
+		       this.signal_name);
+}
 exports.Abort = Abort;
 
 function Loop(loc, subcircuit) {
    Circuit.call(this, "LOOP", loc, subcircuit);
 }
 Loop.prototype = new Circuit();
+Loop.prototype.factory = function() {
+   return new rk.Loop(this.machine, this.loc, this.subcircuit[0]);
+}
 exports.Loop = Loop;
 
 function Suspend(loc, signal_name, subcircuit) {
@@ -146,12 +164,24 @@ function Suspend(loc, signal_name, subcircuit) {
    this.signal_name = signal_name;
 }
 Suspend.prototype = new Circuit();
+Suspend.prototype.factory = function() {
+   return new rk.Suspend(this.machine,
+			 this.loc,
+			 this.subcircuit[0],
+			 this.signal_name)
+}
 exports.Suspend = Suspend;
 
 function Parallel(loc, subcircuits) {
    Circuit.call(this, "PARALLEL", loc, subcircuits);
 }
 Parallel.prototype = new Circuit();
+Parallel.prototype.factory = function() {
+   return new rk.Parallel(this.machine,
+			  this.loc,
+			  this.subcircuit[0],
+			  this.subcircuit[1]);
+}
 exports.Parallel = Parallel;
 
 function Present(loc, signal_name, subcircuits) {
@@ -159,12 +189,22 @@ function Present(loc, signal_name, subcircuits) {
    this.signal_name = signal_name;
 }
 Present.prototype = new Circuit();
+Present.prototype.factory = function() {
+   return new rk.Present(this.machine,
+			 this.loc,
+			 this.signal_name,
+			 this.subcircuit[0],
+			 this.subcircuit[1]);
+}
 exports.Present = Present;
 
 function Sequence(loc, subcircuits) {
    Circuit.call(this, "SEQUENCE", loc, subcircuits);
 }
 Sequence.prototype = new Circuit();
+Sequence.prototype.factory = function() {
+   return new rk.Sequence(this.machine, this.loc, this.subcircuit);
+}
 exports.Sequence = Sequence;
 
 
@@ -175,6 +215,12 @@ function LocalSignal(loc, signal_name, subcircuit) {
    this.signal_name = signal_name;
 }
 LocalSignal.prototype = new Circuit();
+LocalSignal.prototype.factory = function() {
+   return new rk.LocalSignalIdentifier(this.machine,
+				       this.loc,
+				       this.subcircuit[0],
+				       this.signal_name);
+}
 exports.LocalSignal = LocalSignal;
 
 function Signal(debug_name, loc, signal_ref) {
