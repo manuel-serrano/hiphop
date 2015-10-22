@@ -263,6 +263,8 @@ function ReactiveMachine(loc, machine_name) {
    this.seq = -1;
    this.boot_reg = true;
    this.machine_name = machine_name;
+   this.reincarnation_lvl = 0;
+   this.current_loop_imbric = 0;
    this.local_signals = {};
    this.input_signals = {};
    this.output_signals = {};
@@ -343,8 +345,11 @@ ReactiveMachine.prototype.run = function() {
 }
 
 ReactiveMachine.prototype.get_signal = function(name) {
-   if (this.local_signals[name])
-      return this.local_signals[name][0];
+   if (this.local_signals[name]) {
+      var i = this.reincarnation_lvl > this.local_signals[name].length ?
+	  this.local_signals[name].length : this.reincarnation_lvl;
+      return this.local_signals[name][i];
+   }
    if (this.input_signals[name])
       return this.input_signals[name];
    if (this.output_signals[name])
@@ -581,15 +586,17 @@ Loop.prototype = new Circuit();
 Loop.prototype.run = function() {
    var stop = false;
 
+   this.machine.current_loop_imbric++;
    this.res_in.set = this.res.set;
    this.susp_in.set = this.susp.set;
    this.kill_in.set = this.kill.set;
 
    while (!stop) {
       this.go_in.set = this.go.set || this.k_in[0].set;
-      if (!this.go_in.stmt_out.run())
+      if (!this.go_in.stmt_out.run()) {
+	 this.machine.current_loop_imbric--;
 	 return false;
-      // stop = !(this.k_in[0].set && (this.res.set && this.sel.set));
+      }
       stop = !this.k_in[0].set;
    }
 
@@ -597,6 +604,7 @@ Loop.prototype.run = function() {
    this.k[0].set = false;
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
+   this.machine.current_loop_imbric--;
 
    if (DEBUG_FLAGS & DEBUG_LOOP)
       this.debug();
@@ -892,6 +900,19 @@ function LocalSignalIdentifier(machine, loc, subcircuit, signal_name) {
 }
 
 LocalSignalIdentifier.prototype = new Circuit();
+
+LocalSignalIdentifier.prototype.run = function() {
+   var reincar = this.machine.current_loop_imbric > 0;
+   var ret;
+
+   if (reincar)
+      this.machine.reincarnation_lvl++;
+   ret = Circuit.prototype.run.call(this)
+   if (reincar)
+      this.machine.reincarnation_lvl--;
+
+   return ret;
+}
 
 /* Visitor that reset register */
 
