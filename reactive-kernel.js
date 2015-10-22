@@ -498,7 +498,7 @@ Sequence.prototype.build_wires = function(subcircuits) {
 	 var w = new Wire(subcircuits[i - 1], circuit_cur);
 
 	 this.go_in[i] = w;
-	 this.k_in[0][i - 1] = w;
+	 this.k_in[0][i - 1] = w;///////
 	 subcircuits[i - 1].k[0] = w;
 	 circuit_cur.go = w;
       }
@@ -821,7 +821,7 @@ Trap.prototype.build_out_wires = function(circuit) {
    this.k_in = [];
    this.k_in[0] = circuit.k[0] = new Wire(circuit, this);
    this.k_in[1] = circuit.k[1] = new Wire(circuit, this);
-   this.k_in[2] = new Wire(null, null); // exit use it to make the trap
+   this.k_in[2] = circuit.k[2] = new Wire(circuit, this);
    for (var i = 2; i < circuit.k.length; i++) {
       if (this.k[i - 1] == undefined)
 	 this.k[i - 1] = null;
@@ -833,7 +833,7 @@ Trap.prototype.run = function() {
    this.go_in.set = this.go.set;
    this.res_in.set = this.res.set;
    this.susp_in.set = this.susp.set;
-   this.kill_in.set = this.kill.set //|| this.k_in[2].set;
+   this.kill_in.set = this.kill.set || this.k_in[2].set;
 
    this.go_in.stmt_out.run();
 
@@ -851,9 +851,13 @@ Trap.prototype.run = function() {
 
 /* Exit of a trap */
 
-function Exit(machine, loc, trap_name) {
+function Exit(machine, loc, trap_name, return_code) {
    Statement.call(this, machine, loc, "EXIT");
    this.trap_name = trap_name;
+   this.return_code = return_code;
+
+   for (var i = 2; i <= return_code; i++)
+      this.k[i] = null;
 }
 
 Exit.prototype = new Statement();

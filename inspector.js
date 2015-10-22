@@ -123,7 +123,7 @@ Inspector.prototype.inspect = function() {
    while (1) {
       if (cmd == CMD_REACT) {
 	 if (this.stmt instanceof reactive.ReactiveMachine) {
-	    this.stmt.react();
+	    this.stmt.react(-2);
 	    this.read_properties();
 	 } else {
 	    console.log("ERROR: "

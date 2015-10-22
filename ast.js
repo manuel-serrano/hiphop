@@ -62,7 +62,7 @@ function Exit(loc, trap_name) {
 }
 Exit.prototype = new Statement();
 Exit.prototype.factory = function() {
-   return new rk.Exit(this.machine, this.loc, this.trap_name);
+   return new rk.Exit(this.machine, this.loc, this.trap_name, this.return_code);
 }
 exports.Exit = Exit;
 

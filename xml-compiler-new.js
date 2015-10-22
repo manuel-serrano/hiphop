@@ -1,5 +1,7 @@
 "use hopscript"
 
+/* TODO: CheckNamesVisitor: detect if we use a trap name for a signal */
+
 var ast = require("./ast.js");
 var reactive = require("./reactive-kernel.js");
 
@@ -396,6 +398,7 @@ BuildCircuitVisitor.prototype.visit = function(node) {
 	 for (var i in node.subcircuit)
 	    subcircuit.push(this.children_stack.pop());
 
+	 subcircuit.reverse();
 	 node.subcircuit = subcircuit;
       }
       this.children_stack.push(node.factory());
