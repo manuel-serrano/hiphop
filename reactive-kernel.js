@@ -30,6 +30,7 @@ var DEBUG_FLAGS = DEBUG_NONE;
 // DEBUG_FLAGS |= DEBUG_PAUSE;
 // DEBUG_FLAGS |= DEBUG_HALT;
 // DEBUG_FLAGS |= DEBUG_SUSPEND;
+// DEBUG_FLAGS |= DEBUG_SEQUENCE;
 // DEBUG_FLAGS |= DEBUG_TRAP;
 
 function Signal(name, value) {
@@ -550,9 +551,8 @@ Sequence.prototype.run = function() {
    for (var i = 0; i < this.seq_len; i++) {
       this.sel.set = this.sel.set || this.sel_in[i].set;
       for (var j = 1; j < this.k_in.length; j++) {
-	 if (this.k[j] != undefined && this.k[j][i] != undefined) {
+	 if (this.k_in[j][i] != undefined)
 	    this.k[j].set = this.k[j].set || this.k_in[j][i].set;
-	 }
       }
    }
 
@@ -831,10 +831,10 @@ Trap.prototype.build_out_wires = function(circuit) {
    this.k_in[0] = circuit.k[0] = new Wire(circuit, this);
    this.k_in[1] = circuit.k[1] = new Wire(circuit, this);
    this.k_in[2] = circuit.k[2] = new Wire(circuit, this);
-   for (var i = 2; i < circuit.k.length; i++) {
+   for (var i = 3; i < circuit.k.length; i++) {
       if (this.k[i - 1] == undefined)
 	 this.k[i - 1] = null;
-      this.k_in[i + 1] = circuit.k[i] = new Wire(circuit, this);
+      this.k_in[i] = circuit.k[i] = new Wire(circuit, this);
    }
 }
 
