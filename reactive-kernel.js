@@ -874,7 +874,7 @@ Exit.prototype = new Statement();
 Exit.prototype.run = function() {
    this.k[0].set = false;
    this.k[1].set = false;
-   this.k[this.return_code].set = true;
+   this.k[this.return_code].set = this.go.set;
    return true;
 }
 
