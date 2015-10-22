@@ -346,8 +346,8 @@ ReactiveMachine.prototype.run = function() {
 
 ReactiveMachine.prototype.get_signal = function(name) {
    if (this.local_signals[name]) {
-      var i = this.reincarnation_lvl > this.local_signals[name].length ?
-	  this.local_signals[name].length : this.reincarnation_lvl;
+      var i = this.reincarnation_lvl > this.local_signals[name].length - 1 ?
+	  this.local_signals[name].length - 1 : this.reincarnation_lvl;
       return this.local_signals[name][i];
    }
    if (this.input_signals[name])
@@ -691,7 +691,10 @@ Parallel.prototype = new MultipleCircuit();
 Parallel.prototype.run = function() {
    var lend = false;
    var rend = false;
+   var in_loop = this.machine.current_loop_imbric > 0;
 
+   if (in_loop)
+      this.machine.reincarnation_lvl++;
    this.go_in[0].set = this.go_in[1].set = this.go.set;
    this.res_in[0].set = this.res_in[1].set = this.res.set;
    this.susp_in[0].set = this.susp_in[1].set = this.susp.set;
@@ -732,6 +735,9 @@ Parallel.prototype.run = function() {
       this.go_in[0].stmt_out.accept(reset_register);
       this.go_in[1].stmt_out.accept(reset_register);
    }
+
+   if (in_loop)
+      this.machine.reincarnation_lvl--;
 
    if (DEBUG_FLAGS & DEBUG_PARALLEL)
       this.debug();
