@@ -842,7 +842,7 @@ Trap.prototype.run = function() {
    this.go_in.set = this.go.set;
    this.res_in.set = this.res.set;
    this.susp_in.set = this.susp.set;
-   this.kill_in.set = this.kill.set || this.k_in[2].set;
+   this.kill_in.set = this.kill.set //|| this.k_in[2].set;
 
    this.go_in.stmt_out.run();
 
