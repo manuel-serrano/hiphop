@@ -87,9 +87,8 @@ function REACTIVEMACHINE(attrs) {
    ast_machine.accept(new SetIncarnationLevelVisitor());
    ast_machine.accept(new SetExitReturnCodeVisitor());
    ast_machine.accept_auto(new SetLocalSignalsVisitor(machine));
+// ast_machine.accept(new PrintTreeVisitor(ast_machine));
    ast_machine.accept(new BuildCircuitVisitor(machine));
-   //ast_machine.accept(new PrintTreeVisitor(ast_machine));
-   //console.log(machine);
    return machine;
 }
 
@@ -366,8 +365,9 @@ SetLocalSignalsVisitor.prototype.visit = function(node) {
       var sigs = this.machine.local_signals;
 
       sigs[name] = [];
-      for (var i = 0; i < node.incarnation_lvl; i++)
+      for (var i = 0; i < node.incarnation_lvl + 1; i++) {
 	 sigs[name][i] = new reactive.Signal(name, false);
+      }
    }
 }
 
