@@ -1,39 +1,9 @@
 "use hopscript"
 
+/* TODO: CheckNamesVisitor: detect if we use a trap name for a signal */
+
 var ast = require("./ast.js");
 var reactive = require("./reactive-kernel.js");
-
-function Context() {
-   this.machine = new reactive.ReactiveMachine();
-   this.incarnation_lvl = 0;
-}
-
-Context.prototype.is_free_signal_name = function(signal_name) {
-   return (this.machine.input_signals[signal_name] == undefined
-	   && this.machine.output_signals[signal_name] == undefined)
-}
-
-Context.prototype.assert_free_signal_name = function(signal_name, attrs) {
-   if (!this.is_free_signal_name(signal_name))
-      fatal("Name " + signal_name + " already used.", attrs);
-}
-
-Context.prototype.assert_free_trap_name = function(trap_name, attrs) {
-   if (typeof(trap_name) != 'string')
-      fatal("trap_name not a string.", attrs);
-   if (this.machine.traps[trap_name] != undefined)
-      fatal("Trap " + trap_name + " already used.", attrs);
-}
-
-Context.prototype.lazymake_local_signal = function(signal_name) {
-   if (this.is_free_signal_name(signal_name)
-       && this.machine.local_signals[signal_name] == undefined)
-      this.machine.local_signals[signal_name] =
-      [ new reactive.Signal(signal_name) ];
-}
-
-var compile_context = new Context();
-
 
 function format_loc(attrs) {
    return attrs["%location"].filename + ":" + attrs["%location"].pos;
@@ -44,231 +14,395 @@ function get_children(args) {
    var raw_children = Array.prototype.slice.call(args, 1, args.length);
 
    for (var i in raw_children)
-      if (typeof(raw_children[i]) == 'object') /*instanceof reactive.Statement*/
+      if (raw_children[i] instanceof ast.ASTNode)
 	 children.push(raw_children[i]);
    return children;
 }
 
-function fatal(msg, attrs) {
-   console.log("*** ERROR at", format_loc(attrs), "***");
+function fatal(msg, pos) {
+   console.log("*** ERROR at", pos, "***");
    console.log("   ", msg);
    process.exit(1);
 }
 
+function already_used_name_error(name, loc) {
+   fatal("Name " + name + " already used.", loc);
+}
+
+function unknown_name_error(name, loc) {
+   fatal("Name " + name + " is not known.", loc);
+}
+
 function check_signal_name(signal_name, attrs) {
    if (typeof(signal_name) != 'string' || signal_name.length <= 0)
-      fatal("signal_name not a string.", attrs);
+      fatal("signal_name not a string.", format_loc(attrs));
 }
 
 function check_trap_name(trap_name, attrs) {
    if (typeof(trap_name) != 'string' || trap_name.length <= 0)
-      fatal("trap_name not a string.", attrs);
+      fatal("trap_name not a string.", format_loc(attrs));
 }
 
 function REACTIVEMACHINE(attrs) {
    var children = get_children(arguments);
    var len = children.length;
-   var machine = null;
+   var ast_machine = null;
+   var machine = new reactive.ReactiveMachine(format_loc(attrs), attrs.name);
+   var inputs = [];
+   var outputs = [];
+   var sig_names = [];
 
-   if (!(children[len - 1] instanceof reactive.Statement))
-      fatal("ReactiveMachime last child must be a statement", attrs);
+   if (!(children[len - 1] instanceof ast.Statement))
+      fatal("ReactiveMachime last child must be a statement",
+	    format_loc(attrs));
 
-   for (var i = 0; i < len - 2; i++)
-      if (!(children[i] instanceof reactive.Signal))
+   for (var i = 0; i < len - 1; i++) {
+      var child = children[i];
+
+      if (!(child instanceof ast.Signal))
 	 fatal("ReactiveMachine child " + i
-	       + " is not an input or output signal.", attrs);
+	       + " is not an input or output signal.", format_loc(attrs));
+      else if (child instanceof ast.InputSignal) {
+	 if (sig_names.indexOf(child.signal_ref.name) > -1)
+	    already_used_name_error(child.signal_ref.name, format_loc(attrs));
+	 inputs.push(child);
+	 machine.input_signals[child.signal_ref.name] = child.signal_ref;
+	 sig_names.push(child.signal_ref.name);
+      } else {
+	 if (sig_names.indexOf(child.signal_ref.name) > -1)
+	    already_used_name_error(child.signal_ref.name, format_loc(attrs));
+	 outputs.push(child);
+	 machine.output_signals[child.signal_ref.name] = child.signal_ref;
+	 sig_names.push(child.signal_ref.name);
+      }
+   }
 
-   machine = compile_context.machine;
-   machine.build_wires(children[len - 1]);
-   machine.loc = format_loc(attrs);
-   machine.machine_name = attrs.name;
-   compile_context = new Context();
+   ast_machine = new ast.ReactiveMachine(format_loc(attrs),
+				     attrs.name,
+				     inputs,
+				     outputs,
+				     children[len - 1]);
+   ast_machine.accept(new BuildTreeVisitor(ast_machine));
+   ast_machine.accept_auto(new CheckNamesVisitor(sig_names));
+   ast_machine.accept(new SetIncarnationLevelVisitor());
+   ast_machine.accept(new SetExitReturnCodeVisitor());
+   ast_machine.accept_auto(new SetLocalSignalsVisitor(machine));
+   ast_machine.accept(new BuildCircuitVisitor(machine));
+   //ast_machine.accept(new PrintTreeVisitor(ast_machine));
+   //console.log(machine);
    return machine;
 }
 
 function EMIT(attrs) {
-   var signal_name = attrs.signal_name;
-
-   check_signal_name(signal_name, attrs);
-   compile_context.lazymake_local_signal(signal_name);
-   return new reactive.Emit(compile_context.machine,
-			    format_loc,
-			    attrs.signal_name);
+   check_signal_name(attrs.signal_name, attrs);
+   return new ast.Emit(format_loc(attrs), attrs.signal_name);
 }
 
 function NOTHING(attrs) {
-   return new reactive.Nothing(compile_context.machine, format_loc(attrs));
+   return new ast.Nothing(format_loc(attrs));
 }
 
 function PAUSE(attrs) {
-   return new reactive.Pause(compile_context.machine, format_loc(attrs));
+   return new ast.Pause(format_loc(attrs));
 }
 
 function HALT(attrs) {
-   return new reactive.Halt(compile_context.machine, format_loc(attrs));
+   return new ast.Halt(format_loc(attrs));
 }
 
 function PRESENT(attrs) {
    var children = get_children(arguments);
-   var signal_name = attrs.signal_name;
-   var present = null;
 
-   check_signal_name(signal_name, attrs);
-   compile_context.lazymake_local_signal(signal_name);
+   check_signal_name(attrs.signal_name, attrs);
    if (children.length < 1)
-      fatal("Present must have at least one child.", attrs);
-   return new reactive.Present(compile_context.machine,
-			       format_loc(attrs),
-			       signal_name,
-			       children[0],
-			       children[1]);
+      fatal("Present must have at least one child.", format_loc(attrs));
+   return new ast.Present(format_loc(attrs),
+			  attrs.signal_name,
+			  [ children[0], children[1] ]);
 }
 
 function AWAIT(attrs) {
-   var signal_name = attrs.signal_name;
-   var await = null;
-
-   check_signal_name(signal_name, attrs);
-   compile_context.lazymake_local_signal(signal_name);
-   return new reactive.Await(compile_context.machine,
-			     format_loc(attrs),
-			     signal_name);
+   check_signal_name(attrs.signal_name, attrs);
+   return new ast.Await(format_loc(attrs), attrs.signal_name);
 }
 
 function PARALLEL(attrs) {
    var children = get_children(arguments);
 
    if (children.length != 2)
-      fatal("Parallel must have exactly two children.", attrs);
-   return new reactive.Parallel(compile_context.machine,
-				format_loc(attrs),
-				children[0],
-				children[1]);
+      fatal("Parallel must have exactly two children.", format_loc(attrs));
+   return new ast.Parallel(format_loc(attrs), [ children[0], children[1] ]);
 }
 
 function ABORT(attrs) {
    var children = get_children(arguments);
-   var signal_name = attrs.signal_name;
 
-   check_signal_name(signal_name, attrs);
-   compile_context.lazymake_local_signal(signal_name);
+   check_signal_name(attrs.signal_name, attrs);
    if (children.length != 1)
-      fatal("Abort must have exactly one child.", attrs);
-   return new reactive.Abort(compile_context.machine,
-			     format_loc(attrs),
-			     children[0],
-			     signal_name);
+      fatal("Abort must have exactly one child.", format_loc(attrs));
+   return new ast.Abort(format_loc(attrs), attrs.signal_name, children[0]);
 }
 
 function SUSPEND(attrs) {
    var children = get_children(arguments);
-   var signal_name = attrs.signal_name;
 
-   check_signal_name(signal_name, attrs);
-   compile_context.lazymake_local_signal(signal_name);
+   check_signal_name(attrs.signal_name, attrs);
    if (children.length != 1)
-      fatal("Suspend must have exactly one child.", attrs);
-   return new reactive.Suspend(compile_context.machime,
-			       format_loc(attrs),
-			       children[0],
-			       signal);
+      fatal("Suspend must have exactly one child.", format_loc(attrs));
+   return new ast.Suspend(format_loc(attrs), attrs.signal_name, children[0]);
 }
 
 function LOOP(attrs) {
    var children = get_children(arguments);
 
    if (children.length != 1)
-      fatal("Loop must have exaclty one child.", attrs);
-   return new reactive.Loop(compile_context.machine,
-			    format_loc(attrs),
-			    children[0]);
+      fatal("Loop must have exaclty one child.", format_loc(attrs));
+   return new ast.Loop(format_loc(attrs), children[0]);
 }
 
 function SEQUENCE(attrs) {
    var children = get_children(arguments);
 
    if (children.length < 2)
-      fatal("Sequence must have at least two children.", attrs);
-   return new reactive.Sequence(compile_context.machine,
-				format_loc(attrs),
-				children);
+      fatal("Sequence must have at least two children.", format_loc(attrs));
+   return new ast.Sequence(format_loc(attrs), children);
 }
 
 function ATOM(attrs) {
    var func = attrs.func;
 
    if (!(func instanceof Function))
-      fatal("Atom must have a func attribute which is a function.", attrs);
-   return new reactive.Atom(compile_context.machine,
-			    format_loc(attrs),
-			    attrs.func);
+      fatal("Atom must have a func attribute which is a function.",
+	    format_loc(attrs));
+   return new ast.Atom(format_loc(attrs), attrs.func);
 }
 
 function TRAP(attrs) {
    var children = get_children(arguments);
-   var trap_name = attrs.trap_name;
-   var trap = null;
 
-   check_trap_name(trap_name, attrs);
+   check_trap_name(attrs.trap_name, attrs);
    if (children.length != 1)
-      fatal("Trap must embeded one child.", attrs);
-   compile_context.assert_free_trap_name(trap_name, attrs);
-   trap = new reactive.Trap(compile_context.machine,
-			    format_loc(attrs),
-			    children[0],
-			    trap_name);
-   compile_context.machine.traps[trap_name] = trap;
-   return trap;
+      fatal("Trap must embeded one child.", format_loc(attrs));
+   return new ast.Trap(format_loc(attrs), attrs.trap_name, children[0]);
 }
 
 function EXIT(attrs) {
    check_trap_name(attrs.trap_name, attrs);
-   return new reactive.Exit(compile_context.machine,
-			    format_loc(attrs),
-			    attrs.trap_name);
+   return new ast.Exit(format_loc(attrs), attrs.trap_name);
 }
 
 function INPUTSIGNAL(attrs) {
-   var ref = attrs.ref;
-
-   if (!(ref instanceof reactive.Signal))
-      fatal("InputSignal must had a ref argument as signal.", attrs);
-   compile_context.assert_free_signal_name(ref.name, attrs);
-   compile_context.machine.input_signals[ref.name] = ref;
-   return ref;
+   if (!(attrs.ref instanceof reactive.Signal))
+      fatal("InputSignal must had a ref argument as signal.",
+	    format_loc(attrs));
+   return new ast.InputSignal(format_loc(attrs), attrs.ref);
 }
 
 function OUTPUTSIGNAL(attrs) {
-   var ref = attrs.ref;
-
-   if (!(ref instanceof reactive.Signal))
-      fatal("OutputSignal must had a ref argument as signal.", attrs);
-   compile_context.assert_free_signal_name(ref.name, attrs);
-   compile_context.machine.output_signals[ref.name] = ref;
-   return ref;
+   if (!(attrs.ref instanceof reactive.Signal))
+      fatal("OutputSignal must had a ref argument as signal.",
+	    format_loc(attrs));
+   return new ast.OutputSignal(format_loc(attrs), attrs.ref);
 }
 
 function LOCALSIGNAL(attrs) {
-   var localsignal = null;
-   var signal_name = attrs.signal_name;
-   var machine = compile_context.machine;
-   var sigs = [];
    var children = get_children(arguments);
 
-   check_signal_name(signal_name, attrs);
-   compile_context.assert_free_signal_name(signal_name, attrs);
-   if (machine.local_signals[signal_name] == undefined) {
-      compile_context.machine.local_signals[signal_name] = sigs;
-      for (var i = 0; i <= compile_context.incarnation_lvl; i++)
-	 sigs[i] = new reactive.Signal(signal_name, null);
-   }
-
+   check_signal_name(attrs.signal_name, attrs);
    if (children.length != 1)
-      fatal("LocalSignalIdentifier must have only one statement child.", attrs);
-   return new reactive.LocalSignalIdentifier(compile_context.machine,
-					     format_loc(attrs),
-					     children[0],
-					     signal_name);
+      fatal("LocalSignalIdentifier must have only one statement child.",
+	    format_loc(attrs));
+   return new ast.LocalSignal(format_loc(attrs),
+			      attrs.signal_name,
+			      children[0]);
+}
+
+function BuildTreeVisitor(machine) {
+   this.machine = machine;
+   this.parent = null;
+}
+
+BuildTreeVisitor.prototype.visit = function(node) {
+   node.parent = this.parent;
+   node.machine = this.machine;
+
+   if (node instanceof ast.Circuit)
+      for (var i in node.subcircuit) {
+	 this.parent = node;
+	 node.subcircuit[i].accept(this);
+      }
+}
+
+function PrintTreeVisitor() {
+   this.indent = "+-- ";
+   this.INDENT_UNIT = "   ";
+}
+
+PrintTreeVisitor.prototype.visit = function(node) {
+   var buf = this.indent + node.name;
+   var buf_parent = node.parent == null ? "N/A" : node.parent.name;
+
+   if (node instanceof ast.Emit
+       || node instanceof ast.Await
+       || node instanceof ast.Abort
+       || node instanceof ast.Suspend
+       || node instanceof ast.Present
+       || node instanceof ast.LocalSignal)
+      buf = buf + " " + node.signal_name;
+   else if (node instanceof ast.Trap)
+      buf = buf + " " + node.trap_name;
+   else if (node instanceof ast.Exit)
+      buf = buf + " " + node.trap_name + " " + node.return_code;
+
+   console.log(buf
+	       + " [parent: "
+	       + buf_parent
+	       + " / lvl: "
+	       + node.incarnation_lvl + "]");
+
+   if (node instanceof ast.Circuit) {
+      var prev_indent = this.indent;
+
+      this.indent = this.INDENT_UNIT + this.indent;
+      for (var i in node.subcircuit)
+	 node.subcircuit[i].accept(this);
+      this.indent = prev_indent;
+   }
+}
+
+function CheckNamesVisitor(used_names) {
+   this.used_names = used_names;
+}
+
+CheckNamesVisitor.prototype.visit = function(node) {
+   if (node instanceof ast.LocalSignal) {
+      if (this.used_names.indexOf(node.signal_name) > -1)
+	 already_used_name_error(node.signal_name, node.loc);
+      this.used_names.push(node.signal_name);
+   } else if (node instanceof ast.Trap) {
+      if (this.used_names.indexOf(node.trap_name) > -1)
+	 already_used_name_error(node.trap_name, node.loc);
+      this.used_names.push(node.trap_name);
+   } else if (node instanceof ast.Exit) {
+      if (this.used_names.indexOf(node.trap_name) < 0)
+	 unknown_name_error(node.trap_name, node.loc);
+   } else if (node instanceof ast.Emit
+	      || node instanceof ast.Await
+	      || node instanceof ast.Abort
+	      || node instanceof ast.Suspend
+	      || node instanceof ast.Present)
+      if (this.used_names.indexOf(node.signal_name) < 0)
+	 unknown_name_error(node.signal_name, node.loc);
+}
+
+function SetIncarnationLevelVisitor() {
+   this.in_loop = 0;
+   this.lvl = 0;
+}
+
+SetIncarnationLevelVisitor.prototype.visit = function(node) {
+   if (node instanceof ast.Circuit) {
+      var node_is_loop = false;
+      var node_must_incr = false;
+
+      if ((node instanceof ast.LocalSignal
+	   || node instanceof ast.Parallel)
+	  && this.in_loop > 0) {
+	 this.lvl++;
+	 node_must_incr = true;
+      } else if (node instanceof ast.Loop) {
+	 this.in_loop++;
+	 node_is_loop = true;
+      }
+
+      node.incarnation_lvl = this.lvl;
+      for (var i in node.subcircuit) {
+	 node.subcircuit[i].accept(this);
+      }
+
+      if (node_is_loop)
+	 this.in_loop--;
+
+      if (node_must_incr)
+	 this.lvl--;
+   } else if (node instanceof ast.Statement)
+      node.incarnation_lvl = this.lvl;
+   else
+      fatal("Inconsitant state", node.loc);
+}
+
+function SetExitReturnCodeVisitor() {
+   this.trap_stack = [];
+}
+
+SetExitReturnCodeVisitor.prototype.visit = function(node) {
+   if (node instanceof ast.Circuit) {
+      var is_trap = false;
+
+      if (node instanceof ast.Trap) {
+	 this.trap_stack.push(node.trap_name);
+	 is_trap = true;
+      }
+
+      for (var i in node.subcircuit)
+	 node.subcircuit[i].accept(this);
+
+      if (is_trap)
+	 this.trap_stack.pop();
+   } else if (node instanceof ast.Exit) {
+      var offset = this.trap_stack.length
+	  - this.trap_stack.indexOf(node.trap_name) - 1;
+      node.return_code = 2 + offset;
+   }
+}
+
+function SetLocalSignalsVisitor(machine) {
+   this.machine = machine;
+}
+
+SetLocalSignalsVisitor.prototype.visit = function(node) {
+   if (node instanceof ast.LocalSignal) {
+      var name = node.signal_name;
+      var sigs = this.machine.local_signals;
+
+      sigs[name] = [];
+      for (var i = 0; i < node.incarnation_lvl; i++)
+	 sigs[name][i] = new reactive.Signal(name, false);
+   }
+}
+
+function BuildCircuitVisitor(machine) {
+   this.machine = machine;
+   this.children_stack = [];
+}
+
+BuildCircuitVisitor.prototype.visit = function(node) {
+   if (!(node instanceof ast.Statement))
+      fatal("Inconsistence state: node not a circuit/statement.", node.loc);
+
+   if (node instanceof ast.ReactiveMachine) {
+      node.subcircuit[0].accept(this);
+      this.machine.build_wires(this.children_stack.pop());
+      if (this.children_stack.length != 0)
+	 fatal("children_stack has " + this.children_stack.length
+	       + " elements.", node.loc);
+   } else {
+      node.machine = this.machine;
+
+      if (node instanceof ast.Circuit) {
+	 var subcircuit = [];
+
+	 for (var i in node.subcircuit)
+	    node.subcircuit[i].accept(this);
+
+	 for (var i in node.subcircuit)
+	    subcircuit.push(this.children_stack.pop());
+
+	 subcircuit.reverse();
+	 node.subcircuit = subcircuit;
+      }
+      this.children_stack.push(node.factory());
+   }
 }
 
 exports.REACTIVEMACHINE = REACTIVEMACHINE;

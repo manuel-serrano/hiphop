@@ -700,8 +700,18 @@ Parallel.prototype.run = function() {
 
    var max_code = -1;
    for (var i in this.k) {
-      if (this.k_in[i][0].set || this.k_in[i][1].set)
-   	 max_code = parseInt(i);
+      if (this.k_in[i][0] != undefined) {
+	 if (this.k_in[i][1] != undefined) {
+	    if (this.k_in[i][0].set || this.k_in[i][1].set)
+   	       max_code = parseInt(i);
+	 } else {
+	    if (this.k_in[i][0].set)
+	       max_code = parseInt(i);
+	 }
+      } else {
+	 if (this.k_in[i][1].set)
+	    max_code = parseInt(i);
+      }
       this.k[i].set = false;
    }
 
