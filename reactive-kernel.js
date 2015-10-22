@@ -716,7 +716,14 @@ Parallel.prototype.run = function() {
    }
 
    if (max_code > -1)
-   	this.k[max_code].set = true;
+      this.k[max_code].set = true;
+
+   /* propage kill on branches */
+   if (max_code > 1) {
+      var reset_register = new ResetRegisterVisitor();
+      this.go_in[0].stmt_out.accept(reset_register);
+      this.go_in[1].stmt_out.accept(reset_register);
+   }
 
    if (DEBUG_FLAGS & DEBUG_PARALLEL)
       this.debug();
