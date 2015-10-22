@@ -52,7 +52,7 @@ function Pause(loc) {
 }
 Pause.prototype = new Statement();
 Pause.prototype.factory = function() {
-   return new rk.Pause(this.machine, this,loc);
+   return new rk.Pause(this.machine, this.loc);
 }
 exports.Pause = Pause;
 

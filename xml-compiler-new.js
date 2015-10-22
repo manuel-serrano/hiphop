@@ -85,7 +85,7 @@ function REACTIVEMACHINE(attrs) {
    ast_machine.accept(new SetIncarnationLevelVisitor());
    ast_machine.accept(new SetExitReturnCodeVisitor());
    ast_machine.accept_auto(new SetLocalSignalsVisitor(machine));
-   ast_machime.accept(new BuildCircuitVisitor(machine));
+   ast_machine.accept(new BuildCircuitVisitor(machine));
    //ast_machine.accept(new PrintTreeVisitor(ast_machine));
    //console.log(machine);
    return machine;
@@ -380,7 +380,7 @@ BuildCircuitVisitor.prototype.visit = function(node) {
 
    if (node instanceof ast.ReactiveMachine) {
       node.subcircuit[0].accept(this);
-      machine.build_wires(this.children_stack.pop());
+      this.machine.build_wires(this.children_stack.pop());
       if (this.children_stack.length != 0)
 	 fatal("children_stack has " + this.children_stack.length
 	       + " elements.", node.loc);
@@ -391,7 +391,7 @@ BuildCircuitVisitor.prototype.visit = function(node) {
 	 var subcircuit = [];
 
 	 for (var i in node.subcircuit)
-	    node.subcircuit[i].accept(node);
+	    node.subcircuit[i].accept(this);
 
 	 for (var i in node.subcircuit)
 	    subcircuit.push(this.children_stack.pop());
