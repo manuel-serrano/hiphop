@@ -818,9 +818,9 @@ Suspend.prototype.run = function() {
 /* Trap/Shift - Figure 11.12/11.13 page 124 */
 
 function Trap(machine, loc, circuit, trap_name) {
+   this.trap_name = trap_name;
    Circuit.call(this, machine, loc, "TRAP", circuit);
    this.debug_code = DEBUG_TRAP;
-   this.trap_name = trap_name;
 }
 
 Trap.prototype = new Circuit();
@@ -831,7 +831,7 @@ Trap.prototype.build_out_wires = function(circuit) {
    this.k_in[0] = circuit.k[0] = new Wire(circuit, this);
    this.k_in[1] = circuit.k[1] = new Wire(circuit, this);
    this.k_in[2] = circuit.k[2] = new Wire(circuit, this);
-   for (var i = 2; i < circuit.k.length - 1; i++) {
+   for (var i = 2; i < circuit.k.length; i++) {
       if (this.k[i - 1] == undefined)
 	 this.k[i - 1] = null;
       this.k_in[i + 1] = circuit.k[i] = new Wire(circuit, this);
