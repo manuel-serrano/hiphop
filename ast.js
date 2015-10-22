@@ -185,6 +185,9 @@ Parallel.prototype.factory = function() {
 exports.Parallel = Parallel;
 
 function Present(loc, signal_name, subcircuits) {
+   if (subcircuits[1] == undefined)
+      subcircuits[1] = new Nothing(loc);
+
    Circuit.call(this, "PRESENT", loc, subcircuits);
    this.signal_name = signal_name;
 }
