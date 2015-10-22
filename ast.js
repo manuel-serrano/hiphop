@@ -1,6 +1,11 @@
 "use hopscript"
 
+var rk = require("./reactive-kernel.js");
+
 function ASTNode(name, loc) {
+   /* `machine` is ast.ReactiveMachine when building the AST and work on it,
+      but it must be changed by a rk.ReactiveMachine when factory() is called */
+
    this.name = name
    this.loc = loc;
    this.machine = null;
@@ -10,6 +15,7 @@ ASTNode.prototype.accept = function(visitor) {
    visitor.visit(this);
 }
 ASTNode.prototype.accept_auto = ASTNode.prototype.accept;
+ASTNode.prototype.factory = function() { /* Return program node of this */ }
 exports.ASTNode = ASTNode;
 
 /* Statements nodes */
@@ -27,18 +33,27 @@ function Emit(loc, signal_name) {
    this.return_code = 2;
 }
 Emit.prototype = new Statement();
+Emit.prototype.factory = function() {
+   return new rk.Emit(this.machine, this.loc, this.signal_name);
+}
 exports.Emit = Emit;
 
 function Nothing(loc) {
    Statement.call(this, "NOTHING", loc);
 }
 Nothing.prototype = new Statement();
+Nothing.prototype.factory = function() {
+   return new rk.Nothing(this.machine, this.loc);
+}
 exports.Nothing = Nothing;
 
 function Pause(loc) {
    Statement.call(this, "PAUSE", loc);
 }
 Pause.prototype = new Statement();
+Pause.prototype.factory = function() {
+   return new rk.Pause(this.machine, this,loc);
+}
 exports.Pause = Pause;
 
 function Exit(loc, trap_name) {
@@ -46,12 +61,18 @@ function Exit(loc, trap_name) {
    this.trap_name = trap_name;
 }
 Exit.prototype = new Statement();
+Exit.prototype.factory = function() {
+   return new rk.Exit(this.machine, this.loc, this.trap_name);
+}
 exports.Exit = Exit;
 
 function Halt(loc) {
    Statement.call(this, "HALT", loc);
 }
 Halt.prototype = new Statement();
+Halt.prototype.factory = function() {
+   return new rk.Halt(this.machine, this.loc);
+}
 exports.Halt = Halt;
 
 function Atom(loc, func) {
@@ -59,6 +80,9 @@ function Atom(loc, func) {
    this.func = func;
 }
 Atom.prototype = new Statement();
+Atom.prototype.factory = function() {
+   return new rk.Atom(this.machine, this.loc, this.func);
+}
 exports.Atom = Atom;
 
 function Await(loc, signal_name) {
@@ -71,6 +95,8 @@ exports.Await = Await;
 /* Circuit nodes */
 
 function Circuit(name, loc, subcircuit) {
+   /* `subcircuit` is an AST node when building the AST and work on it,
+      but it become an rk.Circuit before the call of factory() */
    Statement.call(this, name, loc);
    this.subcircuit = [].concat(subcircuit);
 }

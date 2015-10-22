@@ -85,7 +85,7 @@ function REACTIVEMACHINE(attrs) {
    ast_machine.accept(new SetIncarnationLevelVisitor());
    ast_machine.accept(new SetExitReturnCodeVisitor());
    ast_machine.accept_auto(new SetLocalSignalsVisitor(machine));
-   ast_machime.accept_auto(new BuildCircuitVisitor(machine));
+   ast_machime.accept(new BuildCircuitVisitor(machine));
    //ast_machine.accept(new PrintTreeVisitor(ast_machine));
    //console.log(machine);
    return machine;
@@ -371,9 +371,35 @@ SetLocalSignalsVisitor.prototype.visit = function(node) {
 
 function BuildCircuitVisitor(machine) {
    this.machine = machine;
+   this.children_stack = [];
 }
 
 BuildCircuitVisitor.prototype.visit = function(node) {
+   if (!(node instanceof ast.Statement))
+      fatal("Inconsistence state: node not a circuit/statement.", node.loc);
+
+   if (node instanceof ast.ReactiveMachine) {
+      node.subcircuit[0].accept(this);
+      machine.build_wires(this.children_stack.pop());
+      if (this.children_stack.length != 0)
+	 fatal("children_stack has " + this.children_stack.length
+	       + " elements.", node.loc);
+   } else {
+      node.machine = this.machine;
+
+      if (node instanceof ast.Circuit) {
+	 var subcircuit = [];
+
+	 for (var i in node.subcircuit)
+	    node.subcircuit[i].accept(node);
+
+	 for (var i in node.subcircuit)
+	    subcircuit.push(this.children_stack.pop());
+
+	 node.subcircuit = subcircuit;
+      }
+      this.children_stack.push(node.factory());
+   }
 }
 
 exports.REACTIVEMACHINE = REACTIVEMACHINE;
