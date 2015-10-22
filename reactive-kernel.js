@@ -484,23 +484,20 @@ Sequence.prototype.build_wires = function(subcircuits) {
    this.susp_in = [];
    this.kill_in = [];
    this.sel_in = [];
-   this.k_in = [null, []];
-
-   this.k_in[0] = subcircuits[this.seq_len - 1].k[0] =
-      new Wire(subcircuits[this.seq_len - 1], this);
+   this.k_in = [[], []];
 
    for (var i = 0; i < this.seq_len; i++) {
       var circuit_cur = subcircuits[i];
 
       if (i == 0) {
-	 this.go_in[i] = circuit_cur.go = new Wire(this, circuit_cur);
+   	 this.go_in[i] = circuit_cur.go = new Wire(this, circuit_cur);
       } else {
-	 var w = new Wire(subcircuits[i - 1], circuit_cur);
+   	 var w = new Wire(subcircuits[i - 1], circuit_cur);
 
-	 this.go_in[i] = w;
-	 this.k_in[0][i - 1] = w;///////
-	 subcircuits[i - 1].k[0] = w;
-	 circuit_cur.go = w;
+   	 this.go_in[i] = w;
+	 this.k_in[0][i - 1] = w;
+   	 subcircuits[i - 1].k[0] = w;
+   	 circuit_cur.go = w;
       }
       this.res_in[i] = circuit_cur.res = new Wire(this, circuit_cur);
       this.susp_in[i] = circuit_cur.susp = new Wire(this, circuit_cur);
@@ -508,15 +505,17 @@ Sequence.prototype.build_wires = function(subcircuits) {
       this.sel_in[i] = circuit_cur.sel = new Wire(circuit_cur, this);
 
       for (var j = 1; j < circuit_cur.k.length; j++) {
-	 if (this.k_in[j] == undefined) {
-	    this.k_in[j] = [];
-	    this.k[j] = null; /* If we plug a circuit after this one, we have
-				 to know there is more than 2 K outputs, and
-				 connect it */
-	 }
-	 this.k_in[j][i] = circuit_cur.k[j] = new Wire(circuit_cur, this);
+   	 if (this.k_in[j] == undefined) {
+   	    this.k_in[j] = [];
+   	    this.k[j] = null;
+   	 }
+   	 this.k_in[j][i] = circuit_cur.k[j] = new Wire(circuit_cur, this);
       }
    }
+
+   var last_id = this.seq_len -1;
+   this.k_in[0][last_id] = subcircuits[last_id].k[0] =
+      new Wire(subcircuits[last_id], this);
 }
 
 Sequence.prototype.run = function() {
@@ -557,7 +556,7 @@ Sequence.prototype.run = function() {
       }
    }
 
-   this.k[0].set = this.k_in[0].set;
+   this.k[0].set = this.k_in[0][this.seq_len - 1].set;
 
    if (DEBUG_FLAGS & DEBUG_SEQUENCE)
       this.debug();
@@ -822,7 +821,7 @@ Trap.prototype.build_out_wires = function(circuit) {
    this.k_in[0] = circuit.k[0] = new Wire(circuit, this);
    this.k_in[1] = circuit.k[1] = new Wire(circuit, this);
    this.k_in[2] = circuit.k[2] = new Wire(circuit, this);
-   for (var i = 2; i < circuit.k.length; i++) {
+   for (var i = 2; i < circuit.k.length - 1; i++) {
       if (this.k[i - 1] == undefined)
 	 this.k[i - 1] = null;
       this.k_in[i + 1] = circuit.k[i] = new Wire(circuit, this);
