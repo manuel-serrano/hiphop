@@ -1,0 +1,12 @@
+module P17:
+output O;
+loop
+    signal S1 in
+        present S1 then
+            emit O
+        end present;
+        pause;
+        emit S1
+    end signal
+end loop
+end module
