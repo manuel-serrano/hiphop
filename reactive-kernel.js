@@ -2,7 +2,8 @@
 
 /* TODO
    - test suspend statement
-   - remove this.name, except for the machine (we must can get it by objet type)
+   - put number of emitters of a reaction in the signal object (and avoid
+     all the mess with the hashmap containing this information in machine)
 */
 
 var DEBUG_NONE = 0;
@@ -235,6 +236,12 @@ MultipleCircuit.prototype.build_out_wires = function(circuit, j) {
    }
 }
 
+MultipleCircuit.prototype.accept = function(visitor) {
+   visitor.visit(this);
+   for (var i in this.go_in)
+      this.go_in[i].stmt_out.accept(visitor);
+}
+
 function ReactiveMachine(loc, machine_name) {
    Circuit.call(this, null, loc, "REACTIVE_MACHINE", null);
    this.seq = -1;
@@ -449,12 +456,6 @@ Present.prototype.run = function() {
    return true;
 }
 
-Present.prototype.accept = function(visitor) {
-   visitor.visit(this);
-   this.go_in[0].stmt_out.accept(visitor);
-   this.go_in[1].stmt_out.accept(visitor);
-}
-
 /* Sequence - Figure 11.8 page 120
    It can take either a variable list of argument, or only one argument
    which is an array of statements */
@@ -550,12 +551,6 @@ Sequence.prototype.run = function() {
    if (DEBUG_FLAGS & DEBUG_SEQUENCE)
       this.debug();
    return true;
-}
-
-Sequence.prototype.accept = function(visitor) {
-   visitor.visit(this);
-   for (var i in this.go_in)
-      this.go_in[i].stmt_out.accept(visitor);
 }
 
 /* Loop - Figure 11.9 page 121 */
@@ -721,12 +716,6 @@ Parallel.prototype.run = function() {
       this.debug();
    this.assert_completion_code();
    return true;
-}
-
-Parallel.prototype.accept = function(visitor) {
-   visitor.visit(this);
-   this.go_in[0].stmt_out.accept(visitor);
-   this.go_in[1].stmt_out.accept(visitor);
 }
 
 /* Nothing statement */
@@ -919,7 +908,7 @@ CountSignalEmitters.prototype.visit = function(stmt) {
 
    if (stmt instanceof Emit) {
       this.machime.signals_emitters[stmt.signal_name] == undefined
-	 ? this.machine.signals_emitters[stmt.signal_name] = 0
+	 ? this.machine.signals_emitters[stmt.signal_name] = 1
 	 : this.machine.signals_emitters[stmt.signal_name]++;
       return;
    }
