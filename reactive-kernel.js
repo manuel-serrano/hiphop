@@ -40,8 +40,6 @@ function Signal(name, value) {
    this.name = name;
    this.set = false;
    this.value = false;
-   this.emitters = 0; /* number of emitters in the program code */
-   this.waiting = 0; /* number of waiting emitters for the current reaction */
 }
 
 /* 2: the signal is set and its value is ready to read
@@ -49,38 +47,17 @@ function Signal(name, value) {
    0: the value is unkown
    -1: the value is unset */
 
-Signal.prototype.get_state = function() {
-   if (this.waiting == 0 && this.set)
+Signal.prototype.get_state = function(emitters) {
+   if (emitters == undefined)
+      emitters = 0;
+
+   if (emitters == 0 && this.set)
       return 2;
    if (this.set)
       return 1;
-   if (this.waiting > 0)
+   if (emitters > 0)
       return 0;
    return -1;
-}
-
-/* Set the value of a signal from host language, before the begining
-   of an execution */
-
-Signal.prototype.set_from_host = function (set, value) {
-   if (value != null || value != undefined) {
-      this.value = value;
-      this.set = set;
-      this.waiting = this.emitters;
-   } else {
-      this.set = set;
-      this.waiting = 0;
-   }
-}
-
-Signal.prototype.incr_emitters = function() {
-   this.emitters++;
-   this.waiting = this.emitters;
-}
-
-Signal.prototype.reset = function() {
-   this.set = false;
-   this.waiting = this.emitters;
 }
 
 /* A wire connect two statements.
@@ -267,6 +244,9 @@ function ReactiveMachine(loc, machine_name) {
    this.local_signals = {};
    this.input_signals = {};
    this.output_signals = {};
+
+   /* number of emitters of a signal for the current reaction */
+   this.signals_emitters = {};
 }
 
 ReactiveMachine.prototype = new Circuit();
@@ -282,6 +262,7 @@ ReactiveMachine.prototype.react = function(seq) {
       go = this.boot_reg;
       this.boot_reg = false;
    }
+   (new CountSignalEmitters(this)).visit(this.go_in.stmt_out);
 
    this.go_in.set = go;
    this.res_in.set = true;
@@ -308,7 +289,7 @@ ReactiveMachine.prototype.react = function(seq) {
       for (var i in this.output_signals) {
 	 var sig = this.output_signals[i];
 
-	 if (sig.waiting == 0 && sig.set)
+	 if (sig.set)
 	       buf_out += " " + sig.name;
       }
 
@@ -318,14 +299,14 @@ ReactiveMachine.prototype.react = function(seq) {
    }
 
    for (var i in this.input_signals)
-      this.input_signals[i].reset();
+      this.input_signals[i].set = false;
 
    for (var i in this.output_signals)
-      this.output_signals[i].reset();
+      this.output_signals[i].set = false;
 
    for (var i in this.local_signals)
       for (var j in this.local_signals[i])
-	 this.local_signals[i][j].reset();
+	 this.local_signals[i][j].set = false;
 
    this.reset_react = false;
 }
@@ -362,7 +343,6 @@ function Emit(machine, loc, signal_name) {
    Statement.call(this, machine, loc, "EMIT");
    this.debug_code = DEBUG_EMIT;
    this.signal_name = signal_name;
-   this.machine.get_signal(signal_name).incr_emitters();
 }
 
 Emit.prototype = new Statement();
@@ -371,8 +351,8 @@ Emit.prototype.run = function() {
    var signal = this.machine.get_signal(this.signal_name);
 
    this.k[0].set = this.go.set;
-   if (signal.waiting > 0)
-      signal.waiting--;
+   this.machine.signals_emitters[this.signal_name]--;
+
    if (this.go.set)
       signal.set = true;
 
@@ -427,9 +407,10 @@ function Present(machine, loc, signal_name, then_branch, else_branch) {
 Present.prototype = new MultipleCircuit();
 
 Present.prototype.run = function() {
+   var sig_name = this.signal_name;
    var branch = 0;
-   var signal = this.machine.get_signal(this.signal_name);
-   var signal_state = signal.get_state();
+   var signal = this.machine.get_signal(sig_name);
+   var signal_state = signal.get_state(this.machine.signals_emitters[sig_name]);
 
    if (this.blocked == -1) {
       if (signal_state == 0)
@@ -625,8 +606,9 @@ function Abort(machine, loc, circuit, signal_name) {
 Abort.prototype = new Circuit();
 
 Abort.prototype.run = function() {
-   var signal = this.machine.get_signal(this.signal_name);
-   var signal_state = signal.get_state();
+   var sig_name = this.signal_name;
+   var signal = this.machine.get_signal(sig_name);
+   var signal_state = signal.get_state(this.machine.signals_emitters[sig_name]);
 
    if (signal_state == 0) {
       this.blocked_by_signal = true;
@@ -799,8 +781,9 @@ Suspend.prototype = new Circuit();
 
 Suspend.prototype.run = function() {
    /* TODO: make same hack that abort */
-   var signal = this.machine.get_signal(this.signal_name);
-   var signal_state = signal.get_state();
+   var sig_name = this.signal_name;
+   var signal = this.machine.get_signal(sig_name);
+   var signal_state = signal.get_state(this.machine.signals_emitters[sig_name]);
 
    if (signal_state == 0) {
       this.blocked_by_signal = true;
@@ -916,6 +899,29 @@ ResetRegisterVisitor.prototype.visit = function(stmt) {
       reset it */
    if (stmt instanceof Abort) {
       stmt.sel.set = false;
+   }
+}
+
+function CountSignalEmitters(machine) {
+   this.stop_visit = false;
+   this.machine = machine;
+   this.machine.signals_emitters = {};
+}
+
+CountSignalEmitters.prototype.visit = function(stmt) {
+   if (this.stop_visit)
+      return;
+
+   if (stmt instanceof Pause && !stmt.set.set) {
+      this.stop_visit = true;
+      return;
+   }
+
+   if (stmt instanceof Emit) {
+      this.machime.signals_emitters[stmt.signal_name] == undefined
+	 ? this.machine.signals_emitters[stmt.signal_name] = 0
+	 : this.machine.signals_emitters[stmt.signal_name]++;
+      return;
    }
 }
 

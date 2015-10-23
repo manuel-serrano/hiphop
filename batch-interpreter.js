@@ -18,7 +18,7 @@ function configure(prg, cmd) {
 function set_signal(sig_list, sig_name) {
    for (var i in sig_list)
       if (sig_list[i].name == sig_name)
-	 sig_list[i].set_from_host(true, null);
+	 sig_list[i].set = true;
 }
 
 function interpreter(prg) {
