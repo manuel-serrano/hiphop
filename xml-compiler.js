@@ -353,7 +353,7 @@ SetExitReturnCodeVisitor.prototype.visit = function(node) {
    } else if (node instanceof ast.Exit) {
       var offset = this.trap_stack.length
 	  - this.trap_stack.indexOf(node.trap_name) - 1;
-      node.return_code = 2 + offset;
+      node.return_code += offset;
    }
 }
 

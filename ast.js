@@ -30,7 +30,6 @@ exports.Statement = Statement;
 function Emit(loc, signal_name) {
    Statement.call(this, "EMIT", loc);
    this.signal_name = signal_name;
-   this.return_code = 2;
 }
 Emit.prototype = new Statement();
 Emit.prototype.factory = function() {
@@ -62,6 +61,7 @@ exports.Pause = Pause;
 function Exit(loc, trap_name) {
    Statement.call(this, "EXIT", loc);
    this.trap_name = trap_name;
+   this.return_code = 2;
 }
 Exit.prototype = new Statement();
 Exit.prototype.factory = function() {
