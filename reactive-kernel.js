@@ -269,7 +269,7 @@ ReactiveMachine.prototype.react = function(seq) {
       go = this.boot_reg;
       this.boot_reg = false;
    }
-   (new CountSignalEmitters(this)).visit(this.go_in.stmt_out);
+   this.go_in.stmt_out.accept(new CountSignalEmitters(this));
 
    this.go_in.set = go;
    this.res_in.set = true;
@@ -420,7 +420,7 @@ Present.prototype.run = function() {
    var signal_state = signal.get_state(this.machine.signals_emitters[sig_name]);
 
    if (this.blocked == -1) {
-      if (signal_state == 0)
+      if (signal_state == 0 && this.go.set)
 	 return false;
 
       this.go_in[0].set = this.go.set && signal_state > 0;
@@ -901,13 +901,13 @@ CountSignalEmitters.prototype.visit = function(stmt) {
    if (this.stop_visit)
       return;
 
-   if (stmt instanceof Pause && !stmt.set.set) {
+   if (stmt instanceof Pause && !stmt.sel.set) {
       this.stop_visit = true;
       return;
    }
 
    if (stmt instanceof Emit) {
-      this.machime.signals_emitters[stmt.signal_name] == undefined
+      this.machine.signals_emitters[stmt.signal_name] == undefined
 	 ? this.machine.signals_emitters[stmt.signal_name] = 1
 	 : this.machine.signals_emitters[stmt.signal_name]++;
       return;
