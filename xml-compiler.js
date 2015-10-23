@@ -407,6 +407,20 @@ BuildCircuitVisitor.prototype.visit = function(node) {
    }
 }
 
+/* When we try to get the state of a signal, if it has emitters > 0,
+   but the emit is after a pause and a present test, and there is no others
+   threads that can write on it, we have to tell that the signal is unset for
+   the current reaction */
+
+// function SingleThreadedSignalVisitor(machine) {
+//    this.machine = machine;
+//    this.parallel_context = false;
+// }
+
+// SingleThreadedSignalVisitor.prototype.visit = function(node) {
+//    if (node instanceof 
+// }
+
 exports.REACTIVEMACHINE = REACTIVEMACHINE;
 exports.EMIT = EMIT;
 exports.NOTHING = NOTHING;

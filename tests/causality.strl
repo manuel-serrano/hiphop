@@ -1,0 +1,10 @@
+module presentemit:
+output I, O;
+loop
+    present O then
+        emit I
+    end present;
+    pause;
+    emit O
+end loop
+end module
