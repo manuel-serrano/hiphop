@@ -34,7 +34,7 @@ EOF
 	batch_esterel $file < $file.in > $output_est
 	diff_out=$(diff -Z $output_hop $output_est)
     else
-	buff_out=$(diff $output_hop $file.out)
+	diff_out=$(diff $output_hop $file.out)
     fi
 
     if [ "$diff_out" != "" ]
