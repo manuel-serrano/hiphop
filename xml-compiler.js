@@ -324,9 +324,11 @@ SetIncarnationLevelVisitor.prototype.visit = function(node) {
 
       if (node_must_incr)
 	 this.lvl--;
-   } else if (node instanceof ast.Statement)
+   } else if (node instanceof ast.Statement) {
       node.incarnation_lvl = this.lvl;
-   else
+      if (node instanceof ast.Pause && node.incarnation_lvl > 0)
+	 node.k0_on_depth = true;
+   } else
       fatal("Inconsitant state", node.loc);
 }
 

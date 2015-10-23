@@ -49,10 +49,13 @@ exports.Nothing = Nothing;
 
 function Pause(loc) {
    Statement.call(this, "PAUSE", loc);
+   this.k0_on_depth = false;
 }
 Pause.prototype = new Statement();
 Pause.prototype.factory = function() {
-   return new rk.Pause(this.machine, this.loc);
+   var p = new rk.Pause(this.machine, this.loc);
+   p.k0_on_depth = this.k0_on_depth;
+   return p;
 }
 exports.Pause = Pause;
 

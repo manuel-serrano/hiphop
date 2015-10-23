@@ -264,7 +264,6 @@ function ReactiveMachine(loc, machine_name) {
    this.boot_reg = true;
    this.machine_name = machine_name;
    this.reincarnation_lvl = 0;
-   this.current_loop_imbric = 0;
    this.local_signals = {};
    this.input_signals = {};
    this.output_signals = {};
@@ -388,6 +387,7 @@ function Pause(machine, loc) {
    Statement.call(this, machine, loc, "PAUSE");
    this.debug_code = DEBUG_PAUSE;
    this.reg = false;
+   this.k0_on_depth = false;
 }
 
 Pause.prototype = new Statement()
@@ -397,6 +397,9 @@ Pause.prototype.run = function() {
    this.k[1].set = this.go.set;
    this.reg = (this.go.set || (this.susp.set && this.reg)) && !this.kill.set;
    this.sel.set = this.reg;
+
+   if (this.k0_on_depth && this.k[0].set)
+      this.machine.reincarnation_lvl++;
 
    if (DEBUG_FLAGS & DEBUG_PAUSE)
       this.debug();
@@ -586,25 +589,24 @@ Loop.prototype = new Circuit();
 Loop.prototype.run = function() {
    var stop = false;
 
-   this.machine.current_loop_imbric++;
    this.res_in.set = this.res.set;
    this.susp_in.set = this.susp.set;
    this.kill_in.set = this.kill.set;
 
    while (!stop) {
       this.go_in.set = this.go.set || this.k_in[0].set;
-      if (!this.go_in.stmt_out.run()) {
-	 this.machine.current_loop_imbric--;
+      if (!this.go_in.stmt_out.run())
 	 return false;
-      }
       stop = !this.k_in[0].set;
+
+      if (!stop && this.machine.reincarnation_lvl > 0)
+	 this.machine.reincarnation_lvl--;
    }
 
    this.sel.set = this.sel_in.set;
    this.k[0].set = false;
    for (var i = 1; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;
-   this.machine.current_loop_imbric--;
 
    if (DEBUG_FLAGS & DEBUG_LOOP)
       this.debug();
@@ -691,10 +693,7 @@ Parallel.prototype = new MultipleCircuit();
 Parallel.prototype.run = function() {
    var lend = false;
    var rend = false;
-   var in_loop = this.machine.current_loop_imbric > 0;
 
-   if (in_loop)
-      this.machine.reincarnation_lvl++;
    this.go_in[0].set = this.go_in[1].set = this.go.set;
    this.res_in[0].set = this.res_in[1].set = this.res.set;
    this.susp_in[0].set = this.susp_in[1].set = this.susp.set;
@@ -735,9 +734,6 @@ Parallel.prototype.run = function() {
       this.go_in[0].stmt_out.accept(reset_register);
       this.go_in[1].stmt_out.accept(reset_register);
    }
-
-   if (in_loop)
-      this.machine.reincarnation_lvl--;
 
    if (DEBUG_FLAGS & DEBUG_PARALLEL)
       this.debug();
@@ -906,21 +902,6 @@ function LocalSignalIdentifier(machine, loc, subcircuit, signal_name) {
 }
 
 LocalSignalIdentifier.prototype = new Circuit();
-
-LocalSignalIdentifier.prototype.run = function() {
-   var reincar = this.machine.current_loop_imbric > 0;
-   var ret;
-
-   if (reincar)
-      this.machine.reincarnation_lvl++;
-   ret = Circuit.prototype.run.call(this)
-   if (reincar)
-      this.machine.reincarnation_lvl--;
-
-   return ret;
-}
-
-/* Visitor that reset register */
 
 function ResetRegisterVisitor() {
 }
