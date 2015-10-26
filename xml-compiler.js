@@ -1,6 +1,12 @@
 "use hopscript"
 
-/* TODO: CheckNamesVisitor: detect if we use a trap name for a signal */
+/* TODO:
+   - CheckNamesVisitor: detect if we use a trap name for a signal
+   - put the content of REACTIVEMACHINE and visitor on ast.js, and rename it
+     compiler.js. It will be easy to have diffrents front-end :
+     xml-compiler.js -> reactivejs from xml syntax
+     esterel-compiler.js -> reactivejs from esterel syntax
+     dsl-compiler.js -> reactivejs from a dsl ? */
 
 var ast = require("./ast.js");
 var reactive = require("./reactive-kernel.js");
