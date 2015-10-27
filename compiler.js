@@ -75,10 +75,16 @@ PrintTreeVisitor.prototype.visit = function(node) {
 }
 
 function CheckNamesVisitor(ast_machine) {
-   this.inputs = ast_machine.input_signals;
-   this.outputs = ast_machine.output_signals;
+   this.inputs = [];
+   this.outputs = [];
    this.traps = [];
    this.locals = [];
+
+   for (var i in ast_machine.input_signals)
+      this.inputs.push(ast_machine.input_signals[i].signal_ref.name);
+
+   for (var i in ast_machine.output_signals)
+      this.outputs.push(ast_machine.output_signals[i].signal_ref.name);
 }
 
 CheckNamesVisitor.prototype.declared_name = function(name) {
@@ -115,7 +121,7 @@ CheckNamesVisitor.prototype.visit = function(node) {
 	      || node instanceof ast.Abort
 	      || node instanceof ast.Suspend
 	      || node instanceof ast.Present)
-      if (!this.declared_name_signal(this.signal_name))
+      if (!this.declared_name_signal(node.signal_name))
 	 unknown_name_error("signal::" + node.signal_name, node.loc);
 }
 
