@@ -1,15 +1,8 @@
 "use hopscript"
 
-/* TODO:
-   - CheckNamesVisitor: detect if we use a trap name for a signal
-   - put the content of REACTIVEMACHINE and visitor on ast.js, and rename it
-     compiler.js. It will be easy to have diffrents front-end :
-     xml-compiler.js -> reactivejs from xml syntax
-     esterel-compiler.js -> reactivejs from esterel syntax
-     dsl-compiler.js -> reactivejs from a dsl ? */
-
 var ast = require("./ast.js");
 var reactive = require("./reactive-kernel.js");
+var compiler = require("./compiler.js");
 
 function format_loc(attrs) {
    return attrs["%location"].filename + ":" + attrs["%location"].pos;
@@ -53,10 +46,8 @@ function REACTIVEMACHINE(attrs) {
    var children = get_children(arguments);
    var len = children.length;
    var ast_machine = null;
-   var machine = new reactive.ReactiveMachine(format_loc(attrs), attrs.name);
    var inputs = [];
    var outputs = [];
-   var sig_names = [];
 
    if (!(children[len - 1] instanceof ast.Statement))
       fatal("ReactiveMachime last child must be a statement",
@@ -72,14 +63,10 @@ function REACTIVEMACHINE(attrs) {
 	 if (sig_names.indexOf(child.signal_ref.name) > -1)
 	    already_used_name_error(child.signal_ref.name, format_loc(attrs));
 	 inputs.push(child);
-	 machine.input_signals[child.signal_ref.name] = child.signal_ref;
-	 sig_names.push(child.signal_ref.name);
       } else {
 	 if (sig_names.indexOf(child.signal_ref.name) > -1)
 	    already_used_name_error(child.signal_ref.name, format_loc(attrs));
 	 outputs.push(child);
-	 machine.output_signals[child.signal_ref.name] = child.signal_ref;
-	 sig_names.push(child.signal_ref.name);
       }
    }
 
@@ -88,14 +75,7 @@ function REACTIVEMACHINE(attrs) {
 				     inputs,
 				     outputs,
 				     children[len - 1]);
-   ast_machine.accept(new BuildTreeVisitor(ast_machine));
-   ast_machine.accept_auto(new CheckNamesVisitor(sig_names));
-   ast_machine.accept(new SetIncarnationLevelVisitor());
-   ast_machine.accept(new SetExitReturnCodeVisitor());
-   ast_machine.accept_auto(new SetLocalSignalsVisitor(machine));
-// ast_machine.accept(new PrintTreeVisitor(ast_machine));
-   ast_machine.accept(new BuildCircuitVisitor(machine));
-   return machine;
+   return compiler.compile(ast_machine);
 }
 
 function EMIT(attrs) {
