@@ -81,28 +81,28 @@ function CheckNamesVisitor(ast_machine) {
    this.locals = [];
 }
 
-CheckNamesVisitor.prototype.declared_name(name) {
-   return this.inputs.indexOf(declared_name) > -1
-       || this.outputs.indexOf(declared_name) > -1
-       || this.traps.indexOf(declared_name) > -1
-       || this.locals.indexOf(declared_name) > -1
+CheckNamesVisitor.prototype.declared_name = function(name) {
+   return this.inputs.indexOf(name) > -1
+       || this.outputs.indexOf(name) > -1
+       || this.traps.indexOf(name) > -1
+       || this.locals.indexOf(name) > -1
 }
 
-CheckNamesVisitor.prototype.declared_name_trap(name) {
+CheckNamesVisitor.prototype.declared_name_trap = function(name) {
    return this.traps.indexOf(name) > -1
 }
 
-CheckNamesVisitor.prototype.declared_name_signal(nane) {
-   return this.inputs.indexOf(declared_name) > -1
-      || this.outputs.indexOf(declared_name) > -1
-      || this.locals.indexOf(declared_name) > -1
+CheckNamesVisitor.prototype.declared_name_signal = function(name) {
+   return this.inputs.indexOf(name) > -1
+      || this.outputs.indexOf(name) > -1
+      || this.locals.indexOf(name) > -1
 }
 
 CheckNamesVisitor.prototype.visit = function(node) {
    if (node instanceof ast.LocalSignal) {
       if (this.declared_name(node.signal_name))
 	 already_used_name_error(node.signal_name, node.loc);
-      this.used_names.push(node.signal_name);
+      this.locals.push(node.signal_name);
    } else if (node instanceof ast.Trap) {
       if (this.declared_name(node.trap_name))
 	 already_used_name_error(node.trap_name, node.loc);
@@ -239,7 +239,7 @@ BuildCircuitVisitor.prototype.visit = function(node) {
    signals defined, an checked (not the same name more than one time) */
 
 function compile(ast_machine) {
-   if (!(root instanceof ast.ReactiveMachine))
+   if (!(ast_machine instanceof ast.ReactiveMachine))
       fatal("compile must take a ast.ReactiveMachine argument.", "N/A");
 
    var machine = new reactive.ReactiveMachine(ast_machine.loc,
@@ -256,7 +256,7 @@ function compile(ast_machine) {
    }
 
    ast_machine.accept(new BuildTreeVisitor(ast_machine));
-   ast_machine.accept_auto(new CheckNamesVisitor());
+   ast_machine.accept_auto(new CheckNamesVisitor(ast_machine));
    ast_machine.accept(new SetIncarnationLevelVisitor());
    ast_machine.accept(new SetExitReturnCodeVisitor());
    ast_machine.accept_auto(new SetLocalSignalsVisitor(machine));

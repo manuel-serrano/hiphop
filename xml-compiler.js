@@ -60,11 +60,13 @@ function REACTIVEMACHINE(attrs) {
 	 fatal("ReactiveMachine child " + i
 	       + " is not an input or output signal.", format_loc(attrs));
       else if (child instanceof ast.InputSignal) {
-	 if (sig_names.indexOf(child.signal_ref.name) > -1)
+	 if (inputs.indexOf(child.signal_ref.name) > -1
+	     || outputs.indexOf(child.signal_ref.name) > -1)
 	    already_used_name_error(child.signal_ref.name, format_loc(attrs));
 	 inputs.push(child);
       } else {
-	 if (sig_names.indexOf(child.signal_ref.name) > -1)
+	 if (inputs.indexOf(child.signal_ref.name) > -1
+	     || outputs.indexOf(child.signal_ref.name) > -1)
 	    already_used_name_error(child.signal_ref.name, format_loc(attrs));
 	 outputs.push(child);
       }
