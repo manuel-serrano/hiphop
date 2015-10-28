@@ -2,8 +2,6 @@
 
 /* TODO
    - test suspend statement
-   - put number of emitters of a reaction in the signal object (and avoid
-     all the mess with the hashmap containing this information in machine)
 */
 
 var DEBUG_NONE = 0;
