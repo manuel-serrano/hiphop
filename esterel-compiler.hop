@@ -64,7 +64,22 @@
 	 ((no-parallel-instruction)))
       (no-parallel-instruction
 	 ((sequence-instruction))
-	 ((atomic-instruction)))))
+	 ((atomic-instruction)))
+      (parallel-instruction
+	 ((no-parallel-instruction parallel no-parallel-instruction))
+	 ((no-parallel-instruction parallel parallel-branch-list)))
+      (parallel-branch-list
+	 ((no-parallel-instruction parallel no-parallel-instruction))
+	 ((parallel-branch-list parallel no-parallel-instruction)))
+      (sequence-instruction
+	 ((sequence-instruction-list)))
+      (sequence-instruction-list
+	 ((pure-sequence-instruction-list))
+	 ((atomic-instruction semi-colon))
+	 ((pure-sequence-instruction-list semi-colon)))
+      (pure-sequence-instruction-list
+	 ((atomic-instruction semi-colon atomic-instruction))
+	 ((pure-sequence-instruction-list semi-colon atomic-instruction)))))
 
 (define esterel-regular-grammar
    (regular-grammar ()
