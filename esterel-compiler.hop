@@ -5,13 +5,15 @@
 (define exports-obj #f)
 
 (define esterel-lalr-grammar
-   (lalr-grammar ))
+   (lalr-grammar
+      (term
+	 ((emit identifier) (format "emit ~s" identifier)))))
 
 (define esterel-regular-grammar
    (regular-grammar ()
       ((+ (or #\tab #\space)) (ignore))
       (#\newline 'newline)
-      (() 'identifier)
+      (alnum (cons 'identifier the-string)
       ((uncase "module") 'module)
       ((uncase "signal") 'signal)
       ((uncase "input") 'input)
@@ -35,12 +37,15 @@
       ((uncase "abort") 'abort)
       ((uncase "suspend") 'suspend)
       ("||" 'parallel)
-      (";" 'end-of-instruction)
+      (";" 'semi-colon)
+      (":" 'colon)
       ("[" 'left-square-bracket)
-      ("]" 'right-square-bracket)))
+      ("]" 'right-square-bracket))))
 
-(define (build-ast)
-   )
+(define (build-ast input)
+   (begin
+      (read/lalrp esterel-lalr-grammer esterel-regular-grammar input)
+      (reset-eof input)))
 
 (define (hopscript %this this scope module)
    (set! global-obj %this)
@@ -53,3 +58,5 @@
                    1 'build_ast)
          :writable #f
          :enumerable #f)))
+
+(build-ast (current-input-port))
