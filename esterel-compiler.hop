@@ -6,10 +6,22 @@
 
 (define esterel-lalr-grammar
    (lalr-grammar
-      (newline emit identifier)
+      (newline identifier input output signal colon semi-colon comma present
+	 then else end in nothing emit halt suspend sustain await abort left-par
+	 right-par left-square-bracket right-square-bracket pause exit loop
+	 parallel module)
       (lines
 	 (())
 	 ((lines newline)))
+      (module-decl
+	 ((module semi-colon decl-list instruction end-module-decl)))
+      (end-module-decl
+	 ((end module))
+	 ((end)))
+      (decl-list
+	 (())
+	 ((input-decls))
+	 ((output-decls)))
       (signal-decl-list
 	 ((identifier))
 	 ((signal-decl-list)))
@@ -38,13 +50,18 @@
       (halt-stmt
 	 ((halt)))
       (emit-stmt
-	 ((emit identifier left-par expression right-par))
+;	 ((emit identifier left-par expression right-par))
 	 ((emit identifier)))
       (await-stmt
 	 ((await identifier))
 	 ((pause)))
       (exit-stmt
 	 ((exit identifier)))
+      (loop-stmt
+	 ((loop instruction end-loop)))
+      (end-loop
+	 ((end loop))
+	 ((end)))
       (atomic-instruction
 	 ((subinstruction))
 	 ((nothing-stmt))
@@ -54,9 +71,7 @@
 	 ((loop-stmt))
 	 ((local-signal-decl))
 	 ((await-stmt))
-	 ((sustain-stmt))
-	 ((exit-stmt))
-	 ((suspend-stmt)))
+	 ((exit-stmt)))
       (subinstruction
 	 ((left-square-bracket instruction right-square-bracket)))
       (instruction
@@ -83,8 +98,7 @@
 
 (define esterel-regular-grammar
    (regular-grammar ()
-      ((+ (or #\tab #\space)) (ignore))
-      (#\newline 'newline)
+      ((+ (or #\tab #\space #\newline)) (ignore))
       ((uncase "module") 'module)
       ((uncase "signal") 'signal)
       ((uncase "input") 'input)
