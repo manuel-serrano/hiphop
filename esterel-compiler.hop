@@ -126,12 +126,19 @@
       ("]" 'right-square-bracket)
       ("(" 'left-par)
       (")" 'right-par)
-      ((+ alnum) (cons 'identifier (the-string)))))
+      ((+ alnum) (cons 'identifier (the-string)))
+      (else
+       (let ((c the-failure))
+	  (if (eof-object? c)
+	      c
+	      (error 'rgc "Illegal character " c))))))
+
 
 (define (build-ast input)
-   (begin
-      (read/lalrp esterel-lalr-grammar esterel-regular-grammar input)
-      (reset-eof input)))
+   (read/lalrp
+      esterel-lalr-grammar
+      esterel-regular-grammar
+      input))
 
 (define (hopscript %this this scope module)
    (set! global-obj %this)
