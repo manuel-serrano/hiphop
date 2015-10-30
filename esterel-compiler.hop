@@ -9,10 +9,62 @@
       (newline emit identifier)
       (lines
 	 (())
-	 ((lines newline))
-	 ((lines expression newline) (display expression)))
-      (expression
-	 ((emit identifier) (string-append "emit " identifier)))))
+	 ((lines newline)))
+      (signal-decl-list
+	 ((identifier))
+	 ((signal-decl-list)))
+      (input-decls
+	 ((input signal-decl-list)))
+      (output-decls
+	 ((output signal-decl-list)))
+      (local-signal-decl
+	 ((signal signal-decl-list in instruction end-local-signal)))
+      (end-local-signal
+	 ((end))
+	 ((end signal)))
+      (present-stmt
+	 ((present identifier optional-then optional-else end-present)))
+      (optional-then
+	 ((then instruction))
+	 (()))
+      (optional-else
+	 ((else instruction))
+	 (()))
+      (end-present
+	 ((end present))
+	 ((end)))
+      (nothing-stmt
+	 ((nothing)))
+      (halt-stmt
+	 ((halt)))
+      (emit-stmt
+	 ((emit identifier left-par expression right-par))
+	 ((emit identifier)))
+      (await-stmt
+	 ((await identifier))
+	 ((pause)))
+      (exit-stmt
+	 ((exit identifier)))
+      (atomic-instruction
+	 ((subinstruction))
+	 ((nothing-stmt))
+	 ((halt-stmt))
+	 ((emit-stmt))
+	 ((present-stmt))
+	 ((loop-stmt))
+	 ((local-signal-decl))
+	 ((await-stmt))
+	 ((sustain-stmt))
+	 ((exit-stmt))
+	 ((suspend-stmt)))
+      (subinstruction
+	 ((left-square-bracket instruction right-square-bracket)))
+      (instruction
+	 ((parallel-instruction))
+	 ((no-parallel-instruction)))
+      (no-parallel-instruction
+	 ((sequence-instruction))
+	 ((atomic-instruction)))))
 
 (define esterel-regular-grammar
    (regular-grammar ()
@@ -21,7 +73,7 @@
       ((uncase "module") 'module)
       ((uncase "signal") 'signal)
       ((uncase "input") 'input)
-      ((uncase "output") 'output )
+      ((uncase "output") 'output)
       ((uncase "nothing") 'nothing)
       ((uncase "halt") 'halt)
       ((uncase "emit") 'emit)
@@ -43,8 +95,11 @@
       ("||" 'parallel)
       (";" 'semi-colon)
       (":" 'colon)
+      ("," 'comma)
       ("[" 'left-square-bracket)
       ("]" 'right-square-bracket)
+      ("(" 'left-par)
+      (")" 'right-par)
       ((+ alnum) (cons 'identifier (the-string)))))
 
 (define (build-ast input)
