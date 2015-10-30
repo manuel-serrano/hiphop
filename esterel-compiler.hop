@@ -1,0 +1,55 @@
+(module esterel-compiler
+   (export (hopscript ::JsGlobalObject ::JsObject ::JsObject ::JsObject)))
+
+(define global-obj #f)
+(define exports-obj #f)
+
+(define esterel-lalr-grammar
+   (lalr-grammar ))
+
+(define esterel-regular-grammar
+   (regular-grammar ()
+      ((+ (or #\tab #\space)) (ignore))
+      (#\newline 'newline)
+      (() 'identifier)
+      ((uncase "module") 'module)
+      ((uncase "signal") 'signal)
+      ((uncase "input") 'input)
+      ((uncase "output") 'output )
+      ((uncase "nothing") 'nothing)
+      ((uncase "halt") 'halt)
+      ((uncase "emit") 'emit)
+      ((uncase "present") 'present)
+      ((uncase "then") 'then)
+      ((uncase "else") 'else)
+      ((uncase "loop") 'loop)
+      ((uncase "trap") 'trap)
+      ((uncase "in") 'in)
+      ((uncase "exit") 'exit)
+      ((uncase "when") 'when)
+      ((uncase "each") 'each)
+      ((uncase "sustain") 'sustain)
+      ((uncase "end") 'end)
+      ((uncase "pause") 'pause)
+      ((uncase "await") 'await)
+      ((uncase "abort") 'abort)
+      ((uncase "suspend") 'suspend)
+      ("||" 'parallel)
+      (";" 'end-of-instruction)
+      ("[" 'left-square-bracket)
+      ("]" 'right-square-bracket)))
+
+(define (build-ast)
+   )
+
+(define (hopscript %this this scope module)
+   (set! global-obj %this)
+   (let ((exports (js-get module 'exports %this)))
+      (set! exports-obj exports)
+      (js-bind! %this exports 'build_ast
+         :value (js-make-function %this
+                   (lambda (o)
+                      (build-ast))
+                   1 'build_ast)
+         :writable #f
+         :enumerable #f)))
