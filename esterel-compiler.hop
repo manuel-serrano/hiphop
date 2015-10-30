@@ -6,15 +6,12 @@
 
 (define esterel-lalr-grammar
    (lalr-grammar
-      (newline identifier input output signal colon semi-colon comma present
+      (identifier input output signal colon semi-colon comma present
 	 then else end in nothing emit halt suspend sustain await abort left-par
 	 right-par left-square-bracket right-square-bracket pause exit loop
 	 parallel module)
-      (lines
-	 (())
-	 ((lines newline)))
       (module-decl
-	 ((module semi-colon decl-list instruction end-module-decl)))
+	 ((module identifier colon decl-list instruction end-module-decl)))
       (end-module-decl
 	 ((end module))
 	 ((end)))
