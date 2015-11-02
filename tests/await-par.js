@@ -4,9 +4,9 @@ var rjs = require("../xml-compiler.js");
 var rkernel = require("../reactive-kernel.js");
 var inspector = require("../inspector.js");
 
-var sigA = new rkernel.Signal("A", false);
-var sigB = new rkernel.Signal("B", false);
-var sigO = new rkernel.Signal("O", false);
+var sigA = new rkernel.Signal("A");
+var sigB = new rkernel.Signal("B");
+var sigO = new rkernel.Signal("O");
 
 var prg = <rjs.reactivemachine name="awaitpar">
   <rjs.inputsignal ref=${sigA}/>

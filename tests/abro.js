@@ -5,10 +5,10 @@ var rkernel = require("../reactive-kernel.js");
 var inspector = require("../inspector.js");
 var batch = require("../batch-interpreter.js");
 
-var sigA = new rkernel.Signal("A", false);
-var sigB = new rkernel.Signal("B", false);
-var sigR = new rkernel.Signal("R", false);
-var sigO = new rkernel.Signal("O", false);
+var sigA = new rkernel.Signal("A");
+var sigB = new rkernel.Signal("B");
+var sigR = new rkernel.Signal("R");
+var sigO = new rkernel.Signal("O");
 
 var prg = <rjs.reactivemachine name="ABRO">
   <rjs.inputsignal ref=${sigR}/>

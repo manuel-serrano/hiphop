@@ -32,13 +32,9 @@ var DEBUG_FLAGS = DEBUG_NONE;
 // DEBUG_FLAGS |= DEBUG_SEQUENCE;
 // DEBUG_FLAGS |= DEBUG_TRAP;
 
-function Signal(name, value) {
-   /* value == false: pure signal
-      value != false: valued signal */
-
+function Signal(name) {
    this.name = name;
    this.set = false;
-   this.value = false;
 }
 
 /* 2: the signal is set and its value is ready to read
@@ -57,6 +53,50 @@ Signal.prototype.get_state = function(emitters) {
    if (emitters > 0)
       return 0;
    return -1;
+}
+
+Signal.prototype.reset = function() {
+   this.set = false;
+}
+
+function ValuedSignal(name, is_single, init_value=undefined) {
+   Signal.call(this, name);
+   this.value = init_value;
+   this.pre = init_value;
+   this.is_init = init_value != undefined;
+   this.single = is_single; /* only one write allowed by reaction */
+   this.written_in_react = false;
+}
+
+ValuedSignal.prototype = new Signal();
+
+ValuedSignal.prototype.get_value = function() {
+   if (!this.is_init)
+      fatal_error("Signal " + this.name + " is not initialized when reading.");
+   if (!this.set)
+      fatal_error("Signal " + this.name + " is not set when reading.");
+   return this.value;
+}
+
+ValuedSignal.prototype.get_pre = function() {
+   if (!this.is_init)
+      fatal_error("Signal " + this.name + " is not initialized when reading "
+		  + "pre.");
+   return this.pre;
+}
+
+ValuedSignal.prototype.set_value = function(value) {
+   if (this.single && this.written_in_react)
+      fatal_error("Multiple writes on single signal " + this.name);
+   this.written_in_react = true;
+   this.is_init = true;
+   this.set = true;
+   this.value = value;
+}
+
+ValuedSignal.prototype.reset = function() {
+   Signal.reset.call(this);
+   this.pre = this.value;
 }
 
 /* A wire connect two statements.
@@ -304,14 +344,14 @@ ReactiveMachine.prototype.react = function(seq) {
    }
 
    for (var i in this.input_signals)
-      this.input_signals[i].set = false;
+      this.input_signals[i].reset();
 
    for (var i in this.output_signals)
-      this.output_signals[i].set = false;
+      this.output_signals[i].reset();
 
    for (var i in this.local_signals)
       for (var j in this.local_signals[i])
-	 this.local_signals[i][j].set = false;
+	 this.local_signals[i][j].reset();
 
    this.reset_react = false;
 }

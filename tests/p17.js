@@ -1,7 +1,7 @@
 var rjs = require("../xml-compiler.js");
 var rk = require("../reactive-kernel.js");
 
-var sigO = new rk.Signal("O", false);
+var sigO = new rk.Signal("O");
 
 var prg = <rjs.reactivemachine name="P17">
   <rjs.outputsignal ref=${sigO}/>

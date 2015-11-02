@@ -4,9 +4,9 @@ var reactive = require("../reactive-kernel.js");
 var inspector = require("../inspector.js");
 var rjs = require("../xml-compiler.js");
 
-var sigA = new reactive.Signal("A", false);
-var sigT = new reactive.Signal("T", false);
-var sigV = new reactive.Signal("V", false);
+var sigA = new reactive.Signal("A");
+var sigT = new reactive.Signal("T");
+var sigV = new reactive.Signal("V");
 
 var prg = <rjs.reactivemachine name="example3">
   <rjs.inputsignal ref=${sigA}/>

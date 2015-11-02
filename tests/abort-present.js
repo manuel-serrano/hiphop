@@ -4,10 +4,10 @@ var rjs = require("../xml-compiler.js");
 var rkernel = require("../reactive-kernel.js");
 var inspector = require("../inspector.js");
 
-var sigI = new rkernel.Signal("I", false);
-var sigJ = new rkernel.Signal("J", false);
-var sigK = new rkernel.Signal("K", false);
-var sigV = new rkernel.Signal("V", false);
+var sigI = new rkernel.Signal("I");
+var sigJ = new rkernel.Signal("J");
+var sigK = new rkernel.Signal("K");
+var sigV = new rkernel.Signal("V");
 
 var prg = <rjs.reactivemachine name="abortpresent">
   <rjs.inputsignal ref=${sigI}/>

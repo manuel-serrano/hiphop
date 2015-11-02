@@ -2,7 +2,7 @@ var reactive = require("../reactive-kernel.js");
 var rjs = require("../xml-compiler.js");
 var inspector = require("../inspector.js");
 
-var sigJ = new reactive.Signal("J", false);
+var sigJ = new reactive.Signal("J");
 
 var machine = <rjs.reactivemachine name="parallel">
   <rjs.outputsignal ref=${sigJ}/>

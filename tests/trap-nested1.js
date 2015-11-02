@@ -2,10 +2,10 @@ var rjs = require("../xml-compiler.js");
 var reactive = require("../reactive-kernel.js");
 require("../js2esterel.js");
 
-var sigA = new reactive.Signal("A", false);
-var sigB = new reactive.Signal("B", false);
-var sigC = new reactive.Signal("C", false);
-var sigD = new reactive.Signal("D", false);
+var sigA = new reactive.Signal("A");
+var sigB = new reactive.Signal("B");
+var sigC = new reactive.Signal("C");
+var sigD = new reactive.Signal("D");
 
 var prg = <rjs.reactivemachine name="trapnested1">
   <rjs.outputsignal ref=${sigA}/>

@@ -1,8 +1,8 @@
 var rjs = require("/home/colin/phd/reactive-js/xml-compiler.js");
 var rk = require("/home/colin/phd/reactive-js/reactive-kernel.js");
 
-var sigI = new rk.Signal("I", false);
-var sigO = new rk.Signal("O", false);
+var sigI = new rk.Signal("I");
+var sigO = new rk.Signal("O");
 
 var example = <rjs.reactivemachine name="presentemit">
   <rjs.outputsignal ref=${sigI}/>
