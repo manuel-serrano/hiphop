@@ -196,10 +196,17 @@ SetLocalSignalsVisitor.prototype.visit = function(node) {
    if (node instanceof ast.LocalSignal) {
       var name = node.signal_name;
       var sigs = this.machine.local_signals;
-
       sigs[name] = [];
-      for (var i = 0; i < node.incarnation_lvl + 1; i++) {
-	 sigs[name][i] = new reactive.Signal(name, false);
+
+      if (this.valued_type != undefined) {
+	 var is_single = this.valued_type == 0;
+	 for (var i = 0; i < node.incarnation_lvl + 1; i++)
+	    sigs[name][i] = new reactive.ValuedSignal(name,
+						      is_single,
+						      this.init_value);
+      } else {
+	 for (var i = 0; i < node.incarnation_lvl + 1; i++)
+	    sigs[name][i] = new reactive.Signal(name);
       }
    }
 }
