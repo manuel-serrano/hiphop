@@ -1,0 +1,11 @@
+module value1:
+
+output O := 5 : combine integer with +;
+
+loop
+	emit O(5);
+	emit O(10);
+	pause
+end loop
+
+end module

@@ -111,6 +111,9 @@ ValuedSignal.prototype.set_value = function(value) {
 ValuedSignal.prototype.reset = function() {
    Signal.reset.call(this);
    this.pre = this.value;
+
+   if (this.is_init)
+      this.value = this.init_value;
 }
 
 ValuedSignal.prototype.check_type = function(value) {
@@ -1009,11 +1012,12 @@ function check_valued_signel_definition(type, combine_with) {
    if (VALUED_TYPES[type] == undefined)
       fatal_error("Wrong type on valued signal " + name);
 
-   if (VALUED_TYPES[types].indexOf(combine_with) == -1)
+   if (VALUED_TYPES[type].indexOf(combine_with) == -1)
       fatal_error("Wrong combinaison function on valued signal " + name);
 }
 
 exports.Signal = Signal;
+exports.ValuedSignal = ValuedSignal;
 exports.Emit = Emit;
 exports.Pause = Pause;
 exports.Present = Present;
