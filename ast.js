@@ -216,9 +216,21 @@ exports.Sequence = Sequence;
 
 /* Signal nodes */
 
-function LocalSignal(loc, signal_name, subcircuit) {
+function LocalSignal(loc,
+		     signal_name,
+		     subcircuit,
+		     valued_type=undefined,
+		     init_value=undefined) {
+   /* valued_type = undefined -> non valued signal
+      valued_type = 0 -> single valued signal
+      valued_type = 1 -> combined valued signal */
+
+   if (valued_type != undefined && valued_type != 0 && valued_type != 1)
+      rk.fatal_error("Invalid valued_type value in " + loc);
    Circuit.call(this, "LOCALSIGNAL", loc, subcircuit);
    this.signal_name = signal_name;
+   this.valued_type = valued_type;
+   this.init_value = init_value;
 }
 LocalSignal.prototype = new Circuit();
 LocalSignal.prototype.factory = function() {
