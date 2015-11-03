@@ -32,6 +32,9 @@ var DEBUG_FLAGS = DEBUG_NONE;
 // DEBUG_FLAGS |= DEBUG_SEQUENCE;
 // DEBUG_FLAGS |= DEBUG_TRAP;
 
+var VALUED_TYPES = { "number": [ "+", "*" ],
+		     "boolean": [ "and", "or" ] };
+
 function Signal(name) {
    this.name = name;
    this.set = false;
@@ -59,13 +62,24 @@ Signal.prototype.reset = function() {
    this.set = false;
 }
 
-function ValuedSignal(name, is_single, init_value=undefined) {
+function ValuedSignal(name,
+		      type,
+		      combine_with,
+		      is_single,
+		      init_value=undefined) {
+   check_valued_signel_definition(type, combine_with);
    Signal.call(this, name);
    this.value = init_value;
    this.pre = init_value;
+   this.type = type;
+   this.combine_with = combine_with;
    this.is_init = init_value != undefined;
+   this.init_value = init_value;
    this.single = is_single; /* only one write allowed by reaction */
    this.written_in_react = false;
+
+   if (this.is_init)
+      this.check_type(this.init_value);
 }
 
 ValuedSignal.prototype = new Signal();
@@ -97,6 +111,11 @@ ValuedSignal.prototype.set_value = function(value) {
 ValuedSignal.prototype.reset = function() {
    Signal.reset.call(this);
    this.pre = this.value;
+}
+
+ValuedSignal.prototype.check_type = function(value) {
+   if (typeof(value) != this.type)
+      fatal_error("Wrong type of value given to signal " + this.name);
 }
 
 /* A wire connect two statements.
@@ -986,6 +1005,14 @@ function deep_clone(obj) {
    return _clone(obj, [], []);
 }
 
+function check_valued_signel_definition(type, combine_with) {
+   if (VALUED_TYPES[type] == undefined)
+      fatal_error("Wrong type on valued signal " + name);
+
+   if (VALUED_TYPES[types].indexOf(combine_with) == -1)
+      fatal_error("Wrong combinaison function on valued signal " + name);
+}
+
 exports.Signal = Signal;
 exports.Emit = Emit;
 exports.Pause = Pause;
@@ -1004,3 +1031,4 @@ exports.Statement = Statement;
 exports.Trap = Trap;
 exports.Exit = Exit;
 exports.LocalSignalIdentifier = LocalSignalIdentifier;
+exports.check_valued_signel_definition = check_valued_signel_definition;
