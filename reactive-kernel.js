@@ -417,11 +417,11 @@ ReactiveMachine.prototype.get_signal = function(name) {
 
 /* Emit - Figure 11.4 page 116 */
 
-function Emit(machine, loc, signal_name, value_expr=undefined) {
+function Emit(machine, loc, signal_name, expr=undefined) {
    Statement.call(this, machine, loc, "EMIT");
    this.debug_code = DEBUG_EMIT;
    this.signal_name = signal_name;
-   this.value_expr = value_expr;
+   this.expr = expr;
 }
 
 Emit.prototype = new Statement();
@@ -434,8 +434,8 @@ Emit.prototype.run = function() {
 
    if (this.go.set) {
       signal.set = true;
-      if (this.value_expr != undefined && signal instanceof ValuedSignal)
-	 signal.set_value(this.value_expr.evaluate());
+      if (this.expr instanceof Expression && signal instanceof ValuedSignal)
+	 signal.set_value(this.expr.evaluate());
    }
 
    if (DEBUG_FLAGS & DEBUG_EMIT)
@@ -443,32 +443,98 @@ Emit.prototype.run = function() {
    return true;
 }
 
-function Expression(machine, loc, type, value) {
+/* Expressions */
+
+function Expression(machine, loc, type) {
    this.machine = machine;
    this.loc = loc;
    this.type = type; /* return type of the expression */
-   this.value = value; /* expression to evaluate */
 }
 
-Expression.prototype.evaluate = function() {
-   var ret;
-   var len = this.value.length;
+Expression.prototype.evaluate = function() {}
 
-   ret = parseFloat(this.value);
-   if (!isNaN(ret)) {
-      // uncomment this when ParseExpressionVisitor could check the type
-      // if (this.type != "number")
-      // 	 fatal_error("Return expression must be number at " + this.loc);
-   } else if (this.value.charAt(0) == "?") {
-      ret = this.machine.get_signal(this.value.substring(1, len)).get_value();
-   } else if (this.value.toLowerCase().substring(0, 4) == "pre(") {
-      ret =
-	 this.machine,get_signal(this.value.substring(1, len - 1)).get_value();
-   } else {
-      fatal_error("Invalid expression at " + this.loc);
-   }
+/* As Expression objects are created before the reactive machine, we need this
+   to assign the reactive machine to already existing expressions */
 
-   return ret;
+Expression.prototype.set_machine = function(machine) {
+   this.machine = machine;
+}
+
+Expression.prototype.is_vald_type = function() {
+   return true;
+}
+
+function ConstExpression(machine, loc, type, value) {
+   Expression.call(this, machine, loc, type);
+   this.value = value;
+}
+
+ConstExpression.prototype = new Expression();
+
+ConstExpression.prototype.evaluate = function() { return this.value; }
+
+function SignalExpression(machine, loc, type, signal_name) {
+   Expression.call(this, machine, loc, type);
+   this.signal_name = signal_name;
+}
+
+SignalExpression.prototype = new Expression();
+
+SignalExpression.prototype.evaluate = function() {
+   return this.machine.get_signal(this.signal_name).get_value();
+}
+
+SignalExpression.prototype.is_vald_type = function() {
+   return this.type == machine.get_signal(this.signal_name).type;
+}
+
+function PreExpression(machine, loc, type, signal_name) {
+   SignalExpression.call(this, machine, loc, type, signal_name);
+}
+
+PreExpression.prototype = new SignalExpression();
+
+PreExpression.prototype.evaluate = function() {
+   return this.machine.get_signal(this.signal_name).get_pre();
+}
+
+function BinaryExpression(machine, loc, type, expr1, expr2) {
+   Expression.call(this, machine, loc, type);
+   this.expr1 = expr1;
+   this.expr2 = expr2;
+}
+
+BinaryExpression.prototype = new Expression();
+
+BinaryExpression.prototype.set_machine = function(machine) {
+   Expression.prototype.set_machine(machine);
+   this.expr1.set_machine(machine);
+   this.expr2.set_machine(machine);
+}
+
+BinaryExpression.prototype.is_vald_type = function() {
+   return this.type == this.expr1.type && this.type == this.expr2.type;
+}
+
+function PlusExpression(machine, loc, type, expr1, expr2) {
+   BinaryExpression.call(this, machine, loc, type, expr1, expr2);
+}
+
+PlusExpression.prototype = new BinaryExpression();
+
+PlusExpression.prototype.evaluate = function() {
+   return this.expr1.evaluate() + this.expr2.evaluate()
+}
+
+
+function MinusExpression(machine, loc, type, expr1, expr2) {
+   BinaryExpression.call(this, machine, loc, type, expr1, expr2);
+}
+
+MinusExpression.prototype = new BinaryExpression();
+
+MinusExpression.prototype.evaluate = function() {
+   return this.expr1.evaluate() - this.expr2.evaluate()
 }
 
 /* Pause - Figure 11.3 page 115 */

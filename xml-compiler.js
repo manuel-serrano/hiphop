@@ -204,6 +204,43 @@ function LOCALSIGNAL(attrs) {
 			      children[0]);
 }
 
+function CONSTEXPR(attrs) {
+   return new reactive.ConstExpression(null,
+				       format_loc(attrs),
+				       typeof(attrs.value),
+				       attrs.value);
+}
+
+function SIGEXPR(attrs) {
+   return new reactive.SignalExpression(null,
+					format_loc(attrs),
+					attrs.type,
+					attrs.signal_name);
+}
+
+function PREEXPR(attrs) {
+   return new reactive.PreExpression(null,
+				     format_loc(attrs),
+				     attrs.type,
+				     attrs.signal_name);
+}
+
+function PLUSEXPR(attrs) {
+   return new reactive.PlusExpression(null,
+				      format_loc(attrs),
+				      attrs.type,
+				      attrs.expr1,
+				      attrs.expr2);
+}
+
+function MINUSEXPR(attrs) {
+   return new reactive.MinusExpression(null,
+				       format_loc(attrs),
+				       attrs.type,
+				       attrs.expr1,
+				       attrs.expr2);
+}
+
 exports.REACTIVEMACHINE = REACTIVEMACHINE;
 exports.EMIT = EMIT;
 exports.NOTHING = NOTHING;
@@ -222,3 +259,8 @@ exports.EXIT = EXIT;
 exports.LOCALSIGNAL = LOCALSIGNAL;
 exports.INPUTSIGNAL = INPUTSIGNAL;
 exports.OUTPUTSIGNAL = OUTPUTSIGNAL;
+exports.CONSTEXPR = CONSTEXPR;
+exports.SIGEXPR = SIGEXPR;
+exports.PREEXPR = PREEXPR;
+exports.PLUSEXPR = PLUSEXPR;
+exports.MINUSEXPR = MINUSEXPR;
