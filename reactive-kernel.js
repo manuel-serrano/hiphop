@@ -71,6 +71,7 @@ function ValuedSignal(name,
    Signal.call(this, name);
    this.value = init_value;
    this.pre = init_value;
+   this.is_pre_init = init_value != undefined;
    this.type = type;
    this.combine_with = combine_with;
    this.is_init = init_value != undefined;
@@ -93,7 +94,7 @@ ValuedSignal.prototype.get_value = function() {
 }
 
 ValuedSignal.prototype.get_pre = function() {
-   if (!this.is_init)
+   if (!this.is_pre_init)
       fatal_error("Signal " + this.name + " is not initialized when reading "
 		  + "pre.");
    return this.pre;
@@ -102,15 +103,22 @@ ValuedSignal.prototype.get_pre = function() {
 ValuedSignal.prototype.set_value = function(value) {
    if (this.single && this.written_in_react)
       fatal_error("Multiple writes on single signal " + this.name);
-   this.written_in_react = true;
-   this.is_init = true;
    this.set = true;
-   this.value = value;
+
+   if (!this.written_in_react) {
+      this.value = value;
+      this.written_in_react = true;
+   } else {
+      var eval_buff = this.value + this.combine_with + value;
+      this.value = eval(eval_buff);
+   }
 }
 
 ValuedSignal.prototype.reset = function() {
-   Signal.reset.call(this);
+   Signal.prototype.reset.call(this);
    this.pre = this.value;
+   this.is_pre_init = true;
+   this.written_in_react = false;
 
    if (this.is_init)
       this.value = this.init_value;
@@ -348,16 +356,19 @@ ReactiveMachine.prototype.react = function(seq) {
 	 var sig = this.input_signals[i];
 
 	 if (sig.set) {
-	       buf_in += " " + sig.name;
-	       semicolon_space = "";
+	    buf_in += " " + sig.name;
+	    semicolon_space = "";
 	 }
       }
 
       for (var i in this.output_signals) {
 	 var sig = this.output_signals[i];
 
-	 if (sig.set)
-	       buf_out += " " + sig.name;
+	 if (sig.set) {
+	    buf_out += " " + sig.name;
+	    if (sig instanceof ValuedSignal)
+	       buf_out += "(" + sig.value + ")";
+	 }
       }
 
       buf_in += semicolon_space + ";"
@@ -406,10 +417,11 @@ ReactiveMachine.prototype.get_signal = function(name) {
 
 /* Emit - Figure 11.4 page 116 */
 
-function Emit(machine, loc, signal_name) {
+function Emit(machine, loc, signal_name, value_expr=undefined) {
    Statement.call(this, machine, loc, "EMIT");
    this.debug_code = DEBUG_EMIT;
    this.signal_name = signal_name;
+   this.value_expr = value_expr;
 }
 
 Emit.prototype = new Statement();
@@ -420,13 +432,92 @@ Emit.prototype.run = function() {
    this.k[0].set = this.go.set;
    this.machine.signals_emitters[this.signal_name]--;
 
-   if (this.go.set)
+   if (this.go.set) {
       signal.set = true;
+      if (this.value_expr != undefined && signal instanceof ValuedSignal)
+	 signal.set_value(this.value_expr.evaluate());
+   }
 
    if (DEBUG_FLAGS & DEBUG_EMIT)
       this.debug();
    return true;
 }
+
+function Expression(machine, loc, type, value) {
+   this.machine = machine;
+   this.loc = loc;
+   this.type = type; /* return type of the expression */
+   this.value = value; /* expression to evaluate */
+}
+
+Expression.prototype.evaluate = function() {
+   var ret;
+   var len = this.value.length;
+
+   ret = parseFloat(this.value);
+   if (!isNaN(ret)) {
+      // uncomment this when ParseExpressionVisitor could check the type
+      // if (this.type != "number")
+      // 	 fatal_error("Return expression must be number at " + this.loc);
+   } else if (this.value.charAt(0) == "?") {
+      ret = this.machine.get_signal(this.value.substring(1, len)).get_value();
+   } else if (this.value.toLowerCase().substring(0, 4) == "pre(") {
+      ret =
+	 this.machine,get_signal(this.value.substring(1, len - 1)).get_value();
+   } else {
+      fatal_error("Invalid expression at " + this.loc);
+   }
+
+   return ret;
+}
+
+// function Expression(machine,
+// 		    loc,
+// 		    type,
+// 		    op1,
+// 		    apply_func=undefined,
+// 		    op2=undefined) {
+//    this.machine = machine;
+//    this.loc = loc;
+//    this.type = type;
+//    this.op1 = op1;
+//    this.apply_func = apply_func;
+//    this.op2 = op2;
+// }
+
+// Expression.prototype.parse = function(op) {
+//       if (typeof(op) == "string") {
+//       if (op.charAt(0) == "?") {
+//       } else if (op.substring(0, 4).toLowerCase() == "pre(") {
+//       } else {
+// 	 fatal_error("Invalid operand on expression at " + this.loc);
+//       }
+//    } else if (typeof(op) == "boolean") {
+//    } else if (typeof(op) == "number") {
+//    } else {
+//       fatal_error("Invalid operand type on expression at " + this.loc);
+//    }
+// }
+
+// Expression.prototype.get_value = function() {
+//    var ret = this.parse(this.op1);
+
+//    if (op2 != undefined) {
+//       var op2 = this.parse(this.op2);
+
+//       if (typeof(apply_func) == "function") {
+// 	 ret = apply_func(op1, op2);
+//       } else if (typeof(apply_func) == "string") {
+
+//       } else {
+// 	 fatal_error("Invalid function type of expression at " + this.loc);
+//       }
+//    }
+
+//    if (typeof(ret) != this.type)
+//       fatal_error("Invalid return type of expression at " + ẗhis.loc);
+//    return ret;
+// }
 
 /* Pause - Figure 11.3 page 115 */
 
@@ -1034,5 +1125,6 @@ exports.ReactiveMachine = ReactiveMachine;
 exports.Statement = Statement;
 exports.Trap = Trap;
 exports.Exit = Exit;
+exports.Expression = Expression;
 exports.LocalSignalIdentifier = LocalSignalIdentifier;
 exports.check_valued_signel_definition = check_valued_signel_definition;

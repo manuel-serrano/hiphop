@@ -27,13 +27,17 @@ Statement.prototype = new ASTNode();
 Statement.prototype.factory = function() { /* Return program node of this */ }
 exports.Statement = Statement;
 
-function Emit(loc, signal_name) {
+function Emit(loc, signal_name, value_expr=undefined) {
    Statement.call(this, "EMIT", loc);
    this.signal_name = signal_name;
+   this.value_expr = value_expr;
 }
 Emit.prototype = new Statement();
 Emit.prototype.factory = function() {
-   return new rk.Emit(this.machine, this.loc, this.signal_name);
+   return new rk.Emit(this.machine,
+		      this.loc,
+		      this.signal_name,
+		      this.value_expr);
 }
 exports.Emit = Emit;
 

@@ -246,6 +246,28 @@ BuildCircuitVisitor.prototype.visit = function(node) {
    }
 }
 
+/* This visitor must parse expressions for valued signal.
+   It must be called at the end of the compilation (where all signals
+   are defined in the reactive machine, and types are checked).
+
+   For now, this visitor didn't do lot of things, but it must in the future
+   parse a complex expression, and check that names and types of the expression
+   are corrects  */
+
+function ParseExpressionVisitor(machine) {
+   this.machine = machine;
+}
+
+ParseExpressionVisitor.prototype.visit = function(node) {
+   if (node instanceof ast.Emit && node.value_expr != undefined) {
+      node.value_expr = new reactive.Expression(this.machine,
+						node.loc,
+						"type-NYI",
+						node.value_expr);
+   }
+}
+
+
 /* Take the root of an AST (that must be ReactiveMachine node)
    and then return a reactive program (a runnable reactive machine).
 
@@ -274,6 +296,7 @@ function compile(ast_machine) {
    ast_machine.accept(new SetIncarnationLevelVisitor());
    ast_machine.accept(new SetExitReturnCodeVisitor());
    ast_machine.accept_auto(new SetLocalSignalsVisitor(machine));
+   ast_machine.accept_auto(new ParseExpressionVisitor(machine));
 // ast_machine.accept(new PrintTreeVisitor(ast_machine));
    ast_machine.accept(new BuildCircuitVisitor(machine));
    return machine;
