@@ -471,54 +471,6 @@ Expression.prototype.evaluate = function() {
    return ret;
 }
 
-// function Expression(machine,
-// 		    loc,
-// 		    type,
-// 		    op1,
-// 		    apply_func=undefined,
-// 		    op2=undefined) {
-//    this.machine = machine;
-//    this.loc = loc;
-//    this.type = type;
-//    this.op1 = op1;
-//    this.apply_func = apply_func;
-//    this.op2 = op2;
-// }
-
-// Expression.prototype.parse = function(op) {
-//       if (typeof(op) == "string") {
-//       if (op.charAt(0) == "?") {
-//       } else if (op.substring(0, 4).toLowerCase() == "pre(") {
-//       } else {
-// 	 fatal_error("Invalid operand on expression at " + this.loc);
-//       }
-//    } else if (typeof(op) == "boolean") {
-//    } else if (typeof(op) == "number") {
-//    } else {
-//       fatal_error("Invalid operand type on expression at " + this.loc);
-//    }
-// }
-
-// Expression.prototype.get_value = function() {
-//    var ret = this.parse(this.op1);
-
-//    if (op2 != undefined) {
-//       var op2 = this.parse(this.op2);
-
-//       if (typeof(apply_func) == "function") {
-// 	 ret = apply_func(op1, op2);
-//       } else if (typeof(apply_func) == "string") {
-
-//       } else {
-// 	 fatal_error("Invalid function type of expression at " + this.loc);
-//       }
-//    }
-
-//    if (typeof(ret) != this.type)
-//       fatal_error("Invalid return type of expression at " + ẗhis.loc);
-//    return ret;
-// }
-
 /* Pause - Figure 11.3 page 115 */
 
 function Pause(machine, loc) {
