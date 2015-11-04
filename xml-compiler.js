@@ -82,7 +82,7 @@ function REACTIVEMACHINE(attrs) {
 
 function EMIT(attrs) {
    check_signal_name(attrs.signal_name, attrs);
-   return new ast.Emit(format_loc(attrs), attrs.signal_name, attrs.value_expr);
+   return new ast.Emit(format_loc(attrs), attrs.signal_name, attrs.expr);
 }
 
 function NOTHING(attrs) {
