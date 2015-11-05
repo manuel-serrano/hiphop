@@ -105,12 +105,15 @@ function PRESENT(attrs) {
       fatal("Present must have at least one child.", format_loc(attrs));
    return new ast.Present(format_loc(attrs),
 			  attrs.signal_name,
+			  attrs.test_pre != undefined,
 			  [ children[0], children[1] ]);
 }
 
 function AWAIT(attrs) {
    check_signal_name(attrs.signal_name, attrs);
-   return new ast.Await(format_loc(attrs), attrs.signal_name);
+   return new ast.Await(format_loc(attrs),
+			attrs.signal_name,
+			attrs.test_pre != undefined);
 }
 
 function PARALLEL(attrs) {
@@ -127,7 +130,10 @@ function ABORT(attrs) {
    check_signal_name(attrs.signal_name, attrs);
    if (children.length != 1)
       fatal("Abort must have exactly one child.", format_loc(attrs));
-   return new ast.Abort(format_loc(attrs), attrs.signal_name, children[0]);
+   return new ast.Abort(format_loc(attrs),
+			attrs.signal_name,
+			attrs.test_pre != undefined,
+			children[0]);
 }
 
 function SUSPEND(attrs) {
@@ -136,7 +142,10 @@ function SUSPEND(attrs) {
    check_signal_name(attrs.signal_name, attrs);
    if (children.length != 1)
       fatal("Suspend must have exactly one child.", format_loc(attrs));
-   return new ast.Suspend(format_loc(attrs), attrs.signal_name, children[0]);
+   return new ast.Suspend(format_loc(attrs),
+			  attrs.signal_name,
+			  attrs.test_pre != undefined,
+			  children[0]);
 }
 
 function LOOP(attrs) {

@@ -92,13 +92,14 @@ Atom.prototype.factory = function() {
 }
 exports.Atom = Atom;
 
-function Await(loc, signal_name) {
+function Await(loc, signal_name, test_pre) {
    Circuit.call(this, "AWAIT", loc);
    this.signal_name = signal_name;
+   this.test_pre = test_pre;
 }
 Await.prototype = new Statement();
 Await.prototype.factory = function() {
-   return new rk.Await(this.machine, this.loc, this.signal_name);
+   return new rk.Await(this.machine, this.loc, this.signal_name, this.test_pre);
 }
 exports.Await = Await;
 
@@ -144,16 +145,18 @@ function ReactiveMachine(loc,
 ReactiveMachine.prototype = new Circuit();
 exports.ReactiveMachine = ReactiveMachine;
 
-function Abort(loc, signal_name, subcircuit) {
+function Abort(loc, signal_name, test_pre, subcircuit) {
    Circuit.call(this, "ABORT", loc, subcircuit);
    this.signal_name = signal_name;
+   this.test_pre = test_pre;
 }
 Abort.prototype = new Circuit();
 Abort.prototype.factory = function() {
    return new rk.Abort(this.machine,
 		       this.loc,
 		       this.subcircuit[0],
-		       this.signal_name);
+		       this.signal_name,
+		       this.test_pre);
 }
 exports.Abort = Abort;
 
@@ -166,16 +169,18 @@ Loop.prototype.factory = function() {
 }
 exports.Loop = Loop;
 
-function Suspend(loc, signal_name, subcircuit) {
+function Suspend(loc, signal_name, test_pre, subcircuit) {
    Circuit.call(this, "SUSPEND", loc, subcircuit);
    this.signal_name = signal_name;
+   this.test_pre = test_pre;
 }
 Suspend.prototype = new Circuit();
 Suspend.prototype.factory = function() {
    return new rk.Suspend(this.machine,
 			 this.loc,
 			 this.subcircuit[0],
-			 this.signal_name)
+			 this.signal_name,
+			 this.test_pre)
 }
 exports.Suspend = Suspend;
 
@@ -191,18 +196,20 @@ Parallel.prototype.factory = function() {
 }
 exports.Parallel = Parallel;
 
-function Present(loc, signal_name, subcircuits) {
+function Present(loc, signal_name, test_pre, subcircuits) {
    if (subcircuits[1] == undefined)
       subcircuits[1] = new Nothing(loc);
 
    Circuit.call(this, "PRESENT", loc, subcircuits);
    this.signal_name = signal_name;
+   this.test_pre = test_pre;
 }
 Present.prototype = new Circuit();
 Present.prototype.factory = function() {
    return new rk.Present(this.machine,
 			 this.loc,
 			 this.signal_name,
+			 this.test_pre,
 			 this.subcircuit[0],
 			 this.subcircuit[1]);
 }

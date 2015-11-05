@@ -38,6 +38,7 @@ var VALUED_TYPES = { "number": [ "+", "*" ],
 function Signal(name) {
    this.name = name;
    this.set = false;
+   this.pre_set = false;
 }
 
 /* 2: the signal is set and its value is ready to read
@@ -45,7 +46,10 @@ function Signal(name) {
    0: the value is unkown
    -1: the value is unset */
 
-Signal.prototype.get_state = function(emitters) {
+Signal.prototype.get_state = function(emitters, test_pre) {
+   if (test_pre)
+      return this.pre_set ? 2 : -1;
+
    if (emitters == undefined)
       emitters = 0;
 
@@ -59,6 +63,7 @@ Signal.prototype.get_state = function(emitters) {
 }
 
 Signal.prototype.reset = function() {
+   this.pre_set = this.set;
    this.set = false;
 }
 
@@ -568,13 +573,19 @@ Pause.prototype.run = function() {
    X_in[1] represent X_in of else branch
    It's allowed to have only a then branch */
 
-function Present(machine, loc, signal_name, then_branch, else_branch) {
+function Present(machine,
+		 loc,
+		 signal_name,
+		 test_pre,
+		 then_branch,
+		 else_branch) {
    if (!(else_branch instanceof Statement))
       else_branch = new Nothing();
    MultipleCircuit.call(this, machine, loc, "PRESENT",
 			[then_branch, else_branch]);
    this.debug_code = DEBUG_PRESENT;
    this.signal_name = signal_name;
+   this.test_pre = test_pre;
 
    /* set to 0 or 1 is the branch 0|1 was blocked on signal test */
    this.blocked = -1;
@@ -586,7 +597,8 @@ Present.prototype.run = function() {
    var sig_name = this.signal_name;
    var branch = 0;
    var signal = this.machine.get_signal(sig_name);
-   var signal_state = signal.get_state(this.machine.signals_emitters[sig_name]);
+   var signal_state = signal.get_state(this.machine.signals_emitters[sig_name],
+				       this.test_pre);
 
    if (this.blocked == -1) {
       if (signal_state == 0 && this.go.set)
@@ -761,10 +773,11 @@ Loop.prototype.run = function() {
 
 /* Abort - Figure 11.7 page 120 */
 
-function Abort(machine, loc, circuit, signal_name) {
+function Abort(machine, loc, circuit, signal_name, test_pre) {
    Circuit.call(this, machine, loc, "ABORT", circuit);
    this.debug_code = DEBUG_ABORT;
    this.signal_name = signal_name;
+   this.test_pre = test_pre;
 }
 
 Abort.prototype = new Circuit();
@@ -772,7 +785,8 @@ Abort.prototype = new Circuit();
 Abort.prototype.run = function() {
    var sig_name = this.signal_name;
    var signal = this.machine.get_signal(sig_name);
-   var signal_state = signal.get_state(this.machine.signals_emitters[sig_name]);
+   var signal_state = signal.get_state(this.machine.signals_emitters[sig_name],
+				       this.test_pre);
 
    if (signal_state == 0) {
       this.blocked_by_signal = true;
@@ -805,12 +819,13 @@ Abort.prototype.run = function() {
 
 /* Await */
 
-function Await(machine, loc, signal_name) {
+function Await(machine, loc, signal_name, test_pre) {
    this.signal_name = signal_name;
    var abort = new Abort(machine,
 			 loc,
 			 new Halt(machine, loc),
-			 this.signal_name);
+			 this.signal_name,
+			 this.test_pre);
    Circuit.call(this, machine, loc, "AWAIT", abort);
    this.debug_code = DEBUG_AWAIT;
 }
@@ -927,12 +942,14 @@ Atom.prototype.run = function() {
    return true;
 }
 
-/* Suspend - Figure 11.6 */
+/* Suspend - Figure 11.6
+   /!\ could be broken, not tested */
 
-function Suspend(machine, loc, circuit, signal_name) {
+function Suspend(machine, loc, circuit, signal_name, test_pre) {
    Circuit.call(this, machine, loc, "SUSPEND", circuit);
    this.debug_code = DEBUG_SUSPEND;
    this.signal_name = signal_name;
+   this.test_pre = test_pre;
 }
 
 Suspend.prototype = new Circuit();
@@ -941,7 +958,8 @@ Suspend.prototype.run = function() {
    /* TODO: make same hack that abort */
    var sig_name = this.signal_name;
    var signal = this.machine.get_signal(sig_name);
-   var signal_state = signal.get_state(this.machine.signals_emitters[sig_name]);
+   var signal_state = signal.get_state(this.machine.signals_emitters[sig_name],
+				       this.test_pre);
 
    if (signal_state == 0) {
       this.blocked_by_signal = true;

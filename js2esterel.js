@@ -31,7 +31,7 @@ function print_valued_signal(signal) {
    if (signal.has_init_value)
       buf += " := " + signal.init_value;
 
-   if (signal.is_single)
+   if (signal.single)
       buf += " : " + type;
 
    else
