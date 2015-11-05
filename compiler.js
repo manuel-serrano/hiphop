@@ -288,6 +288,7 @@ function compile(ast_machine) {
    ast_machine.accept(new SetIncarnationLevelVisitor());
    ast_machine.accept(new SetExitReturnCodeVisitor());
    ast_machine.accept_auto(new SetLocalSignalsVisitor(machine));
+   ast_machine.accept_auto(new ExpressionVisitor(machine));
 // ast_machine.accept(new PrintTreeVisitor(ast_machine));
    ast_machine.accept(new BuildCircuitVisitor(machine));
    return machine;
