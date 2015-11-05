@@ -73,20 +73,20 @@ function ValuedSignal(name,
    this.pre = init_value;
    this.is_pre_init = init_value != undefined;
    this.type = type;
-   this.combine_with = combine_with;
-   this.is_init = init_value != undefined;
+   this.combine_with = combine_with; /* null if single */
+   this.has_init_value = init_value != undefined;
    this.init_value = init_value;
    this.single = is_single; /* only one write allowed by reaction */
    this.written_in_react = false;
 
-   if (this.is_init)
+   if (this.has_init_value)
       this.check_type(this.init_value);
 }
 
 ValuedSignal.prototype = new Signal();
 
 ValuedSignal.prototype.get_value = function() {
-   if (!this.is_init)
+   if (!this.has_init_value && !this.written_in_react)
       fatal_error("Signal " + this.name + " is not initialized when reading.");
    if (!this.set)
       fatal_error("Signal " + this.name + " is not set when reading.");
@@ -120,7 +120,7 @@ ValuedSignal.prototype.reset = function() {
    this.is_pre_init = true;
    this.written_in_react = false;
 
-   if (this.is_init)
+   if (this.has_init_value)
       this.value = this.init_value;
 }
 

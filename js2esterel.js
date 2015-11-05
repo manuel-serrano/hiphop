@@ -13,6 +13,32 @@ function apply_indent(indent) {
    return buf;
 }
 
+function print_valued_signal(signal) {
+   if (!(signal instanceof reactive.ValuedSignal))
+      return "";
+
+   var buf = "";
+   var type = signal.type;
+
+   if (type == "number") {
+      if (signal.has_init_value)
+	 signal.init_value % 1 === 0 ? type = "integer" : type = "float";
+      else
+	 /* could be wrong, but it will remains correct at syntaxic level */
+	 type = "integer";
+   }
+
+   if (signal.has_init_value)
+      buf += " := " + signal.init_value;
+
+   if (signal.is_single)
+      buf += " : " + type;
+
+   else
+      buf += " : combine " + type + " with " + signal.combine_with;
+   return buf;
+}
+
 String.prototype.replace_char = function(index, chr) {
    return this.substr(0, index) + chr + this.substr(index + 1);
 }
@@ -31,8 +57,10 @@ reactive.ReactiveMachine.prototype.esterel_code = function(indent) {
       buf += "input ";
       count = 0;
       for (var i in this.input_signals) {
+	 var sig = this.input_signals[i];
+
 	 count++;
-	 buf += this.input_signals[i].name;
+	 buf += sig.name + print_valued_signal(sig);
 	 buf += count == len ? ";\n" : ", ";
       }
    }
@@ -42,8 +70,10 @@ reactive.ReactiveMachine.prototype.esterel_code = function(indent) {
       buf += "output ";
       count = 0;
       for (var i in this.output_signals) {
+	 var sig = this.output_signals[i];
+
 	 count++;
-	 buf += this.output_signals[i].name;
+	 buf += sig.name + print_valued_signal(sig);
 	 buf += count == len ? ";\n" : ", ";
       }
    }
@@ -55,7 +85,11 @@ reactive.ReactiveMachine.prototype.esterel_code = function(indent) {
 }
 
 reactive.Emit.prototype.esterel_code = function(indent) {
-   return apply_indent(indent) + "emit " + this.signal_name;
+   var buf = apply_indent(indent) + "emit " + this.signal_name;
+
+   if (this.expr instanceof reactive.Expression)
+      buf += "(" + this.expr.esterel_code() + ")";
+   return buf;
 }
 
 reactive.Pause.prototype.esterel_code = function(indent) {
@@ -213,9 +247,32 @@ reactive.Trap.prototype.esterel_code = function(indent) {
 reactive.LocalSignalIdentifier.prototype.esterel_code = function(indent) {
    var buf = "";
 
-   buf += apply_indent(indent) + "signal " + this.signal_name + " in\n";
+   buf += apply_indent(indent) + "signal "
+      + this.signal_name
+      + print_valued_signal(this.machine.get_signal(this.signal_name))
+      + " in\n";
    buf += this.go_in.stmt_out.esterel_code(indent + INDENT_LEVEL);
    buf += "\n" + apply_indent(indent) + "end signal";
 
    return buf;
+}
+
+reactive.ConstExpression.prototype.esterel_code = function() {
+   return this.value;
+}
+
+reactive.SignalExpression.prototype.esterel_code = function() {
+   return "?" + this.signal_name;
+}
+
+reactive.PreExpression.prototype.esterel_code = function() {
+   return "pre(" + this.signal_name + ")";
+}
+
+reactive.PlusExpression.prototype.esterel_code = function() {
+   return this.expr1.esterel_code() + "+" + this.expr2.esterel_code();
+}
+
+reactive.MinusExpression.prototype.esterel_code = function() {
+   return this.expr1.esterel_code() + "-" + this.expr2.esterel_code();
 }
