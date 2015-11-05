@@ -39,6 +39,14 @@ function print_valued_signal(signal) {
    return buf;
 }
 
+function print_test_pre(stmt) {
+   var buf = stmt.signal_name;
+
+   if (stmt.test_pre)
+      buf = "pre(" + buf + ")";
+   return buf;
+}
+
 String.prototype.replace_char = function(index, chr) {
    return this.substr(0, index) + chr + this.substr(index + 1);
 }
@@ -99,7 +107,7 @@ reactive.Pause.prototype.esterel_code = function(indent) {
 reactive.Present.prototype.esterel_code = function(indent) {
    var buf = "";
 
-   buf += apply_indent(indent) + "present " + this.signal_name + " then\n";
+   buf += apply_indent(indent) + "present " + print_test_pre(this) + " then\n";
    buf += this.go_in[0].stmt_out.esterel_code(indent + INDENT_LEVEL);
 
    if (!(this.go_in[1].stmt_out instanceof reactive.Nothing)) {
@@ -159,7 +167,7 @@ reactive.Abort.prototype.esterel_code = function(indent) {
 
    buf += apply_indent(indent) + "abort\n";
    buf += this.go_in.stmt_out.esterel_code(indent + INDENT_LEVEL);
-   buf += "\n" + apply_indent(indent) + "when " + this.signal_name;
+   buf += "\n" + apply_indent(indent) + "when " + print_test_pre(this);
 
    return buf;
 }
@@ -169,13 +177,13 @@ reactive.Suspend.prototype.esterel_code = function(indent) {
 
    buf += apply_indent(indent) + "suspend\n";
    buf += this.go_in.stmt_out.esterel_code(indent + INDENT_LEVEL);
-   buf += "\n" + apply_indent(indent) + "when " + this.signal_name;
+   buf += "\n" + apply_indent(indent) + "when " + print_test_pre(this);
 
    return buf;
 }
 
 reactive.Await.prototype.esterel_code = function(indent) {
-   return apply_indent(indent) + "await " + this.signal_name;
+   return apply_indent(indent) + "await " + print_test_pre(this);
 }
 
 reactive.Halt.prototype.esterel_code = function(indent) {
@@ -262,11 +270,13 @@ reactive.ConstExpression.prototype.esterel_code = function() {
 }
 
 reactive.SignalExpression.prototype.esterel_code = function() {
-   return "?" + this.signal_name;
-}
+   var buf = this.signal_name;
 
-reactive.PreExpression.prototype.esterel_code = function() {
-   return "pre(" + this.signal_name + ")";
+   if (this.get_value)
+      buf = "?" + buf;
+   if (this.get_pre)
+      buf = "pre(" + buf + ")";
+   return buf;
 }
 
 reactive.PlusExpression.prototype.esterel_code = function() {

@@ -220,18 +220,17 @@ function CONSTEXPR(attrs) {
 				       attrs.value);
 }
 
+/* attrs.pre get the state of a signal
+   attrs.value get the value (the compiler must checks if the signal
+   is actually a valued signal */
+
 function SIGEXPR(attrs) {
    return new reactive.SignalExpression(null,
 					format_loc(attrs),
 					attrs.type,
-					attrs.signal_name);
-}
-
-function PREEXPR(attrs) {
-   return new reactive.PreExpression(null,
-				     format_loc(attrs),
-				     attrs.type,
-				     attrs.signal_name);
+					attrs.signal_name,
+					attrs.get_pre != undefined,
+					attrs.get_value != undefined);
 }
 
 function PLUSEXPR(attrs) {
@@ -270,6 +269,5 @@ exports.INPUTSIGNAL = INPUTSIGNAL;
 exports.OUTPUTSIGNAL = OUTPUTSIGNAL;
 exports.CONSTEXPR = CONSTEXPR;
 exports.SIGEXPR = SIGEXPR;
-exports.PREEXPR = PREEXPR;
 exports.PLUSEXPR = PLUSEXPR;
 exports.MINUSEXPR = MINUSEXPR;

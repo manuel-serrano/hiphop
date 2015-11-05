@@ -98,7 +98,7 @@ ValuedSignal.prototype.get_value = function() {
    return this.value;
 }
 
-ValuedSignal.prototype.get_pre = function() {
+ValuedSignal.prototype.get_pre_value = function() {
    if (!this.is_pre_init)
       fatal_error("Signal " + this.name + " is not initialized when reading "
 		  + "pre.");
@@ -478,29 +478,30 @@ ConstExpression.prototype = new Expression();
 
 ConstExpression.prototype.evaluate = function() { return this.value; }
 
-function SignalExpression(machine, loc, type, signal_name) {
+function SignalExpression(machine, loc, type, signal_name, get_pre, get_value) {
    Expression.call(this, machine, loc, type);
    this.signal_name = signal_name;
+   this.get_pre = get_pre;
+   this.get_value = get_value;
 }
 
 SignalExpression.prototype = new Expression();
 
 SignalExpression.prototype.evaluate = function() {
-   return this.machine.get_signal(this.signal_name).get_value();
+   var sig = this.machine.get_signal(this.signal_name);
+
+   if (this.get_pre && this.get_value)
+      return sig.get_pre_value();
+   else if (this.get_pre)
+      return sig.pre_set;
+   else if (this.get_value)
+      return sig.get_value();
+   else
+      return sig.set;
 }
 
 SignalExpression.prototype.is_vald_type = function() {
    return this.type == machine.get_signal(this.signal_name).type;
-}
-
-function PreExpression(machine, loc, type, signal_name) {
-   SignalExpression.call(this, machine, loc, type, signal_name);
-}
-
-PreExpression.prototype = new SignalExpression();
-
-PreExpression.prototype.evaluate = function() {
-   return this.machine.get_signal(this.signal_name).get_pre();
 }
 
 function BinaryExpression(machine, loc, type, expr1, expr2) {
@@ -1166,6 +1167,5 @@ exports.LocalSignalIdentifier = LocalSignalIdentifier;
 exports.check_valued_signel_definition = check_valued_signel_definition;
 exports.ConstExpression = ConstExpression;
 exports.SignalExpression = SignalExpression;
-exports.PreExpression = PreExpression;
 exports.PlusExpression = PlusExpression;
 exports.MinusExpression = MinusExpression;
