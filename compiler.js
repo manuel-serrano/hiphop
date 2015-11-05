@@ -254,7 +254,7 @@ function ExpressionVisitor(machine) {
 
 ExpressionVisitor.prototype.visit = function(node) {
    if (node instanceof ast.Emit && node.expr != undefined) {
-      node.expr.set_machine(machine);
+      node.expr.set_machine(this.machine);
       if (!node.expr.is_vald_type())
 	 fatal("Invalid type of expression.", node.expr.loc);
    }
