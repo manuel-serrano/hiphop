@@ -561,8 +561,8 @@ BinaryExpression.prototype.init_and_check_type = function(machine) {
       this.machine = machine;
    this.expr1.init_and_check_type(machine);
    this.expr2.init_and_check_type(machine);
-   console.log(this.expr1.type, this.expr2.type);
-   return this.type == this.expr1.type && this.type == this.expr2.type;
+   this.type = this.expr1.type;
+   return this.type == this.expr2.type;
 }
 
 function PlusExpression(machine, loc, expr1, expr2) {
