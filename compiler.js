@@ -253,14 +253,12 @@ function ExpressionVisitor(machine) {
 
 ExpressionVisitor.prototype.visit = function(node) {
    if (node instanceof ast.Emit && node.expr != undefined) {
-      node.expr.set_machine(this.machine);
-
       if (node.expr instanceof reactive.SignalExpression && node.get_value)
 	 if (!(machine.get_signal(node.signal_name)
 	       instanceof reactive.ValuedSignal))
 	    fatal("Can't get value of non valued signal.", node.expr.loc);
 
-      if (!node.expr.check_type())
+      if (!node.expr.init_and_check_type(this.machine))
 	 fatal("Invalid type of expression.", node.expr.loc);
    }
 }

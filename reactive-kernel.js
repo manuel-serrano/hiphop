@@ -32,6 +32,7 @@ var DEBUG_FLAGS = DEBUG_NONE;
 // DEBUG_FLAGS |= DEBUG_SEQUENCE;
 // DEBUG_FLAGS |= DEBUG_TRAP;
 
+var HOST_TYPE = 1;
 var VALUED_TYPES = { "number": [ "+", "*" ],
 		     "boolean": [ "and", "or" ] };
 
@@ -474,14 +475,12 @@ function Expression(machine, loc, type) {
 
 Expression.prototype.evaluate = function() {}
 
-/* As Expression objects are created before the reactive machine, we need this
-   to assign the reactive machine to already existing expressions */
+/* Finish initialization of the expression (set machine if needed)
+   and check if the type is correct */
 
-Expression.prototype.set_machine = function(machine) {
-   this.machine = machine;
-}
-
-Expression.prototype.check_type = function() {
+Expression.prototype.init_and_check_type = function(machine) {
+   if (machine == null)
+      this.machine = machine;
    return true;
 }
 
@@ -496,20 +495,17 @@ function ConstExpression(machine, loc, value) {
       type = "boolean";
       value = false;
    } else if (typeof(raw_value) == "string") {
-      var num = Number(value);
+      var num = Number(raw_value);
 
-      if (!isNaN(num)) {
+      if (isNaN(num)) {
 	 type = "string";
       } else {
 	 value = num;
 	 type = "number";
       }
    } else {
-      type = HOST_VALUED_TYPE;
+      type = HOST_TYPE;
    }
-
-   if (type == "number")
-      value = Number(value);
 
    Expression.call(this, machine, loc, type);
    this.value = value;
@@ -528,7 +524,9 @@ function SignalExpression(machine, loc, signal_name, get_pre, get_value) {
 
 SignalExpression.prototype = new Expression();
 
-SignalExpression.prototype.check_type = function() {
+SignalExpression.prototype.init_and_check_type = function(machine) {
+   if (this.machine == null)
+      this.machine = machine;
    this.type = this.machine.get_signal(this.signal_name).type;
    return true;
 }
@@ -558,15 +556,12 @@ function BinaryExpression(machine, loc, expr1, expr2) {
 
 BinaryExpression.prototype = new Expression();
 
-BinaryExpression.prototype.set_machine = function(machine) {
-   Expression.prototype.set_machine(machine);
-   this.expr1.set_machine(machine);
-   this.expr2.set_machine(machine);
-}
-
-BinaryExpression.prototype.check_type = function() {
-   this.expr1.check_type();
-   this.expr2.check_type();
+BinaryExpression.prototype.init_and_check_type = function(machine) {
+   if (this.machine == null)
+      this.machine = machine;
+   this.expr1.init_and_check_type(machine);
+   this.expr2.init_and_check_type(machine);
+   console.log(this.expr1.type, this.expr2.type);
    return this.type == this.expr1.type && this.type == this.expr2.type;
 }
 
