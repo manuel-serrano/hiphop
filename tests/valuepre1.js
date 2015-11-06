@@ -12,7 +12,9 @@ var expr2 = <rjs.sigexpr get_value type="number" signal_name="I"/>;
 var expr3 = <rjs.sigexpr get_value get_pre type="number" signal_name="O"/>;
 
 var prg = <rjs.ReactiveMachine name="valuepre1">
+    <rjs.outputsignal ref=${sigI}/>
     <rjs.outputsignal ref=${sigO}/>
+    <rjs.outputsignal ref=${sigU}/>
     <rjs.loop>
     <rjs.sequence>
 

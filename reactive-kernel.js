@@ -517,7 +517,7 @@ SignalExpression.prototype.evaluate = function() {
 }
 
 SignalExpression.prototype.is_vald_type = function() {
-   return this.type == machine.get_signal(this.signal_name).type;
+   return this.type == this.machine.get_signal(this.signal_name).type;
 }
 
 function BinaryExpression(machine, loc, type, expr1, expr2) {
