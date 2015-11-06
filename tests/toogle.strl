@@ -1,0 +1,24 @@
+module toogle:
+
+output SEQ := 1 : combine integer with +,
+       STATE1 := false : combine boolean with or,
+       STATE2 := false : combine boolean with and,
+       S,
+       TOOGLE : boolean;
+
+loop
+	emit SEQ(pre(?SEQ) + 1);
+	emit STATE1(true);
+	emit STATE1(false);
+	emit STATE2(true);
+	emit STATE2(false);
+	present pre(S) then
+		emit TOOGLE(true)
+	else
+		emit TOOGLE(false);
+		emit S;
+	end;
+	pause;
+end loop
+
+end module
