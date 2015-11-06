@@ -71,11 +71,10 @@ function ValuedSignal(name,
 		      type,
 		      combine_with=undefined,
 		      init_value=undefined) {
-   if (conbine_with != undefined && init_value == undefined)
+   if (combine_with != undefined && init_value == undefined)
       fatal_error("Missing init_value at valued signal " + name
 		  + " definition.");
 
-   check_valued_signel_definition(type, combine_with);
    Signal.call(this, name);
    this.value = init_value;
    this.pre_value = init_value;
@@ -87,6 +86,7 @@ function ValuedSignal(name,
    this.single = combine_with == undefined; /* only one write by react */
    this.written_in_react = false;
 
+   this.check_definition();
    if (this.has_init_value)
       this.check_type(this.init_value);
 }
@@ -134,8 +134,21 @@ ValuedSignal.prototype.reset = function() {
 
 ValuedSignal.prototype.check_type = function(value) {
    if (typeof(value) != this.type)
-      fatal_error("Wrong type of value given to signal " + this.name);
+      fatal_error("Wrong type of value given to signal " + this.name
+		  + " [ expected:" + this.type
+		  + " given:" + typeof(value) + " ]");
 }
+
+ValuedSignal.prototype.check_definition = function() {
+   if (VALUED_TYPES[this.type] == undefined)
+      fatal_error("Wrong type on valued signal " + this.name);
+
+   if (this.combine_with != undefined)
+      if (VALUED_TYPES[this.type].indexOf(this.combine_with) == -1)
+	 fatal_error("Wrong combinaison function on valued signal "
+		     + this.name);
+}
+
 
 /* A wire connect two statements.
    The `set` attribute, contains the status (1 or 0) of the wire */
@@ -1139,14 +1152,6 @@ function deep_clone(obj) {
    return _clone(obj, [], []);
 }
 
-function check_valued_signel_definition(type, combine_with) {
-   if (VALUED_TYPES[type] == undefined)
-      fatal_error("Wrong type on valued signal " + name);
-
-   if (VALUED_TYPES[type].indexOf(combine_with) == -1)
-      fatal_error("Wrong combinaison function on valued signal " + name);
-}
-
 exports.Signal = Signal;
 exports.ValuedSignal = ValuedSignal;
 exports.Emit = Emit;
@@ -1167,7 +1172,6 @@ exports.Trap = Trap;
 exports.Exit = Exit;
 exports.Expression = Expression;
 exports.LocalSignalIdentifier = LocalSignalIdentifier;
-exports.check_valued_signel_definition = check_valued_signel_definition;
 exports.ConstExpression = ConstExpression;
 exports.SignalExpression = SignalExpression;
 exports.PlusExpression = PlusExpression;
