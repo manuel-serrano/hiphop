@@ -213,13 +213,13 @@ function LOCALSIGNAL(attrs) {
 			      children[0],
 			      attrs.type,
 			      attrs.combine_with,
-			      attrs.init_value);
+			      parse_value(attrs.init_value));
 }
 
 function CONSTEXPR(attrs) {
    return new reactive.ConstExpression(null,
 				       format_loc(attrs),
-				       attrs.value);
+				       parse_value(attrs.value));
 }
 
 /* attrs.pre get the state of a signal
@@ -246,6 +246,25 @@ function MINUSEXPR(attrs) {
 				       format_loc(attrs),
 				       attrs.expr1,
 				       attrs.expr2);
+}
+
+function parse_value(value) {
+   if (typeof(value) == "string") {
+      var raw_value = value.toLowerCase().trim();
+
+      if (raw_value == "true") {
+	 value = true;
+      } else if (raw_value == "false") {
+	 value = false;
+      } else {
+	 var num = Number(raw_value);
+
+	 if (!isNaN(num)) {
+	    value = num;
+	 }
+      }
+   }
+   return value;
 }
 
 exports.REACTIVEMACHINE = REACTIVEMACHINE;

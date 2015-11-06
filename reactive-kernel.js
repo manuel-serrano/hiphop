@@ -32,9 +32,8 @@ var DEBUG_FLAGS = DEBUG_NONE;
 // DEBUG_FLAGS |= DEBUG_SEQUENCE;
 // DEBUG_FLAGS |= DEBUG_TRAP;
 
-var HOST_TYPE = 1;
-var VALUED_TYPES = { "number": [ "+", "*" ],
-		     "boolean": [ "and", "or" ] };
+var COMBINED_VALUED_TYPES = { "number": [ "+", "*" ],
+			      "boolean": [ "and", "or" ] };
 
 function Signal(name) {
    this.name = name;
@@ -76,21 +75,19 @@ function ValuedSignal(name,
       fatal_error("Missing init_value at valued signal " + name
 		  + " definition.");
 
-   var type_value = parse_type_value(init_value);
-
    Signal.call(this, name);
-   this.value = type_value.value;
-   this.pre_value = type_value.value;
+   this.value = init_value;
+   this.pre_value = init_value;
    this.is_pre_value_init = init_value != undefined;
    this.type = type;
    this.combine_with = combine_with; /* null if single */
    this.has_init_value = init_value != undefined;
-   this.init_value = type_value.value;
+   this.init_value = init_value;
    this.single = combine_with == undefined; /* only one write by react */
    this.written_in_react = false;
    this.check_definition();
    if (this.has_init_value)
-      this.check_type(type_value.type);
+      this.check_type(init_value);
 }
 
 ValuedSignal.prototype = new Signal();
@@ -114,12 +111,10 @@ ValuedSignal.prototype.set_value = function(value) {
    if (this.single && this.written_in_react)
       fatal_error("Multiple writes on single signal " + this.name);
 
-   var type_value = parse_type_value(value);
-
    this.set = true;
-   this.check_type(type_value.type);
+   this.check_type(value);
    if (!this.written_in_react) {
-      this.value = type_value.value;
+      this.value = value;
       this.written_in_react = true;
    } else {
       var combine = this.combine_with;
@@ -129,7 +124,7 @@ ValuedSignal.prototype.set_value = function(value) {
       else if (combine == "or")
 	 combine = "||"
 
-      var eval_buff = this.value + combine + type_value.value;
+      var eval_buff = this.value + combine + value;
       this.value = eval(eval_buff);
    }
 }
@@ -144,11 +139,11 @@ ValuedSignal.prototype.reset = function() {
       this.value = this.init_value;
 }
 
-ValuedSignal.prototype.check_type = function(type) {
-   if (type != this.type)
+ValuedSignal.prototype.check_type = function(value) {
+   if (typeof(value) != this.type)
       fatal_error("Wrong type of value given to signal " + this.name
 		  + " [ expected:" + this.type
-		  + " given:" + type + " ]");
+		  + " given:" + typeof(value) + " ]");
 }
 
 ValuedSignal.prototype.check_definition = function() {
@@ -158,11 +153,11 @@ ValuedSignal.prototype.check_definition = function() {
 /* It can be use in ast.js, when the local signal is not created yet */
 
 function check_valued_signal_definition(type, combine_with, name) {
-   if (VALUED_TYPES[type] == undefined)
+   if (COMBINED_VALUED_TYPES[type] == undefined)
       fatal_error("Wrong type on valued signal " + name);
 
    if (combine_with != undefined)
-      if (VALUED_TYPES[type].indexOf(combine_with) == -1)
+      if (COMBINED_VALUED_TYPES[type].indexOf(combine_with) == -1)
 	 fatal_error("Wrong combinaison function on valued signal "
 		     + name);
 }
@@ -502,9 +497,8 @@ Expression.prototype.init_and_check_type = function(machine) {
 }
 
 function ConstExpression(machine, loc, value) {
-   var type_value = parse_type_value(value);
-   Expression.call(this, machine, loc, type_value.type);
-   this.value = type_value.value;
+   Expression.call(this, machine, loc, typeof(value));
+   this.value = value;
 }
 
 ConstExpression.prototype = new Expression();
@@ -1173,42 +1167,6 @@ function deep_clone(obj) {
    }
 
    return _clone(obj, [], []);
-}
-
-function parse_type_value(value) {
-   var type;
-   if (value == undefined) {
-      type = undefined;
-   } else if (!isNaN(value)) {
-      type = "number";
-   } else if (value == true || value == false) {
-      type = "boolean";
-   } else if (value instanceof Object) {
-      type = HOST_TYPE;
-   } else {
-      var raw_value = value.toLowerCase().trim();
-
-      if (raw_value == "true") {
-	 type = "boolean";
-	 value = true;
-      } else if (raw_value == "false") {
-	 type = "boolean";
-	 value = false;
-      } else if (typeof(raw_value) == "string") {
-	 var num = Number(raw_value);
-
-	 if (isNaN(num)) {
-	    type = "string";
-	 } else {
-	    value = num;
-	    type = "number";
-	 }
-      } else {
-	 type = HOST_TYPE;
-      }
-   }
-   return {type: type,
-	   value: value}
 }
 
 exports.Signal = Signal;
