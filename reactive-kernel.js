@@ -69,11 +69,11 @@ Signal.prototype.reset = function() {
 
 function ValuedSignal(name,
 		      type,
-		      init_value=undefined,
-		      combine_with=undefined) {
-   if (combine_with != undefined && init_value == undefined)
-      fatal_error("Missing init_value at valued signal " + name
-		  + " definition.");
+		      init_value,
+		      combine_with) {
+   if ((init_value != undefined || combine_with != undefined)
+       && type == undefined)
+      fatal_error("Signal " + signal_name + " must be typed.");
 
    Signal.call(this, name);
    this.value = init_value;
