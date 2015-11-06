@@ -485,11 +485,33 @@ Expression.prototype.check_type = function() {
    return true;
 }
 
-function ConstExpression(machine, loc, type, value) {
-   Expression.call(this, machine, loc, type);
+function ConstExpression(machine, loc, value) {
+   var type;
+   var raw_value = value.toLowerCase().trim();
+
+   if (raw_value == "true") {
+      type = "boolean";
+      value = true;
+   } else if (raw_value == "false") {
+      type = "boolean";
+      value = false;
+   } else if (typeof(raw_value) == "string") {
+      var num = Number(value);
+
+      if (!isNaN(num)) {
+	 type = "string";
+      } else {
+	 value = num;
+	 type = "number";
+      }
+   } else {
+      type = HOST_VALUED_TYPE;
+   }
 
    if (type == "number")
       value = Number(value);
+
+   Expression.call(this, machine, loc, type);
    this.value = value;
 }
 
@@ -497,14 +519,19 @@ ConstExpression.prototype = new Expression();
 
 ConstExpression.prototype.evaluate = function() { return this.value; }
 
-function SignalExpression(machine, loc, signal_name, type, get_pre, get_value) {
-   Expression.call(this, machine, loc, type);
+function SignalExpression(machine, loc, signal_name, get_pre, get_value) {
+   Expression.call(this, machine, loc, null);
    this.signal_name = signal_name;
    this.get_pre = get_pre;
    this.get_value = get_value;
 }
 
 SignalExpression.prototype = new Expression();
+
+SignalExpression.prototype.check_type = function() {
+   this.type = this.machine.get_signal(this.signal_name).type;
+   return true;
+}
 
 SignalExpression.prototype.evaluate = function() {
    var sig = this.machine.get_signal(this.signal_name);
@@ -519,8 +546,8 @@ SignalExpression.prototype.evaluate = function() {
       return sig.set;
 }
 
-function BinaryExpression(machine, loc, type, expr1, expr2) {
-   Expression.call(this, machine, loc, type);
+function BinaryExpression(machine, loc, expr1, expr2) {
+   Expression.call(this, machine, loc, null);
 
    if (loc != undefined /* avoid error when inherit prototype... */
        && (!(expr1 instanceof Expression) || !(expr2 instanceof Expression)))
@@ -538,11 +565,13 @@ BinaryExpression.prototype.set_machine = function(machine) {
 }
 
 BinaryExpression.prototype.check_type = function() {
+   this.expr1.check_type();
+   this.expr2.check_type();
    return this.type == this.expr1.type && this.type == this.expr2.type;
 }
 
-function PlusExpression(machine, loc, type, expr1, expr2) {
-   BinaryExpression.call(this, machine, loc, type, expr1, expr2);
+function PlusExpression(machine, loc, expr1, expr2) {
+   BinaryExpression.call(this, machine, loc, expr1, expr2);
 }
 
 PlusExpression.prototype = new BinaryExpression();
@@ -552,8 +581,8 @@ PlusExpression.prototype.evaluate = function() {
 }
 
 
-function MinusExpression(machine, loc, type, expr1, expr2) {
-   BinaryExpression.call(this, machine, loc, type, expr1, expr2);
+function MinusExpression(machine, loc, expr1, expr2) {
+   BinaryExpression.call(this, machine, loc, expr1, expr2);
 }
 
 MinusExpression.prototype = new BinaryExpression();
