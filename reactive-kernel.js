@@ -69,14 +69,15 @@ Signal.prototype.reset = function() {
 
 function ValuedSignal(name,
 		      type,
-		      combine_with=undefined,
-		      init_value=undefined) {
+		      init_value=undefined,
+		      combine_with=undefined) {
    if (combine_with != undefined && init_value == undefined)
       fatal_error("Missing init_value at valued signal " + name
 		  + " definition.");
 
    Signal.call(this, name);
    this.value = init_value;
+   this.is_value_init = init_value != undefined;
    this.pre_value = init_value;
    this.is_pre_value_init = init_value != undefined;
    this.type = type;
@@ -84,7 +85,6 @@ function ValuedSignal(name,
    this.has_init_value = init_value != undefined;
    this.init_value = init_value;
    this.single = combine_with == undefined; /* only one write by react */
-   this.written_in_react = false;
    this.check_definition();
    if (this.has_init_value)
       this.check_type(init_value);
@@ -93,10 +93,8 @@ function ValuedSignal(name,
 ValuedSignal.prototype = new Signal();
 
 ValuedSignal.prototype.get_value = function() {
-   if (!this.has_init_value && !this.written_in_react)
+   if (!this.is_value_init)
       fatal_error("Signal " + this.name + " is not initialized when reading.");
-   if (!this.set)
-      fatal_error("Signal " + this.name + " is not set when reading.");
    return this.value;
 }
 
@@ -108,14 +106,14 @@ ValuedSignal.prototype.get_pre_value = function() {
 }
 
 ValuedSignal.prototype.set_value = function(value) {
-   if (this.single && this.written_in_react)
+   if (this.single && this.set)
       fatal_error("Multiple writes on single signal " + this.name);
 
-   this.set = true;
    this.check_type(value);
-   if (!this.written_in_react) {
+   this.set = true;
+   this.is_value_init = true;
+   if (this.single) {
       this.value = value;
-      this.written_in_react = true;
    } else {
       var combine = this.combine_with;
 
@@ -133,7 +131,6 @@ ValuedSignal.prototype.reset = function() {
    Signal.prototype.reset.call(this);
    this.pre_value = this.value;
    this.is_pre_value_init = true;
-   this.written_in_react = false;
 
    if (this.has_init_value)
       this.value = this.init_value;

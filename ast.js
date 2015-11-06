@@ -231,15 +231,15 @@ function LocalSignal(loc,
 		     signal_name,
 		     subcircuit,
 		     type=undefined,
-		     combine_with=undefined,
-		     init_value=undefined) {
-   if (type != undefined)
+		     init_value=undefined,
+		     combine_with=undefined) {
+   if (type != undefined && combine_with != undefined)
       rk.check_valued_signal_definition(type, combine_with, signal_name);
    Circuit.call(this, "LOCALSIGNAL", loc, subcircuit);
    this.signal_name = signal_name;
    this.type = type;
-   this.combine_with = combine_with;
    this.init_value = init_value;
+   this.combine_with = combine_with;
 }
 LocalSignal.prototype = new Circuit();
 LocalSignal.prototype.factory = function() {

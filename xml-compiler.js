@@ -212,8 +212,8 @@ function LOCALSIGNAL(attrs) {
 			      attrs.signal_name,
 			      children[0],
 			      attrs.type,
-			      attrs.combine_with,
-			      parse_value(attrs.init_value));
+			      parse_value(attrs.init_value),
+			      attrs.combine_with);
 }
 
 function CONSTEXPR(attrs) {
