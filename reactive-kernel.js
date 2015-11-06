@@ -69,19 +69,22 @@ Signal.prototype.reset = function() {
 
 function ValuedSignal(name,
 		      type,
-		      combine_with,
-		      is_single,
+		      combine_with=undefined,
 		      init_value=undefined) {
+   if (conbine_with != undefined && init_value == undefined)
+      fatal_error("Missing init_value at valued signal " + name
+		  + " definition.");
+
    check_valued_signel_definition(type, combine_with);
    Signal.call(this, name);
    this.value = init_value;
-   this.pre = init_value;
-   this.is_pre_init = init_value != undefined;
+   this.pre_value = init_value;
+   this.is_pre_value_init = init_value != undefined;
    this.type = type;
    this.combine_with = combine_with; /* null if single */
    this.has_init_value = init_value != undefined;
    this.init_value = init_value;
-   this.single = is_single; /* only one write allowed by reaction */
+   this.single = combine_with == undefined; /* only one write by react */
    this.written_in_react = false;
 
    if (this.has_init_value)
@@ -99,10 +102,10 @@ ValuedSignal.prototype.get_value = function() {
 }
 
 ValuedSignal.prototype.get_pre_value = function() {
-   if (!this.is_pre_init)
+   if (!this.is_pre_value_init)
       fatal_error("Signal " + this.name + " is not initialized when reading "
-		  + "pre.");
-   return this.pre;
+		  + "pre_value.");
+   return this.pre_value;
 }
 
 ValuedSignal.prototype.set_value = function(value) {
@@ -121,8 +124,8 @@ ValuedSignal.prototype.set_value = function(value) {
 
 ValuedSignal.prototype.reset = function() {
    Signal.prototype.reset.call(this);
-   this.pre = this.value;
-   this.is_pre_init = true;
+   this.pre_value = this.value;
+   this.is_pre_value_init = true;
    this.written_in_react = false;
 
    if (this.has_init_value)

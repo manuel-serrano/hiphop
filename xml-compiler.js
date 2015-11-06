@@ -210,7 +210,10 @@ function LOCALSIGNAL(attrs) {
 	    format_loc(attrs));
    return new ast.LocalSignal(format_loc(attrs),
 			      attrs.signal_name,
-			      children[0]);
+			      children[0],
+			      attrs.type,
+			      attrs.combine_with,
+			      attrs.init_value);
 }
 
 function CONSTEXPR(attrs) {

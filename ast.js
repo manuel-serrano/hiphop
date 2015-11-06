@@ -232,14 +232,13 @@ function LocalSignal(loc,
 		     subcircuit,
 		     type=undefined,
 		     combine_with=undefined,
-		     is_single=undefined,
 		     init_value=undefined) {
    if (type != undefined)
       rk.check_valued_signel_definition(type, combine_with);
    Circuit.call(this, "LOCALSIGNAL", loc, subcircuit);
    this.signal_name = signal_name;
    this.type = type;
-   this.is_single = is_single;
+   this.combine_with = combine_with;
    this.init_value = init_value;
 }
 LocalSignal.prototype = new Circuit();

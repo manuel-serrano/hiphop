@@ -203,7 +203,6 @@ SetLocalSignalsVisitor.prototype.visit = function(node) {
 	    sigs[name][i] = new reactive.ValuedSignal(name,
 						      this.type,
 						      this.combine_with,
-						      this.is_single,
 						      this.init_value);
       } else {
 	 for (var i = 0; i < node.incarnation_lvl + 1; i++)
