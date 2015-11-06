@@ -1,0 +1,13 @@
+module prepure2:
+
+output O1, O2;
+
+signal S in
+       loop
+	       present pre(S) then emit O1 else emit O2 end;
+	       pause;
+	       emit S;
+	end loop
+end signal
+
+end module

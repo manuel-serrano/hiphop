@@ -1,0 +1,14 @@
+module abortpre:
+
+output O, S;
+
+loop
+	abort
+		emit S;
+		pause;
+		emit O;
+	when pre(S);
+	pause;
+end loop
+
+end module
