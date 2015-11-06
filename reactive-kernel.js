@@ -76,20 +76,21 @@ function ValuedSignal(name,
       fatal_error("Missing init_value at valued signal " + name
 		  + " definition.");
 
+   var type_value = parse_type_value(init_value);
+
    Signal.call(this, name);
-   this.value = init_value;
-   this.pre_value = init_value;
+   this.value = type_value.value;
+   this.pre_value = type_value.value;
    this.is_pre_value_init = init_value != undefined;
    this.type = type;
    this.combine_with = combine_with; /* null if single */
    this.has_init_value = init_value != undefined;
-   this.init_value = init_value;
+   this.init_value = type_value.value;
    this.single = combine_with == undefined; /* only one write by react */
    this.written_in_react = false;
-
    this.check_definition();
    if (this.has_init_value)
-      this.check_type(this.init_value);
+      this.check_type(type_value.type);
 }
 
 ValuedSignal.prototype = new Signal();
@@ -112,10 +113,13 @@ ValuedSignal.prototype.get_pre_value = function() {
 ValuedSignal.prototype.set_value = function(value) {
    if (this.single && this.written_in_react)
       fatal_error("Multiple writes on single signal " + this.name);
-   this.set = true;
 
+   var type_value = parse_type_value(value);
+
+   this.set = true;
+   this.check_type(type_value.type);
    if (!this.written_in_react) {
-      this.value = value;
+      this.value = type_value.value;
       this.written_in_react = true;
    } else {
       var combine = this.combine_with;
@@ -125,7 +129,7 @@ ValuedSignal.prototype.set_value = function(value) {
       else if (combine == "or")
 	 combine = "||"
 
-      var eval_buff = this.value + combine + value;
+      var eval_buff = this.value + combine + type_value.value;
       this.value = eval(eval_buff);
    }
 }
@@ -138,13 +142,6 @@ ValuedSignal.prototype.reset = function() {
 
    if (this.has_init_value)
       this.value = this.init_value;
-}
-
-ValuedSignal.prototype.check_type = function(value) {
-   if (typeof(value) != this.type)
-      fatal_error("Wrong type of value given to signal " + this.name
-		  + " [ expected:" + this.type
-		  + " given:" + typeof(value) + " ]");
 }
 
 ValuedSignal.prototype.check_definition = function() {
@@ -1190,6 +1187,36 @@ function deep_clone(obj) {
    }
 
    return _clone(obj, [], []);
+}
+
+function parse_type_value(value) {
+   if (value == undefined)
+      return { type: undefined, value: undefined }
+
+   var raw_value = value.toLowerCase().trim();
+   var type;
+
+   if (raw_value == "true") {
+      type = "boolean";
+      value = true;
+   } else if (raw_value == "false") {
+      type = "boolean";
+      value = false;
+   } else if (typeof(raw_value) == "string") {
+      var num = Number(raw_value);
+
+      if (isNaN(num)) {
+	 type = "string";
+      } else {
+	 value = num;
+	 type = "number";
+      }
+   } else {
+      type = HOST_TYPE;
+   }
+
+   return {type: type,
+	   value: value}
 }
 
 exports.Signal = Signal;
