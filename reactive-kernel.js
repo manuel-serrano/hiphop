@@ -482,7 +482,6 @@ Expression.prototype.set_machine = function(machine) {
 }
 
 Expression.prototype.check_type = function() {
-   console.log(this.type);
    return true;
 }
 
