@@ -85,6 +85,7 @@ function ValuedSignal(name,
    this.has_init_value = init_value != undefined;
    this.init_value = init_value;
    this.single = combine_with == undefined; /* only one write by react */
+   this.set_value_in_current_react = false;
    this.check_definition();
    if (this.has_init_value)
       this.check_type(init_value);
@@ -106,11 +107,11 @@ ValuedSignal.prototype.get_pre_value = function() {
 }
 
 ValuedSignal.prototype.set_value = function(value) {
-   if (this.single && this.set)
+   if (this.single && this.set_value_in_current_react)
       fatal_error("Multiple writes on single signal " + this.name);
 
    this.check_type(value);
-   this.set = true;
+   this.set_value_in_current_react = true;
    this.is_value_init = true;
    if (this.single) {
       this.value = value;
@@ -131,6 +132,7 @@ ValuedSignal.prototype.reset = function() {
    Signal.prototype.reset.call(this);
    this.pre_value = this.value;
    this.is_pre_value_init = true;
+   this.set_value_in_current_react = false;
 
    if (this.has_init_value)
       this.value = this.init_value;
@@ -464,9 +466,9 @@ Emit.prototype.run = function() {
    this.machine.signals_emitters[this.signal_name]--;
 
    if (this.go.set) {
-      signal.set = true;
       if (this.expr instanceof Expression && signal instanceof ValuedSignal)
 	 signal.set_value(this.expr.evaluate());
+      signal.set = true;
    }
 
    if (DEBUG_FLAGS & DEBUG_EMIT)
