@@ -10,12 +10,12 @@ var prg = <rjs.reactivemachine name="reincar">
     <rjs.loop>
     <rjs.localsignal signal_name="S">
     <rjs.sequence>
-    <rjs.emit signal_name="S"/>
-    <rjs.pause/>
     <rjs.present signal_name="S">
     <rjs.emit signal_name="O"/>
     </rjs.present>
-</rjs.sequence>
+   <rjs.pause/>
+   <rjs.emit signal_name="S"/>
+   </rjs.sequence>
    </rjs.localsignal>
    </rjs.loop>
    </rjs.ReactiveMachine>;

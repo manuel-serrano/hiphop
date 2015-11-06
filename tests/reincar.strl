@@ -4,9 +4,9 @@ output O;
 
 loop
 	signal S in
-	       emit S;
-	       pause;
 	       present S then emit O end;
+	       pause;
+	       emit S;
 	end signal
 end loop
 
