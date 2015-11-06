@@ -144,6 +144,13 @@ ValuedSignal.prototype.reset = function() {
       this.value = this.init_value;
 }
 
+ValuedSignal.prototype.check_type = function(type) {
+   if (type != this.type)
+      fatal_error("Wrong type of value given to signal " + this.name
+		  + " [ expected:" + this.type
+		  + " given:" + type + " ]");
+}
+
 ValuedSignal.prototype.check_definition = function() {
    check_valued_signal_definition(this.type, this.combine_with, this.name);
 }
@@ -495,30 +502,9 @@ Expression.prototype.init_and_check_type = function(machine) {
 }
 
 function ConstExpression(machine, loc, value) {
-   var type;
-   var raw_value = value.toLowerCase().trim();
-
-   if (raw_value == "true") {
-      type = "boolean";
-      value = true;
-   } else if (raw_value == "false") {
-      type = "boolean";
-      value = false;
-   } else if (typeof(raw_value) == "string") {
-      var num = Number(raw_value);
-
-      if (isNaN(num)) {
-	 type = "string";
-      } else {
-	 value = num;
-	 type = "number";
-      }
-   } else {
-      type = HOST_TYPE;
-   }
-
-   Expression.call(this, machine, loc, type);
-   this.value = value;
+   var type_value = parse_type_value(value);
+   Expression.call(this, machine, loc, type_value.type);
+   this.value = type_value.value;
 }
 
 ConstExpression.prototype = new Expression();
@@ -1190,31 +1176,37 @@ function deep_clone(obj) {
 }
 
 function parse_type_value(value) {
-   if (value == undefined)
-      return { type: undefined, value: undefined }
-
-   var raw_value = value.toLowerCase().trim();
    var type;
-
-   if (raw_value == "true") {
+   if (value == undefined) {
+      type = undefined;
+   } else if (!isNaN(value)) {
+      type = "number";
+   } else if (value == true || value == false) {
       type = "boolean";
-      value = true;
-   } else if (raw_value == "false") {
-      type = "boolean";
-      value = false;
-   } else if (typeof(raw_value) == "string") {
-      var num = Number(raw_value);
-
-      if (isNaN(num)) {
-	 type = "string";
-      } else {
-	 value = num;
-	 type = "number";
-      }
-   } else {
+   } else if (value instanceof Object) {
       type = HOST_TYPE;
-   }
+   } else {
+      var raw_value = value.toLowerCase().trim();
 
+      if (raw_value == "true") {
+	 type = "boolean";
+	 value = true;
+      } else if (raw_value == "false") {
+	 type = "boolean";
+	 value = false;
+      } else if (typeof(raw_value) == "string") {
+	 var num = Number(raw_value);
+
+	 if (isNaN(num)) {
+	    type = "string";
+	 } else {
+	    value = num;
+	    type = "number";
+	 }
+      } else {
+	 type = HOST_TYPE;
+      }
+   }
    return {type: type,
 	   value: value}
 }
