@@ -219,7 +219,7 @@ function LOCALSIGNAL(attrs) {
 function CONSTEXPR(attrs) {
    return new reactive.ConstExpression(null,
 				       format_loc(attrs),
-				       typeof(attrs.value),
+				       attrs.type,
 				       attrs.value);
 }
 
@@ -230,8 +230,8 @@ function CONSTEXPR(attrs) {
 function SIGEXPR(attrs) {
    return new reactive.SignalExpression(null,
 					format_loc(attrs),
-					attrs.type,
 					attrs.signal_name,
+					attrs.type,
 					attrs.get_pre != undefined,
 					attrs.get_value != undefined);
 }

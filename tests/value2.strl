@@ -1,0 +1,14 @@
+module value2:
+
+output I : integer;
+output O := 5 : combine integer with *;
+output U : integer;
+
+loop
+	emit I(3 - 2 + 5);
+	emit O(?I + 7);
+	emit U(pre(?O) - 1);
+	pause
+end loop
+
+end module

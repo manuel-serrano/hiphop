@@ -481,12 +481,16 @@ Expression.prototype.set_machine = function(machine) {
    this.machine = machine;
 }
 
-Expression.prototype.is_vald_type = function() {
+Expression.prototype.check_type = function() {
+   console.log(this.type);
    return true;
 }
 
 function ConstExpression(machine, loc, type, value) {
    Expression.call(this, machine, loc, type);
+
+   if (type == "number")
+      value = Number(value);
    this.value = value;
 }
 
@@ -494,7 +498,7 @@ ConstExpression.prototype = new Expression();
 
 ConstExpression.prototype.evaluate = function() { return this.value; }
 
-function SignalExpression(machine, loc, type, signal_name, get_pre, get_value) {
+function SignalExpression(machine, loc, signal_name, type, get_pre, get_value) {
    Expression.call(this, machine, loc, type);
    this.signal_name = signal_name;
    this.get_pre = get_pre;
@@ -516,12 +520,12 @@ SignalExpression.prototype.evaluate = function() {
       return sig.set;
 }
 
-SignalExpression.prototype.is_vald_type = function() {
-   return this.type == this.machine.get_signal(this.signal_name).type;
-}
-
 function BinaryExpression(machine, loc, type, expr1, expr2) {
    Expression.call(this, machine, loc, type);
+
+   if (loc != undefined /* avoid error when inherit prototype... */
+       && (!(expr1 instanceof Expression) || !(expr2 instanceof Expression)))
+      fatal_error("BinaryExpression has invalid operand at " + loc);
    this.expr1 = expr1;
    this.expr2 = expr2;
 }
@@ -534,7 +538,7 @@ BinaryExpression.prototype.set_machine = function(machine) {
    this.expr2.set_machine(machine);
 }
 
-BinaryExpression.prototype.is_vald_type = function() {
+BinaryExpression.prototype.check_type = function() {
    return this.type == this.expr1.type && this.type == this.expr2.type;
 }
 
