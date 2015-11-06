@@ -111,9 +111,8 @@ ValuedSignal.prototype.set_value = function(value) {
       fatal_error("Multiple writes on single signal " + this.name);
 
    this.check_type(value);
-   this.set_value_in_current_react = true;
    this.is_value_init = true;
-   if (this.single) {
+   if (this.single || !this.set_value_in_current_react) {
       this.value = value;
    } else {
       var combine = this.combine_with;
@@ -126,6 +125,7 @@ ValuedSignal.prototype.set_value = function(value) {
       var eval_buff = this.value + combine + value;
       this.value = eval(eval_buff);
    }
+   this.set_value_in_current_react = true;
 }
 
 ValuedSignal.prototype.reset = function() {
