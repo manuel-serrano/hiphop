@@ -148,13 +148,19 @@ ValuedSignal.prototype.check_type = function(value) {
 }
 
 ValuedSignal.prototype.check_definition = function() {
-   if (VALUED_TYPES[this.type] == undefined)
-      fatal_error("Wrong type on valued signal " + this.name);
+   check_valued_signal_definition(this.type, this.combine_with, this.name);
+}
 
-   if (this.combine_with != undefined)
-      if (VALUED_TYPES[this.type].indexOf(this.combine_with) == -1)
+/* It can be use in ast.js, when the local signal is not created yet */
+
+function check_valued_signal_definition(type, combine_with, name) {
+   if (VALUED_TYPES[type] == undefined)
+      fatal_error("Wrong type on valued signal " + name);
+
+   if (combine_with != undefined)
+      if (VALUED_TYPES[type].indexOf(combine_with) == -1)
 	 fatal_error("Wrong combinaison function on valued signal "
-		     + this.name);
+		     + name);
 }
 
 
@@ -1210,3 +1216,4 @@ exports.ConstExpression = ConstExpression;
 exports.SignalExpression = SignalExpression;
 exports.PlusExpression = PlusExpression;
 exports.MinusExpression = MinusExpression;
+exports.check_valued_signal_definition = check_valued_signal_definition;

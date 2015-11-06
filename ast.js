@@ -234,7 +234,7 @@ function LocalSignal(loc,
 		     combine_with=undefined,
 		     init_value=undefined) {
    if (type != undefined)
-      rk.check_valued_signel_definition(type, combine_with);
+      rk.check_valued_signal_definition(type, combine_with, signal_name);
    Circuit.call(this, "LOCALSIGNAL", loc, subcircuit);
    this.signal_name = signal_name;
    this.type = type;

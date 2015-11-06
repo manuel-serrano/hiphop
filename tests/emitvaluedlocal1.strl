@@ -1,0 +1,13 @@
+module emitvaluedlocal1:
+
+output O: integer;
+
+loop
+	signal S := 1 : combine integer with + in
+	       emit S(pre(?S) + 1);
+	       emit O(?S);
+	end signal;
+	pause
+end loop
+
+end module
