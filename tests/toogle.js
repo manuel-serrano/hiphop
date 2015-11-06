@@ -3,11 +3,11 @@
 var rjs = require("../xml-compiler.js");
 var rk = require("../reactive-kernel.js");
 
-var seq = new rk.ValuedSignal("SEQ", "number", "+", 1);
-var state1 = new rk.ValuedSignal("STATE1", "boolean", "or", false);
-var state2 = new rk.ValuedSignal("STATE2", "boolean", "and", false);
+var seq = new rk.ValuedSignal("SEQ", "number", 1, "+");
+var state1 = new rk.ValuedSignal("STATE1", "boolean", false, "or");
+var state2 = new rk.ValuedSignal("STATE2", "boolean", false, "and");
 var s = new rk.Signal("S");
-var toogle = new rk.ValuedSignal("TOOGLE", "boolean");
+var toogle = new rk.ValuedSignal("TOOGLE", "boolean", undefined, undefined);
 
 var const1 = <rjs.constexpr value=1 />;
 var consttrue = <rjs.constexpr value=true />;

@@ -3,7 +3,7 @@
 var rjs = require("../xml-compiler.js");
 var rk = require("../reactive-kernel.js");
 
-var sigO = new rk.ValuedSignal("O", "number", "+", 5);
+var sigO = new rk.ValuedSignal("O", "number", 5, "+");
 
 var expr1 = <rjs.constexpr value=5 />;
 var expr2 = <rjs.constexpr value=10 />;

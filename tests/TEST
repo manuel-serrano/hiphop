@@ -22,6 +22,7 @@ run_kernel_test() {
     echo -n "$i. $file ... "
 
     cat <<EOF > $batch
+"use hopscript"
 var batch = require("$dir/../batch-interpreter.js");
 var example = require("$dir/$file.js");
 batch.interpreter(example.prg);
@@ -55,6 +56,7 @@ run_js2esterel_test() {
     echo -n "$i. $file ... "
 
     cat <<EOF > $js2esterel
+"use hopscript"
 var js2esterel = require("$dir/../js2esterel.js");
 var example = require("$dir/$file.js");
 console.log(example.prg.esterel_code());

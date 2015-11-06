@@ -3,9 +3,9 @@
 var rjs = require("../xml-compiler.js");
 var rk = require("../reactive-kernel.js");
 
-var sigI = new rk.ValuedSignal("I", "number");
-var sigO = new rk.ValuedSignal("O", "number", "+", 5);
-var sigU = new rk.ValuedSignal("U", "number");
+var sigI = new rk.ValuedSignal("I", "number", undefined, undefined);
+var sigO = new rk.ValuedSignal("O", "number", 5, "+");
+var sigU = new rk.ValuedSignal("U", "number", undefined, undefined);
 
 var expr1 = <rjs.constexpr value=3 />;
 var expr2 = <rjs.sigexpr get_value signal_name="I"/>;
