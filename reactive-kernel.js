@@ -118,7 +118,14 @@ ValuedSignal.prototype.set_value = function(value) {
       this.value = value;
       this.written_in_react = true;
    } else {
-      var eval_buff = this.value + this.combine_with + value;
+      var combine = this.combine_with;
+
+      if (combine == "and")
+	 combine = "&&"
+      else if (combine == "or")
+	 combine = "||"
+
+      var eval_buff = this.value + combine + value;
       this.value = eval(eval_buff);
    }
 }
