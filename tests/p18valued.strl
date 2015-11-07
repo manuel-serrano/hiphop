@@ -1,0 +1,45 @@
+module P18valued:
+
+output S1_and_S2: integer,
+       S1_and_not_S2: integer,
+       not_S1_and_S2: integer,
+       not_S1_and_not_S2: integer;
+
+loop
+    trap T1 in
+        signal S1 := 10 : combine integer with + in
+	    pause;
+	    emit S1(pre(?S1));
+	    exit T1
+	||
+	    loop
+	        trap T2 in
+		    signal S2 := 20 : combine integer with + in
+		        pause;
+			emit S2(pre(?S2));
+			exit T2
+		    ||
+		        loop
+			    present S1 then
+			        present S2 then
+				    emit S1_and_S2(?S1 + ?S2)
+				else
+				    emit S1_and_not_S2(?S1 + ?S2)
+				end present
+			    else
+			        present S2 then
+				    emit not_S1_and_S2(?S1 + ?S2)
+				else
+				    emit not_S1_and_not_S2(?S1 + ?S2)
+				end
+			    end present;
+			    pause
+			end loop
+		    end signal
+		end trap
+	    end loop
+	end signal
+    end trap
+end loop
+
+end module
