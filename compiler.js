@@ -128,6 +128,7 @@ CheckNamesVisitor.prototype.visit = function(node) {
 function SetIncarnationLevelVisitor() {
    this.in_loop = 0;
    this.lvl = 0;
+   this.down_at_loop_out = 0;
 }
 
 SetIncarnationLevelVisitor.prototype.visit = function(node) {
@@ -135,14 +136,15 @@ SetIncarnationLevelVisitor.prototype.visit = function(node) {
       var node_is_loop = false;
       var node_must_incr = false;
 
-      if ((node instanceof ast.LocalSignal
-	   || node instanceof ast.Parallel)
-	  && this.in_loop > 0) {
+      if (node instanceof ast.Parallel && this.in_loop > 0) {
 	 this.lvl++;
 	 node_must_incr = true;
       } else if (node instanceof ast.Loop) {
 	 this.in_loop++;
 	 node_is_loop = true;
+      } else if (node instanceof ast.LocalSignal && this.in_loop > 0) {
+	 this.lvl++;
+	 this.down_at_loop_out++;
       }
 
       node.incarnation_lvl = this.lvl;
@@ -150,8 +152,11 @@ SetIncarnationLevelVisitor.prototype.visit = function(node) {
 	 node.subcircuit[i].accept(this);
       }
 
-      if (node_is_loop)
+      if (node_is_loop) {
 	 this.in_loop--;
+	 this.lvl -= this.down_at_loop_out;
+	 this.down_at_loop_out = 0;
+      }
 
       if (node_must_incr)
 	 this.lvl--;
@@ -292,7 +297,7 @@ function compile(ast_machine) {
    ast_machine.accept(new SetExitReturnCodeVisitor());
    ast_machine.accept_auto(new SetLocalSignalsVisitor(machine));
    ast_machine.accept_auto(new ExpressionVisitor(machine));
- //  ast_machine.accept(new PrintTreeVisitor(ast_machine));
+//   ast_machine.accept(new PrintTreeVisitor(ast_machine));
    ast_machine.accept(new BuildCircuitVisitor(machine));
    return machine;
 }
