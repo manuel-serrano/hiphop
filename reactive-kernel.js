@@ -1120,22 +1120,18 @@ function ResetLocalSignalVisitor() {
 
 ResetLocalSignalVisitor.prototype.visit = function(stmt) {
    if (stmt instanceof LocalSignalIdentifier) {
-      var sigs = stmt.machine.local_signals[stmt.signal_name];
-      var reset_pre = sigs[0].has_init_value;
+      var sig = stmt.machine.get_signal(stmt.signal_name);
 
-
-      for (var i in sigs) {
-	 var sig = sigs[i];
-
+      if (sig instanceof ValuedSignal) {
 	 sig.reset();
-	 if (reset_pre) {
-	    sig.pre_value = sig.init_value;
-	    sig.value = sig.init_value;
-	 } else {
-	    sig.pre_value = undefined;
-	    sig.value = undefined;
-	    sig.is_value_init = false;
-	 }
+   	 if (sig.has_init_value) {
+   	    sig.pre_value = sig.init_value;
+   	    sig.value = sig.init_value;
+   	 } else {
+   	    sig.pre_value = undefined;
+   	    sig.value = undefined;
+   	    sig.is_value_init = false;
+   	 }
       }
    }
 }
