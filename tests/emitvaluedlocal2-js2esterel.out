@@ -1,4 +1,4 @@
-module emitvaluedsignal1:
+module emitvaluedlocal2:
 output O : integer;
 loop
     signal S := 1 : combine integer with + in
