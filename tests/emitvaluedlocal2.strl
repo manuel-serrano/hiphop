@@ -1,4 +1,4 @@
-module emitvaluedlocal1:
+module emitvaluedlocal2:
 
 output O: integer;
 
@@ -7,9 +7,7 @@ loop
 	       emit S(pre(?S) + 1);
 	       emit O(?S);
 	end signal;
-	pause;
-	emit O(pre(?O));
-	pause;
+	pause
 end loop
 
 end module

@@ -10,9 +10,7 @@ var subexpr1 = <rjs.sigexpr get_pre get_value signal_name="S" />;
 var expr1 = <rjs.plusexpr expr1=${subexpr1} expr2=${const1} />;
 var expr2 = <rjs.sigexpr get_value signal_name="S"/>;
 
-var preo = <rjs.sigexpr get_value get_pre signal_name="O"/>;
-
-var prg = <rjs.ReactiveMachine name="emitvaluedlocal1">
+var prg = <rjs.ReactiveMachine name="emitvaluedlocal2">
     <rjs.outputsignal ref=${sigO}/>
     <rjs.loop>
     <rjs.sequence>
@@ -22,8 +20,6 @@ var prg = <rjs.ReactiveMachine name="emitvaluedlocal1">
     <rjs.emit signal_name="O" expr=${expr2}/>
     </rjs.sequence>
    </rjs.localsignal>
-   <rjs.pause/>
-   <rjs.emit signal_name="O" expr=${preo}/>
    <rjs.pause/>
     </rjs.sequence>
    </rjs.loop>
