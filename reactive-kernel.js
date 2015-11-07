@@ -789,8 +789,10 @@ Loop.prototype.run = function() {
 	 return false;
       stop = !this.k_in[0].set;
 
-      if (!stop && this.machine.reincarnation_lvl > 0)
+      if (!stop && this.machine.reincarnation_lvl > 0) {
 	 this.machine.reincarnation_lvl--;
+	 this.accept(new ResetLocalSignalVisitor());
+      }
    }
 
    this.sel.set = this.sel_in.set;
@@ -1110,6 +1112,34 @@ ResetRegisterVisitor.prototype.visit = function(stmt) {
       stmt.sel.set = false;
    }
 }
+
+/* This visitor reset localsignal in nested loop, and erase the pre value */
+
+function ResetLocalSignalVisitor() {
+}
+
+ResetLocalSignalVisitor.prototype.visit = function(stmt) {
+   if (stmt instanceof LocalSignalIdentifier) {
+      var sigs = stmt.machine.local_signals[stmt.signal_name];
+      var reset_pre = sigs[0].has_init_value;
+
+
+      for (var i in sigs) {
+	 var sig = sigs[i];
+
+	 sig.reset();
+	 if (reset_pre) {
+	    sig.pre_value = sig.init_value;
+	    sig.value = sig.init_value;
+	 } else {
+	    sig.pre_value = undefined;
+	    sig.value = undefined;
+	    sig.is_value_init = false;
+	 }
+      }
+   }
+}
+
 
 function CountSignalEmitters(machine) {
    this.stop_visit = false;
