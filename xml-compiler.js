@@ -216,12 +216,6 @@ function LOCALSIGNAL(attrs) {
 			      attrs.combine_with);
 }
 
-function CONSTEXPR(attrs) {
-   return new reactive.ConstExpression(null,
-				       format_loc(attrs),
-				       parse_value(attrs.value));
-}
-
 /* attrs.pre get the state of a signal
    attrs.value get the value (the compiler must checks if the signal
    is actually a valued signal */
