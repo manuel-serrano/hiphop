@@ -509,7 +509,14 @@ Expression.prototype.init_and_check_type = function(machine) {
    }
 }
 
-Expression.prototype.evaluate = function() {}
+Expression.prototype.evaluate = function() {
+   var ret = this.func(...);//TODO
+
+   if (typeof(ret) != this.type)
+      fatal_error("Invalid type return by func at " + this.loc);
+   return ret;
+}
+
 
 function SignalExpression(machine, loc, signal_name, get_pre, get_value) {
    Expression.call(this, machine, loc, null);
