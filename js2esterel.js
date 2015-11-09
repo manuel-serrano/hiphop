@@ -265,10 +265,6 @@ reactive.LocalSignalIdentifier.prototype.esterel_code = function(indent) {
    return buf;
 }
 
-reactive.ConstExpression.prototype.esterel_code = function() {
-   return this.value;
-}
-
 reactive.SignalExpression.prototype.esterel_code = function() {
    var buf = this.signal_name;
 
@@ -277,12 +273,4 @@ reactive.SignalExpression.prototype.esterel_code = function() {
    if (this.get_pre)
       buf = "pre(" + buf + ")";
    return buf;
-}
-
-reactive.PlusExpression.prototype.esterel_code = function() {
-   return this.expr1.esterel_code() + "+" + this.expr2.esterel_code();
-}
-
-reactive.MinusExpression.prototype.esterel_code = function() {
-   return this.expr1.esterel_code() + "-" + this.expr2.esterel_code();
 }

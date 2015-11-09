@@ -478,31 +478,38 @@ Emit.prototype.run = function() {
 
 /* Expressions */
 
-function Expression(machine, loc, type) {
+function Expression(machine, loc, func, sigexprs) {
    this.machine = machine;
    this.loc = loc;
-   this.type = type; /* return type of the expression */
+
+   /* Test if undefined for JS prototypes... */
+   if (func != undefined && !(func instanceof Function))
+      fatal_error("Wrong function argument at " + loc);
+   this.func = func; /* JS callback */
+
+   if (sigexprs != undefined && sigexprs.length != func.length)
+      fatal_error("Arity error in expression at " + loc);
+   this.sigexprs = sigexprs;
+}
+
+/* As the reactive machine doesn't exists when the expression is build,
+   and as we need the reactive machine to get type of signals, we have to
+   use init_and_check_type in a visitor, when the AST is build and the machine
+   instanciated */
+
+Expression.prototype.init_and_check_type = function(machine) {
+   var type  = this.sigexprs[0].type;
+
+   this.machine = machine;
+   for (var i in this.sigexprs) {
+      if (!(this.sigexprs[i] instanceof SignalExpression))
+	 fatal_error("Invalid type in sigexprs at " + this.loc);
+      if (this.sigexprs[i].type != type)
+	 fatal_error("Type error in sigexprs at " + this.loc);
+   }
 }
 
 Expression.prototype.evaluate = function() {}
-
-/* Finish initialization of the expression (set machine if needed)
-   and check if the type is correct */
-
-Expression.prototype.init_and_check_type = function(machine) {
-   if (machine == null)
-      this.machine = machine;
-   return true;
-}
-
-function ConstExpression(machine, loc, value) {
-   Expression.call(this, machine, loc, typeof(value));
-   this.value = value;
-}
-
-ConstExpression.prototype = new Expression();
-
-ConstExpression.prototype.evaluate = function() { return this.value; }
 
 function SignalExpression(machine, loc, signal_name, get_pre, get_value) {
    Expression.call(this, machine, loc, null);
@@ -514,10 +521,8 @@ function SignalExpression(machine, loc, signal_name, get_pre, get_value) {
 SignalExpression.prototype = new Expression();
 
 SignalExpression.prototype.init_and_check_type = function(machine) {
-   if (this.machine == null)
-      this.machine = machine;
+   this.machine = machine;
    this.type = this.machine.get_signal(this.signal_name).type;
-   return true;
 }
 
 SignalExpression.prototype.evaluate = function() {
@@ -531,48 +536,6 @@ SignalExpression.prototype.evaluate = function() {
       return sig.get_value();
    else
       return sig.set;
-}
-
-function BinaryExpression(machine, loc, expr1, expr2) {
-   Expression.call(this, machine, loc, null);
-
-   if (loc != undefined /* avoid error when inherit prototype... */
-       && (!(expr1 instanceof Expression) || !(expr2 instanceof Expression)))
-      fatal_error("BinaryExpression has invalid operand at " + loc);
-   this.expr1 = expr1;
-   this.expr2 = expr2;
-}
-
-BinaryExpression.prototype = new Expression();
-
-BinaryExpression.prototype.init_and_check_type = function(machine) {
-   if (this.machine == null)
-      this.machine = machine;
-   this.expr1.init_and_check_type(machine);
-   this.expr2.init_and_check_type(machine);
-   this.type = this.expr1.type;
-   return this.type == this.expr2.type;
-}
-
-function PlusExpression(machine, loc, expr1, expr2) {
-   BinaryExpression.call(this, machine, loc, expr1, expr2);
-}
-
-PlusExpression.prototype = new BinaryExpression();
-
-PlusExpression.prototype.evaluate = function() {
-   return this.expr1.evaluate() + this.expr2.evaluate()
-}
-
-
-function MinusExpression(machine, loc, expr1, expr2) {
-   BinaryExpression.call(this, machine, loc, expr1, expr2);
-}
-
-MinusExpression.prototype = new BinaryExpression();
-
-MinusExpression.prototype.evaluate = function() {
-   return this.expr1.evaluate() - this.expr2.evaluate()
 }
 
 /* Pause - Figure 11.3 page 115 */
@@ -1214,8 +1177,6 @@ exports.Trap = Trap;
 exports.Exit = Exit;
 exports.Expression = Expression;
 exports.LocalSignalIdentifier = LocalSignalIdentifier;
-exports.ConstExpression = ConstExpression;
 exports.SignalExpression = SignalExpression;
-exports.PlusExpression = PlusExpression;
-exports.MinusExpression = MinusExpression;
+exports.Expression = Expression;
 exports.check_valued_signal_definition = check_valued_signal_definition;

@@ -262,9 +262,7 @@ ExpressionVisitor.prototype.visit = function(node) {
 	 if (!(machine.get_signal(node.signal_name)
 	       instanceof reactive.ValuedSignal))
 	    fatal("Can't get value of non valued signal.", node.expr.loc);
-
-      if (!node.expr.init_and_check_type(this.machine))
-	 fatal("Invalid type of expression.", node.expr.loc);
+      node.expr.init_and_check_type(this.machine);
    }
 }
 

@@ -234,18 +234,11 @@ function SIGEXPR(attrs) {
 					attrs.get_value != undefined);
 }
 
-function PLUSEXPR(attrs) {
-   return new reactive.PlusExpression(null,
-				      format_loc(attrs),
-				      attrs.expr1,
-				      attrs.expr2);
-}
-
-function MINUSEXPR(attrs) {
-   return new reactive.MinusExpression(null,
-				       format_loc(attrs),
-				       attrs.expr1,
-				       attrs.expr2);
+function EXPR(attrs) {
+   return new reactive.Expression(null,
+				  format_loc(attrs),
+				  attrs.func,
+				  attrs.sigexprs)
 }
 
 function parse_value(value) {
@@ -285,7 +278,5 @@ exports.EXIT = EXIT;
 exports.LOCALSIGNAL = LOCALSIGNAL;
 exports.INPUTSIGNAL = INPUTSIGNAL;
 exports.OUTPUTSIGNAL = OUTPUTSIGNAL;
-exports.CONSTEXPR = CONSTEXPR;
+exports.EXPR = EXPR;
 exports.SIGEXPR = SIGEXPR;
-exports.PLUSEXPR = PLUSEXPR;
-exports.MINUSEXPR = MINUSEXPR;
