@@ -265,6 +265,14 @@ reactive.LocalSignalIdentifier.prototype.esterel_code = function(indent) {
    return buf;
 }
 
+reactive.BoxingExpression.prototype.esterel_code = function() {
+   return this.value;
+}
+
+reactive.Expression.prototype.esterel_code = function() {
+   return "EXPR";
+}
+
 reactive.SignalExpression.prototype.esterel_code = function() {
    var buf = this.signal_name;
 
