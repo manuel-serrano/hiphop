@@ -1,0 +1,9 @@
+module parvalued2:
+
+output J : integer;
+
+signal I : integer in
+       emit I(5) || present I then emit J(?I) end
+end signal
+
+end module
