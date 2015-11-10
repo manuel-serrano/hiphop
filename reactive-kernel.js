@@ -151,7 +151,8 @@ ValuedSignal.prototype.check_type = function(value) {
 }
 
 ValuedSignal.prototype.check_definition = function() {
-   check_valued_signal_definition(this.type, this.combine_with, this.name);
+   if (this.combine_with != undefined)
+      check_valued_signal_definition(this.type, this.combine_with, this.name);
 }
 
 /* It can be use in ast.js, when the local signal is not created yet */
