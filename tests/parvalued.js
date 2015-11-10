@@ -2,11 +2,11 @@ var reactive = require("../reactive-kernel.js");
 var rjs = require("../xml-compiler.js");
 var inspector = require("../inspector.js");
 
-var sigJ = new reactive.ValuedSignal("J", "integer");
+var sigJ = new reactive.ValuedSignal("J", "number");
 
 var machine = <rjs.ReactiveMachine name="parvalued">
   <rjs.outputsignal ref=${sigJ}/>
-  <rjs.localsignal signal_name="I" type="integer">
+  <rjs.localsignal signal_name="I" type="number">
     <rjs.Parallel>
       <rjs.present signal_name="I">
 	<rjs.emit signal_name="J"
