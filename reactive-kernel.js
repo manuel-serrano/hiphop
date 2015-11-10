@@ -81,7 +81,7 @@ function ValuedSignal(name,
    this.pre_value = init_value;
    this.is_pre_value_init = init_value != undefined;
    this.type = type;
-   this.combine_with = combine_with; /* null if single */
+   this.combine_with = combine_with; /* undefined if single */
    this.has_init_value = init_value != undefined;
    this.init_value = init_value;
    this.single = combine_with == undefined; /* only one write by react */
