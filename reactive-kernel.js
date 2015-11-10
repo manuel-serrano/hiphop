@@ -93,6 +93,11 @@ function ValuedSignal(name,
 
 ValuedSignal.prototype = new Signal();
 
+/* WARNING !!
+   Always use get_state to know if the value is readable before use
+   this function.
+   Othewise the semantic is undefined.
+   TODO : stop execution if the value is unreadable or unkown state */
 ValuedSignal.prototype.get_value = function() {
    if (!this.is_value_init)
       fatal_error("Signal " + this.name + " is not initialized when reading.");
@@ -455,6 +460,7 @@ function Emit(machine, loc, signal_name, expr=undefined) {
    this.debug_code = DEBUG_EMIT;
    this.signal_name = signal_name;
    this.expr = expr;
+   this.blocked = false;
 }
 
 Emit.prototype = new Statement();
@@ -463,11 +469,18 @@ Emit.prototype.run = function() {
    var signal = this.machine.get_signal(this.signal_name);
 
    this.k[0].set = this.go.set;
-   this.machine.signals_emitters[this.signal_name]--;
+
+   if (!this.blocked)
+      this.machine.signals_emitters[this.signal_name]--;
+   else
+      this.blocked = false;
 
    if (this.go.set) {
       if (this.expr instanceof Expression && signal instanceof ValuedSignal)
-	 signal.set_value(this.expr.evaluate());
+	 if (!this.expr.set_value_to_signal(signal)) {
+	    this.blocked = true;
+	    return false;
+	 }
       signal.set = true;
    }
 
@@ -478,48 +491,64 @@ Emit.prototype.run = function() {
 
 /* Expressions */
 
-function Expression(machine, loc, func, sigexprs) {
-   this.machine = machine;
+function Expression(loc, func, exprs) {
    this.loc = loc;
+   this.exprs = exprs;
+   this.machine = null
+
+   /* value is updated each time we get the result of the expression,
+      and must not be use outside this class */
+   this.value;
 
    /* Test if undefined for JS prototypes... */
    if (func != undefined && !(func instanceof Function))
       fatal_error("Wrong function argument at " + loc);
    this.func = func; /* JS callback */
 
-   if (sigexprs != undefined && sigexprs.length != func.length)
-      fatal_error("Arity error in expression at " + loc);
-   this.sigexprs = sigexprs;
-}
-
-/* As the reactive machine doesn't exists when the expression is build,
-   and as we need the reactive machine to get type of signals, we have to
-   use init_and_check_type in a visitor, when the AST is build and the machine
-   instanciated */
-
-Expression.prototype.init_and_check_type = function(machine) {
-   var type  = this.sigexprs[0].type;
-
-   this.machine = machine;
-   for (var i in this.sigexprs) {
-      if (!(this.sigexprs[i] instanceof SignalExpression))
-	 fatal_error("Invalid type in sigexprs at " + this.loc);
-      if (this.sigexprs[i].type != type)
-	 fatal_error("Type error in sigexprs at " + this.loc);
-   }
+   if (exprs != undefined && exprs.length != func.length)
+      fatal_error("Arity error in expression at " + loc
+		  + "[expected:" + func.length
+		  + " given:" + exprs.length + "]");
 }
 
 Expression.prototype.evaluate = function() {
-   var ret = this.func(...);//TODO
+   var args_values = [];
 
-   if (typeof(ret) != this.type)
-      fatal_error("Invalid type return by func at " + this.loc);
-   return ret;
+   for (var i in this.exprs) {
+      if (!this.exprs[i].evaluate())
+	 return false;
+      else
+	 args_values[i] = this.exprs[i].value;
+   }
+
+   this.value = this.func.apply(this, args_values);
+   return true;
 }
 
+Expression.prototype.set_value_to_signal = function(signal) {
+   if (!this.evaluate())
+      return false;
+   signal.set_value(this.value);
+   return true;
+}
 
-function SignalExpression(machine, loc, signal_name, get_pre, get_value) {
-   Expression.call(this, machine, loc, null);
+Expression.prototype.set_machine = function(machine) {
+   this.machine = machine;
+   for (var i in this.exprs)
+      this.exprs[i].set_machine(machine);
+}
+
+function BoxingExpression(loc, value) {
+   this.loc = loc;
+   this.value = value;
+}
+
+BoxingExpression.prototype = new Expression();
+
+BoxingExpression.prototype.evaluate = function() { return true }
+
+function SignalExpression(loc, signal_name, get_pre, get_value) {
+   Expression.call(this, loc, undefined, undefined);
    this.signal_name = signal_name;
    this.get_pre = get_pre;
    this.get_value = get_value;
@@ -527,22 +556,30 @@ function SignalExpression(machine, loc, signal_name, get_pre, get_value) {
 
 SignalExpression.prototype = new Expression();
 
-SignalExpression.prototype.init_and_check_type = function(machine) {
-   this.machine = machine;
-   this.type = this.machine.get_signal(this.signal_name).type;
-}
-
 SignalExpression.prototype.evaluate = function() {
    var sig = this.machine.get_signal(this.signal_name);
 
-   if (this.get_pre && this.get_value)
-      return sig.get_pre_value();
-   else if (this.get_pre)
-      return sig.pre_set;
-   else if (this.get_value)
-      return sig.get_value();
-   else
-      return sig.set;
+   if (this.get_pre) {
+      if (this.get_value)
+	 this.value = sig.get_pre_value();
+      else
+	 this.value = sig.get_pre;
+   } else {
+      var state = sig.get_state(sig.emitters, false);
+
+      if (this.get_value) {
+	 if (state == 2)
+	    this.value = sig.get_value();
+	 else
+	    return false;
+      } else {
+	 if (state == 1)
+	    this.value = sig.set;
+	 else
+	    return false;
+      }
+   }
+   return true;
 }
 
 /* Pause - Figure 11.3 page 115 */
@@ -1183,6 +1220,7 @@ exports.Statement = Statement;
 exports.Trap = Trap;
 exports.Exit = Exit;
 exports.Expression = Expression;
+exports.BoxingExpression = BoxingExpression;
 exports.LocalSignalIdentifier = LocalSignalIdentifier;
 exports.SignalExpression = SignalExpression;
 exports.Expression = Expression;

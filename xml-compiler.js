@@ -81,8 +81,16 @@ function REACTIVEMACHINE(attrs) {
 }
 
 function EMIT(attrs) {
+   var loc = format_loc(attrs);
+   var expr = attrs.expr;
+
+   if (expr != undefined && !(expr instanceof reactive.Expression))
+      /* Need to parse_value if a litteral is given as
+	 expression, becauseXML parser will convert it
+	 in string. */
+      expr = new reactive.BoxingExpression(loc, parse_value(attrs.expr));
    check_signal_name(attrs.signal_name, attrs);
-   return new ast.Emit(format_loc(attrs), attrs.signal_name, attrs.expr);
+   return new ast.Emit(loc, attrs.signal_name, expr);
 }
 
 function NOTHING(attrs) {
@@ -221,18 +229,23 @@ function LOCALSIGNAL(attrs) {
    is actually a valued signal */
 
 function SIGEXPR(attrs) {
-   return new reactive.SignalExpression(null,
-					format_loc(attrs),
+   return new reactive.SignalExpression(format_loc(attrs),
 					attrs.signal_name,
 					attrs.get_pre != undefined,
 					attrs.get_value != undefined);
 }
 
 function EXPR(attrs) {
-   return new reactive.Expression(null,
-				  format_loc(attrs),
-				  attrs.func,
-				  attrs.sigexprs)
+   var loc = format_loc(attrs);
+   var exprs = [];
+
+   for (var i in attrs.exprs) {
+      if (!(attrs.exprs[i] instanceof reactive.Expression))
+	 exprs[i] = new reactive.BoxingExpression(loc, attrs.exprs[i]);
+      else
+	 exprs[i] = attrs.exprs[i];
+   }
+   return new reactive.Expression(loc, attrs.func, exprs)
 }
 
 function parse_value(value) {

@@ -5,10 +5,10 @@ var rk = require("../reactive-kernel.js");
 
 var sigO = new rk.ValuedSignal("O", "number");
 
-var const1 = <rjs.constexpr value=1 />;
-var subexpr1 = <rjs.sigexpr get_pre get_value signal_name="S" />;
-var expr1 = <rjs.plusexpr expr1=${subexpr1} expr2=${const1} />;
-var expr2 = <rjs.sigexpr get_value signal_name="S"/>;
+var sigSvalpre = <rjs.sigexpr get_pre get_value signal_name="S" />;
+var expr1 = <rjs.expr func=${function(arg1, arg2) { return arg1 + arg2 }}
+		      exprs=${[sigSvalpre, 1]} />;
+var sigSval = <rjs.sigexpr get_value signal_name="S"/>;
 
 var preo = <rjs.sigexpr get_value get_pre signal_name="O"/>;
 
@@ -19,7 +19,7 @@ var prg = <rjs.ReactiveMachine name="emitvaluedlocal1">
     <rjs.localsignal signal_name="S" combine_with="+" type="number" init_value=1 >
     <rjs.sequence>
     <rjs.emit signal_name="S" expr=${expr1}/>
-    <rjs.emit signal_name="O" expr=${expr2}/>
+    <rjs.emit signal_name="O" expr=${sigSval}/>
     </rjs.sequence>
    </rjs.localsignal>
    <rjs.pause/>

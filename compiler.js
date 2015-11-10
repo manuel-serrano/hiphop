@@ -250,7 +250,7 @@ BuildCircuitVisitor.prototype.visit = function(node) {
    }
 }
 
-/* Set machine attribute to expression and check types of the expressions */
+/* Set machine attribute to SignalExpression and make a very tiny type check */
 
 function ExpressionVisitor(machine) {
    this.machine = machine;
@@ -258,11 +258,12 @@ function ExpressionVisitor(machine) {
 
 ExpressionVisitor.prototype.visit = function(node) {
    if (node instanceof ast.Emit && node.expr != undefined) {
-      if (node.expr instanceof reactive.SignalExpression && node.get_value)
+      if (node.expr instanceof reactive.SignalExpression && node.get_value) {
 	 if (!(machine.get_signal(node.signal_name)
 	       instanceof reactive.ValuedSignal))
 	    fatal("Can't get value of non valued signal.", node.expr.loc);
-      node.expr.init_and_check_type(this.machine);
+      }
+      node.expr.set_machine(this.machine);
    }
 }
 
