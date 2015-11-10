@@ -574,7 +574,7 @@ SignalExpression.prototype.evaluate = function() {
 	 else
 	    return false;
       } else {
-	 if (state == 1 || state == -1)
+	 if (state != 0)
 	    this.value = sig.set;
 	 else
 	    return false;
