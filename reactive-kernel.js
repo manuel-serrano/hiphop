@@ -568,12 +568,12 @@ SignalExpression.prototype.evaluate = function() {
       var state = sig.get_state(sig.emitters, false);
 
       if (this.get_value) {
-	 if (state == 2)
+	 if (state == 2 || state == -1)
 	    this.value = sig.get_value();
 	 else
 	    return false;
       } else {
-	 if (state == 1)
+	 if (state == 1 || state == -1)
 	    this.value = sig.set;
 	 else
 	    return false;
