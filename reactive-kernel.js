@@ -1184,35 +1184,6 @@ function fatal_error(msg) {
    process.exit(1);
 }
 
-function deep_clone(obj) {
-   function _clone(obj, cloned, clones) {
-      if (!(obj instanceof Object))
-	 return obj;
-
-      var cloned_i = cloned.indexOf(obj);
-      if (cloned_i > -1)
-	 return clones[cloned_i];
-
-      var cpy;
-      if (obj instanceof Array)
-	 cpy = [];
-      else
-	 cpy = Object.create(Object.getPrototypeOf(obj));
-
-      cloned_i = cloned.length;
-      cloned[cloned_i] = obj;
-      clones[cloned_i] = cpy;
-
-      for (var i in obj)
-	 if (!(obj[i] instanceof Function))
-	    cpy[i] = _clone(obj[i], cloned, clones);
-
-      return cpy;
-   }
-
-   return _clone(obj, [], []);
-}
-
 exports.Signal = Signal;
 exports.ValuedSignal = ValuedSignal;
 exports.Emit = Emit;

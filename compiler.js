@@ -75,6 +75,7 @@ PrintTreeVisitor.prototype.visit = function(node) {
 }
 
 function CheckNamesVisitor(ast_machine) {
+   this.ast_machine = ast_machine;
    this.inputs = [];
    this.outputs = [];
    this.traps = [];
@@ -109,10 +110,16 @@ CheckNamesVisitor.prototype.visit = function(node) {
       if (this.declared_name(node.signal_name))
 	 already_used_name_error(node.signal_name, node.loc);
       this.locals.push(node.signal_name);
+
+      /* usefull only for RunVisitor */
+      this.ast_machine.local_signals.push(node.signal_name);
    } else if (node instanceof ast.Trap) {
       if (this.declared_name(node.trap_name))
 	 already_used_name_error(node.trap_name, node.loc);
       this.traps.push(node.trap_name);
+
+      /* usefull only for RunVisitor */
+      this.ast_machine.trap_names.push(node.trap_name);
    } else if (node instanceof ast.Exit) {
       if (!this.declared_name_trap(node.trap_name))
 	 unknown_name_error("trap::" + node.trap_name, node.loc);
@@ -268,6 +275,73 @@ ExpressionVisitor.prototype.visit = function(node) {
    }
 }
 
+/* Clone the circuit of a reactive machine, checks if signal association
+   matches, and replace it */
+
+function RunVisitor(ast_machine, machine) {
+   this.ast_machine = ast_machine;
+   this.machine = machine;
+}
+
+RunVisitor.prototype.visit = function(node) {
+   if (!(node instanceof ast.Run))
+      return;
+   node.subcircuits = this.deep_clone(node.run_machine.go_in.stmt_out,
+				      node.sigs_assoc);
+}
+
+RunVisitor.prototype.deep_clone = function(obj, sigs_assoc) {
+   var cloned = [];
+   var clones = [];
+   var trap_names = {};
+   var machine = this.machine;
+
+   function _clone(obj) {
+      if (!(obj instanceof Object))
+	 return obj;
+
+      var cloned_i = cloned.indexOf(obj);
+      if (cloned_i > -1)
+	 return clones[cloned_i];
+
+      var cpy;
+      if (obj instanceof Array)
+	 cpy = [];
+      else
+	 cpy = Object.create(Object.getPrototypeOf(obj));
+
+      cloned_i = cloned.length;
+      cloned[cloned_i] = obj;
+      clones[cloned_i] = cpy;
+
+      for (var i in obj)
+	 if (!(obj[i] instanceof Function)) {
+	    if (i != "machine")
+	       cpy[i] = _clone(obj[i]);
+	    else
+	       cpy[i] = machine
+	 }
+
+      if (cpy instanceof reactive.LocalSignalIdentifier) {
+	 if (this.ast_machine.local_signals.indexOf(cpy.signal_name) > -1)
+	    sigs_assoc[cpy.signal_name] = "__run__" + cpy.signal_name;
+      } else if (cpy instanceof reactive.Trap) {
+	 if (this.ast_machine.trap_names.indexOf(cpy.trap_name) > -1)
+	    trap_names[cpy.trap_name] = "__run__" + cpy.trap_name;
+      } else if (cpy.signal_name != undefined) {
+	 if (sigs_assoc[cpy.signal_name] != undefined)
+	    cpy.signal_name = sigs_assoc[cpy.signal_name];
+      } else if (cpy.trap_name != undefined) {
+	 if (trap_names[cpy.trap_name] != undefined)
+	    cpy.trap_name = trap_names[cpy.trap_name];
+      }
+
+      return cpy;
+   }
+
+   return _clone(obj);
+}
+
 /* Take the root of an AST (that must be ReactiveMachine node)
    and then return a reactive program (a runnable reactive machine).
 
@@ -295,11 +369,12 @@ function compile(ast_machine) {
 
    ast_machine.accept(new BuildTreeVisitor(ast_machine));
    ast_machine.accept_auto(new CheckNamesVisitor(ast_machine));
+   ast_machine.accept_auto(new RunVisitor(ast_machine, machine));
    ast_machine.accept(new SetIncarnationLevelVisitor());
    ast_machine.accept(new SetExitReturnCodeVisitor());
    ast_machine.accept_auto(new SetLocalSignalsVisitor(machine));
    ast_machine.accept_auto(new ExpressionVisitor(machine));
-//   ast_machine.accept(new PrintTreeVisitor(ast_machine));
+ //  ast_machine.accept(new PrintTreeVisitor(ast_machine));
    ast_machine.accept(new BuildCircuitVisitor(machine));
    return machine;
 }

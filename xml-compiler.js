@@ -248,6 +248,34 @@ function EXPR(attrs) {
    return new reactive.Expression(loc, attrs.func, exprs)
 }
 
+function RUN(attrs) {
+   var run_machine = attrs.machine;
+   var sigs_assoc = attrs.sigs_assoc;
+   var sigs_assoc_len = Object.keys(sigs_assoc).length;
+   var run_machine_siglen = (Object.keys(run_machine.input_signals).length
+			     + Object.keys(run_machine.output_signals).length);
+
+   if(!(run_machine instanceof reactive.ReactiveMachine))
+      fatal("Run::machine must be a ReactiveMachine.", format_loc(attrs));
+
+   if (sigs_assoc_len != run_machine_siglen)
+      fatal("Bad mapping signals [given:"
+	    + sigs_assoc_len + " excepted:" + run_machine_siglen + "]",
+	    format_loc(attrs));
+
+   for (var i in run_machine.input_signals)
+      if (sigs_assoc[i] == undefined)
+	 fatal("Signal " + i + " not mapped.", format_loc(attrs));
+
+   for (var i in run_machine.output_signals)
+      if (sigs_assoc[i] == undefined)
+	 fatal("Signal " + i + " not mapped.", format_loc(attrs));
+
+   return new ast.Run(format_loc(attrs),
+		      run_machine,
+		      sigs_assoc);
+}
+
 function parse_value(value) {
    if (typeof(value) == "string") {
       var raw_value = value.toLowerCase().trim();
@@ -287,3 +315,4 @@ exports.INPUTSIGNAL = INPUTSIGNAL;
 exports.OUTPUTSIGNAL = OUTPUTSIGNAL;
 exports.EXPR = EXPR;
 exports.SIGEXPR = SIGEXPR;
+exports.RUN = RUN;

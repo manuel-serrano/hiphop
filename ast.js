@@ -141,6 +141,10 @@ function ReactiveMachine(loc,
    this.machine_name = machine_name;
    this.input_signals = input_signals;
    this.output_signals = output_signals;
+
+   /* usefull only for program composition (see RunVisitor) */
+   this.local_signals = [];
+   this.trap_names = [];
 }
 ReactiveMachine.prototype = new Circuit();
 exports.ReactiveMachine = ReactiveMachine;
@@ -224,6 +228,21 @@ Sequence.prototype.factory = function() {
 }
 exports.Sequence = Sequence;
 
+
+/* run_machine, inputs_assoc and outputs_assoc must be checked before
+   the call of this constructor */
+
+function Run(loc, run_machine, sigs_assoc) {
+   Statement.call(this, "RUN", loc);
+   this.run_machine = run_machine;
+   this.sigs_assoc = sigs_assoc;
+   this.subcircuits = null;
+}
+Run.prototype = new Statement();
+Run.prototype.factory = function() {
+   return this.subcircuits;
+}
+exports.Run = Run;
 
 /* Signal nodes */
 

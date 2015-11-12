@@ -1,22 +1,14 @@
 module m1:
-
 input T, W;
 output V, Z;
-
 present T then emit V end || present W then emit Z end
-
 end module
 
 module run2:
-
-output V, A;
-
-signal S, U in
-
-emit S;
-emit U;
-run m1 [ signal S / T, U / W, A / Z ];
-
-end signal
-
+input S, U;
+output A, B;
+run m1 [ signal S / T,
+       	 	U / W,
+		A / V,
+		B / Z ];
 end module
