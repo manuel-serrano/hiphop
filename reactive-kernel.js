@@ -72,7 +72,6 @@ Signal.prototype.decr_emitters = function() {
 }
 
 Signal.prototype.is_set_ready = function(pre) {
-   console.log(this.name + ":" + this.set);
    return pre || this.set || this.get_emitters() == 0;
 }
 
@@ -87,7 +86,6 @@ Signal.prototype.get_set = function(pre) {
 
 Signal.prototype.set_set = function() {
    this.set = true;
-   this.decr_emitters();
 }
 
 function ValuedSignal(name,
@@ -489,12 +487,18 @@ function Emit(machine, loc, signal_name, expr=undefined) {
    this.debug_code = DEBUG_EMIT;
    this.signal_name = signal_name;
    this.expr = expr;
+   this.blocked = false;
 }
 
 Emit.prototype = new Statement();
 
 Emit.prototype.run = function() {
    var signal = this.machine.get_signal(this.signal_name);
+
+   if (!this.blocked)
+      signal.decr_emitters();
+   else
+      this.blocked = false;
 
    this.k[0].set = this.go.set;
    if (this.go.set) {
@@ -504,7 +508,6 @@ Emit.prototype.run = function() {
       } else {
 	 signal.set_set();
       }
-      console.log("emit signal " + this.signal_name + " " + signal.set);
    }
 
    if (DEBUG_FLAGS & DEBUG_EMIT)
