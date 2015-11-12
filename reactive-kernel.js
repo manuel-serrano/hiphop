@@ -35,10 +35,11 @@ var DEBUG_FLAGS = DEBUG_NONE;
 var COMBINED_VALUED_TYPES = { "number": [ "+", "*" ],
 			      "boolean": [ "and", "or" ] };
 
-function Signal(name) {
+function Signal(name, machine=undefined) {
    this.name = name;
    this.set = false;
    this.pre_set = false;
+   this.machine = machine;
 }
 
 /* 2: the signal is set and its value is ready to read
@@ -46,36 +47,59 @@ function Signal(name) {
    0: the value is unkown
    -1: the value is unset */
 
-Signal.prototype.get_state = function(emitters, test_pre) {
-   if (test_pre)
-      return this.pre_set ? 2 : -1;
-
-   if (emitters == undefined)
-      emitters = 0;
-
-   if (emitters == 0 && this.set)
-      return 2;
-   if (this.set)
-      return 1;
-   if (emitters > 0)
-      return 0;
-   return -1;
-}
+// Signal.prototype.get_state = function() {
+//    if (this.get_emitters() == 0 && this.set)
+//       return 2;
+//    if (this.set)
+//       return 1;
+//    if (this.get_emitters() > 0)
+//       return 0;
+//    return -1;
+// }
 
 Signal.prototype.reset = function() {
    this.pre_set = this.set;
    this.set = false;
 }
 
+Signal.prototype.get_emitters = function() {
+   var emitters = this.machine.signals_emitters[this.name];
+   console.log(emitters);
+   return emitters == undefined ? 0 : emitters;
+}
+
+Signal.prototype.decr_emitters = function() {
+   return this.machine.signals_emitters[this.name]--;
+}
+
+Signal.prototype.is_set_ready = function(pre) {
+   return pre || this.set || this.get_emitters == 0;
+}
+
+Signal.prototype.get_set = function(pre) {
+   if (pre)
+      return this.pre_set;
+
+   if (!this.is_set_ready(false))
+      fatal_error("Causality error on Signal::set " + this.name);
+   return this.set;
+}
+
+Signal.prototype.set_set = function() {
+   this.set = true;
+   this.decr_emitters();
+}
+
 function ValuedSignal(name,
 		      type,
 		      init_value,
-		      combine_with) {
+		      combine_with,
+		      machine=undefined) {
    if ((init_value != undefined || combine_with != undefined)
        && type == undefined)
       fatal_error("Signal " + signal_name + " must be typed.");
 
-   Signal.call(this, name);
+   Signal.call(this, name, machine);
    this.value = init_value;
    this.is_value_init = init_value != undefined;
    this.pre_value = init_value;
@@ -93,22 +117,25 @@ function ValuedSignal(name,
 
 ValuedSignal.prototype = new Signal();
 
-/* WARNING !!
-   Always use get_state to know if the value is readable before use
-   this function.
-   Othewise the semantic is undefined.
-   TODO : stop execution if the value is unreadable or unkown state */
-ValuedSignal.prototype.get_value = function() {
-   if (!this.is_value_init)
-      fatal_error("Signal " + this.name + " is not initialized when reading.");
-   return this.value;
+ValuedSignal.prototype.is_value_ready = function(pre) {
+   return (pre
+	   || (this.set && this.get_emitters() == 0)
+	   || this.get_emitters == 0)
 }
 
-ValuedSignal.prototype.get_pre_value = function() {
-   if (!this.is_pre_value_init)
-      fatal_error("Signal " + this.name + " is not initialized when reading "
-		  + "pre_value.");
-   return this.pre_value;
+ValuedSignal.prototype.get_value = function(pre) {
+   if (pre) {
+      if (!this.is_pre_value_init)
+	 fatal_error("Signal " + this.name + " is not initialized when reading "
+		     + "pre_value.");
+      return this.pre_value;
+   }
+
+   if (!this.is_value_init)
+      fatal_error("Signal " + this.name + " is not initialized when reading.");
+   if (!this.is_value_ready(false))
+      fatal_error("Causality error on ValuedSignal::value " + this.name);
+   return this.value;
 }
 
 ValuedSignal.prototype.set_value = function(value) {
@@ -131,6 +158,7 @@ ValuedSignal.prototype.set_value = function(value) {
       this.value = eval(eval_buff);
    }
    this.set_value_in_current_react = true;
+   this.set_set();
 }
 
 ValuedSignal.prototype.reset = function() {
@@ -461,7 +489,6 @@ function Emit(machine, loc, signal_name, expr=undefined) {
    this.debug_code = DEBUG_EMIT;
    this.signal_name = signal_name;
    this.expr = expr;
-   this.blocked = false;
 }
 
 Emit.prototype = new Statement();
@@ -470,19 +497,13 @@ Emit.prototype.run = function() {
    var signal = this.machine.get_signal(this.signal_name);
 
    this.k[0].set = this.go.set;
-
-   if (!this.blocked)
-      this.machine.signals_emitters[this.signal_name]--;
-   else
-      this.blocked = false;
-
    if (this.go.set) {
-      if (this.expr instanceof Expression && signal instanceof ValuedSignal)
-	 if (!this.expr.set_value_to_signal(signal)) {
-	    this.blocked = true;
+      if (this.expr instanceof Expression && signal instanceof ValuedSignal) {
+	 if (!this.expr.set_value_to_signal(signal))
 	    return false;
-	 }
-      signal.set = true;
+      } else {
+	 signal.set_set();
+      }
    }
 
    if (DEBUG_FLAGS & DEBUG_EMIT)
@@ -562,20 +583,18 @@ SignalExpression.prototype.evaluate = function() {
 
    if (this.get_pre) {
       if (this.get_value)
-	 this.value = sig.get_pre_value();
+	 this.value = sig.get_value(true);
       else
-	 this.value = sig.get_pre;
+	 this.value = sig.get_set(true);
    } else {
-      var state = sig.get_state(sig.emitters, false);
-
       if (this.get_value) {
-	 if (state == 2 || state == -1)
-	    this.value = sig.get_value();
+	 if (sig.is_value_ready())
+	    this.value = sig.get_value(false);
 	 else
 	    return false;
       } else {
-	 if (state != 0)
-	    this.value = sig.set;
+	 if (sig.is_set_ready())
+	    this.value = sig.get_set(false);
 	 else
 	    return false;
       }
@@ -638,15 +657,15 @@ Present.prototype.run = function() {
    var sig_name = this.signal_name;
    var branch = 0;
    var signal = this.machine.get_signal(sig_name);
-   var signal_state = signal.get_state(this.machine.signals_emitters[sig_name],
-				       this.test_pre);
+   var signal_set;
 
    if (this.blocked == -1) {
-      if (signal_state == 0 && this.go.set)
+      if (this.go.set && !signal.is_set_ready(this.test_pre))
 	 return false;
 
-      this.go_in[0].set = this.go.set && signal_state > 0;
-      this.go_in[1].set = this.go.set && !(signal_state > 0);
+      signal_set = signal.get_set(this.test_pre);
+      this.go_in[0].set = this.go.set && signal_set;
+      this.go_in[1].set = this.go.set && !signal_set;
 
       /* initialize states of k outputs of present from the previous reaction */
       for (var i in this.k)
@@ -828,16 +847,14 @@ Abort.prototype = new Circuit();
 Abort.prototype.run = function() {
    var sig_name = this.signal_name;
    var signal = this.machine.get_signal(sig_name);
-   var signal_state = signal.get_state(this.machine.signals_emitters[sig_name],
-				       this.test_pre);
+   var signal_set;
 
-   if (signal_state == 0) {
-      this.blocked_by_signal = true;
+   if (!signal.is_set_ready(this.test_pre))
       return false;
-   }
 
+   signal_set = signal.get_set(this.test_pre);
    this.go_in.set = this.go.set;
-   this.res_in.set = this.res.set && this.sel.set && !(signal_state > 0);
+   this.res_in.set = this.res.set && this.sel.set && !signal_set;
    this.susp_in.set = this.susp.set;
    this.kill_in.set = this.kill.set;
 
@@ -848,7 +865,7 @@ Abort.prototype.run = function() {
 
    this.k[0].set = ((this.res.set &&
 		     this.sel.set &&
-		     signal_state > 0) ||
+		     signal_set) ||
 		    this.k_in[0].set);
    this.sel.set = new_sel;
    for (var i = 1; i < this.k_in.length; i++)
@@ -1001,19 +1018,17 @@ Suspend.prototype.run = function() {
    /* TODO: make same hack that abort */
    var sig_name = this.signal_name;
    var signal = this.machine.get_signal(sig_name);
-   var signal_state = signal.get_state(this.machine.signals_emitters[sig_name],
-				       this.test_pre);
+   var signal_set;
 
-   if (signal_state == 0) {
-      this.blocked_by_signal = true;
+   if (signal.is_set_ready(this.test_pre))
       return false;
-   }
 
+   signal_set = signal.get_set(this.test_pre);
    this.go_in.set = this.go.set;
-   this.res_in.set = this.res.set && !(signal_state > 0);
+   this.res_in.set = this.res.set && !signal_set;
    this.susp_in.set = this.susp.set || (this.res.set &&
 					this.sel.set &&
-					signal_state > 0);
+					signal_set);
    this.kill_in.set = this.kill.set;
 
    if (!this.go_in.stmt_out.run())
@@ -1023,7 +1038,7 @@ Suspend.prototype.run = function() {
    this.k[0].set = this.k_in[0].set;
    this.k[1].set = ((this.res.set &&
 		     this.sel.set &&
-		     signal_state > 0) ||
+		     signal_set) ||
 		    this.k_in[1].set);
    for (var i = 2; i < this.k_in.length; i++)
       this.k[i].set = this.k_in[i].set;

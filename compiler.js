@@ -208,10 +208,11 @@ SetLocalSignalsVisitor.prototype.visit = function(node) {
 	    sigs[name][i] = new reactive.ValuedSignal(name,
 						      node.type,
 						      node.init_value,
-						      node.combine_with);
+						      node.combine_with,
+						      this.machine);
       } else {
 	 for (var i = 0; i < node.incarnation_lvl + 1; i++)
-	    sigs[name][i] = new reactive.Signal(name);
+	    sigs[name][i] = new reactive.Signal(name, this.machine);
       }
    }
 }
@@ -283,11 +284,13 @@ function compile(ast_machine) {
    for (var i in ast_machine.input_signals) {
       var sig = ast_machine.input_signals[i];
       machine.input_signals[sig.signal_ref.name] = sig.signal_ref;
+      sig.signal_ref.machine = machine;
    }
 
    for (var i in ast_machine.output_signals) {
       var sig = ast_machine.output_signals[i];
       machine.output_signals[sig.signal_ref.name] = sig.signal_ref;
+      sig.signal_ref.machine = machine;
    }
 
    ast_machine.accept(new BuildTreeVisitor(ast_machine));
