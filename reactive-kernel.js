@@ -64,16 +64,16 @@ Signal.prototype.reset = function() {
 
 Signal.prototype.get_emitters = function() {
    var emitters = this.machine.signals_emitters[this.name];
-   console.log(emitters);
    return emitters == undefined ? 0 : emitters;
 }
 
 Signal.prototype.decr_emitters = function() {
-   return this.machine.signals_emitters[this.name]--;
+   this.machine.signals_emitters[this.name]--;
 }
 
 Signal.prototype.is_set_ready = function(pre) {
-   return pre || this.set || this.get_emitters == 0;
+   console.log(this.name + ":" + this.set);
+   return pre || this.set || this.get_emitters() == 0;
 }
 
 Signal.prototype.get_set = function(pre) {
@@ -504,6 +504,7 @@ Emit.prototype.run = function() {
       } else {
 	 signal.set_set();
       }
+      console.log("emit signal " + this.signal_name + " " + signal.set);
    }
 
    if (DEBUG_FLAGS & DEBUG_EMIT)
@@ -588,12 +589,12 @@ SignalExpression.prototype.evaluate = function() {
 	 this.value = sig.get_set(true);
    } else {
       if (this.get_value) {
-	 if (sig.is_value_ready())
+	 if (sig.is_value_ready(false))
 	    this.value = sig.get_value(false);
 	 else
 	    return false;
       } else {
-	 if (sig.is_set_ready())
+	 if (sig.is_set_ready(false))
 	    this.value = sig.get_set(false);
 	 else
 	    return false;
