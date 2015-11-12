@@ -1,5 +1,7 @@
 "use hopscript"
 
+var ast = require("./ast.js");
+
 /* TODO
    - test suspend statement
 */
@@ -250,6 +252,14 @@ Statement.prototype.assert_completion_code = function() {
 	 set = true;
 }
 
+/* Return a blank ast node (not attached to any reactive machine, without
+   any compilation task make on it).
+   Usefull for print AST of program, and for program composition (RUN) */
+
+Statement.prototype.get_ast_node = function() {
+   fatal_error("get_ast_node must be implemented");
+}
+
 /* Root class of any circuit (construction with statements, or others
    circuits.
    `X_in` represent the connections of the circuit with subcircuit.
@@ -374,10 +384,6 @@ function ReactiveMachine(loc, machine_name) {
 
    /* number of emitters of a signal for the current reaction */
    this.signals_emitters = {};
-
-   /* abstract representation of the runtime machine. Usefull for
-      program composition */
-   this.ast_machine;
 }
 
 ReactiveMachine.prototype = new Circuit();
@@ -508,6 +514,10 @@ Emit.prototype.run = function() {
    return true;
 }
 
+Emit.prototype.get_ast_node = function() {
+   return new ast.Emit(this.loc, this.signal_name, this.expr);
+}
+
 /* Expressions */
 
 function Expression(loc, func, exprs) {
@@ -625,6 +635,10 @@ Pause.prototype.run = function() {
    return true;
 }
 
+Pause.prototype.get_ast_node = function() {
+   return new ast.Pause(this.loc)
+}
+
 /* Present test - Figure 11.5 page 117
    X_in[0] represent X_in of then branch
    X_in[1] represent X_in of else branch
@@ -695,6 +709,14 @@ Present.prototype.run = function() {
    if (DEBUG_FLAGS & DEBUG_PRESENT)
       this.debug();
    return true;
+}
+
+Present.prototype.get_ast_node = function() {
+   return new ast.Present(this.loc,
+			  this.signal_name,
+			  this.test_pre,
+			  [ this.go_in[0].stmt_out.get_ast_node(),
+			    this.go_in[1].stmt_out.get_ast_node() ]);
 }
 
 /* Sequence - Figure 11.8 page 120
@@ -794,6 +816,14 @@ Sequence.prototype.run = function() {
    return true;
 }
 
+Sequence.prototype.get_ast_node = function() {
+   var subcircuits = [];
+
+   for (var i in this.go_in)
+      subcircuits[i] = this.go_in[i].stmt_out.get_ast_node();
+   return new ast.Sequence(this.loc, subcircuits);
+}
+
 /* Loop - Figure 11.9 page 121 */
 
 function Loop(machine, loc, circuit) {
@@ -831,6 +861,10 @@ Loop.prototype.run = function() {
       this.debug();
 
    return true;
+}
+
+Loop.prototype.get_ast_node = function() {
+   return new ast.Loop(this.loc, this.go_in.stmt_out.get_ast_node());
 }
 
 /* Abort - Figure 11.7 page 120 */
@@ -877,6 +911,13 @@ Abort.prototype.run = function() {
    return true;
 }
 
+Abort.prototype.get_ast_node = function() {
+   return new ast.Abort(this.loc,
+			this.signal_name,
+			this.test_pre,
+			this.go_in.stmt_out.get_ast_node());
+}
+
 /* Await */
 
 function Await(machine, loc, signal_name, test_pre) {
@@ -892,6 +933,10 @@ function Await(machine, loc, signal_name, test_pre) {
 
 Await.prototype = new Circuit();
 
+Await.prototype.get_ast_node = function() {
+   return new ast.Await(this.loc, this.signal_name, this.test_pre)
+}
+
 /* Halt */
 
 function Halt(machine, loc) {
@@ -901,6 +946,10 @@ function Halt(machine, loc) {
 }
 
 Halt.prototype = new Circuit();
+
+Halt.prototype.get_ast_node = function() {
+   return new ast.Halt(this.loc);
+}
 
 /* Parallel - Figure 11.10 page 122 */
 
@@ -962,6 +1011,12 @@ Parallel.prototype.run = function() {
    return true;
 }
 
+Parallel.prototype.get_ast_node = function() {
+   return new ast.Parallel(this.loc,
+			   [ this.go_in[0].stmt_out.get_ast_node(),
+			     this.go_in[1].stmt_out.get_ast_node() ]);
+}
+
 /* Nothing statement */
 
 function Nothing (machine, loc) {
@@ -973,6 +1028,10 @@ Nothing.prototype = new Statement();
 Nothing.prototype.run = function() {
    this.k[0].set = this.go.set;
    return true;
+}
+
+Nothing.prototype.get_ast_node = function() {
+   return new ast.Nothing(this.loc);
 }
 
 function remove_duplicates(arr) {
@@ -1000,6 +1059,10 @@ Atom.prototype.run = function() {
    if (this.go.set)
       this.func();
    return true;
+}
+
+Atom.prototype.get_ast_node = function() {
+   return new ast.Atom(this.loc, this.func);
 }
 
 /* Suspend - Figure 11.6
@@ -1049,6 +1112,13 @@ Suspend.prototype.run = function() {
    return true;
 }
 
+Suspend.prototype.get_ast_node = function() {
+   return new ast.Suspend(this.loc,
+			  this.signal_name,
+			  this.test_pre,
+			  this.go_in.stmt_out.get_ast_node());
+}
+
 /* Trap/Shift - Figure 11.12/11.13 page 124 */
 
 function Trap(machine, loc, circuit, trap_name) {
@@ -1092,6 +1162,12 @@ Trap.prototype.run = function() {
    return true;
 }
 
+Trap.prototype.get_ast_node = function() {
+   return new ast.Trap(this.loc,
+		       this.trap_name,
+		       this.go_in.stmt_out.get_ast_node());
+}
+
 /* Exit of a trap */
 
 function Exit(machine, loc, trap_name, return_code) {
@@ -1112,13 +1188,36 @@ Exit.prototype.run = function() {
    return true;
 }
 
+Exit.prototype.get_ast_node = function() {
+   return new ast.Exit(this.loc, this.trap_name);
+}
+
 /* Local signal idenfifier (not instances) which embeded circutis */
-function LocalSignalIdentifier(machine, loc, subcircuit, signal_name) {
+
+function LocalSignalIdentifier(machine,
+			       loc,
+			       subcircuit,
+			       signal_name,
+			       type,
+			       init_value,
+			       combine_with) {
    Circuit.call(this, machine, loc, "LOCALSIGNALIDENTIFIER", subcircuit);
    this.signal_name = signal_name;
+   this.type = type;
+   this.init_value = init_value;
+   this.combine_with = combine_with;
 }
 
 LocalSignalIdentifier.prototype = new Circuit();
+
+LocalSignalIdentifier.prototype.get_ast_node = function() {
+   return new ast.LocalSignal(this.loc,
+			      this.signal_name,
+			      this.go_in.stmt_out.get_ast_node(),
+			      this.type,
+			      this.init_value,
+			      this.combine_with);
+}
 
 function ResetRegisterVisitor() {
 }

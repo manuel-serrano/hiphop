@@ -286,6 +286,7 @@ function RunVisitor(ast_machine, machine) {
 RunVisitor.prototype.visit = function(node) {
    if (!(node instanceof ast.Run))
       return;
+
    node.subcircuits = this.deep_clone(node.run_machine.go_in.stmt_out,
 				      node.sigs_assoc);
 }
@@ -376,8 +377,6 @@ function compile(ast_machine) {
    ast_machine.accept_auto(new ExpressionVisitor(machine));
  //  ast_machine.accept(new PrintTreeVisitor(ast_machine));
    ast_machine.accept(new BuildCircuitVisitor(machine));
-
-   machine.ast_machine = ast_machine;
    return machine;
 }
 

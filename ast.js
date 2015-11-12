@@ -24,7 +24,8 @@ function Statement(name, loc) {
    this.incarnation_lvl = 0;
 }
 Statement.prototype = new ASTNode();
-Statement.prototype.factory = function() { /* Return program node of this */ }
+Statement.prototype.factory = function() { /* Return runtine (rk.*)
+					      program node of this */ }
 exports.Statement = Statement;
 
 function Emit(loc, signal_name, expr=undefined) {
@@ -229,14 +230,14 @@ Sequence.prototype.factory = function() {
 exports.Sequence = Sequence;
 
 
-/* run_machine, inputs_assoc and outputs_assoc must be checked before
-   the call of this constructor */
+/* run_machine, sigs_assoc must be checked before the call
+   of this constructor */
 
 function Run(loc, run_machine, sigs_assoc) {
    Statement.call(this, "RUN", loc);
    this.run_machine = run_machine;
    this.sigs_assoc = sigs_assoc;
-   this.subcircuits = null;
+   this.subcircuit = null;
 }
 Run.prototype = new Statement();
 Run.prototype.factory = function() {
