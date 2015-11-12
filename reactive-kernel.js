@@ -47,9 +47,9 @@ Signal.prototype.reset = function() {
    this.set = false;
 }
 
-Signal.prototype.get_emitters = function() {
+Signal.prototype.will_change_in_react = function() {
    var emitters = this.machine.signals_emitters[this.name];
-   return emitters == undefined ? 0 : emitters;
+   return emitters == undefined ? false : emitters > 0;
 }
 
 Signal.prototype.decr_emitters = function() {
@@ -59,7 +59,7 @@ Signal.prototype.decr_emitters = function() {
 }
 
 Signal.prototype.is_set_ready = function(pre) {
-   return pre || this.set || this.get_emitters() <= 0;
+   return pre || this.set || !this.will_change_in_react();
 }
 
 Signal.prototype.get_set = function(pre) {
@@ -104,8 +104,8 @@ ValuedSignal.prototype = new Signal();
 
 ValuedSignal.prototype.is_value_ready = function(pre) {
    return (pre
-	   || (this.set && this.get_emitters() <= 0)
-	   || this.get_emitters() <= 0)
+	   || (this.set && !this.will_change_in_react)
+	   || this.will_change_in_react);
 }
 
 ValuedSignal.prototype.get_value = function(pre) {
