@@ -374,6 +374,10 @@ function ReactiveMachine(loc, machine_name) {
 
    /* number of emitters of a signal for the current reaction */
    this.signals_emitters = {};
+
+   /* abstract representation of the runtime machine. Usefull for
+      program composition */
+   this.ast_machine;
 }
 
 ReactiveMachine.prototype = new Circuit();

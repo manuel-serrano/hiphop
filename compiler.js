@@ -316,7 +316,7 @@ RunVisitor.prototype.deep_clone = function(obj, sigs_assoc) {
 
       for (var i in obj)
 	 if (!(obj[i] instanceof Function)) {
-	    if (i != "machine")
+	    if (i != "machine") /* avoid to get the machine of the callee */
 	       cpy[i] = _clone(obj[i]);
 	    else
 	       cpy[i] = machine
@@ -376,6 +376,8 @@ function compile(ast_machine) {
    ast_machine.accept_auto(new ExpressionVisitor(machine));
  //  ast_machine.accept(new PrintTreeVisitor(ast_machine));
    ast_machine.accept(new BuildCircuitVisitor(machine));
+
+   machine.ast_machine = ast_machine;
    return machine;
 }
 
