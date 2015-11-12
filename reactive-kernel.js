@@ -42,21 +42,6 @@ function Signal(name, machine=undefined) {
    this.machine = machine;
 }
 
-/* 2: the signal is set and its value is ready to read
-   1: the signal is set
-   0: the value is unkown
-   -1: the value is unset */
-
-// Signal.prototype.get_state = function() {
-//    if (this.get_emitters() == 0 && this.set)
-//       return 2;
-//    if (this.set)
-//       return 1;
-//    if (this.get_emitters() > 0)
-//       return 0;
-//    return -1;
-// }
-
 Signal.prototype.reset = function() {
    this.pre_set = this.set;
    this.set = false;
@@ -68,11 +53,13 @@ Signal.prototype.get_emitters = function() {
 }
 
 Signal.prototype.decr_emitters = function() {
+   if (this.machine.signals_emitters[this.name] == undefined)
+      this.machine.signals_emitters[this.name] = 1;
    this.machine.signals_emitters[this.name]--;
 }
 
 Signal.prototype.is_set_ready = function(pre) {
-   return pre || this.set || this.get_emitters() == 0;
+   return pre || this.set || this.get_emitters() <= 0;
 }
 
 Signal.prototype.get_set = function(pre) {
@@ -117,8 +104,8 @@ ValuedSignal.prototype = new Signal();
 
 ValuedSignal.prototype.is_value_ready = function(pre) {
    return (pre
-	   || (this.set && this.get_emitters() == 0)
-	   || this.get_emitters == 0)
+	   || (this.set && this.get_emitters() <= 0)
+	   || this.get_emitters() <= 0)
 }
 
 ValuedSignal.prototype.get_value = function(pre) {
@@ -504,7 +491,7 @@ Emit.prototype.run = function() {
    if (this.go.set) {
       if (this.expr instanceof Expression && signal instanceof ValuedSignal) {
 	 if (!this.expr.set_value_to_signal(signal)) {
-	    this.bloched = true
+	    this.bloched = true;
 	    return false;
 	 }
       } else {
@@ -663,13 +650,16 @@ Present.prototype.run = function() {
    var sig_name = this.signal_name;
    var branch = 0;
    var signal = this.machine.get_signal(sig_name);
-   var signal_set;
+   var signal_set = false;
 
    if (this.blocked == -1) {
-      if (this.go.set && !signal.is_set_ready(this.test_pre))
-	 return false;
+      if (this.go.set) {
+	 if (!signal.is_set_ready(this.test_pre))
+	    return false;
+	 else
+	    signal_set = signal.get_set(this.test_pre);
+      }
 
-      signal_set = signal.get_set(this.test_pre);
       this.go_in[0].set = this.go.set && signal_set;
       this.go_in[1].set = this.go.set && !signal_set;
 
