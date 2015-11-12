@@ -503,8 +503,10 @@ Emit.prototype.run = function() {
    this.k[0].set = this.go.set;
    if (this.go.set) {
       if (this.expr instanceof Expression && signal instanceof ValuedSignal) {
-	 if (!this.expr.set_value_to_signal(signal))
+	 if (!this.expr.set_value_to_signal(signal)) {
+	    this.bloched = true
 	    return false;
+	 }
       } else {
 	 signal.set_set();
       }
