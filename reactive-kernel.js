@@ -512,7 +512,8 @@ ReactiveMachine.prototype.save = function() {
       return ret;
    }
 
-   var state = { registers: [],
+   var state = { boot_reg: false,
+		 registers: [],
 		 values: [] };
 
    for (var s in this.input_signals)
@@ -528,12 +529,14 @@ ReactiveMachine.prototype.save = function() {
    }
    this.go_in.stmt_out.accept(new SaveRestoreRegisterVisitor(false,
 							     state.registers));
+   state.registers.reverse();
+   state.boot_reg = this.boot_reg;
    return state;
 }
 
 ReactiveMachine.prototype.restore = function(state) {
    function init_signal(sig, init) {
-      sig.set = init.pre_set;
+      sig.pre_set = init.pre_set;
 
       if (sig instanceof ValuedSignal) {
 	 sig.value = init.pre_value;
@@ -552,6 +555,7 @@ ReactiveMachine.prototype.restore = function(state) {
 	 init_signal(this.local_signals[s][l], state.values[s][l]);
    this.go_in.stmt_out.accept(new SaveRestoreRegisterVisitor(true,
 							     state.registers));
+   this.boot_reg = state.boot_reg;
 }
 
 /* Emit - Figure 11.4 page 116 */
