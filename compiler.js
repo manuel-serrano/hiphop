@@ -63,6 +63,51 @@ MapNameRunVisitor.prototype.visit = function(node) {
    }
 }
 
+/* This visitor must be called *after* CheckNamesVisitor : it checks if in
+   any Run sub-ast, a local signal / trap definition has a name already
+   somewhere in the caller circuit.
+   If yes, it change the name in the sub (callee) circuit.
+   In any cases, it add the defined name in the sub circuit on global
+   ast_machine names, in case that this name could be use on sub circuit
+   of others run statement */
+
+function RemoveNameConflictRunVisitor(ast_machine) {
+   this.locals = ast_machine.local_signals;
+   this.traps = ast_machine.trap_names;
+   this.switch_locals = {};
+   this.switch_traps = {};
+   this.prefix;
+}
+
+RemoveNameConflictRunVisitor.prototype.visit = function(node) {
+   var name;
+
+   if (node instanceof ast.Run) {
+      /* New prefix for conflicts local/trap name for each callee */
+      this.prefix = String(Math.random()).substring(2);
+   } else if (node instanceof ast.LocalSignal) {
+      name = node.signal_name;
+      if (this.locals[name] != undefined) {
+	 this.switch_locals[name] = this.prefix + "__" + name;
+	 node.signal_name = this.switch_locals[name];
+      }
+   } else if (node instanceof ast.Trap) {
+      name = node.trap_name;
+      if (this.traps[name] != undefined) {
+	 this.switch_traps[name] = this.prefix + "__" + name;
+	 node.trap_name = this.switch_traps[name];
+      }
+   } else if (node.signal_name != undefined) {
+      name = node.signal_name;
+      if (this.switch_locals[name] != undefined)
+	 node.signal_name = this.switch_locals[name];
+   } else if (node.trap_name != undefined) {
+      name = node.trap_name;
+      if (this.switch_traps[name] != undefined)
+	 node.trap_name = this.switch_traps[name];
+   }
+}
+
 function PrintTreeVisitor() {
    this.indent = "+-- ";
    this.INDENT_UNIT = "   ";
@@ -132,6 +177,8 @@ CheckNamesVisitor.prototype.declared_name_signal = function(name) {
 }
 
 CheckNamesVisitor.prototype.visit = function(node) {
+   if (node instanceof ast.Run)
+      return;
    if (node instanceof ast.LocalSignal) {
       if (this.declared_name(node.signal_name))
 	 already_used_name_error(node.signal_name, node.loc);
@@ -328,6 +375,7 @@ function compile(ast_machine) {
 
    ast_machine.accept(new BuildTreeVisitor(ast_machine));
    ast_machine.accept_auto(new CheckNamesVisitor(ast_machine));
+   ast_machine.accept_auto(new RemoveNameConflictRunVisitor(ast_machine));
    ast_machine.accept(new SetIncarnationLevelVisitor());
    ast_machine.accept(new SetExitReturnCodeVisitor());
    ast_machine.accept_auto(new SetLocalSignalsVisitor(machine));
