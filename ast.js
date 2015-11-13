@@ -230,18 +230,18 @@ Sequence.prototype.factory = function() {
 exports.Sequence = Sequence;
 
 
-/* run_machine, sigs_assoc must be checked before the call
-   of this constructor */
+/* sigs_assoc must be checked before the call of this constructor,
+   see xml-compiler */
 
-function Run(loc, run_machine, sigs_assoc) {
-   Statement.call(this, "RUN", loc);
-   this.run_machine = run_machine;
+function Run(loc, ast, sigs_assoc) {
+   Circuit.call(this, "RUN", loc, ast);
    this.sigs_assoc = sigs_assoc;
-   this.subcircuit = null;
 }
-Run.prototype = new Statement();
+Run.prototype = new Circuit();
 Run.prototype.factory = function() {
-   return this.subcircuits;
+   /* Run statement is invisible to runtime, it directly branch into
+      a clone of the subcircuit of the callee machine */
+   return this.subcircuit[0];
 }
 exports.Run = Run;
 

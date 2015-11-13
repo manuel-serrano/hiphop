@@ -272,7 +272,7 @@ function RUN(attrs) {
 	 fatal("Signal " + i + " not mapped.", format_loc(attrs));
 
    return new ast.Run(format_loc(attrs),
-		      run_machine,
+		      run_machine.go_in.stmt_out.get_ast_node(),
 		      sigs_assoc);
 }
 

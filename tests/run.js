@@ -2,6 +2,7 @@
 
 var rjs = require("../xml-compiler.js");
 var reactive = require("../reactive-kernel.js");
+var inspector = require("../inspector.js");
 require("../js2esterel.js");
 
 var sigT = new reactive.Signal("T");
