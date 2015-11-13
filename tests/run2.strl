@@ -1,0 +1,28 @@
+module m1:
+input T, W;
+output V, Z;
+       present T then
+       	       signal L in
+	       	      emit L;
+	       	      emit V
+	       end signal
+       end present
+||
+	present W then emit Z end
+end module
+
+module run22:
+input S, U;
+output A, B;
+signal L in
+       emit L;
+end signal;
+run m1 [ signal S / T,
+       	 	U / W,
+		A / V,
+		B / Z ];
+run m1 [ signal S / T,
+       	 	U / W,
+		A / V,
+		B / Z ];
+end module
