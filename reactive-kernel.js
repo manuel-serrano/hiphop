@@ -64,13 +64,17 @@ Signal.prototype.is_set_ready = function(pre) {
    return pre || this.set || !this.will_change_in_react();
 }
 
-Signal.prototype.get_set = function(pre) {
+Signal.prototype.get_set = function(pre=false) {
    if (pre)
       return this.pre_set;
 
    if (!this.is_set_ready(false))
       fatal_error("Causality error on Signal::set " + this.name);
    return this.set;
+}
+
+Signal.prototype.get_pre = function() {
+   return this.get_set(true)
 }
 
 Signal.prototype.set_set = function() {
@@ -110,7 +114,7 @@ ValuedSignal.prototype.is_value_ready = function(pre) {
 	   || this.will_change_in_react);
 }
 
-ValuedSignal.prototype.get_value = function(pre) {
+ValuedSignal.prototype.get_value = function(pre=false) {
    if (pre) {
       if (!this.is_pre_value_init)
 	 fatal_error("Signal " + this.name + " is not initialized when reading "
@@ -123,6 +127,10 @@ ValuedSignal.prototype.get_value = function(pre) {
    if (!this.is_value_ready(false))
       fatal_error("Causality error on ValuedSignal::value " + this.name);
    return this.value;
+}
+
+ValuedSignal.prototype.get_pre_value = function() {
+   return this.get_value(true);
 }
 
 ValuedSignal.prototype.set_value = function(value) {
@@ -475,6 +483,50 @@ ReactiveMachine.prototype.get_signal = function(name) {
    if (this.output_signals[name])
       return this.output_signals[name];
    fatal_error("Unkown signal " + name);
+}
+
+/* Return a JSON object of the internal state of the machine between two
+   reactions. This object can be reuse later (on new execution of the global
+   JS program), giving it the restore method */
+
+function SaveRestoreRegisterVisitor(restore, state_list) {
+   this.restore = restore
+   this.state_list = state_list;
+}
+
+SaveRestoreRegisterVisitor.prototype.visit = function(stmt) {
+   if (stmt instanceof Pause) {
+      if (this.restore)
+	 stmt.reg = this.state_list.pop()
+      else
+	 this.state_list.push(stmt.reg);
+   }
+}
+
+ReactiveMachine.prototype.save = function() {
+   function dump_signal(sig) {
+      var ret = {};
+      ret.pre_set = sig.get_pre();
+      if (sig instanceof ValuedSignal)
+	 ret.pre_value = sig.get_pre_value()
+      return ret;
+   }
+
+   var state = { registers: [],
+		 values: [] };
+
+   for (var s in this.input_signals)
+      state.values[s] = dump_signal(this.input_signals[s]);
+   for (var s in this.output_signals)
+      state.values[s] = dump_signal(this.output_signals[s]);
+   for (var s in this.local_signals)
+      state.values[s] = dump_signal(this.local_signals[s][0]);
+   this.go_in.stmt_out.accept(new SaveRestoreRegisterVisitor(false,
+							     state.registers));
+   return state;
+}
+
+ReactiveMachine.prototype.restore = function(previous_state) {
 }
 
 /* Emit - Figure 11.4 page 116 */
