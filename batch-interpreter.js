@@ -1,8 +1,13 @@
 "use hopscript"
 
+var eval_mode = false;
+
 function configure(prg, cmd) {
    if (cmd == "!reset") {
       prg.reset();
+      return false;
+   } else if (cmd == "!eval-begin") {
+      eval_mode = true;
       return false;
    }
 
@@ -27,13 +32,20 @@ function interpreter(prg) {
       var i_sc = -1;
       var cmd = "";
 
-      while((i_sc = raw.indexOf(";")) > -1) {
-	 cmd = raw.substr(0, i_sc );
-	 if (cmd[0] == "\n")
-	    cmd = cmd.substr(1, cmd.length);
-	 raw = raw.substr(i_sc + 1, raw.length);
-	 if(configure(prg, cmd))
-	    prg.react(prg.seq + 1);
+      if (eval_mode) {
+	 if (raw == "!eval-end")
+	    eval_mode = false;
+	 else
+	    eval(raw)
+      } else {
+	 while((i_sc = raw.indexOf(";")) > -1) {
+	    cmd = raw.substr(0, i_sc );
+	    if (cmd[0] == "\n")
+	       cmd = cmd.substr(1, cmd.length);
+	    raw = raw.substr(i_sc + 1, raw.length);
+	    if(configure(prg, cmd))
+	       prg.react(prg.seq + 1);
+	 }
       }
    });
 }
