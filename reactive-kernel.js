@@ -519,14 +519,39 @@ ReactiveMachine.prototype.save = function() {
       state.values[s] = dump_signal(this.input_signals[s]);
    for (var s in this.output_signals)
       state.values[s] = dump_signal(this.output_signals[s]);
-   for (var s in this.local_signals)
-      state.values[s] = dump_signal(this.local_signals[s][0]);
+   for (var s in this.local_signals) {
+      var local = [];
+
+      for (var l in this.local_signals[s])
+	 local[l] = dump_signal(this.local_signals[s][l]);
+      state.values[s] = local;
+   }
    this.go_in.stmt_out.accept(new SaveRestoreRegisterVisitor(false,
 							     state.registers));
    return state;
 }
 
-ReactiveMachine.prototype.restore = function(previous_state) {
+ReactiveMachine.prototype.restore = function(state) {
+   function init_signal(sig, init) {
+      sig.set = init.pre_set;
+
+      if (sig instanceof ValuedSignal) {
+	 sig.value = init.pre_value;
+	 sig.is_value_init = true;
+	 sig.pre_value = init.pre_value;
+	 sig.is_pre_value_init = true;
+      }
+   }
+
+   for (var s in this.input_signals)
+      init_signal(this.input_signals[s], state.values[s]);
+   for (var s in this.output_signals)
+      init_signal(this.output_signals[s], state.values[s]);
+   for (var s in this.local_signals)
+      for (var l in this.local_signals[s])
+	 init_signal(this.local_signals[s][l], state.values[s][l]);
+   this.go_in.stmt_out.accept(new SaveRestoreRegisterVisitor(true,
+							     state.registers));
 }
 
 /* Emit - Figure 11.4 page 116 */
