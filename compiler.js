@@ -69,7 +69,7 @@ MapNameRunVisitor.prototype.visit = function(node) {
    If yes, it change the name in the sub (callee) circuit.
    In any cases, it add the defined name in the sub circuit on global
    ast_machine names, in case that this name could be use on sub circuit
-   of others run statement */
+   of others run statement. */
 
 function RemoveNameConflictRunVisitor(ast_machine) {
    this.locals = ast_machine.local_signals;
@@ -77,6 +77,7 @@ function RemoveNameConflictRunVisitor(ast_machine) {
    this.switch_locals = {};
    this.switch_traps = {};
    this.prefix;
+   this.in_run = false;
 }
 
 RemoveNameConflictRunVisitor.prototype.visit = function(node) {
@@ -85,26 +86,43 @@ RemoveNameConflictRunVisitor.prototype.visit = function(node) {
    if (node instanceof ast.Run) {
       /* New prefix for conflicts local/trap name for each callee */
       this.prefix = String(Math.random()).substring(2);
-   } else if (node instanceof ast.LocalSignal) {
-      name = node.signal_name;
-      if (this.locals[name] != undefined) {
-	 this.switch_locals[name] = this.prefix + "__" + name;
-	 node.signal_name = this.switch_locals[name];
+
+      /* As the runtime dosen't know RUN statement, as as the callee machine
+	 is always a runtime machine, we can't have explicit nested run
+	 statement (so we don't have to keep a run-context) */
+      this.in_run = true;
+   }
+
+   if (this.in_run) {
+      if (node instanceof ast.LocalSignal) {
+	 name = node.signal_name;
+	 if (this.locals.indexOf(name) > -1) {
+	    this.switch_locals[name] = this.prefix + "__" + name;
+	    node.signal_name = this.switch_locals[name];
+	 }
+	 this.locals.push(this.switch_locals[name]);
+      } else if (node instanceof ast.Trap) {
+	 name = node.trap_name;
+	 if (this.traps.indexOf(name) > -1) {
+	    this.switch_traps[name] = this.prefix + "__" + name;
+	    node.trap_name = this.switch_traps[name];
+	 }
+	 this.traps.push(this.switch_traps[name]);
+      } else if (node.signal_name != undefined) {
+	 name = node.signal_name;
+	 if (this.switch_locals[name] != undefined)
+	    node.signal_name = this.switch_locals[name];
+      } else if (node.trap_name != undefined) {
+	 name = node.trap_name;
+	 if (this.switch_traps[name] != undefined)
+	    node.trap_name = this.switch_traps[name];
       }
-   } else if (node instanceof ast.Trap) {
-      name = node.trap_name;
-      if (this.traps[name] != undefined) {
-	 this.switch_traps[name] = this.prefix + "__" + name;
-	 node.trap_name = this.switch_traps[name];
-      }
-   } else if (node.signal_name != undefined) {
-      name = node.signal_name;
-      if (this.switch_locals[name] != undefined)
-	 node.signal_name = this.switch_locals[name];
-   } else if (node.trap_name != undefined) {
-      name = node.trap_name;
-      if (this.switch_traps[name] != undefined)
-	 node.trap_name = this.switch_traps[name];
+   }
+
+   if (node instanceof ast.Circuit) {
+      for (var i in node.subcircuit)
+	 node.subcircuit[i].accept(this);
+      this.in_run = false;
    }
 }
 
@@ -203,6 +221,10 @@ CheckNamesVisitor.prototype.visit = function(node) {
 	      || node instanceof ast.Present)
       if (!this.declared_name_signal(node.signal_name))
 	 unknown_name_error("signal::" + node.signal_name, node.loc);
+
+   if (node instanceof ast.Circuit)
+      for (var i in node.subcircuit)
+	 node.subcircuit[i].accept(this);
 }
 
 function SetIncarnationLevelVisitor() {
@@ -374,13 +396,13 @@ function compile(ast_machine) {
    }
 
    ast_machine.accept(new BuildTreeVisitor(ast_machine));
-   ast_machine.accept_auto(new CheckNamesVisitor(ast_machine));
-   ast_machine.accept_auto(new RemoveNameConflictRunVisitor(ast_machine));
+   ast_machine.accept(new CheckNamesVisitor(ast_machine));
+   ast_machine.accept(new RemoveNameConflictRunVisitor(ast_machine));
    ast_machine.accept(new SetIncarnationLevelVisitor());
    ast_machine.accept(new SetExitReturnCodeVisitor());
    ast_machine.accept_auto(new SetLocalSignalsVisitor(machine));
    ast_machine.accept_auto(new ExpressionVisitor(machine));
-//   ast_machine.accept(new PrintTreeVisitor(ast_machine));
+// ast_machine.accept(new PrintTreeVisitor(ast_machine));
    ast_machine.accept(new BuildCircuitVisitor(machine));
    return machine;
 }
