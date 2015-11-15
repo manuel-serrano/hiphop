@@ -34,7 +34,7 @@ function interpreter(prg) {
 
       while((i_sc = raw.indexOf(";")) > -1) {
 	 if (eval_mode) {
-	    if (raw == "!eval-end;\n")
+	    if (raw.substr(0, raw.indexOf(";")) == "!eval-end")
 	       eval_mode = false;
 	    else
 	       eval(raw)

@@ -1,5 +1,5 @@
 !eval-begin;
-var state = example.prg.save();
+state = example.prg.save();
 !eval-end;
 ;
 !eval-begin;
@@ -8,7 +8,7 @@ example.prg.restore(state);
 ;
 !eval-begin;
 example.prg.restore(state);
-!eval-end
+!eval-end;
 ;
 !eval-begin;
 example.prg.restore(state);
