@@ -32,13 +32,14 @@ function interpreter(prg) {
       var i_sc = -1;
       var cmd = "";
 
-      if (eval_mode) {
-	 if (raw == "!eval-end")
-	    eval_mode = false;
-	 else
-	    eval(raw)
-      } else {
-	 while((i_sc = raw.indexOf(";")) > -1) {
+      while((i_sc = raw.indexOf(";")) > -1) {
+	 if (eval_mode) {
+	    if (raw == "!eval-end;\n")
+	       eval_mode = false;
+	    else
+	       eval(raw)
+	    raw = "";
+	 } else {
 	    cmd = raw.substr(0, i_sc );
 	    if (cmd[0] == "\n")
 	       cmd = cmd.substr(1, cmd.length);
