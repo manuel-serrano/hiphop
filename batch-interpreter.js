@@ -33,17 +33,16 @@ function interpreter(prg) {
       var cmd = "";
 
       while((i_sc = raw.indexOf(";")) > -1) {
+	 cmd = raw.substr(0, i_sc );
+	 if (cmd[0] == "\n")
+	    cmd = cmd.substr(1, cmd.length);
+	 raw = raw.substr(i_sc + 1, raw.length);
 	 if (eval_mode) {
-	    if (raw.substr(0, raw.indexOf(";")) == "!eval-end")
+	    if (cmd == "!eval-end")
 	       eval_mode = false;
 	    else
-	       eval(raw)
-	    raw = "";
+	       eval(cmd)
 	 } else {
-	    cmd = raw.substr(0, i_sc );
-	    if (cmd[0] == "\n")
-	       cmd = cmd.substr(1, cmd.length);
-	    raw = raw.substr(i_sc + 1, raw.length);
 	    if(configure(prg, cmd))
 	       prg.react(prg.seq + 1);
 	 }
