@@ -1,13 +1,11 @@
 "use hopscript"
 
-var rjs = require("../xml-compiler.js");
-var rkernel = require("../reactive-kernel.js");
-var inspector = require("../inspector.js");
+var rjs = require("../lib/reactive-js.js");
 
-var sigI = new rkernel.Signal("I");
-var sigJ = new rkernel.Signal("J");
-var sigK = new rkernel.Signal("K");
-var sigV = new rkernel.Signal("V");
+var sigI = new rjs.Signal("I");
+var sigJ = new rjs.Signal("J");
+var sigK = new rjs.Signal("K");
+var sigV = new rjs.Signal("V");
 
 var prg = <rjs.reactivemachine name="abortpresent">
   <rjs.inputsignal ref=${sigI}/>

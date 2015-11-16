@@ -1,9 +1,7 @@
-var rjs = require("../xml-compiler.js");
-var rk = require("../reactive-kernel.js");
-var batch = require("../batch-interpreter.js");
+var rjs = require("../lib/reactive-js.js");
 
-var sigI = new rk.Signal("I");
-var sigO = new rk.Signal("O");
+var sigI = new rjs.Signal("I");
+var sigO = new rjs.Signal("O");
 
 var prg = <rjs.reactivemachine name="abortpar">
   <rjs.inputsignal ref=${sigI}/>

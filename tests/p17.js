@@ -1,7 +1,8 @@
-var rjs = require("../xml-compiler.js");
-var rk = require("../reactive-kernel.js");
+"use hopscript"
 
-var sigO = new rk.Signal("O");
+var rjs = require("../lib/reactive-js.js");
+
+var sigO = new rjs.Signal("O");
 
 var prg = <rjs.reactivemachine name="P17">
   <rjs.outputsignal ref=${sigO}/>

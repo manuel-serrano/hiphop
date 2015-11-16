@@ -1,11 +1,11 @@
-var rjs = require("../xml-compiler.js");
-var reactive = require("../reactive-kernel.js");
-require("../js2esterel.js");
+"use hopscript"
 
-var sigA = new reactive.Signal("A");
-var sigB = new reactive.Signal("B");
-var sigC = new reactive.Signal("C");
-var sigD = new reactive.Signal("D");
+var rjs = require("../lib/reactive-js.js");
+
+var sigA = new rjs.Signal("A");
+var sigB = new rjs.Signal("B");
+var sigC = new rjs.Signal("C");
+var sigD = new rjs.Signal("D");
 
 var prg = <rjs.reactivemachine name="trapnested1">
   <rjs.outputsignal ref=${sigA}/>

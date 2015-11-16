@@ -1,11 +1,9 @@
-"use strict"
+"use hopscript"
 
-var reactive = require("../reactive-kernel.js");
-var inspector = require("../inspector.js");
-var rjs = require("../xml-compiler.js");
+var rjs = require("../lib/reactive-js.js");
 
-var sigT = new reactive.Signal("T");
-var sigV = new reactive.Signal("V");
+var sigT = new rjs.Signal("T");
+var sigV = new rjs.Signal("V");
 
 var prg = <rjs.reactivemachine name="example2">
   <rjs.outputsignal ref=${sigT}/>

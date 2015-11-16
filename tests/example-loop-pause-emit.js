@@ -1,8 +1,9 @@
-var reactive = require("../reactive-kernel.js");
-var rjs = require("../xml-compiler.js");
+"use hopscript"
 
-var sigI = new reactive.Signal("I");
-var sigS = new reactive.Signal("S");
+var rjs = require("../lib/reactive-js.js");
+
+var sigI = new rjs.Signal("I");
+var sigS = new rjs.Signal("S");
 
 var machine = <rjs.ReactiveMachine name="looppauseemit">
   <rjs.inputsignal ref=${sigI}/>

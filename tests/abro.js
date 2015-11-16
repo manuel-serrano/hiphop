@@ -1,14 +1,11 @@
 "use hopscript"
 
-var rjs = require("../xml-compiler.js");
-var rkernel = require("../reactive-kernel.js");
-var inspector = require("../inspector.js");
-var batch = require("../batch-interpreter.js");
+var rjs = require("../lib/reactive-js.js");
 
-var sigA = new rkernel.Signal("A");
-var sigB = new rkernel.Signal("B");
-var sigR = new rkernel.Signal("R");
-var sigO = new rkernel.Signal("O");
+var sigA = new rjs.Signal("A");
+var sigB = new rjs.Signal("B");
+var sigR = new rjs.Signal("R");
+var sigO = new rjs.Signal("O");
 
 var prg = <rjs.reactivemachine name="ABRO">
   <rjs.inputsignal ref=${sigR}/>

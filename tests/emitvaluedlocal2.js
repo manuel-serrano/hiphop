@@ -1,9 +1,8 @@
 "use hopscript"
 
-var rjs = require("../xml-compiler.js");
-var rk = require("../reactive-kernel.js");
+var rjs = require("../lib/reactive-js.js");
 
-var sigO = new rk.ValuedSignal("O", "number");
+var sigO = new rjs.ValuedSignal("O", "number");
 
 var subexpr1 = <rjs.sigexpr get_pre get_value signal_name="S" />;
 var expr1 = <rjs.expr func=${function(arg1, arg2) { return arg1 + arg2 }}

@@ -1,12 +1,11 @@
-var rjs = require("../xml-compiler.js");
-var rk = require("../reactive-kernel.js");
-var batch = require("../batch-interpreter.js");
-require("../js2esterel.js");
+"use hopscript"
 
-var S1_and_S2 = new rk.ValuedSignal("S1_and_S2", "number");
-var S1_and_not_S2 = new rk.ValuedSignal("S1_and_not_S2", "number");
-var not_S1_and_S2 = new rk.ValuedSignal("not_S1_and_S2", "number");
-var not_S1_and_not_S2 = new rk.ValuedSignal("not_S1_and_not_S2", "number");
+var rjs = require("../lib/reactive-js.js");
+
+var S1_and_S2 = new rjs.ValuedSignal("S1_and_S2", "number");
+var S1_and_not_S2 = new rjs.ValuedSignal("S1_and_not_S2", "number");
+var not_S1_and_S2 = new rjs.ValuedSignal("not_S1_and_S2", "number");
+var not_S1_and_not_S2 = new rjs.ValuedSignal("not_S1_and_not_S2", "number");
 
 var vals1 = <rjs.sigexpr get_value signal_name="S1"/>;
 var vals2 = <rjs.sigexpr get_value signal_name="S2"/>;

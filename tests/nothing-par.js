@@ -1,4 +1,6 @@
-var rjs = require("../xml-compiler.js");
+"use hopscript"
+
+var rjs = require("../lib/reactive-js.js");
 
 var prg = <rjs.reactivemachine name="nothingpar">
   <rjs.parallel>

@@ -1,8 +1,8 @@
-var reactive = require("../reactive-kernel.js");
-var rjs = require("../xml-compiler.js");
-var inspector = require("../inspector.js");
+"use hopscript"
 
-var sigJ = new reactive.ValuedSignal("J", "number");
+var rjs = require("../lib/reactive-js.js");
+
+var sigJ = new rjs.ValuedSignal("J", "number");
 
 var machine = <rjs.ReactiveMachine name="parvalued2">
   <rjs.outputsignal ref=${sigJ}/>

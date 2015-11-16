@@ -1,9 +1,8 @@
 "use hopscript"
 
-var rjs = require("../xml-compiler.js");
-var rk = require("../reactive-kernel.js");
+var rjs = require("../lib/reactive-js.js");
 
-var sigO = new rk.ValuedSignal("O", "number", 5, "+");
+var sigO = new rjs.ValuedSignal("O", "number", 5, "+");
 
 var prg = <rjs.ReactiveMachine name="value1">
   <rjs.outputsignal ref=${sigO}/>

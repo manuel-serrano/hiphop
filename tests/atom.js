@@ -1,6 +1,6 @@
 "use strict"
 
-var rjs = require("../xml-compiler.js");
+var rjs = require("../lib/reactive-js.js");
 
 var func = function() {
    console.log("atom works!");

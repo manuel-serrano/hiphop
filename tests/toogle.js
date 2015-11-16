@@ -1,13 +1,12 @@
 "use hopscript"
 
-var rjs = require("../xml-compiler.js");
-var rk = require("../reactive-kernel.js");
+var rjs = require("../lib/reactive-js.js");
 
-var seq = new rk.ValuedSignal("SEQ", "number", 1, "+");
-var state1 = new rk.ValuedSignal("STATE1", "boolean", false, "or");
-var state2 = new rk.ValuedSignal("STATE2", "boolean", false, "and");
-var s = new rk.Signal("S");
-var toogle = new rk.ValuedSignal("TOOGLE", "boolean", undefined, undefined);
+var seq = new rjs.ValuedSignal("SEQ", "number", 1, "+");
+var state1 = new rjs.ValuedSignal("STATE1", "boolean", false, "or");
+var state2 = new rjs.ValuedSignal("STATE2", "boolean", false, "and");
+var s = new rjs.Signal("S");
+var toogle = new rjs.ValuedSignal("TOOGLE", "boolean", undefined, undefined);
 
 var pre_seq = <rjs.sigexpr get_value get_pre signal_name="SEQ"/>;
 var expr1 = <rjs.expr func=${function(arg1, arg2) { return arg1 + arg2 }}

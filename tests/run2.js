@@ -1,14 +1,11 @@
 "use hopscript"
 
-var rjs = require("../xml-compiler.js");
-var reactive = require("../reactive-kernel.js");
-var inspector = require("../inspector.js");
-require("../js2esterel.js");
+var rjs = require("../lib/reactive-js.js");
 
-var sigT = new reactive.Signal("T");
-var sigW = new reactive.Signal("W");
-var sigV = new reactive.Signal("V");
-var sigZ = new reactive.Signal("Z");
+var sigT = new rjs.Signal("T");
+var sigW = new rjs.Signal("W");
+var sigV = new rjs.Signal("V");
+var sigZ = new rjs.Signal("Z");
 
 var m1 = <rjs.reactivemachine name="m1">
   <rjs.inputsignal ref=${sigT}/>
@@ -30,10 +27,10 @@ var m1 = <rjs.reactivemachine name="m1">
   </rjs.parallel>
 </rjs.reactivemachine>;
 
-var sigS = new reactive.Signal("S");
-var sigU = new reactive.Signal("U");
-var sigA = new reactive.Signal("A");
-var sigB = new reactive.Signal("B");
+var sigS = new rjs.Signal("S");
+var sigU = new rjs.Signal("U");
+var sigA = new rjs.Signal("A");
+var sigB = new rjs.Signal("B");
 
 var m2 = <rjs.reactivemachine name="run22">
   <rjs.inputsignal ref=${sigS}/>

@@ -1,12 +1,11 @@
-var rjs = require("../xml-compiler.js");
-var rk = require("../reactive-kernel.js");
-var batch = require("../batch-interpreter.js");
-require("../js2esterel.js");
+"use hopscript"
 
-var S1_and_S2 = new rk.Signal("S1_and_S2");
-var S1_and_not_S2 = new rk.Signal("S1_and_not_S2");
-var not_S1_and_S2 = new rk.Signal("not_S1_and_S2");
-var not_S1_and_not_S2 = new rk.Signal("not_S1_and_not_S2");
+var rjs = require("../lib/reactive-js.js");
+
+var S1_and_S2 = new rjs.Signal("S1_and_S2");
+var S1_and_not_S2 = new rjs.Signal("S1_and_not_S2");
+var not_S1_and_S2 = new rjs.Signal("not_S1_and_S2");
+var not_S1_and_not_S2 = new rjs.Signal("not_S1_and_not_S2");
 
 var prg = <rjs.reactivemachine name="P18">
   <rjs.outputsignal ref=${S1_and_S2}/>
