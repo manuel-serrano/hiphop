@@ -6,7 +6,7 @@ var sigA = new rjs.Signal("A");
 var sigB = new rjs.Signal("B");
 var sigC = new rjs.Signal("C");
 
-var prg = <rjs.reactivemachine name="trapsimple">
+var prg = <rjs.reactivemachine debug name="trapsimple">
   <rjs.outputsignal ref=${sigA}/>
   <rjs.outputsignal ref=${sigB}/>
   <rjs.outputsignal ref=${sigC}/>

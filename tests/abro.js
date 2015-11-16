@@ -7,7 +7,7 @@ var sigB = new rjs.Signal("B");
 var sigR = new rjs.Signal("R");
 var sigO = new rjs.Signal("O");
 
-var prg = <rjs.reactivemachine name="ABRO">
+var prg = <rjs.reactivemachine debug name="ABRO">
   <rjs.inputsignal ref=${sigR}/>
   <rjs.inputsignal ref=${sigA}/>
   <rjs.inputsignal ref=${sigB}/>

@@ -4,7 +4,7 @@ var rjs = require("../lib/reactive-js.js");
 
 var sigO = new rjs.ValuedSignal("O", "number", 5, "+");
 
-var prg = <rjs.ReactiveMachine name="value1">
+var prg = <rjs.ReactiveMachine debug name="value1">
   <rjs.outputsignal ref=${sigO}/>
   <rjs.loop>
     <rjs.sequence>

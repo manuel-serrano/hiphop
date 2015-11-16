@@ -11,7 +11,7 @@ var sigSval = <rjs.sigexpr get_value signal_name="S"/>;
 
 var preo = <rjs.sigexpr get_value get_pre signal_name="O"/>;
 
-var prg = <rjs.ReactiveMachine name="emitvaluedlocal1">
+var prg = <rjs.ReactiveMachine debug name="emitvaluedlocal1">
   <rjs.outputsignal ref=${sigO}/>
   <rjs.loop>
     <rjs.sequence>

@@ -6,7 +6,7 @@ var sigI = new rjs.ValuedSignal("I", "number", undefined, undefined);
 var sigO = new rjs.ValuedSignal("O", "number", 5, "+");
 var sigU = new rjs.ValuedSignal("U", "number", undefined, undefined);
 
-var prg = <rjs.ReactiveMachine name="valuepre1">
+var prg = <rjs.ReactiveMachine debug name="valuepre1">
   <rjs.outputsignal ref=${sigI}/>
   <rjs.outputsignal ref=${sigO}/>
   <rjs.outputsignal ref=${sigU}/>

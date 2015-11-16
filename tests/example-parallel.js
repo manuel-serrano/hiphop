@@ -4,7 +4,7 @@ var rjs = require("../lib/reactive-js.js");
 
 var sigJ = new rjs.Signal("J");
 
-var machine = <rjs.reactivemachine name="parallel">
+var machine = <rjs.reactivemachine debug name="parallel">
   <rjs.outputsignal ref=${sigJ}/>
   <rjs.localsignal signal_name="I">
     <rjs.parallel>

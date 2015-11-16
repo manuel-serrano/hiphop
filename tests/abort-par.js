@@ -3,7 +3,7 @@ var rjs = require("../lib/reactive-js.js");
 var sigI = new rjs.Signal("I");
 var sigO = new rjs.Signal("O");
 
-var prg = <rjs.reactivemachine name="abortpar">
+var prg = <rjs.reactivemachine debug name="abortpar">
   <rjs.inputsignal ref=${sigI}/>
   <rjs.outputsignal ref=${sigO}/>
   <rjs.localsignal signal_name="L">

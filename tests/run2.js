@@ -7,7 +7,7 @@ var sigW = new rjs.Signal("W");
 var sigV = new rjs.Signal("V");
 var sigZ = new rjs.Signal("Z");
 
-var m1 = <rjs.reactivemachine name="m1">
+var m1 = <rjs.reactivemachine debug name="m1">
   <rjs.inputsignal ref=${sigT}/>
   <rjs.inputsignal ref=${sigW}/>
   <rjs.outputsignal ref=${sigV}/>
@@ -32,7 +32,7 @@ var sigU = new rjs.Signal("U");
 var sigA = new rjs.Signal("A");
 var sigB = new rjs.Signal("B");
 
-var m2 = <rjs.reactivemachine name="run22">
+var m2 = <rjs.reactivemachine debug name="run22">
   <rjs.inputsignal ref=${sigS}/>
   <rjs.inputsignal ref=${sigU}/>
   <rjs.outputsignal ref=${sigA}/>

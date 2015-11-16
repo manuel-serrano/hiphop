@@ -9,7 +9,7 @@ var expr1 = <rjs.expr func=${function(arg1, arg2) { return arg1 + arg2 }}
 		      exprs=${[subexpr1, 1]} />;
 var expr2 = <rjs.sigexpr get_value signal_name="S"/>;
 
-var prg = <rjs.ReactiveMachine name="emitvaluedlocal2">
+var prg = <rjs.ReactiveMachine debug name="emitvaluedlocal2">
   <rjs.outputsignal ref=${sigO}/>
   <rjs.loop>
     <rjs.sequence>

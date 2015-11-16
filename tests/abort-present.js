@@ -7,7 +7,7 @@ var sigJ = new rjs.Signal("J");
 var sigK = new rjs.Signal("K");
 var sigV = new rjs.Signal("V");
 
-var prg = <rjs.reactivemachine name="abortpresent">
+var prg = <rjs.reactivemachine debug name="abortpresent">
   <rjs.inputsignal ref=${sigI}/>
   <rjs.outputsignal ref=${sigJ}/>
   <rjs.outputsignal ref=${sigK}/>

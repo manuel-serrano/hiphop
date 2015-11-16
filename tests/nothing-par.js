@@ -2,7 +2,7 @@
 
 var rjs = require("../lib/reactive-js.js");
 
-var prg = <rjs.reactivemachine name="nothingpar">
+var prg = <rjs.reactivemachine debug name="nothingpar">
   <rjs.parallel>
     <rjs.sequence>
       <rjs.nothing/>

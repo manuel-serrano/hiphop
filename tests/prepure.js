@@ -5,7 +5,7 @@ var rjs = require("../lib/reactive-js.js");
 var o1 = new rjs.Signal("O1");
 var o2 = new rjs.Signal("O2");
 
-var prg = <rjs.ReactiveMachine name="prepure">
+var prg = <rjs.ReactiveMachine debug name="prepure">
   <rjs.outputsignal ref=${o1}/>
   <rjs.outputsignal ref=${o2}/>
   <rjs.loop>

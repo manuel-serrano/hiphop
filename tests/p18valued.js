@@ -14,7 +14,7 @@ var valpres2 = <rjs.sigexpr get_value get_pre signal_name="S2"/>;
 var sums1s2 = <rjs.expr func=${function(arg1, arg2) { return arg1 + arg2 }}
 			exprs=${[vals1, vals2]}/>;
 
-var prg = <rjs.reactivemachine name="P18valued">
+var prg = <rjs.reactivemachine debug name="P18valued">
   <rjs.outputsignal ref=${S1_and_S2}/>
   <rjs.outputsignal ref=${S1_and_not_S2}/>
   <rjs.outputsignal ref=${not_S1_and_S2}/>

@@ -6,7 +6,7 @@ var sigA = new rjs.Signal("A");
 var sigT = new rjs.Signal("T");
 var sigV = new rjs.Signal("V");
 
-var prg = <rjs.reactivemachine name="example4">
+var prg = <rjs.reactivemachine debug name="example4">
   <rjs.inputsignal ref=${sigA}/>
   <rjs.outputsignal ref=${sigT}/>
   <rjs.outputsignal ref=${sigV}/>

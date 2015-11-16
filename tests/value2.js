@@ -17,7 +17,7 @@ var expr2 = <rjs.expr func=${plus} exprs=${[subexpr2, 7]}/>;
 var subexpr3 = <rjs.sigexpr get_value get_pre signal_name="O"/>;
 var expr3 = <rjs.expr func=${minus} exprs=${[subexpr3, 1]}/>
 
-var prg = <rjs.ReactiveMachine name="value2">
+var prg = <rjs.ReactiveMachine debug name="value2">
   <rjs.outputsignal ref=${sigI}/>
   <rjs.outputsignal ref=${sigO}/>
   <rjs.outputsignal ref=${sigU}/>

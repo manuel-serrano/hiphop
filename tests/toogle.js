@@ -12,7 +12,7 @@ var pre_seq = <rjs.sigexpr get_value get_pre signal_name="SEQ"/>;
 var expr1 = <rjs.expr func=${function(arg1, arg2) { return arg1 + arg2 }}
 		      exprs=${[pre_seq, 1]}/>;
 
-var prg = <rjs.reactivemachine name="toogle">
+var prg = <rjs.reactivemachine debug name="toogle">
   <rjs.outputsignal ref=${seq}/>
   <rjs.outputsignal ref=${state1}/>
   <rjs.outputsignal ref=${state2}/>

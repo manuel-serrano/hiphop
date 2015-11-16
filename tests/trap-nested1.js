@@ -7,7 +7,7 @@ var sigB = new rjs.Signal("B");
 var sigC = new rjs.Signal("C");
 var sigD = new rjs.Signal("D");
 
-var prg = <rjs.reactivemachine name="trapnested1">
+var prg = <rjs.reactivemachine debug name="trapnested1">
   <rjs.outputsignal ref=${sigA}/>
   <rjs.outputsignal ref=${sigB}/>
   <rjs.outputsignal ref=${sigC}/>

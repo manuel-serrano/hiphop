@@ -7,7 +7,7 @@ var S1_and_not_S2 = new rjs.Signal("S1_and_not_S2");
 var not_S1_and_S2 = new rjs.Signal("not_S1_and_S2");
 var not_S1_and_not_S2 = new rjs.Signal("not_S1_and_not_S2");
 
-var prg = <rjs.reactivemachine name="trappar3">
+var prg = <rjs.reactivemachine debug name="trappar3">
   <rjs.outputsignal ref=${S1_and_S2}/>
   <rjs.outputsignal ref=${S1_and_not_S2}/>
   <rjs.outputsignal ref=${not_S1_and_S2}/>
