@@ -1,0 +1,24 @@
+toogle> ;
+--- Output: SEQ(2) STATE1(true) STATE2(false) S TOOGLE(false)
+toogle> ;
+--- Output: SEQ(3) STATE1(true) STATE2(false) TOOGLE(true)
+toogle> ;
+--- Output: SEQ(4) STATE1(true) STATE2(false) S TOOGLE(false)
+toogle> ;
+--- Output: SEQ(2) STATE1(true) STATE2(false) S TOOGLE(false)
+toogle> ;
+--- Output: SEQ(3) STATE1(true) STATE2(false) TOOGLE(true)
+toogle> ;
+--- Output: SEQ(2) STATE1(true) STATE2(false) S TOOGLE(false)
+toogle> ;
+--- Output: SEQ(3) STATE1(true) STATE2(false) TOOGLE(true)
+toogle> ;
+--- Output: SEQ(3) STATE1(true) STATE2(false) TOOGLE(true)
+toogle> ;
+--- Output: SEQ(4) STATE1(true) STATE2(false) S TOOGLE(false)
+toogle> ;
+--- Output: SEQ(4) STATE1(true) STATE2(false) S TOOGLE(false)
+toogle> ;
+--- Output: SEQ(5) STATE1(true) STATE2(false) TOOGLE(true)
+toogle> ;
+--- Output: SEQ(2) STATE1(true) STATE2(false) S TOOGLE(false)

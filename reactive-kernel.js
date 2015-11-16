@@ -504,28 +504,32 @@ SaveRestoreRegisterVisitor.prototype.visit = function(stmt) {
 }
 
 ReactiveMachine.prototype.save = function() {
-   function dump_signal(sig) {
+   function save_signal(sig) {
       var ret = {};
-      ret.pre_set = sig.get_pre();
-      if (sig instanceof ValuedSignal)
-	 ret.pre_value = sig.get_pre_value()
+
+      ret.pre_set = sig.pre_set;
+      if (sig instanceof ValuedSignal) {
+	 ret.valued = true;
+	 ret.value = sig.value;
+	 ret.is_value_init = sig.is_value_init;
+	 ret.pre_value = sig.pre_value;
+	 ret.is_pre_value_init = sig.is_pre_value_init;
+      }
       return ret;
    }
 
    var state = { boot_reg: false,
 		 registers: [],
-		 values: [] };
+		 signals: [] };
 
    for (var s in this.input_signals)
-      state.values[s] = dump_signal(this.input_signals[s]);
+      state.signals[s] = save_signal(this.input_signals[s]);
    for (var s in this.output_signals)
-      state.values[s] = dump_signal(this.output_signals[s]);
+      state.signals[s] = save_signal(this.output_signals[s]);
    for (var s in this.local_signals) {
-      var local = [];
-
+      state.signals[s] = [];
       for (var l in this.local_signals[s])
-	 local[l] = dump_signal(this.local_signals[s][l]);
-      state.values[s] = local;
+	 state.signals[s][l] = save_signal(this.local_signals[s][l]);
    }
    this.go_in.stmt_out.accept(new SaveRestoreRegisterVisitor(false,
 							     state.registers));
@@ -535,24 +539,23 @@ ReactiveMachine.prototype.save = function() {
 }
 
 ReactiveMachine.prototype.restore = function(state) {
-   function init_signal(sig, init) {
+   function restore_signal(sig, init) {
       sig.pre_set = init.pre_set;
-
-      if (sig instanceof ValuedSignal) {
+      if (init.valued) {
 	 sig.value = init.pre_value;
-	 sig.is_value_init = true;
+	 sig.is_value_init = init.is_value_init;
 	 sig.pre_value = init.pre_value;
-	 sig.is_pre_value_init = true;
+	 sig.is_pre_value_init = init.is_pre_value_init;
       }
    }
 
    for (var s in this.input_signals)
-      init_signal(this.input_signals[s], state.values[s]);
+      restore_signal(this.input_signals[s], state.signals[s]);
    for (var s in this.output_signals)
-      init_signal(this.output_signals[s], state.values[s]);
+      restore_signal(this.output_signals[s], state.signals[s]);
    for (var s in this.local_signals)
       for (var l in this.local_signals[s])
-	 init_signal(this.local_signals[s][l], state.values[s][l]);
+	 restore_signal(this.local_signals[s][l], state.signals[s][l]);
    this.go_in.stmt_out.accept(new SaveRestoreRegisterVisitor(true,
 							     state.registers));
    this.boot_reg = state.boot_reg;
