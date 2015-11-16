@@ -57,7 +57,7 @@ run_js2esterel_test() {
 
     cat <<EOF > $js2esterel
 "use hopscript"
-var js2esterel = require("$dir/lib/js2esterel.js");
+var js2esterel = require("$dir/../lib/js2esterel.js");
 var example = require("$dir/$file.js");
 console.log(example.prg.esterel_code());
 EOF

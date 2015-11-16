@@ -1,6 +1,6 @@
 "use hopscript"
 
-var rjs = require("../xml-compiler.js");
+var rjs = require("../lib/reactive-js.js");
 
 var sigA = new rjs.Signal("A");
 var sigB = new rjs.Signal("B");
