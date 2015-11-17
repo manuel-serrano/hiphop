@@ -7,11 +7,12 @@
 (define esterel-lalr-grammar
    (lalr-grammar
 
-      (identifier input output signal colon (left: semi-colon parallel
-      logical-or logical-and plus mult) in comma present then else end
-      nothing emit halt suspend sustain await abort left-par
-      left-square-bracket right-square-bracket right-par pause exit
-      loop module conbine with init)
+      (identifier input-kwd output-kwd signal-kwd colon (left:
+      semi-colon parallel-kwd logical-or logical-and plus mult) in-kwd
+      comma present-kwd then-kwd else-kwd end-kwd nothing-kwd emit-kwd
+      halt-kwd suspend-kwd sustain-kwd await-kwd abort-kwd left-par
+      left-square-bracket right-square-bracket right-par pause
+      exit-kwd loop-kwd module-kwd conbine-kwd with-kwd init-kwd)
 
       ;; Modules decarations
       (module-decl
@@ -37,6 +38,28 @@
 	 ((relation-decls))
 	 ((output-decls)))
 
+      ;; Signal declarations
+      (interface-signal-decls
+	 ((input-kwd signal-decl-list semi-colon))
+	 ((output-kwd signal-decl-list semi-colon))
+	 ((inputoutput-kwd signal-decl-list semi-colon)))
+      (signal-decl-list
+	 ((signal-decl))
+	 ((signal-decl-list comma signal-decl)))
+      (signal-decl
+	 ((identifier))
+	 ((indentifier colon channel-type))
+	 ((indentifier init-kwd expression colon channel-type)))
+      (channel-type
+	 ((identifier))
+	 ((combine-kwd identifier with-kwd indentifier))
+	 ((combine-kwd identifier with-kwd predefined-combine-function)))
+      (predefined-combine-function
+	 ((plus))
+	 ((mult))
+	 ((logical-or))
+	 ((logical-and)))
+
       ;; Statements declarations
       (statement
 	 ((parallel))
@@ -54,7 +77,7 @@
 	 ((atomic-statement semi-colon atomic-statement))
 	 ((sequence-without-terminator semi-colon atomic-statement)))
 
-      ;; Atomic statements declarations
+      ;; Atomic statements
       (atomic-statement
 	 ((nothing-kwd))
 	 ((pause-kwd))
@@ -80,28 +103,21 @@
 	 ((run-module))
 	 ((left-square-bracket statement right-square-bracket)))
 
-      ;; Signal declarations
-      (interface-signal-decls
-	 ((input-kwd signal-decl-list semi-colon))
-	 ((output-kwd signal-decl-list semi-colon))
-	 ((inputoutput-kwd signal-decl-list semi-colon)))
-      (signal-decl-list
-	 ((signal-decl))
-	 ((signal-decl-list comma signal-decl)))
-      (signal-decl
-	 ((identifier))
-	 ((indentifier colon channel-type))
-	 ((indentifier init-kwd expression colon channel-type)))
-      (channel-type
-	 ((identifier))
-	 ((combine-kwd identifier with-kwd indentifier))
-	 ((combine-kwd identifier with-kwd predefined-combine-function)))
-      (predefined-combine-function
-	 ((plus))
-	 ((mult))
-	 ((logical-or))
-	 ((logical-and)))
+      ;; Signal emission
+      (emit
+	 ((emit-kwd identifier))
+	 ((emit-kwd identifier left-par expression right-par)))
 
+      (sustain
+	 ((sustain-kwd identifier))
+	 ((sustain-kwd identifier left-par expression right-par)))
+
+      ;; Assignment anf procedure call
+      (assignment
+	 ((identifier init-kwd expression)))
+      (procedure-call
+	 ((call-kwd identifier left-par right-par left-par right-par))
+	 ((call-kwd identifier left-par identifier-list right-par))
 
       ;; vieux trucs à virer
       (local-signal-decl
