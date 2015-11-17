@@ -11,8 +11,9 @@
       semi-colon parallel-kwd logical-or logical-and plus mult) in-kwd
       comma present-kwd then-kwd else-kwd end-kwd nothing-kwd emit-kwd
       halt-kwd suspend-kwd sustain-kwd await-kwd abort-kwd left-par
-      left-square-bracket right-square-bracket right-par pause
-      exit-kwd loop-kwd module-kwd conbine-kwd with-kwd init-kwd)
+      left-square-bracket right-square-bracket right-par pause-kwd
+      exit-kwd loop-kwd module-kwd conbine-kwd with-kwd init-kwd
+      function-kwd procedure-kwd)
 
       ;; Modules decarations
       (module-decl
@@ -37,6 +38,29 @@
 	 ((sensor-decls))
 	 ((relation-decls))
 	 ((output-decls)))
+
+      ;; Functions declarations
+      (function-decls
+	 ((function-kwd function-decl-list semi-colon)))
+      (function-decl-list
+	 ((function-decl))
+	 ((function-decl-list comma function-decl)))
+      (function-decl
+	 ((identifier left-par identifier-list right-par)) colon identifier)
+      (identifier-list
+	 (())
+	 ((identifier))
+	 ((identifier-list comma identifier)))
+
+      ;; Procedure declarations
+      (procedure-decls
+	 ((procedure-kwd procedure-decl-list)))
+      (procedure-decl-list
+	 ((procedure-decl))
+	 ((procedure-decl-list conna procedure-decl)))
+      (procedure-decl
+	 ((identifier left-par identifier-list right-par
+	     left-par identifier-list right-par)))
 
       ;; Signal declarations
       (interface-signal-decls
@@ -107,7 +131,6 @@
       (emit
 	 ((emit-kwd identifier))
 	 ((emit-kwd identifier left-par expression right-par)))
-
       (sustain
 	 ((sustain-kwd identifier))
 	 ((sustain-kwd identifier left-par expression right-par)))
@@ -116,8 +139,27 @@
       (assignment
 	 ((identifier init-kwd expression)))
       (procedure-call
-	 ((call-kwd identifier left-par right-par left-par right-par))
-	 ((call-kwd identifier left-par identifier-list right-par))
+	 ((call-kwd identifier left-par identifier-list right-par
+	     left-par expression-list right-par)))
+
+      ;; Present signal test
+      (present
+	 ((present-then-else))
+	 ((present-case-else)))
+      (present-then-else
+	 ((present-kwd present-event then-part else-part end-present)))
+      (present-event
+	 ((signal-expression))
+	 ((left-square-bracket signal-expression right-square-bracket)))
+      (then-part
+	 (())
+	 ((then-kwd statement)))
+      (else-part
+	 (())
+	 ((else-kwd statement)))
+      (end-present
+	 ((end-kwd))
+	 ((end-kwd present-kwd)))
 
       ;; vieux trucs à virer
       (local-signal-decl
@@ -190,6 +232,8 @@
 (define esterel-regular-grammar
    (regular-grammar ()
       ((+ (or #\tab #\space #\newline)) (ignore))
+      ((uncase "function") 'function-kwd)
+      ((uncase "procedure") 'procedure-kwd)
       ((uncase "module") 'module-kwd)
       ((uncase "signal") 'signal-kwd)
       ((uncase "input") 'input-kwd)
