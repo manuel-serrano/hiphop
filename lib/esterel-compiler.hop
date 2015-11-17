@@ -7,13 +7,13 @@
 (define esterel-lalr-grammar
    (lalr-grammar
 
-      (identifier input-kwd output-kwd signal-kwd colon (left:
-      semi-colon parallel-kwd logical-or logical-and plus mult) in-kwd
-      comma present-kwd then-kwd else-kwd end-kwd nothing-kwd emit-kwd
-      halt-kwd suspend-kwd sustain-kwd await-kwd abort-kwd left-par
-      left-square-bracket right-square-bracket right-par pause-kwd
-      exit-kwd loop-kwd module-kwd conbine-kwd with-kwd init-kwd
-      function-kwd procedure-kwd)
+      (identifier input-kwd output-kwd inputoutput-kwd signal-kwd
+      colon (left: semi-colon parallel-kwd logical-or logical-and plus
+      mult) in-kwd comma present-kwd then-kwd else-kwd end-kwd
+      nothing-kwd emit-kwd halt-kwd suspend-kwd sustain-kwd await-kwd
+      abort-kwd left-par left-square-bracket right-square-bracket
+      right-par pause-kwd exit-kwd loop-kwd module-kwd conbine-kwd
+      with-kwd init-kwd function-kwd procedure-kwd)
 
       ;; Modules decarations
       (module-decl
@@ -26,7 +26,7 @@
 
       ;; Interface delcarations
       (interface-decl-list
-	 ((inteface-decl-list interface-decls))
+	 ((interface-decl-list interface-decls))
 	 ((interface-decls)))
       (interface-decls
 	 ((type-decls))
@@ -46,7 +46,7 @@
 	 ((function-decl))
 	 ((function-decl-list comma function-decl)))
       (function-decl
-	 ((identifier left-par identifier-list right-par)) colon identifier)
+	 ((identifier left-par identifier-list right-par colon identifier)))
       (identifier-list
 	 (())
 	 ((identifier))
@@ -57,7 +57,7 @@
 	 ((procedure-kwd procedure-decl-list)))
       (procedure-decl-list
 	 ((procedure-decl))
-	 ((procedure-decl-list conna procedure-decl)))
+	 ((procedure-decl-list comma procedure-decl)))
       (procedure-decl
 	 ((identifier left-par identifier-list right-par
 	     left-par identifier-list right-par)))
@@ -175,9 +175,6 @@
       (optional-else
 	 ((else instruction))
 	 (()))
-      (end-present
-	 ((end present))
-	 ((end)))
       (nothing-stmt
 	 ((nothing)))
       (halt-stmt
