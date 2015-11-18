@@ -1,4 +1,5 @@
-(module esterel-compiler)
+(module esterel-compiler
+   (export (hopscript ::JsGlobalObject ::JsObject ::JsObject ::JsObject)))
 
 (define js-worker #f)
 (define js-exports #f)
@@ -598,12 +599,12 @@
       ((: #\"  (* all) #\") 'string)
       (#\. 'dot)
       ((+ digit) (cons 'digit (string->integer (the-string))))
-      ((+ alnum) (cons 'identifier (the-string)))
-      (else
-       (let ((c the-failure))
-	  (if (eof-object? c)
-	      c
-	      (error 'rgc "Illegal character " c))))))
+      ((+ alnum) (cons 'identifier (the-string)))))
+      ; (else
+      ;  (let ((c the-failure))
+      ; 	  (if (eof-object? c)
+      ; 	      c
+      ; 	      (error 'rgc "Illegal character " c))))))
 
 (define (build-ast input)
    (read/lalrp
@@ -612,15 +613,16 @@
       input))
 
 (define (compile-from-esterel this)
-   (build-ast (current-input-port)))
+   (build-ast (current-input-port))
+   (print "Esterel code successfully parsed."))
 
 (define (hopscript %this this scope module)
    (set! js-worker (js-current-worker))
    (set! js-exports (js-get module 'exports %this))
-   (set! js-require (nodejs-require worker %this module 'hopscript))
-   (set! js-xml-compiler (js-call1 %this require (js-undefined)
+   (set! js-require (nodejs-require js-worker %this module 'hopscript))
+   (set! js-xml-compiler (js-call1 %this js-require (js-undefined)
 			    (js-string->jsstring "./xml-compiler.js")))
-   (js-bind! %this exports 'compile_from_esterel
+   (js-bind! %this js-exports 'compile_from_esterel
       :value (js-make-function %this compile-from-esterel 1
 		'compile_from_esterel)
       :writable #f
