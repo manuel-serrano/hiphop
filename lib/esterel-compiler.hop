@@ -6,8 +6,8 @@
       (identifier input-kwd output-kwd inputoutput-kwd signal-kwd
        colon (left: semi-colon parallel-kwd or-kwd and-kwd plus mult
        slash minus div mod lt gt lteq gteq neq eq) in-kwd comma
-       present-kwd then-kwd else-kwd end-kwd nothing-kwd emit-kwd
-       halt-kwd suspend-kwd sustain-kwd await-kwd abort-kwd left-par
+       present-kwd then-kwd else-kwd end nothing-kwd emit-kwd halt-kwd
+       suspend-kwd sustain-kwd await-kwd abort-kwd left-par
        left-square-bracket right-square-bracket right-par pause-kwd
        exit-kwd loop-kwd module-kwd combine-kwd with-kwd assign-kwd
        function-kwd procedure-kwd case-kwd do-kwd repeat-kwd times-kwd
@@ -16,10 +16,6 @@
        pre-kwd double-xcur double-quote immediate-kwd string digit
        sensor-kwd relation-kwd not-kwd true-kwd false-kwd dot call-kwd
        if-kwd elsif-kwd when-kwd trap-kwd exec-kwd)
-
-      ;; Commons things
-      (end
-	 ((end-kwd)))
 
       ;; Modules decarations
       (module-decl
@@ -534,7 +530,7 @@
       ((uncase "when") 'when-kwd)
       ((uncase "each") 'each-kwd)
       ((uncase "sustain") 'sustain-kwd)
-      ((uncase "end") 'end-kwd)
+      ((uncase "end") 'end)
       ((uncase "pause") 'pause-kwd)
       ((uncase "await") 'await-kwd)
       ((uncase "abort") 'abort-kwd)
