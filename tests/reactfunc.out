@@ -1,0 +1,24 @@
+reactfunc> ;
+--- Output:
+reactfunc> ;
+--- Output:
+reactfunc> I1;
+--- Output: O1 O11
+hi from foo signal O1 is set!
+hi from foo signal O11 is set!
+hi from bar signal O11 is set!
+reactfunc> I2;
+--- Output: O2(5)
+hi from foo2 signal O2 is set with 5 !
+hi from bar2 signal O2 is set with 5 !
+reactfunc> I1 I2;
+--- Output: O1 O11 O2(6)
+hi from foo signal O1 is set!
+hi from foo signal O11 is set!
+hi from bar signal O11 is set!
+hi from foo2 signal O2 is set with 6 !
+hi from bar2 signal O2 is set with 6 !
+reactfunc> ;
+--- Output:
+reactfunc> ;
+--- Output:
