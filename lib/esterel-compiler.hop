@@ -13,10 +13,11 @@
       present-kwd then-kwd else-kwd end-kwd nothing-kwd emit-kwd
       halt-kwd suspend-kwd sustain-kwd await-kwd abort-kwd left-par
       left-square-bracket right-square-bracket right-par pause-kwd
-      exit-kwd loop-kwd module-kwd conbine-kwd with-kwd init-kwd
+      exit-kwd loop-kwd module-kwd conbine-kwd with-kwd assign-kwd
       function-kwd procedure-kwd case-kwd do-kwd repeat-kwd times-kwd
       weak-kwd positive-kwd each-kwd every-kwd handle-kwd return-kwd
-      var-kwd type-kwd constant-kwd task-kwd run-kwd incl excl)
+      var-kwd type-kwd constant-kwd task-kwd run-kwd incl excl xcur
+      pre-kwd double-xcur)
 
       ;; Commons things
       (end
@@ -109,7 +110,7 @@
       (signal-decl
 	 ((identifier))
 	 ((indentifier colon channel-type))
-	 ((indentifier init-kwd expression colon channel-type)))
+	 ((indentifier assign-kwd expression colon channel-type)))
       (channel-type
 	 ((identifier))
 	 ((combine-kwd identifier with-kwd indentifier))
@@ -145,6 +146,37 @@
 	 ((exclusion-decl excl identifier)))
 
       ;; Expressions
+      (expression
+	 ((constant))
+	 ((left-par expression right-par))
+	 ((xcur identifier))
+	 ((pre-kwd left-par xcur identifier right-par))
+	 ((double-xcur identifier))
+	 ((minus expression))
+	 ((expression mult expression))
+	 ((expression div expression))
+	 ((expression plus expression))
+	 ((expression minus expression))
+	 ((expression mod expression))
+	 ((expression eq expression))
+	 ((expressuin neq expression))
+	 ((expression lt expression))
+	 ((expression gt expression))
+	 ((expression lteq expression))
+	 ((expression gteq expression))
+	 ((not-kwd expression))
+	 ((expression and-kwd expression))
+	 ((expression or-kwd expression))
+	 ((function-call)))
+      (constant
+	 ((constant-literal))
+	 ((unsigned-number)))
+      (constant-literal
+	 ((identifier))
+	 ((true-kwd))
+	 ((false-kwd))
+	 ((string-constant)))
+      
 
       ;; Statements declarations
       (statement
@@ -199,7 +231,7 @@
 
       ;; Assignment anf procedure call
       (assignment
-	 ((identifier init-kwd expression)))
+	 ((identifier assign-kwd expression)))
       (procedure-call
 	 ((call-kwd identifier left-par identifier-list right-par
 	     left-par expression-list right-par)))
@@ -322,7 +354,7 @@
 	 ((identifier))
 	 ((identifier channel-type))
 	 ((identifier colon channel-type))
-	 ((identifier init-kwd expression colon channel-type)))
+	 ((identifier assign-kwd expression colon channel-type)))
       (exit
 	 ((exit-kwd identifier))
 	 ((exit-kwd identifier left-par expression right-par)))
@@ -378,7 +410,7 @@
 	 ((variable-decl-list comma variable-decl)))
       (variable-decl
 	 ((identifier colon identifier))
-	 ((identifier init-kwd expression colon identifier)))
+	 ((identifier assign-kwd expression colon identifier)))
 
       ;; Run module instantiation statement
       (run-module
@@ -493,7 +525,7 @@
       ((uncase "run") 'run-kwd)
       ("||" 'parallel-kwd)
       (";" 'semi-colon)
-      (":=" 'init-kwd)
+      (":=" 'assign-kwd)
       (":" 'colon)
       ("," 'comma)
       ("[" 'left-square-bracket)
@@ -514,9 +546,14 @@
       ("/" 'slash)
       ("=>" 'incl)
       ("#" 'excl)
+      ("?" 'xcur)
+      ("??" 'double-xcur)
+      ((uncase "pre") 'pre-kwd)
       ((uncase "or") 'or-kwd)
       ((uncase "and") 'and-kwd)
       ((uncase "not") 'not-kwd)
+      ((uncase "true") 'true-kwd)
+      ((uncase "false") 'false-kwd)
       ((+ alnum) (cons 'identifier (the-string)))
       (else
        (let ((c the-failure))
