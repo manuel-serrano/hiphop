@@ -9,11 +9,13 @@
        present-kwd then-kwd else-kwd end-kwd nothing-kwd emit-kwd
        halt-kwd suspend-kwd sustain-kwd await-kwd abort-kwd left-par
        left-square-bracket right-square-bracket right-par pause-kwd
-       exit-kwd loop-kwd module-kwd conbine-kwd with-kwd assign-kwd
+       exit-kwd loop-kwd module-kwd combine-kwd with-kwd assign-kwd
        function-kwd procedure-kwd case-kwd do-kwd repeat-kwd times-kwd
        weak-kwd positive-kwd each-kwd every-kwd handle-kwd return-kwd
-       var-kwd type-kwd constant-kwd task-kwd run-kwd incl excl xcur
-       pre-kwd double-xcur double-quote immediate-kwd string digit)
+       var-kwd type-kwd constant-kwd task-kwd run-kwd impl excl xcur
+       pre-kwd double-xcur double-quote immediate-kwd string digit
+       sensor-kwd relation-kwd not-kwd true-kwd false-kwd dot call-kwd
+       if-kwd elsif-kwd when-kwd trap-kwd exec-kwd)
 
       ;; Commons things
       (end
@@ -154,7 +156,7 @@
 	 ((expression minus expression))
 	 ((expression mod expression))
 	 ((expression eq expression))
-	 ((expressuin neq expression))
+	 ((expression neq expression))
 	 ((expression lt expression))
 	 ((expression gt expression))
 	 ((expression lteq expression))
@@ -238,7 +240,7 @@
 	 ((assignment))
 	 ((procedure-call))
 	 ((present))
-	 ((if))
+	 ((if-data-test))
 	 ((loop))
 	 ((repeat))
 	 ((abort))
@@ -291,7 +293,7 @@
 	 ((present-kwd present-case-list else-part end-present)))
       (present-case-list
 	 ((present-case))
-	 ((present-case list present-case)))
+	 ((present-case-list present-case)))
       (present-case
 	 ((case-kwd present-event))
 	 ((case-kwd present-event do-kwd statement)))
@@ -557,6 +559,9 @@
       ((uncase "task") 'task-kwd)
       ((uncase "run") 'run-kwd)
       ((uncase "immediate") 'immediate-kwd)
+      ((uncase "sensor") 'sensor-kwd)
+      ((uncase "relation") 'relation-kwd)
+      ((uncase "call") 'call-kwd)
       ("||" 'parallel-kwd)
       (#\; 'semi-colon)
       (":=" 'assign-kwd)
@@ -578,7 +583,7 @@
       (#\= 'eq)
       (#\* 'mult)
       (#\/ 'slash)
-      ("=>" 'incl)
+      ("=>" 'impl)
       (#\# 'excl)
       (#\? 'xcur)
       ("??" 'double-xcur)
