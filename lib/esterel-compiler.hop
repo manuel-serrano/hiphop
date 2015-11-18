@@ -181,7 +181,7 @@
 	 ((signed-number)))
       (signed-number
 	 ((unsigned-number))
-	 ((minus unsigned-nu,ber)))
+	 ((minus unsigned-number)))
       (unsigned-number
 	 ((unsigned-integer-constant))
 	 ((unsigned-float-constant))
