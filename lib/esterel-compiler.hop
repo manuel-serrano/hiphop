@@ -1,23 +1,19 @@
-(module esterel-compiler
-   (export (hopscript ::JsGlobalObject ::JsObject ::JsObject ::JsObject)))
-
-(define global-obj #f)
-(define exports-obj #f)
+(module esterel-compiler)
 
 (define esterel-lalr-grammar
    (lalr-grammar
 
       (identifier input-kwd output-kwd inputoutput-kwd signal-kwd
-      colon (left: semi-colon parallel-kwd or-kwd and-kwd plus mult
-      slash minus div mod lt gt lteq gteq neq eq) in-kwd comma
-      present-kwd then-kwd else-kwd end-kwd nothing-kwd emit-kwd
-      halt-kwd suspend-kwd sustain-kwd await-kwd abort-kwd left-par
-      left-square-bracket right-square-bracket right-par pause-kwd
-      exit-kwd loop-kwd module-kwd conbine-kwd with-kwd assign-kwd
-      function-kwd procedure-kwd case-kwd do-kwd repeat-kwd times-kwd
-      weak-kwd positive-kwd each-kwd every-kwd handle-kwd return-kwd
-      var-kwd type-kwd constant-kwd task-kwd run-kwd incl excl xcur
-      pre-kwd double-xcur double-quote immediate-kwd string digit)
+       colon (left: semi-colon parallel-kwd or-kwd and-kwd plus mult
+       slash minus div mod lt gt lteq gteq neq eq) in-kwd comma
+       present-kwd then-kwd else-kwd end-kwd nothing-kwd emit-kwd
+       halt-kwd suspend-kwd sustain-kwd await-kwd abort-kwd left-par
+       left-square-bracket right-square-bracket right-par pause-kwd
+       exit-kwd loop-kwd module-kwd conbine-kwd with-kwd assign-kwd
+       function-kwd procedure-kwd case-kwd do-kwd repeat-kwd times-kwd
+       weak-kwd positive-kwd each-kwd every-kwd handle-kwd return-kwd
+       var-kwd type-kwd constant-kwd task-kwd run-kwd incl excl xcur
+       pre-kwd double-xcur double-quote immediate-kwd string digit)
 
       ;; Commons things
       (end
@@ -603,23 +599,10 @@
 	      c
 	      (error 'rgc "Illegal character " c))))))
 
-
 (define (build-ast input)
    (read/lalrp
       esterel-lalr-grammar
       esterel-regular-grammar
       input))
-
-(define (hopscript %this this scope module)
-   (set! global-obj %this)
-   (let ((exports (js-get module 'exports %this)))
-      (set! exports-obj exports)
-      (js-bind! %this exports 'build_ast
-         :value (js-make-function %this
-                   (lambda (o)
-                      (build-ast))
-                   1 'build_ast)
-         :writable #f
-         :enumerable #f)))
 
 (build-ast (current-input-port))
