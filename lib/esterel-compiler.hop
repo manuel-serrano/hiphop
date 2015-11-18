@@ -16,7 +16,7 @@
       exit-kwd loop-kwd module-kwd conbine-kwd with-kwd init-kwd
       function-kwd procedure-kwd case-kwd do-kwd repeat-kwd times-kwd
       weak-kwd positive-kwd each-kwd every-kwd handle-kwd return-kwd
-      var-kwd type-kwd constant-kwd task-kwd run-kwd)
+      var-kwd type-kwd constant-kwd task-kwd run-kwd incl excl)
 
       ;; Commons things
       (end
@@ -46,6 +46,25 @@
 	 ((relation-decls))
 	 ((output-decls)))
 
+      ;; Type declarations
+      (type-decls
+	 ((type-kwd type-decl-list semi-colon)))
+      (type-decl-list
+	 ((type-decl))
+	 ((type-decl-list comma type-decl)))
+      (type-decl
+	 ((identifier)))
+
+      ;; Constant declarations
+      (constant-decls
+	 ((constant-kwd constant-decl-list semi-colon)))
+      (constant-decl-list
+	 ((constant-decl))
+	 ((constant-decl-list comma constant-decl)))
+      (constant-decl
+	 ((identifier colon identifier))
+	 ((identifier eq constant-atom colon identifier)))
+
       ;; Functions declarations
       (function-decls
 	 ((function-kwd function-decl-list semi-colon)))
@@ -66,6 +85,16 @@
 	 ((procedure-decl))
 	 ((procedure-decl-list comma procedure-decl)))
       (procedure-decl
+	 ((identifier left-par identifier-list right-par
+	     left-par identifier-list right-par)))
+
+      ;; Task declarations
+      (task-decls
+	 ((task-kwd task-decl-list semi-colon)))
+      (task-decl-list
+	 ((task-decl))
+	 ((task-decl-list comma task-decl)))
+      (task-decl
 	 ((identifier left-par identifier-list right-par
 	     left-par identifier-list right-par)))
 
@@ -90,6 +119,32 @@
 	 ((mult))
 	 ((or-kwd))
 	 ((and-kwd)))
+
+      ;; Sensor declarations
+      (sensor-decls
+	 ((sensor-kwd sensor-decl-list semi-colon)))
+      (sensor-decl-list
+	 ((sensor-decl))
+	 ((sensor-decl-list comma sensor-decl)))
+      (sensor-decl
+	 ((identifier colon identifier)))
+
+      ;; Input relation declarations
+      (relation-decls
+	 ((relation-kwd relation-decl-list semi-colon)))
+      (relation-decl-list
+	 ((relation-decl))
+	 ((relation-decl-list comma relation-decl)))
+      (relation-decl
+	 ((implication-decl))
+	 ((exclusion-decl)))
+      (implication-decl
+	 ((identifier impl identifier)))
+      (exclusion-decl
+	 ((identifier excl identifier))
+	 ((exclusion-decl excl identifier)))
+
+      ;; Expressions
 
       ;; Statements declarations
       (statement
@@ -457,6 +512,8 @@
       ("=" 'eq)
       ("*" 'mult)
       ("/" 'slash)
+      ("=>" 'incl)
+      ("#" 'excl)
       ((uncase "or") 'or-kwd)
       ((uncase "and") 'and-kwd)
       ((uncase "not") 'not-kwd)
