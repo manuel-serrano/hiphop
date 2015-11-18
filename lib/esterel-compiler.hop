@@ -8,12 +8,19 @@
    (lalr-grammar
 
       (identifier input-kwd output-kwd inputoutput-kwd signal-kwd
-      colon (left: semi-colon parallel-kwd logical-or logical-and plus
-      mult) in-kwd comma present-kwd then-kwd else-kwd end-kwd
-      nothing-kwd emit-kwd halt-kwd suspend-kwd sustain-kwd await-kwd
-      abort-kwd left-par left-square-bracket right-square-bracket
-      right-par pause-kwd exit-kwd loop-kwd module-kwd conbine-kwd
-      with-kwd init-kwd function-kwd procedure-kwd)
+      colon (left: semi-colon parallel-kwd or-kwd and-kwd plus mult
+      slash minus div mod lt gt lteq gteq neq eq) in-kwd comma
+      present-kwd then-kwd else-kwd end-kwd nothing-kwd emit-kwd
+      halt-kwd suspend-kwd sustain-kwd await-kwd abort-kwd left-par
+      left-square-bracket right-square-bracket right-par pause-kwd
+      exit-kwd loop-kwd module-kwd conbine-kwd with-kwd init-kwd
+      function-kwd procedure-kwd case-kwd do-kwd repeat-kwd times-kwd
+      weak-kwd positive-kwd each-kwd every-kwd handle-kwd return-kwd
+      var-kwd type-kwd constant-kwd task-kwd run-kwd)
+
+      ;; Commons things
+      (end
+	 ((end-kwd)))
 
       ;; Modules decarations
       (module-decl
@@ -21,8 +28,8 @@
 	     end-module-decl))
 	 ((module-kwd identifier colon statement end-module-decl)))
       (end-module-decl
-	 ((end-kwd module-kwd))
-	 ((end-kwd)))
+	 ((end module-kwd))
+	 ((end)))
 
       ;; Interface delcarations
       (interface-decl-list
@@ -81,8 +88,8 @@
       (predefined-combine-function
 	 ((plus))
 	 ((mult))
-	 ((logical-or))
-	 ((logical-and)))
+	 ((or-kwd))
+	 ((and-kwd)))
 
       ;; Statements declarations
       (statement
@@ -146,6 +153,9 @@
       (present
 	 ((present-then-else))
 	 ((present-case-else)))
+      (end-present
+	 ((end))
+	 ((end present-kwd)))
       (present-then-else
 	 ((present-kwd present-event then-part else-part end-present)))
       (present-event
@@ -157,74 +167,227 @@
       (else-part
 	 (())
 	 ((else-kwd statement)))
-      (end-present
-	 ((end-kwd))
-	 ((end-kwd present-kwd)))
+      (present-case-else
+	 ((present-kwd present-case-list else-part end-present)))
+      (present-case-list
+	 ((present-case))
+	 ((present-case list present-case)))
+      (present-case
+	 ((case-kwd present-event))
+	 ((case-kwd present-event do-kwd statement)))
 
-      ;; vieux trucs à virer
-      (local-signal-decl
-	 ((signal signal-decl-list in instruction end-local-signal)))
-      (end-local-signal
+      ;; If data test
+      (if-data-test
+	 ((if-kwd expression then-part elsif-part-list else-part end-if)))
+      (end-if
 	 ((end))
-	 ((end signal)))
-      (present-stmt
-	 ((present identifier optional-then optional-else end-present)))
-      (optional-then
-	 ((then instruction))
-	 (()))
-      (optional-else
-	 ((else instruction))
-	 (()))
-      (nothing-stmt
-	 ((nothing)))
-      (halt-stmt
-	 ((halt)))
-      (emit-stmt
-;	 ((emit identifier left-par expression right-par))
-	 ((emit identifier)))
-      (await-stmt
-	 ((await identifier))
-	 ((pause)))
-      (exit-stmt
-	 ((exit identifier)))
-      (loop-stmt
-	 ((loop instruction end-loop)))
+	 ((end if-kwd)))
+      (elsif-part-list
+	 (())
+	 ((elsif))
+	 ((elsif-part-list elsif)))
+      (elsif
+	 ((elsif-kwd expression then-part)))
+
+      ;; Looping
+      (loop
+	 ((loop-kwd statement end-loop)))
       (end-loop
-	 ((end loop))
-	 ((end)))
-      (atomic-instruction
-	 ((subinstruction))
-	 ((nothing-stmt))
-	 ((halt-stmt))
-	 ((emit-stmt))
-	 ((present-stmt))
-	 ((loop-stmt))
-	 ((local-signal-decl))
-	 ((await-stmt))
-	 ((exit-stmt)))
-      (subinstruction
-	 ((left-square-bracket instruction right-square-bracket)))
-      (instruction
-	 ((parallel-instruction))
-	 ((no-parallel-instruction)))
-      (no-parallel-instruction
-	 ((sequence-instruction))
-	 ((atomic-instruction)))
-      (parallel-instruction
-	 ((no-parallel-instruction parallel no-parallel-instruction))
-	 ((no-parallel-instruction parallel parallel-branch-list)))
-      (parallel-branch-list
-	 ((no-parallel-instruction parallel no-parallel-instruction))
-	 ((parallel-branch-list parallel no-parallel-instruction)))
-      (sequence-instruction
-	 ((sequence-instruction-list)))
-      (sequence-instruction-list
-	 ((pure-sequence-instruction-list))
-	 ((atomic-instruction semi-colon))
-	 ((pure-sequence-instruction-list semi-colon)))
-      (pure-sequence-instruction-list
-	 ((atomic-instruction semi-colon atomic-instruction))
-	 ((pure-sequence-instruction-list semi-colon atomic-instruction)))))
+	 ((end))
+	 ((end loop-kwd)))
+
+      ;; Repeat loops
+      (repeat
+	 (positive-repeat expression times-kwd statement end-repeat))
+      (end-repeat
+	 ((end))
+	 ((end repeat-kwd)))
+      (positive-repeat
+	 ((repeat-kwd))
+	 ((positive-kwd repeat-kwd)))
+
+      ;; Abort statements
+      (abort
+	 ((weak-abort statement when-kwd delay-expression))
+	 ((weak-abort statement when-kwd delay-expression
+	     do-kwd statement end-abort))
+	 ((weak-abort statement when-kwd abort-case-list end-abort))
+      (weak-abort
+	 ((abort-kwd))
+	 ((weak-kwd abort-kwd)))
+      (end-abort
+	 ((end))
+	 ((end weak-abort)))
+      (abort-case-list
+	 ((abort-case))
+	 ((abort-case-list abort-case)))
+      (abort-case
+	 ((case-kwd delay-expression do-kwd statement))
+	 ((case-kwd delay-expression)))
+
+      ;; Await statement
+      (await
+	 ((await-kwd delay-expression))
+	 ((await-kwd delay-expression do-kwd statement end-await))
+	 ((await-kwd await-case-list end-await)))
+      (await-case-list
+	 ((await-case))
+	 ((await-case-list await-case)))
+      (await-case
+	 ((case-kwd delay-expression do-kwd statement))
+	 ((case-kwd delay-expression)))
+      (end-await
+	 ((end))
+	 ((end await-kwd)))
+
+      ;; Temporal loop
+      (loop-each
+	 ((loop-kwd statement each-kwd delay-expression)))
+      (every
+	 ((every-kwd delay-expression do-kwd statement end-every)))
+      (end-every
+	 ((end))
+	 ((end every-kwd)))
+
+      ;; Suspend statement
+      (suspend
+	 ((suspend-kwd statement when-kwd delay-expression)))
+
+      ;; Traps
+      (trap
+	 (trap-kwd exception-decl-list in-kwd statement
+	    exception-handler-list end-trap))
+      (end-trap
+	 ((end))
+	 ((end trap-kwd)))
+      (exception-decl-list
+	 ((exception-decl))
+	 ((exception-decl-list comma exception-decl)))
+      (exception-decl
+	 ((identifier))
+	 ((identifier channel-type))
+	 ((identifier colon channel-type))
+	 ((identifier init-kwd expression colon channel-type)))
+      (exit
+	 ((exit-kwd identifier))
+	 ((exit-kwd identifier left-par expression right-par)))
+      (exception-handler-list
+	 (())
+	 ((exception-handler))
+	 ((exception-handler-list exception-handler)))
+      (exception-handler
+	 ((handle-kwd exception-event do-kwd statement)))
+      (exception-event
+	 ((identifier))
+	 ((left-par exception-event right-par))
+	 ((not-kwd exception-event))
+	 ((exception-event and-kwd exception-event))
+	 ((exception-event or-kwd exception-event)))
+
+      ;; Exec task execution statement
+      (exec
+	 ((exec-task))
+	 ((exec-task do-kwd statement end-exec))
+	 ((exec-kwd exec-case-list end-exec)))
+      (exec-task
+	 ((exec-kwd identifier left-par identifier-list right-par
+	     left-par expression-list right-par return-kwd identifier)))
+      (end-exec
+	 ((end))
+	 ((end exec-kwd)))
+      (exec-case-list
+	 ((exec-case))
+	 ((exec-case-list exec-case)))
+      (exec-case
+	 ((case-task))
+	 ((case-task do-kwd statement)))
+      (case-task
+	 ((case-kwd identifier left-par identifier-list right-par
+	     left-par expression-list right-par return-kwd identifier)))
+
+      ;; Local signal declaration
+      (local-signal-decl
+	 ((signal-kwd signal-decl-list in-kwd statement end-signal)))
+      (end-signal
+	 ((end))
+	 ((end signal-kwd)))
+
+      ;; Local variable declaration
+      (local-variable-decl
+	 ((var-kwd variable-decl-list in-kwd statement end-var)))
+      (end-var
+	 ((end))
+	 ((end var-kwd)))
+      (variable-decl-list
+	 ((variable-decl))
+	 ((variable-decl-list comma variable-decl)))
+      (variable-decl
+	 ((identifier colon identifier))
+	 ((identifier init-kwd expression colon identifier)))
+
+      ;; Run module instantiation statement
+      (run-module
+	 ((run-kwd run-module-names))
+	 ((run-kwd run-module-names
+	     left-square-bracket renaming-list right-square-bracket)))
+      (run-module-names
+	 ((identifier))
+	 ((identifier slash identifier)))
+      (renaming-list
+	 ((renaming))
+	 ((renaming-list semi-colon renaming)))
+      (renaming
+	 ((type-kwd type-renaming-list))
+	 ((constant-kwd constant-renaming-list))
+	 ((function-kwd function-renaming-list))
+	 ((procedure-kwd procedure-renaming-list))
+	 ((task-kwd task-renaming-list))
+	 ((signal-kwd signal-renaming-list)))
+      (type-renaming-list
+	 ((type-renaming))
+	 ((type-renaming-list comma type-renaming)))
+      (type-renaming
+	 ((identifier slash identifier)))
+      (constant-renaming-list
+	 ((constant-renaming))
+	 ((constant-renaming-list comma constant-renaming)))
+      (constant-renaming
+	 ((constant-atom slash identifier)))
+      (function-renaming-list
+	 ((function-renaming))
+	 ((function-renaming-list comma function-renaming)))
+      (function-renaming
+	 ((identifier slash identifier))
+	 ((predefined-function slash identifier)))
+      (predefined-function
+	 ((and-kwd))
+	 ((or-kwd))
+	 ((not-kwd))
+	 ((plus))
+	 ((minus))
+	 ((div))
+	 ((mod))
+	 ((lt))
+	 ((gt))
+	 ((lteq))
+	 ((gteq))
+	 ((neq))
+	 ((eq)))
+      (procedure-renaming-list
+	 ((procedure-renaming))
+	 ((procedure-renaming-list comma procedure-renaming)))
+      (procedure-renaming
+	 ((identifier slash identifier)))
+      (task-renaming-list
+	 ((task-renaming))
+	 ((task-renaming-list comma task-renaming)))
+      (task-renaming
+	 ((identifier slash identifier)))
+      (signal-renaming-list
+	 ((signal-renaming))
+	 ((signal-renaming-list comma signal-renaming)))
+      (signal-renaming
+	 ((identifier slash identifier)))
 
 (define esterel-regular-grammar
    (regular-grammar ()
@@ -256,6 +419,23 @@
       ((uncase "suspend") 'suspend-kwd)
       ((uncase "combine") 'combine-kwd)
       ((uncase "with") 'with-kwd)
+      ((uncase "do") 'do-kwd)
+      ((uncase "case") 'case-kwd)
+      ((uncase "if") 'if-kwd)
+      ((uncase "elsif") 'elsif-kwd)
+      ((uncase "repeat") 'repeat-kwd)
+      ((uncase "times") 'times-kwd)
+      ((uncase "weak") 'weak-kwd)
+      ((uncase "positive") 'positive-kwd)
+      ((uncase "each") 'each-kwd)
+      ((uncase "every") 'every-kwd)
+      ((uncase "handle") 'handle-kwd)
+      ((uncase "return") 'return-kwd)
+      ((uncase "var") 'var-kwd)
+      ((uncase "type") 'type-kwd)
+      ((uncase "constant") 'constant-kwd)
+      ((uncase "task") 'task-kwd)
+      ((uncase "run") 'run-kwd)
       ("||" 'parallel-kwd)
       (";" 'semi-colon)
       (":=" 'init-kwd)
@@ -266,9 +446,20 @@
       ("(" 'left-par)
       (")" 'right-par)
       ("+" 'plus)
+      ("-" 'minus)
+      ("/" 'div)
+      ((uncase "mod") 'mod)
+      ("<" 'lt)
+      (">" 'gt)
+      ("<=" 'lteq)
+      (">=" 'gteq)
+      ("<>" 'neq)
+      ("=" 'eq)
       ("*" 'mult)
-      ("or" 'logical-or)
-      ("and" 'logical-and)
+      ("/" 'slash)
+      ((uncase "or") 'or-kwd)
+      ((uncase "and") 'and-kwd)
+      ((uncase "not") 'not-kwd)
       ((+ alnum) (cons 'identifier (the-string)))
       (else
        (let ((c the-failure))
