@@ -17,7 +17,7 @@
       function-kwd procedure-kwd case-kwd do-kwd repeat-kwd times-kwd
       weak-kwd positive-kwd each-kwd every-kwd handle-kwd return-kwd
       var-kwd type-kwd constant-kwd task-kwd run-kwd incl excl xcur
-      pre-kwd double-xcur double-quote immediate-kwd)
+      pre-kwd double-xcur double-quote immediate-kwd string digit)
 
       ;; Commons things
       (end
@@ -174,7 +174,7 @@
 	 ((identifier))
 	 ((true-kwd))
 	 ((false-kwd))
-	 ((string-constant)))
+	 ((string)))
       (constant-atom
 	 ((constant-literal))
 	 ((signed-number)))
@@ -182,9 +182,14 @@
 	 ((unsigned-number))
 	 ((minus unsigned-number)))
       (unsigned-number
-	 ((unsigned-integer-constant))
-	 ((unsigned-float-constant))
-	 ((unsigned-double-constant)))
+	 ;; to compile to JS, we don't need to make difference between double
+	 ;; and float, so we keep only unsigned-float rule
+	 ((unsigned-integer))
+	 ((unsigned-float)))
+      (unsigned-integer
+	 ((digit)))
+      (unsigned-float
+	 ((digit dot digit)))
       (function-call
 	 ((identifier left-par expression-list right-par)))
       (expression-list
@@ -557,37 +562,40 @@
       ((uncase "run") 'run-kwd)
       ((uncase "immediate") 'immediate-kwd)
       ("||" 'parallel-kwd)
-      (";" 'semi-colon)
+      (#\; 'semi-colon)
       (":=" 'assign-kwd)
-      (":" 'colon)
-      ("," 'comma)
-      ("[" 'left-square-bracket)
-      ("]" 'right-square-bracket)
-      ("(" 'left-par)
-      (")" 'right-par)
-      ("+" 'plus)
-      ("-" 'minus)
-      ("/" 'div)
+      (#\: 'colon)
+      (#\, 'comma)
+      (#\[ 'left-square-bracket)
+      (#\] 'right-square-bracket)
+      (#\( 'left-par)
+      (#\) 'right-par)
+      (#\+ 'plus)
+      (#\- 'minus)
+      (#\/ 'div)
       ((uncase "mod") 'mod)
-      ("<" 'lt)
-      (">" 'gt)
+      (#\< 'lt)
+      (#\> 'gt)
       ("<=" 'lteq)
       (">=" 'gteq)
       ("<>" 'neq)
-      ("=" 'eq)
-      ("*" 'mult)
-      ("/" 'slash)
+      (#\= 'eq)
+      (#\* 'mult)
+      (#\/ 'slash)
       ("=>" 'incl)
-      ("#" 'excl)
-      ("?" 'xcur)
+      (#\# 'excl)
+      (#\? 'xcur)
       ("??" 'double-xcur)
-      (\#\" 'double-quote)
+      (#\" 'double-quote)
       ((uncase "pre") 'pre-kwd)
       ((uncase "or") 'or-kwd)
       ((uncase "and") 'and-kwd)
       ((uncase "not") 'not-kwd)
       ((uncase "true") 'true-kwd)
       ((uncase "false") 'false-kwd)
+      ((: #\"  (* all) #\") 'string)
+      (#\. 'dot)
+      ((+ digit) (cons 'digit (string->integer (the-string))))
       ((+ alnum) (cons 'identifier (the-string)))
       (else
        (let ((c the-failure))
