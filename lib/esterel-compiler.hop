@@ -331,7 +331,7 @@
 	 ((weak-abort statement when-kwd delay-expression))
 	 ((weak-abort statement when-kwd delay-expression
 	     do-kwd statement end-abort))
-	 ((weak-abort statement when-kwd abort-case-list end-abort))
+	 ((weak-abort statement when-kwd abort-case-list end-abort)))
       (weak-abort
 	 ((abort-kwd))
 	 ((weak-kwd abort-kwd)))
@@ -507,7 +507,7 @@
 	 ((signal-renaming))
 	 ((signal-renaming-list comma signal-renaming)))
       (signal-renaming
-	 ((identifier slash identifier)))
+	 ((identifier slash identifier)))))
 
 (define esterel-regular-grammar
    (regular-grammar ()
