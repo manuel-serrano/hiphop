@@ -104,11 +104,11 @@
 	 ((signal-decl-list comma signal-decl)))
       (signal-decl
 	 ((identifier))
-	 ((indentifier colon channel-type))
-	 ((indentifier assign-kwd expression colon channel-type)))
+	 ((identifier colon channel-type))
+	 ((identifier assign-kwd expression colon channel-type)))
       (channel-type
 	 ((identifier))
-	 ((combine-kwd identifier with-kwd indentifier))
+	 ((combine-kwd identifier with-kwd identifier))
 	 ((combine-kwd identifier with-kwd predefined-combine-function)))
       (predefined-combine-function
 	 ((plus))
@@ -196,7 +196,7 @@
       ;; Signal expressions
       (signal-expression
 	 ((identifier))
-	 ((pre-kwd left-par indentifier right-par))
+	 ((pre-kwd left-par identifier right-par))
 	 ((not-kwd signal-expression))
 	 ((signal-expression and-kwd signal-expression))
 	 ((signal-expression or-kwd signal-expression))
