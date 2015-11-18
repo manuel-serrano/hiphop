@@ -39,13 +39,12 @@
       (interface-decls
 	 ((type-decls))
 	 ((constant-decls))
-	 ((functions-decls))
+	 ((function-decls))
 	 ((procedure-decls))
 	 ((task-decls))
 	 ((interface-signal-decls))
 	 ((sensor-decls))
-	 ((relation-decls))
-	 ((output-decls)))
+	 ((relation-decls)))
 
       ;; Type declarations
       (type-decls
@@ -318,7 +317,7 @@
 
       ;; Repeat loops
       (repeat
-	 (positive-repeat expression times-kwd statement end-repeat))
+	 ((positive-repeat expression times-kwd statement end-repeat)))
       (end-repeat
 	 ((end))
 	 ((end repeat-kwd)))
@@ -375,8 +374,8 @@
 
       ;; Traps
       (trap
-	 (trap-kwd exception-decl-list in-kwd statement
-	    exception-handler-list end-trap))
+	 ((trap-kwd exception-decl-list in-kwd statement
+	    exception-handler-list end-trap)))
       (end-trap
 	 ((end))
 	 ((end trap-kwd)))
