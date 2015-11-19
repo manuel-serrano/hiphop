@@ -2,16 +2,11 @@
 
 var rjs = require("../lib/reactive-js.js");
 
-var sigA = new rjs.Signal("A");
-var sigB = new rjs.Signal("B");
-var sigR = new rjs.Signal("R");
-var sigO = new rjs.Signal("O");
-
 var prg = <rjs.reactivemachine debug name="ABRO">
-  <rjs.inputsignal ref=${sigR}/>
-  <rjs.inputsignal ref=${sigA}/>
-  <rjs.inputsignal ref=${sigB}/>
-  <rjs.outputsignal ref=${sigO}/>
+  <rjs.inputsignal name=R />
+  <rjs.inputsignal name=A />
+  <rjs.inputsignal name=B />
+  <rjs.outputsignal name=O />
   <rjs.loop>
     <rjs.abort signal_name="R">
       <rjs.sequence>
