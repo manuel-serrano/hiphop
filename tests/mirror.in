@@ -1,0 +1,11 @@
+;
+;
+I3(lala);
+!eval-begin;
+example.prg.set_input("I4", 34);
+example.prg.set_input("I1")
+example.prg.set_input("I3", "hihihiihi");
+!eval-end;
+;
+I4(5);
+I4;
