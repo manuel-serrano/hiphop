@@ -177,7 +177,8 @@ __Warning__ : not tested yet.
 
 ## Nothing
 
-Do nothing, equivalent of `nop` assembly instruction.
+Do nothing, equivalent of `nop` assembly instruction. Therefore, the
+execution control directly jump to the next sequence instruction.
 
 ## Atom
 
