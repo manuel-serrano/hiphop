@@ -15,7 +15,7 @@ reactive code.
 This is by order the root node of the XML tree that will build the
 reactive machine. It must take a `name` attribute, and several children which are :
 
-* zero or more `inputsignal` and `outputsignal` nodes (the ordering is
+* zero or more input or output signals nodes (the ordering is
   moot point) ;
 
 * the last child must be the first reactive instruction of the
