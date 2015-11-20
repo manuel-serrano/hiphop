@@ -118,7 +118,6 @@ attribute. The arity of this function is specified by the `exprs`
 attribute, witch is an array of expression (sames rules of Emit's `expr` attribute).
 
 ## Pause
-[:@glyphicon]
 
 Stop the execution of the ReactiveMachine. Next reaction will begin
 after this instruction.
