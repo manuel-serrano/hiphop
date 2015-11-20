@@ -119,15 +119,29 @@ attribute, witch is an array of expression (sames rules of Emit's `expr` attribu
 
 ## Pause
 
+Stop the execution of the ReactiveMachine. Next reaction will begin
+after this instruction.
+
 ## Await
 
 ## Parallel
 
 ## Sequence
 
+Allow a sequence of multiples instructions. It is useful as child of
+ReactiveMachine, Loop, or others instructions which takes only one child.
+
 ## Halt
 
+Stop the current reaction, and block any others reactions at this
+point. It's possible to recover it by embed it inside a Abort
+instruction, for instance.
+
 ## Loop
+
+__Warning__ : HipHip.js not detect cycles because of Loop yet. Be
+careful to avoid it with Pause or others statements which are not
+instantaneous.
 
 ## Run
 
@@ -136,6 +150,11 @@ attribute, witch is an array of expression (sames rules of Emit's `expr` attribu
 ## Nothing
 
 ## Atom
+
+Allow the execution of a JavaScript function, given to `func`
+attribute. Not any modification of the internal state of the machine
+(eg. update signal value) is allowed inside the callee function :
+`set\_input` method will be inhibited.
 
 ## Trap
 
