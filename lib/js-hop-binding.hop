@@ -1,0 +1,32 @@
+(module js-hop-binding
+   (export (hopscript ::JsGlobalObject ::JsObject ::JsObject ::JsObject)))
+
+(define js-worker #f)
+(define js-exports #f)
+(define js-require #f)
+(define rjs #f)
+
+(define reactive-machine #f)
+(define emit #f)
+(define loop #f)
+(define abort #f)
+(define parallel #f)
+(define await #f)
+(define halt #f)
+(define sequence #f)
+(define pause #f)
+(define input-signal #f)
+(define output-signal #f)
+
+(define (hopscript %this this scope module)
+   (set! js-worker (js-current-worker))
+   (set! js-exports (js-get-module 'exports %this))
+   (set! js-require (nodejs-require js-worker %this module 'hopscript))
+   (set! rjs (js-call1 %this js-require (js-undefined)
+		(js-string->jsstring "./reactive-js.js")))
+
+   (set! reactive-machine
+      (let ((js-reactive-machine (js-get rjs 'REACTIVEMACHINE %this)))
+	 (lambda (this #!key
+		    (name (js-undefined))
+		    (debug (js-undefined))
