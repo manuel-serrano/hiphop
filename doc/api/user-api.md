@@ -151,6 +151,25 @@ instantaneous.
 
 ## Run
 
+Run instruction be be consider as a function call, but the callee is a
+reactive machine and not a regular function. Because of the internal
+state of a reactive machine, the callee reactive machine is copied
+inside the caller, and the input / output signals of the callee must
+be associated to input / output / local signals of the caller (local
+signals of the callee must not be reached from the called). It takes
+two arguments :
+
+* `run\_machine` which is the runtime object of a reactive machine ;
+
+* `sigs\_assoc` which is a JavaScript hashmap, where the key
+  correspond to the name of a input / output signal of the callee and
+  the value is the name of a signal in the caller.
+
+In the following example, the caller is `run2` and the callee `m1` :
+
+```hopscript
+${ doc.include("../tests/run.js", 5, 29) }
+```
 
 ## Sustain
 

@@ -1,17 +1,12 @@
 "use hopscript"
 
-var rjs = require("../lib/reactive-js.js");
-
-var sigT = new rjs.Signal("T");
-var sigW = new rjs.Signal("W");
-var sigV = new rjs.Signal("V");
-var sigZ = new rjs.Signal("Z");
+var rjs = require("reactive-js");
 
 var m1 = <rjs.reactivemachine debug name="m1">
-  <rjs.inputsignal ref=${sigT}/>
-  <rjs.inputsignal ref=${sigW}/>
-  <rjs.outputsignal ref=${sigV}/>
-  <rjs.outputsignal ref=${sigZ}/>
+  <rjs.inputsignal name=T />
+  <rjs.inputsignal name=W />
+  <rjs.outputsignal name=V />
+  <rjs.outputsignal name=Z />
   <rjs.parallel>
     <rjs.present signal_name="T">
       <rjs.emit signal_name="V"/>
@@ -22,20 +17,15 @@ var m1 = <rjs.reactivemachine debug name="m1">
   </rjs.parallel>
 </rjs.reactivemachine>;
 
-var sigS = new rjs.Signal("S");
-var sigU = new rjs.Signal("U");
-var sigA = new rjs.Signal("A");
-var sigB = new rjs.Signal("B");
-
-var m2 = <rjs.reactivemachine debug name="run2">
-  <rjs.inputsignal ref=${sigS}/>
-  <rjs.inputsignal ref=${sigU}/>
-  <rjs.outputsignal ref=${sigA}/>
-  <rjs.outputsignal ref=${sigB}/>
+var run2 = <rjs.reactivemachine debug name="run2">
+  <rjs.inputsignal name=S />
+  <rjs.inputsignal name=U />
+  <rjs.outputsignal name=A />
+  <rjs.outputsignal name=B />
   <rjs.run machine=${m1} sigs_assoc=${{"T":"S",
 				       "W":"U",
 				       "V":"A",
 				       "Z":"B"}}/>
 </rjs.reactivemachine>;
 
-exports.prg = m2;
+exports.prg = run2;
