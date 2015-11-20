@@ -44,7 +44,35 @@ applies on the object return by this XML node (the reactive machine runtime).
 
 ## InputSignal
 
+Defines an input signal of the reactive machine. It must be named
+with the `name` attribute.
+
+It can be valued by the `type` attribute. The type is a regular
+predefined or user JavaScript type. If the signal is valued, it also
+can have initialization value, with `init\_value` attribute (the type
+must match with `type` attribute). If the type is `number` or
+`boolean`, there also is a `combine\_with` attribute which can take
+`+` or `\*` if number, or `and` or `or` if boolean. The
+semantics is to applies this operator on the previous value and the
+new value, when setting a value to the signal.
+
+One can set an input signal from JavaScript regular code using the
+`set\_input` method of the reactive machine. This method take the name
+of the signal at first parameters, and a second optional parameters
+which is the value to set on the signal, if valued. It's possible to
+set a valued signal without new value, if it has been initialized before.
+
 ## OutputSignal
+
+Defines an output signal of the reactive machine. It must be named
+with the `name` attribute.
+
+As the `InputSignal`, this kind of signal can have a `type`,
+`combine\_with` and `init\_value` attributes, with the same semantics.
+
+The `react\_functions` attribute takes a JavaScript function, or an
+array of JavaScript functions, which will be call at the end of the
+reaction if the signal has been emitted.
 
 ## LocalSignal
 
@@ -125,3 +153,5 @@ You can bind callbacks on output signals with `react\_functions`
 attribute, according to the API.
 
 ## Valued signal example
+
+## Full example, with valued signal, interactions between JavaScript and HipHop.js
