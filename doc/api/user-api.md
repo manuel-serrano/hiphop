@@ -185,7 +185,21 @@ ABRO> A;
 You can bind callbacks on output signals with `react\_functions`
 attribute, according to the API.
 
-## Valued signal example
+## Valued signal example, with combine_with
+
+```hopscript
+${ doc.include("../tests/value1.js") }
+```
+
+On this example, the first `emit` instruction will erase the current
+value of signal O and set it to 5, but will add the value of the
+second emission. So O value's will be 15 at the end of reaction.
+
+## More complex valued example
+
+```hopscript
+${ doc.include("../tests/value2.js") }
+```
 
 ## Full example, with valued signal, interactions between JavaScript and HipHop.js
 

@@ -1,11 +1,9 @@
 "use hopscript"
 
-var rjs = require("../lib/reactive-js.js");
-
-var sigO = new rjs.ValuedSignal("O", "number", 5, "+");
+var rjs = require("reactive-js");
 
 var prg = <rjs.ReactiveMachine debug name="value1">
-  <rjs.outputsignal ref=${sigO}/>
+  <rjs.outputsignal name="O" type="number" init_value=5 combine_with="+"/>
   <rjs.loop>
     <rjs.sequence>
       <rjs.emit signal_name="O" expr=5 />

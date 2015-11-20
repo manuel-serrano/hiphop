@@ -3,7 +3,7 @@ ${ var config = require( hop.config ) }
 ${ var xml = require( config.docDir + "/xml.js" ) }
 ${ var cfg = require( "./doc.json" ) }
 
-    HOPIMPRESS, a web development kit
+    HipHop.js, a JavaScript reactive extension.
        
     Copyright (c) ${xml.copyrightYears( 2015 )} INRIA
                                                                       

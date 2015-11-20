@@ -1,10 +1,6 @@
 "use hopscript"
 
-var rjs = require("../lib/reactive-js.js");
-
-var sigI = new rjs.ValuedSignal("I", "number", undefined, undefined);
-var sigO = new rjs.ValuedSignal("O", "number", 5, "*");
-var sigU = new rjs.ValuedSignal("U", "number", undefined, undefined);
+var rjs = require("reactive-js");
 
 function minus(arg1, arg2) { return arg1 - arg2 };
 function plus(arg1, arg2) { return arg1 + arg2 };
@@ -18,9 +14,9 @@ var subexpr3 = <rjs.sigexpr get_value get_pre signal_name="O"/>;
 var expr3 = <rjs.expr func=${minus} exprs=${[subexpr3, 1]}/>
 
 var prg = <rjs.ReactiveMachine debug name="value2">
-  <rjs.outputsignal ref=${sigI}/>
-  <rjs.outputsignal ref=${sigO}/>
-  <rjs.outputsignal ref=${sigU}/>
+  <rjs.outputsignal name="I" type="number"/>
+  <rjs.outputsignal name="O" type="number" init_value=5 combine_with="*"/>
+  <rjs.outputsignal name="U" type="number"/>
   <rjs.loop>
     <rjs.sequence>
       <rjs.emit signal_name="I" expr=${expr1}/>

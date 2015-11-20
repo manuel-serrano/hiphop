@@ -1,6 +1,6 @@
 "use hopscript"
 
-var rjs = require("reactive-js");
+var rjs = require("../lib/reactive-js.js");
 
 function foo(name) {
    console.log("hi from foo signal", name, "is set!")
