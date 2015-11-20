@@ -1,0 +1,11 @@
+{
+   "version": "0.0.1",
+   "title": "HipHop.js",
+   "logo": "logo.svg",
+   "urlbase": "http://hop.inria.fr/hopimpress",
+   "chapters": [ { "name": "Home", "icon": "glyphicon-home", "href": "index.html" },
+      { "name": "Download", "icon": "glyphicon-cloud-download", "href": "download.html" },
+      { "name": "Api", "icon": "glyphicon-book", "href": "api.html", "json": "api/api.json" },
+      { "name": "Index", "icon": "glyphicon-list", "href": "idx.html" }
+   ]
+}
