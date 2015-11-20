@@ -124,7 +124,13 @@ after this instruction.
 
 ## Await
 
+Block the execution of the reactive machine if the signal named
+by `signal\_name` attribute is not present when this statement is
+reached. If no parallel branches are running, it will end the current reaction.
+
 ## Parallel
+
+Takes two children.
 
 ## Sequence
 
@@ -145,9 +151,14 @@ instantaneous.
 
 ## Run
 
+
 ## Sustain
 
+__Warning__ : not tested yet.
+
 ## Nothing
+
+Do nothing, equivalent of `nop` assembly instruction.
 
 ## Atom
 
@@ -158,7 +169,15 @@ attribute. Not any modification of the internal state of the machine
 
 ## Trap
 
+A trap must be named with `trap\_name` attribute. It takes one child,
+with is the reactive code that could be preempted by the trap.
+
 ## Exit
+
+An exit instruction must take the name of the related trap, via
+`trap\_name` attribute. The following instructions will not be
+executed, the the execution continues at the instruction following the
+related trap.
 
 # Compile from Esterel source code
 
