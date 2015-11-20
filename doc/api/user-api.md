@@ -67,7 +67,7 @@ set a valued signal without new value, if it has been initialized before.
 Defines an output signal of the reactive machine. It must be named
 with the `name` attribute.
 
-As the `InputSignal`, this kind of signal can have a `type`,
+As the input signal, this kind of signal can have a `type`,
 `combine\_with` and `init\_value` attributes, with the same semantics.
 
 The `react\_functions` attribute takes a JavaScript function, or an
@@ -76,13 +76,46 @@ reaction if the signal has been emitted.
 
 ## LocalSignal
 
+Defines a signal which access is limited inside the reactive code :
+it's not possible to set or get the presence or the value of this
+signal outside the reactive machine. As the input or output signals,
+it can be valued with `type`, `combine\_with` and `init\_value`
+attributes.
+
+It takes one child, which is the code embedded the local signal.
+
 ## Present
+
+The present node test the presence of a signal. It takes a
+`signal\_name` attribute (that could be the name of any kind of
+signal), and one or two children, which are the then branch, and the
+optional else branch.
+
+It is possible to test the presence of the signal on the previous
+reaction, with `test\_pre` attribute, without value.
 
 ## Emit
 
+Set the signal named by `signal\_name` attribute present for the
+current reaction. If the signal is valued, it is possible to give to
+it a new value, with the `expr` attribute. The value of this attribute
+can be an object or primitive value of JavaScript, an HipHop.js
+expression (see Expr), or the value of another signal (see SigExpr).
+
 ## SigExpr
 
+Return the presence of signal named by `signal\_name`. It is possible to
+get the presence of the previous reaction, using `get\_pre` attribute,
+or the value of the signal, using `get\_value` attribute, both of them
+without value. Of course, it is possible to get the value of the
+previous reaction using this two attributes on the same instruction.
+
 ## Expr
+
+Evaluate and return the value of the expression. The expression is
+defined in host language via a JavaScript function given to `func`
+attribute. The arity of this function is specified by the `exprs`
+attribute, witch is an array of expression (sames rules of Emit's `expr` attribute).
 
 ## Pause
 
@@ -155,3 +188,7 @@ attribute, according to the API.
 ## Valued signal example
 
 ## Full example, with valued signal, interactions between JavaScript and HipHop.js
+
+```hopscript
+${ doc.include("../tests/mirror.js", 0, 42) }
+```
