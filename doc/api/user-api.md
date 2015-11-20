@@ -25,11 +25,11 @@ reactive machine. It must take a `name` attribute, and several children which ar
 This node return an object, which is the reactive machine runtime. It
 is needed to start reactions and set input signals.
 
-### Debug mode
+#### Debug mode
 For debugging purposes, you can set `debug` attribute on XML node,
 without value. Any reaction will be logged on the console.
 
-### Start reactions
+#### Start reactions
 There is different way to trigger reactions. The following methods
 applies on the object return by this XML node (the reactive machine runtime).
 
@@ -122,7 +122,9 @@ attribute, witch is an array of expression (sames rules of Emit's `expr` attribu
 Stop the execution of the ReactiveMachine. Next reaction will begin
 after this instruction.
 
-## Await
+
+### Await ###
+[:@glyphicon glyphicon-tag function]
 
 Block the execution of the reactive machine if the signal named
 by `signal\_name` attribute is not present when this statement is
