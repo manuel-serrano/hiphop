@@ -16,6 +16,4 @@ var prg = <rjs.reactivemachine debug name="awaitvalued">
   </rjs.sequence>
 </rjs.reactive.machine>;
 
-prg.react(prg.seq + 1);
-prg.set_input("I", 23);
-prg.react(prg.seq + 1);
+exports.prg = prg;
