@@ -1,15 +1,11 @@
 "use hopscript"
 
-var rjs = require("../lib/reactive-js.js");
-
-var sigI = new rjs.ValuedSignal("I", "number", undefined, undefined);
-var sigO = new rjs.ValuedSignal("O", "number", 5, "+");
-var sigU = new rjs.ValuedSignal("U", "number", undefined, undefined);
+var rjs = require("reactive-js");
 
 var prg = <rjs.ReactiveMachine debug name="valuepre1">
-  <rjs.outputsignal ref=${sigI}/>
-  <rjs.outputsignal ref=${sigO}/>
-  <rjs.outputsignal ref=${sigU}/>
+  <rjs.outputsignal name="I" type="number"/>
+  <rjs.outputsignal name="O" type="number" init_value=5 combine_with="+"/>
+  <rjs.outputsignal name="U" type="number"/>
   <rjs.loop>
     <rjs.sequence>
       <rjs.emit signal_name="I" expr=3 />

@@ -1,11 +1,6 @@
 "use hopscript"
 
-var rjs = require("../lib/reactive-js.js");
-
-var S1_and_S2 = new rjs.ValuedSignal("S1_and_S2", "number");
-var S1_and_not_S2 = new rjs.ValuedSignal("S1_and_not_S2", "number");
-var not_S1_and_S2 = new rjs.ValuedSignal("not_S1_and_S2", "number");
-var not_S1_and_not_S2 = new rjs.ValuedSignal("not_S1_and_not_S2", "number");
+var rjs = require("reactive-js");
 
 var vals1 = <rjs.sigexpr get_value signal_name="S1"/>;
 var vals2 = <rjs.sigexpr get_value signal_name="S2"/>;
@@ -15,10 +10,10 @@ var sums1s2 = <rjs.expr func=${function(arg1, arg2) { return arg1 + arg2 }}
 			exprs=${[vals1, vals2]}/>;
 
 var prg = <rjs.reactivemachine debug name="P18valued">
-  <rjs.outputsignal ref=${S1_and_S2}/>
-  <rjs.outputsignal ref=${S1_and_not_S2}/>
-  <rjs.outputsignal ref=${not_S1_and_S2}/>
-  <rjs.outputsignal ref=${not_S1_and_not_S2}/>
+  <rjs.outputsignal name="S1_and_S2" type="number"/>
+  <rjs.outputsignal name="S1_and_not_S2" type="number"/>
+  <rjs.outputsignal name="not_S1_and_S2" type="number"/>
+  <rjs.outputsignal name="not_S1_and_not_S2" type="number"/>
   <rjs.loop>
     <rjs.trap trap_name="T1">
       <rjs.localsignal signal_name="S1" type="number" combine_with="+"

@@ -2,22 +2,18 @@
 
 var rjs = require("../lib/reactive-js.js");
 
-var seq = new rjs.ValuedSignal("SEQ", "number", 1, "+");
-var state1 = new rjs.ValuedSignal("STATE1", "boolean", false, "or");
-var state2 = new rjs.ValuedSignal("STATE2", "boolean", false, "and");
-var s = new rjs.Signal("S");
-var toogle = new rjs.ValuedSignal("TOOGLE", "boolean", undefined, undefined);
-
 var pre_seq = <rjs.sigexpr get_value get_pre signal_name="SEQ"/>;
 var expr1 = <rjs.expr func=${function(arg1, arg2) { return arg1 + arg2 }}
 		      exprs=${[pre_seq, 1]}/>;
 
 var prg = <rjs.reactivemachine debug name="toogle">
-  <rjs.outputsignal ref=${seq}/>
-  <rjs.outputsignal ref=${state1}/>
-  <rjs.outputsignal ref=${state2}/>
-  <rjs.outputsignal ref=${s}/>
-  <rjs.outputsignal ref=${toogle}/>
+  <rjs.outputsignal name="SEQ" type="number" init_value=1 combine_with="+"/>
+  <rjs.outputsignal name="STATE1" type="boolean" init_value=false
+		    combine_with="or"/>
+  <rjs.outputsignal name="STATE2" type="boolean" init_value=false
+		    combine_with="and"/>
+  <rjs.outputsignal name="S"/>
+  <rjs.outputsignal name="TOOGLE" type="boolean"/>
   <rjs.loop>
     <rjs.sequence>
       <rjs.emit signal_name="SEQ" expr=${expr1}/>

@@ -2,6 +2,7 @@
 
 dir=$(pwd)
 hop=/usr/local/bin/hop
+hop_opt="--no-server"
 js2esterel=/tmp/js2esterel.js
 batch=/tmp/batch.js
 CC=/usr/bin/gcc
@@ -28,7 +29,7 @@ example = require("$dir/$file.js"); // global for eval_mode
 batch.interpreter(example.prg);
 EOF
 
-    $hop -g --no-server $batch < $file.in > $output_hop
+    $hop $hop_opt $batch < $file.in > $output_hop
 
     if [ -f "$file.strl" ]
     then
@@ -62,7 +63,7 @@ var example = require("$dir/$file.js");
 console.log(example.prg.esterel_code());
 EOF
 
-    $hop -g --no-server $js2esterel < $file.in > $output_hop
+    $hop $hop_opt $js2esterel < $file.in > $output_hop
 
     if [ "$(diff -Z $output_hop $file-js2esterel.out)" != "" ]
     then
@@ -120,6 +121,7 @@ if [[ "$1" != "" && -f $1.in ]]
 then
     file=$1
     echo "*** DEBUG $2 TEST FOR $file. TMP FILES WILL NOT BE REMOVED ***"
+    hop_opt+=" -g"
     run_kernel_test
     exit 0
 fi

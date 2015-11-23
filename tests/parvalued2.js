@@ -1,11 +1,9 @@
 "use hopscript"
 
-var rjs = require("../lib/reactive-js.js");
-
-var sigJ = new rjs.ValuedSignal("J", "number");
+var rjs = require("reactive-js");
 
 var machine = <rjs.ReactiveMachine debug name="parvalued2">
-  <rjs.outputsignal ref=${sigJ}/>
+  <rjs.outputsignal name="J" type="number"/>
   <rjs.localsignal signal_name="I" type="number">
     <rjs.Parallel>
       <rjs.emit signal_name="I" expr=5 />
