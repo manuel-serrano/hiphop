@@ -10,8 +10,8 @@ automatically generate the reactive runtime.
 The following items are XML tree nodes that you can use to write the
 reactive code.
 
-### ReactiveMachine ###
-[:@glyphicon glyphicon-tag function]
+### rjs.reactivemachine ###
+[:@glyphicon glyphicon-tag tag]
 
 This is by order the root node of the XML tree that will build the
 reactive machine. It must take a `name` attribute, and several children which are :
@@ -43,8 +43,8 @@ applies on the object return by this XML node (the reactive machine runtime).
   of the machine. You must give as parameter a number strictly bigger
   than `seq` attribute of the reactive machine object.
 
-### InputSignal ###
-[:@glyphicon glyphicon-tag function]
+### rjs.inputsignal ###
+[:@glyphicon glyphicon-tag tag]
 
 Defines an input signal of the reactive machine. It must be named
 with the `name` attribute.
@@ -64,8 +64,8 @@ of the signal at first parameters, and a second optional parameters
 which is the value to set on the signal, if valued. It's possible to
 set a valued signal without new value, if it has been initialized before.
 
-### OutputSignal ###
-[:@glyphicon glyphicon-tag function]
+### rjs.outputsignal ###
+[:@glyphicon glyphicon-tag tag]
 
 Defines an output signal of the reactive machine. It must be named
 with the `name` attribute.
@@ -77,8 +77,8 @@ The `react\_functions` attribute takes a JavaScript function, or an
 array of JavaScript functions, which will be call at the end of the
 reaction if the signal has been emitted.
 
-### LocalSignal ###
-[:@glyphicon glyphicon-tag function]
+### rjs.localsignal ###
+[:@glyphicon glyphicon-tag tag]
 
 Defines a signal which access is limited inside the reactive code :
 it's not possible to set or get the presence or the value of this
@@ -88,8 +88,8 @@ attributes.
 
 It takes one child, which is the code embedded the local signal.
 
-### Present ###
-[:@glyphicon glyphicon-tag function]
+### rjs.present ###
+[:@glyphicon glyphicon-tag tag]
 
 The present node test the presence of a signal. It takes a
 `signal\_name` attribute (that could be the name of any kind of
@@ -99,8 +99,8 @@ optional else branch.
 It is possible to test the presence of the signal on the previous
 reaction, with `test\_pre` attribute, without value.
 
-### Emit ###
-[:@glyphicon glyphicon-tag function]
+### rjs.emit ###
+[:@glyphicon glyphicon-tag tag]
 
 Set the signal named by `signal\_name` attribute present for the
 current reaction. If the signal is valued, it is possible to give to
@@ -108,8 +108,8 @@ it a new value, with the `expr` attribute. The value of this attribute
 can be an object or primitive value of JavaScript, an HipHop.js
 expression (see Expr), or the value of another signal (see SigExpr).
 
-### SigExpr ###
-[:@glyphicon glyphicon-tag function]
+### rjs.sigexpr ###
+[:@glyphicon glyphicon-tag tag]
 
 Return the presence of signal named by `signal\_name`. It is possible to
 get the presence of the previous reaction, using `get\_pre` attribute,
@@ -117,55 +117,55 @@ or the value of the signal, using `get\_value` attribute, both of them
 without value. Of course, it is possible to get the value of the
 previous reaction using this two attributes on the same instruction.
 
-### Expr ###
-[:@glyphicon glyphicon-tag function]
+### rjs.expr ###
+[:@glyphicon glyphicon-tag tag]
 
 Evaluate and return the value of the expression. The expression is
 defined in host language via a JavaScript function given to `func`
 attribute. The arity of this function is specified by the `exprs`
 attribute, witch is an array of expression (sames rules of Emit's `expr` attribute).
 
-### Pause ###
-[:@glyphicon glyphicon-tag function]
+### rjs.pause ###
+[:@glyphicon glyphicon-tag tag]
 
 Stop the execution of the ReactiveMachine. Next reaction will begin
 after this instruction.
 
 
-### Await ###
-[:@glyphicon glyphicon-tag function]
+### rjs.await ###
+[:@glyphicon glyphicon-tag tag]
 
 Block the execution of the reactive machine if the signal named
 by `signal\_name` attribute is not present when this statement is
 reached. If no parallel branches are running, it will end the current reaction.
 
-### Parallel ###
-[:@glyphicon glyphicon-tag function]
+### rjs.parallel ###
+[:@glyphicon glyphicon-tag tag]
 
 Takes two children.
 
-### Sequence ###
-[:@glyphicon glyphicon-tag function]
+### rjs.sequence ###
+[:@glyphicon glyphicon-tag tag]
 
 Allow a sequence of multiples instructions. It is useful as child of
 ReactiveMachine, Loop, or others instructions which takes only one child.
 
-### Halt ###
-[:@glyphicon glyphicon-tag function]
+### rjs.halt ###
+[:@glyphicon glyphicon-tag tag]
 
 Stop the current reaction, and block any others reactions at this
 point. It's possible to recover it by embed it inside a Abort
 instruction, for instance.
 
-### Loop ###
-[:@glyphicon glyphicon-tag function]
+### rjs.loop ###
+[:@glyphicon glyphicon-tag tag]
 
 __Warning__ : HipHip.js not detect cycles because of Loop yet. Be
 careful to avoid it with Pause or others statements which are not
 instantaneous.
 
-### Run ###
-[:@glyphicon glyphicon-tag function]
+### rjs.run ###
+[:@glyphicon glyphicon-tag tag]
 
 Run instruction be be consider as a function call, but the callee is a
 reactive machine and not a regular function. Because of the internal
@@ -187,33 +187,33 @@ In the following example, the caller is `run2` and the callee `m1` :
 ${ doc.include("../tests/run.js", 5, 29) }
 ```
 
-### Sustain ###
-[:@glyphicon glyphicon-tag function]
+### rjs.sustain ###
+[:@glyphicon glyphicon-tag tag]
 
 __Warning__ : not tested yet.
 
-### Nothing ###
-[:@glyphicon glyphicon-tag function]
+### rjs.nothing ###
+[:@glyphicon glyphicon-tag tag]
 
 Do nothing, equivalent of `nop` assembly instruction. Therefore, the
 execution control directly jump to the next sequence instruction.
 
-### Atom ###
-[:@glyphicon glyphicon-tag function]
+### rjs.atom ###
+[:@glyphicon glyphicon-tag tag]
 
 Allow the execution of a JavaScript function, given to `func`
 attribute. Not any modification of the internal state of the machine
 (eg. update signal value) is allowed inside the callee function :
 `set\_input` method will be inhibited.
 
-### Trap ###
-[:@glyphicon glyphicon-tag function]
+### rjs.trap ###
+[:@glyphicon glyphicon-tag tag]
 
 A trap must be named with `trap\_name` attribute. It takes one child,
 with is the reactive code that could be preempted by the trap.
 
-### Exit ###
-[:@glyphicon glyphicon-tag function]
+### rjs.exit ###
+[:@glyphicon glyphicon-tag tag]
 
 An exit instruction must take the name of the related trap, via
 `trap\_name` attribute. The following instructions will not be
