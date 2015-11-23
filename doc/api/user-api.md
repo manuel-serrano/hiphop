@@ -10,7 +10,7 @@ automatically generate the reactive runtime.
 The following items are XML tree nodes that you can use to write the
 reactive code.
 
-### rjs.reactivemachine ###
+### <rjs.reactivemachine> ###
 [:@glyphicon glyphicon-tag tag]
 
 This is by order the root node of the XML tree that will build the
@@ -43,7 +43,7 @@ applies on the object return by this XML node (the reactive machine runtime).
   of the machine. You must give as parameter a number strictly bigger
   than `seq` attribute of the reactive machine object.
 
-### rjs.inputsignal ###
+### <rjs.inputsignal> ###
 [:@glyphicon glyphicon-tag tag]
 
 Defines an input signal of the reactive machine. It must be named
@@ -64,7 +64,7 @@ of the signal at first parameters, and a second optional parameters
 which is the value to set on the signal, if valued. It's possible to
 set a valued signal without new value, if it has been initialized before.
 
-### rjs.outputsignal ###
+### <rjs.outputsignal> ###
 [:@glyphicon glyphicon-tag tag]
 
 Defines an output signal of the reactive machine. It must be named
@@ -77,7 +77,7 @@ The `react\_functions` attribute takes a JavaScript function, or an
 array of JavaScript functions, which will be call at the end of the
 reaction if the signal has been emitted.
 
-### rjs.localsignal ###
+### <rjs.localsignal> ###
 [:@glyphicon glyphicon-tag tag]
 
 Defines a signal which access is limited inside the reactive code :
@@ -88,7 +88,7 @@ attributes.
 
 It takes one child, which is the code embedded the local signal.
 
-### rjs.present ###
+### <rjs.present> ###
 [:@glyphicon glyphicon-tag tag]
 
 The present node test the presence of a signal. It takes a
@@ -99,7 +99,7 @@ optional else branch.
 It is possible to test the presence of the signal on the previous
 reaction, with `test\_pre` attribute, without value.
 
-### rjs.emit ###
+### <rjs.emit> ###
 [:@glyphicon glyphicon-tag tag]
 
 Set the signal named by `signal\_name` attribute present for the
@@ -108,7 +108,7 @@ it a new value, with the `expr` attribute. The value of this attribute
 can be an object or primitive value of JavaScript, an HipHop.js
 expression (see Expr), or the value of another signal (see SigExpr).
 
-### rjs.sigexpr ###
+### <rjs.sigexpr> ###
 [:@glyphicon glyphicon-tag tag]
 
 Return the presence of signal named by `signal\_name`. It is possible to
@@ -117,7 +117,7 @@ or the value of the signal, using `get\_value` attribute, both of them
 without value. Of course, it is possible to get the value of the
 previous reaction using this two attributes on the same instruction.
 
-### rjs.expr ###
+### <rjs.expr> ###
 [:@glyphicon glyphicon-tag tag]
 
 Evaluate and return the value of the expression. The expression is
@@ -125,46 +125,46 @@ defined in host language via a JavaScript function given to `func`
 attribute. The arity of this function is specified by the `exprs`
 attribute, witch is an array of expression (sames rules of Emit's `expr` attribute).
 
-### rjs.pause ###
+### <rjs.pause> ###
 [:@glyphicon glyphicon-tag tag]
 
 Stop the execution of the ReactiveMachine. Next reaction will begin
 after this instruction.
 
 
-### rjs.await ###
+### <rjs.await> ###
 [:@glyphicon glyphicon-tag tag]
 
 Block the execution of the reactive machine if the signal named
 by `signal\_name` attribute is not present when this statement is
 reached. If no parallel branches are running, it will end the current reaction.
 
-### rjs.parallel ###
+### <rjs.parallel> ###
 [:@glyphicon glyphicon-tag tag]
 
 Takes two children.
 
-### rjs.sequence ###
+### <rjs.sequence> ###
 [:@glyphicon glyphicon-tag tag]
 
 Allow a sequence of multiples instructions. It is useful as child of
 ReactiveMachine, Loop, or others instructions which takes only one child.
 
-### rjs.halt ###
+### <rjs.halt> ###
 [:@glyphicon glyphicon-tag tag]
 
 Stop the current reaction, and block any others reactions at this
 point. It's possible to recover it by embed it inside a Abort
 instruction, for instance.
 
-### rjs.loop ###
+### <rjs.loop> ###
 [:@glyphicon glyphicon-tag tag]
 
 __Warning__ : HipHip.js not detect cycles because of Loop yet. Be
 careful to avoid it with Pause or others statements which are not
 instantaneous.
 
-### rjs.run ###
+### <rjs.run> ###
 [:@glyphicon glyphicon-tag tag]
 
 Run instruction be be consider as a function call, but the callee is a
@@ -187,18 +187,18 @@ In the following example, the caller is `run2` and the callee `m1` :
 ${ doc.include("../tests/run.js", 5, 29) }
 ```
 
-### rjs.sustain ###
+### <rjs.sustain> ###
 [:@glyphicon glyphicon-tag tag]
 
 __Warning__ : not tested yet.
 
-### rjs.nothing ###
+### <rjs.nothing> ###
 [:@glyphicon glyphicon-tag tag]
 
 Do nothing, equivalent of `nop` assembly instruction. Therefore, the
 execution control directly jump to the next sequence instruction.
 
-### rjs.atom ###
+### <rjs.atom> ###
 [:@glyphicon glyphicon-tag tag]
 
 Allow the execution of a JavaScript function, given to `func`
@@ -206,13 +206,13 @@ attribute. Not any modification of the internal state of the machine
 (eg. update signal value) is allowed inside the callee function :
 `set\_input` method will be inhibited.
 
-### rjs.trap ###
+### <rjs.trap> ###
 [:@glyphicon glyphicon-tag tag]
 
 A trap must be named with `trap\_name` attribute. It takes one child,
 with is the reactive code that could be preempted by the trap.
 
-### rjs.exit ###
+### <rjs.exit> ###
 [:@glyphicon glyphicon-tag tag]
 
 An exit instruction must take the name of the related trap, via
