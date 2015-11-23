@@ -102,16 +102,25 @@ fi
 
 clear
 
-if [[ "$1" != "" && -f $1.in && ("$2" == "kernel" || "$2" == "js2esterel") ]]
+# if [[ "$1" != "" && -f $1.in && ("$2" == "kernel" || "$2" == "js2esterel") ]]
+# then
+#     file=$1
+#     echo "*** DEBUG $2 TEST FOR $file. TMP FILES WILL NOT BE REMOVED ***"
+#     if [ "$2" == "kernel" ]
+#     then
+# 	run_kernel_test
+#     else
+# 	run_js2esterel_test
+#     fi
+#     exit 0
+# fi
+
+
+if [[ "$1" != "" && -f $1.in ]]
 then
     file=$1
     echo "*** DEBUG $2 TEST FOR $file. TMP FILES WILL NOT BE REMOVED ***"
-    if [ "$2" == "kernel" ]
-    then
-	run_kernel_test
-    else
-	run_js2esterel_test
-    fi
+    run_kernel_test
     exit 0
 fi
 
@@ -124,16 +133,16 @@ do
 done
 print_stats
 
-init_stats
-echo -e "\n\e[1mjs2esterel tests...\e[0m"
-for file in *-js2esterel.out
-do
-    file=${file%-js2esterel.out}
-    run_js2esterel_test
-done
-print_stats
+# init_stats
+# echo -e "\n\e[1mjs2esterel tests...\e[0m"
+# for file in *-js2esterel.out
+# do
+#     file=${file%-js2esterel.out}
+#     run_js2esterel_test
+# done
+# print_stats
 
 rm $batch
-rm $js2esterel
+# rm $js2esterel
 rm $output_est
 rm $output_hop

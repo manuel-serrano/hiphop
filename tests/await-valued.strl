@@ -1,0 +1,9 @@
+module awaitvalued:
+
+input I: integer;
+output O: integer;
+
+await I;
+emit O(?I);
+
+end module
