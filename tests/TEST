@@ -29,7 +29,7 @@ example = require("$dir/$file.js"); // global for eval_mode
 batch.interpreter(example.prg);
 EOF
 
-    $hop $hop_opt $batch < $file.in > $output_hop
+    $hop $hop_opt $batch < $file.in > $output_hop 2>&1
 
     if [ -f "$file.strl" ]
     then
