@@ -14,7 +14,7 @@ DOCJS=`$(HOP) --no-server --evaljs 'console.log( require( hop.config ).docDir + 
 #*---------------------------------------------------------------------*/
 #*    Targets                                                          */
 #*---------------------------------------------------------------------*/
-API_TARGETS=get-started.html user-api.html devel-api.html
+API_TARGETS=user-api.html devel-api.html
 TARGETS=index.html idx.html api.html download.html $(API_TARGETS)
 
 all: $(TARGETS) lib hss

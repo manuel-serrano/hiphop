@@ -77,6 +77,16 @@ The `react\_functions` attribute takes a JavaScript function, or an
 array of JavaScript functions, which will be call at the end of the
 reaction if the signal has been emitted.
 
+As standard DOM-objects, you can use the followings methods to bind
+listener to the emission of signals (instead of `react\_functions`) :
+
+* `addEventListener(signalName, callback)`
+* `removeEventListener(signalName, callback)`.
+
+The listener method take one arguments, which is an object containing
+the `machine` name attribute, `signal` name attribute, and then, if
+the signal is valued, the `value` attribute.
+
 ### <rjs.localsignal> ###
 [:@glyphicon glyphicon-tag tag]
 
@@ -104,26 +114,29 @@ reaction, with `test\_pre` attribute, without value.
 
 Set the signal named by `signal\_name` attribute present for the
 current reaction. If the signal is valued, it is possible to give to
-it a new value, with the `expr` attribute. The value of this attribute
-can be an object or primitive value of JavaScript, an HipHop.js
-expression (see Expr), or the value of another signal (see SigExpr).
+it a new value, with the `exprs` attribute. The value of this attribute
+can be an object or primitive value of JavaScript, or the value of a
+signal of the machine, according the following functions :
 
-### <rjs.sigexpr> ###
-[:@glyphicon glyphicon-tag tag]
+* `rjs.Value(signalName)` : get the value of `signalName`
+* `rjs.PreValue(signalName)` : get the value of `signalName`, at the
+previous reaction
+* `rjs.Present(signalName)` : boolean of presence of `signalName`
+* `rjs.PrePresent(signalName)` : boolean of presence of `signalName` at
+the previous reaction
 
-Return the presence of signal named by `signal\_name`. It is possible to
-get the presence of the previous reaction, using `get\_pre` attribute,
-or the value of the signal, using `get\_value` attribute, both of them
-without value. Of course, it is possible to get the value of the
-previous reaction using this two attributes on the same instruction.
+If `exprs` must have more than one value, it must be nested inside a
+JavaScript array, and `func` attribute must be set with a JavaScript
+function, which the arity matches with the size of given array.
 
-### <rjs.expr> ###
-[:@glyphicon glyphicon-tag tag]
+The following example will set the sum of the value of two valued
+signal :
 
-Evaluate and return the value of the expression. The expression is
-defined in host language via a JavaScript function given to `func`
-attribute. The arity of this function is specified by the `exprs`
-attribute, witch is an array of expression (sames rules of Emit's `expr` attribute).
+```hopscript
+<rjs.emit signal_name="FOO"
+          func=${(x, y) => x + y}
+          exprs=${[ rjs.Value("S"), rjs.PreValue("O") ]} />
+```
 
 ### <rjs.pause> ###
 [:@glyphicon glyphicon-tag tag]
