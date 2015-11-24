@@ -2,6 +2,7 @@
    "version": "0.0.1",
    "title": "HipHop.js",
    "logo": "logo.svg",
+   "github": "https://github.com/colinvidal/hiphop"
    "urlbase": "http://hop.inria.fr/hopimpress",
    "chapters": [ { "name": "Home", "icon": "glyphicon-home", "href": "index.html" },
       { "name": "Download", "icon": "glyphicon-cloud-download", "href": "download.html" },
