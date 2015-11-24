@@ -1,0 +1,16 @@
+;
+!eval-begin;
+var prg = example.prg;
+var foo2 = example.foo2;
+var foo3 = example.foo3;
+prg.addEventListener("O", foo2);
+!eval-end;
+I(34);
+!eval-begin;
+prg.on("O", foo3)
+!eval-end;
+I;
+!eval-begin;
+prg.removeEventListener("O", foo3);
+!eval-end;
+I(15);
