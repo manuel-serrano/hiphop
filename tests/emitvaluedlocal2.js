@@ -2,10 +2,9 @@
 
 var rjs = require("reactive-js");
 
-var subexpr1 = <rjs.sigexpr get_pre get_value signal_name="S" />;
-var expr1 = <rjs.expr func=${function(arg1, arg2) { return arg1 + arg2 }}
-		      exprs=${[subexpr1, 1]} />;
-var expr2 = <rjs.sigexpr get_value signal_name="S"/>;
+function sum(arg1, arg2) {
+   return arg1 + arg2;
+}
 
 var prg = <rjs.ReactiveMachine debug name="emitvaluedlocal2">
   <rjs.outputsignal name="O" type="number"/>
@@ -14,8 +13,8 @@ var prg = <rjs.ReactiveMachine debug name="emitvaluedlocal2">
       <rjs.localsignal signal_name="S" combine_with="+" type="number"
 		       init_value=1 >
 	<rjs.sequence>
-	  <rjs.emit signal_name="S" expr=${expr1}/>
-	  <rjs.emit signal_name="O" expr=${expr2}/>
+	  <rjs.emit signal_name="S" func=${sum} exprs=${[rjs.PreValue("S"),1]}/>
+	  <rjs.emit signal_name="O" exprs=${rjs.Value("S")}/>
 	</rjs.sequence>
       </rjs.localsignal>
       <rjs.pause/>
