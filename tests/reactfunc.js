@@ -33,8 +33,7 @@ var prg = <rjs.reactivemachine debug name="reactfunc">
 	</rjs.sequence>
       </rjs.present>
       <rjs.present signal_name="I2">
-	<rjs.emit signal_name="O2"
-		  expr=${<rjs.sigexpr get_value signal_name="I2"/>}/>
+	<rjs.emit signal_name="O2" exprs=${rjs.Value("I2")}/>
       </rjs.present>
       <rjs.pause/>
     </rjs.sequence>
