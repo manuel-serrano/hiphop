@@ -2,20 +2,20 @@
 
 var rjs = require("../lib/reactive-js.js");
 
-function foo(name) {
-   console.log("hi from foo signal", name, "is set!")
+function foo(evt) {
+   console.log("hi from foo signal", evt.signal, "is set!")
 }
 
-function bar(name) {
-   console.log("hi from bar signal", name, "is set!")
+function bar(evt) {
+   console.log("hi from bar signal", evt.signal, "is set!")
 }
 
-function foo2(name, value) {
-   console.log("hi from foo2 signal", name, "is set with", value, "!")
+function foo2(evt) {
+   console.log("hi from foo2 signal", evt.signal, "is set with", evt.value, "!")
 }
 
-function bar2(name, value) {
-   console.log("hi from bar2 signal", name, "is set with", value, "!")
+function bar2(evt) {
+   console.log("hi from bar2 signal", evt.signal, "is set with", evt.value, "!")
 }
 
 var prg = <rjs.reactivemachine debug name="reactfunc">

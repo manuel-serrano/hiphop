@@ -2,12 +2,13 @@
 
 var rjs = require("../lib/reactive-js.js");
 
-function foo(name) {
-   console.log("hi from foo signal", name, "is set!")
+function foo(evt) {
+   console.log("hi from foo signal", evt.signal, "is set!")
 }
 
-function bar(name, value) {
-   console.log("hi from bar signal", name, "is set with value", value, "!")
+function bar(evt) {
+   console.log("hi from bar signal", evt.signal, "is set with value",
+	       evt.value, "!")
 }
 
 var prg = <rjs.reactivemachine debug name="mirror">
