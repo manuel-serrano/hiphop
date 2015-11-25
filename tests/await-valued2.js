@@ -21,8 +21,7 @@ var prg = <rjs.reactivemachine debug name="awaitvalued2">
   <rjs.loop>
     <rjs.sequence>
       <rjs.await signal_name="I" />
-      <rjs.emit signal_name="O"
-		expr=${<rjs.sigexpr get_value signal_name="I"/>}/>
+      <rjs.emit signal_name="O" exprs=${rjs.value("I")} />
     </rjs.sequence>
   </rjs.loop>
 </rjs.reactive.machine>;

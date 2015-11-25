@@ -1,0 +1,6 @@
+if1> I2(6);
+--- Output: O2
+if1> I1;
+--- Output: O1 O2
+if1> I1 I2(1);
+--- Output: O1
