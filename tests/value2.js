@@ -12,8 +12,8 @@ var prg = <rjs.ReactiveMachine debug name="value2">
   <rjs.loop>
     <rjs.sequence>
       <rjs.emit signal_name="I" func=${plus} exprs=${[(3 - 2), 5]}/>
-      <rjs.emit signal_name="O" func=${plus} exprs=${[rjs.Value("I"), 7]}/>
-      <rjs.emit signal_name="U" func=${minus} exprs=${[rjs.PreValue("O"), 1]}/>
+      <rjs.emit signal_name="O" func=${plus} exprs=${[rjs.value("I"), 7]}/>
+      <rjs.emit signal_name="U" func=${minus} exprs=${[rjs.preValue("O"), 1]}/>
       <rjs.pause/>
     </rjs.sequence>
   </rjs.loop>

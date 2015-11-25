@@ -8,7 +8,7 @@ var machine = <rjs.ReactiveMachine debug name="parvalued2">
     <rjs.Parallel>
       <rjs.emit signal_name="I" exprs=5 />
       <rjs.present signal_name="I">
-	<rjs.emit signal_name="J" exprs=${rjs.Value("I")} />
+	<rjs.emit signal_name="J" exprs=${rjs.value("I")} />
       </rjs.present>
     </rjs.Parallel>
   </rjs.localsignal>

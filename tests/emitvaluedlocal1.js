@@ -14,12 +14,12 @@ var prg = <rjs.ReactiveMachine debug name="emitvaluedlocal1">
 		       init_value=1 >
 	<rjs.sequence>
 	  <rjs.emit signal_name="S" func=${sum}
-		    exprs=${[rjs.PreValue("S"), 1]}/>
-	  <rjs.emit signal_name="O" exprs=${rjs.Value("S")}/>
+		    exprs=${[rjs.preValue("S"), 1]}/>
+	  <rjs.emit signal_name="O" exprs=${rjs.value("S")}/>
 	</rjs.sequence>
       </rjs.localsignal>
       <rjs.pause/>
-      <rjs.emit signal_name="O" exprs=${rjs.PreValue("O")}/>
+      <rjs.emit signal_name="O" exprs=${rjs.preValue("O")}/>
       <rjs.pause/>
     </rjs.sequence>
   </rjs.loop>

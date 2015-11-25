@@ -18,7 +18,7 @@ var prg = <rjs.reactivemachine debug name="P18valued">
 	<rjs.parallel>
 	  <rjs.sequence>
 	    <rjs.pause/>
-            <rjs.emit signal_name="S1" exprs=${rjs.PreValue("S1")}/>
+            <rjs.emit signal_name="S1" exprs=${rjs.preValue("S1")}/>
 	    <rjs.exit trap_name="T1"/>
 	  </rjs.sequence>
 	  <rjs.loop>
@@ -28,7 +28,7 @@ var prg = <rjs.reactivemachine debug name="P18valued">
 		<rjs.parallel>
 		  <rjs.sequence>
 		    <rjs.pause/>
-                    <rjs.emit signal_name="S2" exprs=${rjs.PreValue("S2")}/>
+                    <rjs.emit signal_name="S2" exprs=${rjs.preValue("S2")}/>
 		    <rjs.exit trap_name="T2"/>
 		  </rjs.sequence>
 		  <rjs.loop>
@@ -37,22 +37,22 @@ var prg = <rjs.reactivemachine debug name="P18valued">
 			<rjs.present signal_name="S2">
                           <rjs.emit signal_name="S1_and_S2"
 				    func=${sum}
-				    exprs=${[rjs.Value("S1"),
-					     rjs.Value("S2")]}/>
+				    exprs=${[rjs.value("S1"),
+					     rjs.value("S2")]}/>
 			  <rjs.emit signal_name="S1_and_not_S2"
 				    func=${sum}
-				    exprs=${[rjs.Value("S1"),
-					     rjs.Value("S2")]}/>
+				    exprs=${[rjs.value("S1"),
+					     rjs.value("S2")]}/>
 			</rjs.present>
 			<rjs.present signal_name="S2">
 			  <rjs.emit signal_name="not_S1_and_S2"
 				    func=${sum}
-				    exprs=${[rjs.Value("S1"),
-					     rjs.Value("S2")]}/>
+				    exprs=${[rjs.value("S1"),
+					     rjs.value("S2")]}/>
 			  <rjs.emit signal_name="not_S1_and_not_S2"
 				    func=${sum}
-				    exprs=${[rjs.Value("S1"),
-					     rjs.Value("S2")]}/>
+				    exprs=${[rjs.value("S1"),
+					     rjs.value("S2")]}/>
 			</rjs.present>
 		      </rjs.present>
 		      <rjs.pause/>

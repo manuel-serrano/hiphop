@@ -26,13 +26,13 @@ var prg = <rjs.reactivemachine debug name="mirror">
 	<rjs.emit signal_name="O1"/>
       </rjs.present>
       <rjs.present signal_name="I2">
-	<rjs.emit signal_name="O2" exprs=${rjs.Value("I2")}/>
+	<rjs.emit signal_name="O2" exprs=${rjs.value("I2")}/>
       </rjs.present>
       <rjs.present signal_name="I3">
-	<rjs.emit signal_name="O3" exprs=${rjs.Value("I3")}/>
+	<rjs.emit signal_name="O3" exprs=${rjs.value("I3")}/>
       </rjs.present>
       <rjs.present signal_name="I4">
-	<rjs.emit signal_name="O4" exprs=${rjs.Value("I4")}/>
+	<rjs.emit signal_name="O4" exprs=${rjs.value("I4")}/>
       </rjs.present>
       <rjs.pause/>
     </rjs.sequence>

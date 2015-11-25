@@ -13,8 +13,8 @@ var prg = <rjs.ReactiveMachine debug name="emitvaluedlocal2">
       <rjs.localsignal signal_name="S" combine_with="+" type="number"
 		       init_value=1 >
 	<rjs.sequence>
-	  <rjs.emit signal_name="S" func=${sum} exprs=${[rjs.PreValue("S"),1]}/>
-	  <rjs.emit signal_name="O" exprs=${rjs.Value("S")}/>
+	  <rjs.emit signal_name="S" func=${sum} exprs=${[rjs.preValue("S"),1]}/>
+	  <rjs.emit signal_name="O" exprs=${rjs.value("S")}/>
 	</rjs.sequence>
       </rjs.localsignal>
       <rjs.pause/>

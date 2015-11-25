@@ -14,7 +14,7 @@ var prg = <rjs.reactivemachine debug name="toogle">
     <rjs.sequence>
       <rjs.emit signal_name="SEQ"
 		func=${(x, y) => x + y}
-		exprs=${[rjs.PreValue("SEQ"), 1]}/>
+		exprs=${[rjs.preValue("SEQ"), 1]}/>
       <rjs.emit signal_name="STATE1" exprs=true />
       <rjs.emit signal_name="STATE1" exprs=false />
       <rjs.emit signal_name="STATE2" exprs=true />

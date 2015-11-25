@@ -9,8 +9,8 @@ var prg = <rjs.ReactiveMachine debug name="valuepre1">
   <rjs.loop>
     <rjs.sequence>
       <rjs.emit signal_name="I" exprs=3 />
-      <rjs.emit signal_name="O" exprs=${rjs.Value("I")}/>
-      <rjs.emit signal_name="U" exprs=${rjs.PreValue("O")}/>
+      <rjs.emit signal_name="O" exprs=${rjs.value("I")}/>
+      <rjs.emit signal_name="U" exprs=${rjs.preValue("O")}/>
       <rjs.pause/>
     </rjs.sequence>
   </rjs.loop>
