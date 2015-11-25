@@ -27,9 +27,9 @@
 		(js-string->jsstring "./reactive-js.js")))
 
    (set! reactive-machine
-      (make-hopjs-function (js-get rjs 'REACTIVEMACHINE %this)))
-   (set! emit (make-hopjs-function (js-get rjs 'EMIT %this)))
-   (set! loop (make-hopjs-function (js-get rjs 'LOOP %this)))
+      (make-hopjs-function (js-get rjs 'REACTIVEMACHINE %this) %this))
+   (set! emit (make-hopjs-function (js-get rjs 'EMIT %this) %this))
+   (set! loop (make-hopjs-function (js-get rjs 'LOOP %this) %this))
 
    (js-bind! %this js-exports 'compile_from_esterel
       :value (js-make-function %this compile-from-esterel 1
@@ -56,13 +56,15 @@
 		 (set-cdr! tail '())
 		 (values (js-plist->jsobject l %this) walk))))))))
 
-(define (make-hopjs-function fun)
-   (lambda (%this . l)
+(define (make-hopjs-function fun %this)
+   (lambda ( . l) ;; ( . l) or just l ? seems to be the same
       (multiple-value-bind (attrs nodes)
-	 (split l)
+	 (split %this l)
+	 (print (object-class fun))
 	 (js-apply %this fun (js-undefined)
-	    (cons (js-plist->jsobject attrs %this) nodes)))))
+	    (cons attrs (js-plist->jsobject nodes %this))))))
 
 (define (compile-from-esterel this)
    (build-ast (current-input-port))
+   (print (reactive-machine :name "foo"))
    (print "Esterel code successfully parsed."))

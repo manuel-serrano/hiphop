@@ -1,4 +1,5 @@
 (module esterel-compiler
+   (import js-hop-binding)
    (export build-ast))
 
 (define esterel-lalr-grammar
