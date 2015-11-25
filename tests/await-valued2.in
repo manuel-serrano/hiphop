@@ -7,7 +7,7 @@ prg.addEventListener("O", foo2);
 !eval-end;
 I(34);
 !eval-begin;
-prg.addEventListener("O", foo3)
+prg.addEventListener("O", foo3);
 !eval-end;
 I;
 !eval-begin;

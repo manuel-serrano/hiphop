@@ -2,8 +2,8 @@
 
 var rjs = require("reactive-js");
 
-function foo(signame, sigval) {
-   console.log("foo called by", signame, "with value", sigval);
+function foo(evt) {
+   console.log("foo called by", evt.signal, "with value", evt.value);
 }
 
 var prg = <rjs.reactivemachine debug name="awaitvalued">

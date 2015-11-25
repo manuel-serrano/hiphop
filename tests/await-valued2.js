@@ -2,16 +2,16 @@
 
 var rjs = require("reactive-js");
 
-function foo(signame, sigval) {
-   console.log("foo called by", signame, "with value", sigval);
+function foo(evt) {
+   console.log("foo called by", evt.signal, "with value", evt.value);
 }
 
-function foo2(signame, sigval) {
-   console.log("foo2 called by", signame, "with value", sigval);
+function foo2(evt) {
+   console.log("foo2 called by", evt.signal, "with value", evt.value);
 }
 
-function foo3(signame, sigval) {
-   console.log("foo3 called by", signame, "with value", sigval);
+function foo3(evt) {
+   console.log("foo3 called by", evt.signal, "with value", evt.value);
 }
 
 
