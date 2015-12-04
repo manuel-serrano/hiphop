@@ -1,0 +1,11 @@
+module SUSPEND:
+
+input I;
+output O, J;
+
+suspend
+	sustain O;
+when I;
+emit J;
+
+end module
