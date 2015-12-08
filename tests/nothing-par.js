@@ -1,6 +1,6 @@
 "use hopscript"
 
-var rjs = require("../lib/reactive-js.js");
+var rjs = require("hiphop");
 
 var prg = <rjs.reactivemachine debug name="nothingpar">
   <rjs.parallel>

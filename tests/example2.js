@@ -1,13 +1,10 @@
 "use hopscript"
 
-var rjs = require("../lib/reactive-js.js");
-
-var sigT = new rjs.Signal("T");
-var sigV = new rjs.Signal("V");
+var rjs = require("hiphop");
 
 var prg = <rjs.reactivemachine debug name="example2">
-  <rjs.outputsignal ref=${sigT}/>
-  <rjs.outputsignal ref=${sigV}/>
+  <rjs.outputsignal name="T"/>
+  <rjs.outputsignal name="V"/>
   <rjs.localsignal signal_name="S">
     <rjs.loop>
       <rjs.sequence>

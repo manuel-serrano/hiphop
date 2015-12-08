@@ -1,17 +1,12 @@
 "use hopscript"
 
-var rjs = require("../lib/reactive-js.js");
-
-var sigA = new rjs.Signal("A");
-var sigB = new rjs.Signal("B");
-var sigC = new rjs.Signal("C");
-var sigD = new rjs.Signal("D");
+var rjs = require("hiphop");
 
 var prg = <rjs.reactivemachine debug name="trapnested1">
-  <rjs.outputsignal ref=${sigA}/>
-  <rjs.outputsignal ref=${sigB}/>
-  <rjs.outputsignal ref=${sigC}/>
-  <rjs.outputsignal ref=${sigD}/>
+  <rjs.outputsignal name="A"/>
+  <rjs.outputsignal name="B"/>
+  <rjs.outputsignal name="C"/>
+  <rjs.outputsignal name="D"/>
   <rjs.sequence>
     <rjs.emit signal_name="A"/>
     <rjs.trap trap_name="U">

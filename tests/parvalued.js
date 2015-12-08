@@ -1,6 +1,6 @@
 "use hopscript"
 
-var rjs = require("reactive-js");
+var rjs = require("hiphop");
 
 var machine = <rjs.ReactiveMachine debug name="parvalued">
   <rjs.outputsignal name="J" type="number"/>

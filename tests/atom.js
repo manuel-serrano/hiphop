@@ -1,6 +1,6 @@
 "use strict"
 
-var rjs = require("../lib/reactive-js.js");
+var rjs = require("hiphop");
 
 var func = function() {
    console.log("atom works!");

@@ -3,10 +3,10 @@
 var rjs = require("hiphop");
 
 var prg = <rjs.reactivemachine debug name="ABRO">
-  <rjs.inputsignal name=R />
-  <rjs.inputsignal name=A />
-  <rjs.inputsignal name=B />
-  <rjs.outputsignal name=O />
+  <rjs.inputsignal name="R"/>
+  <rjs.inputsignal name="A"/>
+  <rjs.inputsignal name="B"/>
+  <rjs.outputsignal name="O"/>
   <rjs.loop>
     <rjs.abort signal_name="R">
       <rjs.sequence>

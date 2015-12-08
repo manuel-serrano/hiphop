@@ -1,11 +1,10 @@
-var rjs = require("../lib/reactive-js.js");
+"use hopscript"
 
-var sigI = new rjs.Signal("I");
-var sigO = new rjs.Signal("O");
+var rjs = require("hiphop");
 
 var prg = <rjs.reactivemachine debug name="abortpar">
-  <rjs.inputsignal ref=${sigI}/>
-  <rjs.outputsignal ref=${sigO}/>
+  <rjs.inputsignal name="I"/>
+  <rjs.outputsignal name="O"/>
   <rjs.localsignal signal_name="L">
     <rjs.parallel>
       <rjs.abort signal_name="L">

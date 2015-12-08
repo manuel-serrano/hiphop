@@ -1,6 +1,6 @@
 "use hopscript"
 
-var rjs = require("reactive-js");
+var rjs = require("hiphop");
 
 var prg = <rjs.reactivemachine debug name="SUSPEND">
   <rjs.inputsignal name="I"/>

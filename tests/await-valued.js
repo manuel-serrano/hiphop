@@ -1,6 +1,6 @@
 "use hopscript"
 
-var rjs = require("reactive-js");
+var rjs = require("hiphop");
 
 function foo(evt) {
    console.log("foo called by", evt.signal, "with value", evt.value);

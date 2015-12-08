@@ -1,11 +1,9 @@
 "use strict"
 
-var rjs = require("../lib/reactive-js.js");
-
-var sigT = new rjs.Signal("T");
+var rjs = require("hiphop");
 
 var prg = <rjs.reactivemachine debug name="example1">
-  <rjs.outputsignal ref=${sigT}/>
+  <rjs.outputsignal name="T"/>
   <rjs.sequence>
     <rjs.pause/>
     <rjs.localsignal signal_name="S">

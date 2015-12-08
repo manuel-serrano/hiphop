@@ -1,17 +1,12 @@
 "use hopscript"
 
-var rjs = require("../lib/reactive-js.js");
-
-var S1_and_S2 = new rjs.Signal("S1_and_S2");
-var S1_and_not_S2 = new rjs.Signal("S1_and_not_S2");
-var not_S1_and_S2 = new rjs.Signal("not_S1_and_S2");
-var not_S1_and_not_S2 = new rjs.Signal("not_S1_and_not_S2");
+var rjs = require("hiphop");
 
 var prg = <rjs.reactivemachine debug name="P18">
-  <rjs.outputsignal ref=${S1_and_S2}/>
-  <rjs.outputsignal ref=${S1_and_not_S2}/>
-  <rjs.outputsignal ref=${not_S1_and_S2}/>
-  <rjs.outputsignal ref=${not_S1_and_not_S2}/>
+  <rjs.outputsignal name="S1_and_S2"/>
+  <rjs.outputsignal name="S1_and_not_S2"/>
+  <rjs.outputsignal name="not_S1_and_S2"/>
+  <rjs.outputsignal name="not_S1_and_not_S2"/>
   <rjs.loop>
     <rjs.trap trap_name="T1">
       <rjs.localsignal signal_name="S1">

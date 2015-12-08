@@ -1,17 +1,12 @@
 "use hopscript"
 
-var rjs = require("../lib/reactive-js.js");
-
-var sigI = new rjs.Signal("I");
-var sigJ = new rjs.Signal("J");
-var sigK = new rjs.Signal("K");
-var sigV = new rjs.Signal("V");
+var rjs = require("hiphop");
 
 var prg = <rjs.reactivemachine debug name="abortpresent">
-  <rjs.inputsignal ref=${sigI}/>
-  <rjs.outputsignal ref=${sigJ}/>
-  <rjs.outputsignal ref=${sigK}/>
-  <rjs.outputsignal ref=${sigV}/>
+  <rjs.inputsignal name="I"/>
+  <rjs.outputsignal name="J"/>
+  <rjs.outputsignal name="K"/>
+  <rjs.outputsignal name="V"/>
   <rjs.loop>
     <rjs.sequence>
       <rjs.abort signal_name="I">

@@ -1,6 +1,6 @@
 "use hopscript"
 
-var rjs = require("reactive-js");
+var rjs = require("hiphop");
 
 function sum(arg1, arg2) {
    return arg1 + arg2;
