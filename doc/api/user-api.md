@@ -10,7 +10,7 @@ automatically generate the reactive runtime.
 The following items are XML tree nodes that you can use to write the
 reactive code.
 
-### <rjs.reactivemachine> ###
+### <hiphop.reactivemachine> ###
 [:@glyphicon glyphicon-tag tag]
 
 This is by order the root node of the XML tree that will build the
@@ -43,7 +43,7 @@ applies on the object return by this XML node (the reactive machine runtime).
   of the machine. You must give as parameter a number strictly bigger
   than `seq` attribute of the reactive machine object.
 
-### <rjs.inputsignal> ###
+### <hiphop.inputsignal> ###
 [:@glyphicon glyphicon-tag tag]
 
 Defines an input signal of the reactive machine. It must be named
@@ -64,7 +64,7 @@ of the signal at first parameters, and a second optional parameters
 which is the value to set on the signal, if valued. It's possible to
 set a valued signal without new value, if it has been initialized before.
 
-### <rjs.outputsignal> ###
+### <hiphop.outputsignal> ###
 [:@glyphicon glyphicon-tag tag]
 
 Defines an output signal of the reactive machine. It must be named
@@ -87,7 +87,7 @@ The listener method take one arguments, which is an object containing
 the `machine` name attribute, `signal` name attribute, and then, if
 the signal is valued, the `value` attribute.
 
-### <rjs.localsignal> ###
+### <hiphop.localsignal> ###
 [:@glyphicon glyphicon-tag tag]
 
 Defines a signal which access is limited inside the reactive code :
@@ -98,7 +98,7 @@ attributes.
 
 It takes one child, which is the code embedded the local signal.
 
-### <rjs.present> ###
+### <hiphop.present> ###
 [:@glyphicon glyphicon-tag tag]
 
 The present node test the presence of a signal. It takes a
@@ -109,7 +109,25 @@ optional else branch.
 It is possible to test the presence of the signal on the previous
 reaction, with `test\_pre` attribute, without value.
 
-### <rjs.emit> ###
+### <hiphop.if> ###
+[:@glyphicon glyphicon-tag tag]
+
+Evaluate an expression which must return a boolean value. The
+expression is given by a callback to the `exprs` attribute, or by a
+signal presence (`rjs.present(sigName)` for instance), or a signal
+value, if boolean.
+
+This node takes one or two children, which are respectively the then
+and else branches.
+
+The following example will emit `O1` if the signal `I1` is present,
+and `O2` if the value of the signal `O2` is superior or equals to 2.
+
+```hopscript
+${ doc.include("../tests/if1.js", 5, 21) }
+```
+
+### <hiphop.emit> ###
 [:@glyphicon glyphicon-tag tag]
 
 Set the signal named by `signal\_name` attribute present for the
@@ -118,11 +136,11 @@ it a new value, with the `exprs` attribute. The value of this attribute
 can be an object or primitive value of JavaScript, or the value of a
 signal of the machine, according the following functions :
 
-* `rjs.Value(signalName)` : get the value of `signalName`
-* `rjs.PreValue(signalName)` : get the value of `signalName`, at the
+* `hiphop.value(signalName)` : get the value of `signalName`
+* `hiphop.preValue(signalName)` : get the value of `signalName`, at the
 previous reaction
-* `rjs.Present(signalName)` : boolean of presence of `signalName`
-* `rjs.PrePresent(signalName)` : boolean of presence of `signalName` at
+* `hiphop.present(signalName)` : boolean of presence of `signalName`
+* `hiphop.prePresent(signalName)` : boolean of presence of `signalName` at
 the previous reaction
 
 If `exprs` must have more than one value, it must be nested inside a
@@ -133,51 +151,51 @@ The following example will set the sum of the value of two valued
 signal :
 
 ```hopscript
-<rjs.emit signal_name="FOO"
+<hiphop.emit signal_name="FOO"
           func=${(x, y) => x + y}
-          exprs=${[ rjs.Value("S"), rjs.PreValue("O") ]} />
+          exprs=${[ hiphop.value("S"), hiphop.preValue("O") ]} />
 ```
 
-### <rjs.pause> ###
+### <hiphop.pause> ###
 [:@glyphicon glyphicon-tag tag]
 
 Stop the execution of the ReactiveMachine. Next reaction will begin
 after this instruction.
 
 
-### <rjs.await> ###
+### <hiphop.await> ###
 [:@glyphicon glyphicon-tag tag]
 
 Block the execution of the reactive machine if the signal named
 by `signal\_name` attribute is not present when this statement is
 reached. If no parallel branches are running, it will end the current reaction.
 
-### <rjs.parallel> ###
+### <hiphop.parallel> ###
 [:@glyphicon glyphicon-tag tag]
 
 Takes two children.
 
-### <rjs.sequence> ###
+### <hiphop.sequence> ###
 [:@glyphicon glyphicon-tag tag]
 
 Allow a sequence of multiples instructions. It is useful as child of
 ReactiveMachine, Loop, or others instructions which takes only one child.
 
-### <rjs.halt> ###
+### <hiphop.halt> ###
 [:@glyphicon glyphicon-tag tag]
 
 Stop the current reaction, and block any others reactions at this
 point. It's possible to recover it by embed it inside a Abort
 instruction, for instance.
 
-### <rjs.loop> ###
+### <hiphop.loop> ###
 [:@glyphicon glyphicon-tag tag]
 
 __Warning__ : HipHip.js not detect cycles because of Loop yet. Be
 careful to avoid it with Pause or others statements which are not
 instantaneous.
 
-### <rjs.run> ###
+### <hiphop.run> ###
 [:@glyphicon glyphicon-tag tag]
 
 Run instruction be be consider as a function call, but the callee is a
@@ -200,18 +218,18 @@ In the following example, the caller is `run2` and the callee `m1` :
 ${ doc.include("../tests/run.js", 5, 29) }
 ```
 
-### <rjs.sustain> ###
+### <hiphop.sustain> ###
 [:@glyphicon glyphicon-tag tag]
 
 __Warning__ : not tested yet.
 
-### <rjs.nothing> ###
+### <hiphop.nothing> ###
 [:@glyphicon glyphicon-tag tag]
 
 Do nothing, equivalent of `nop` assembly instruction. Therefore, the
 execution control directly jump to the next sequence instruction.
 
-### <rjs.atom> ###
+### <hiphop.atom> ###
 [:@glyphicon glyphicon-tag tag]
 
 Allow the execution of a JavaScript function, given to `func`
@@ -219,13 +237,13 @@ attribute. Not any modification of the internal state of the machine
 (eg. update signal value) is allowed inside the callee function :
 `set\_input` method will be inhibited.
 
-### <rjs.trap> ###
+### <hiphop.trap> ###
 [:@glyphicon glyphicon-tag tag]
 
 A trap must be named with `trap\_name` attribute. It takes one child,
 with is the reactive code that could be preempted by the trap.
 
-### <rjs.exit> ###
+### <hiphop.exit> ###
 [:@glyphicon glyphicon-tag tag]
 
 An exit instruction must take the name of the related trap, via

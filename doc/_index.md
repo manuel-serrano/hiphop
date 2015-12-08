@@ -8,12 +8,12 @@ allow orchestrate web applications.
 
 * Install [Hop.js](http://hop-dev.inria.fr)
 * Download [HipHop.js](), and extract the tarball inside
-`$HOME/.nodes\_modules/`
+`$HOME/.node\_modules/`
 * Add theses lines on the top of Hop program :
 ```hopscript
 "use hopscript"
 
-var rjs = require("reactive-js")
+var hiphop = require("hiphop")
 ```
 
 ## Hello world example
