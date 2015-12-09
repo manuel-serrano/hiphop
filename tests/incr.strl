@@ -1,0 +1,14 @@
+module Incr:
+
+input I, R;
+output O := 0 : integer;
+
+loop
+	abort
+		await I;
+		emit O(pre(?O) + 1);
+		pause
+	when R
+end loop
+
+end module
