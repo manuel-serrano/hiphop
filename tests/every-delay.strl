@@ -1,0 +1,10 @@
+module everydelay:
+
+input I;
+output O;
+
+every 2 I do
+      emit O;
+end every
+
+end module

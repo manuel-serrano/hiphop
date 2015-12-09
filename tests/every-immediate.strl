@@ -1,0 +1,10 @@
+module everyimmediate:
+
+input I;
+output O;
+
+every immediate I do
+      emit O;
+end every
+
+end module
