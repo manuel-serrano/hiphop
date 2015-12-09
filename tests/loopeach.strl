@@ -1,0 +1,10 @@
+module loopeach:
+
+input I;
+output O;
+
+loop
+	emit O;
+each I;
+
+end module
