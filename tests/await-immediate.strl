@@ -1,0 +1,12 @@
+module awaitimmediate:
+
+input I;
+output O;
+
+loop
+	await immediate I;
+	emit O;
+	pause;
+end loop
+
+end module
