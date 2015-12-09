@@ -1,0 +1,11 @@
+module await3:
+
+input I;
+output O;
+
+loop
+	await 3 I;
+	emit O;
+end loop
+
+end module
