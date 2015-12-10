@@ -1,0 +1,127 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The BUTTON module for watch, stopwatch1, alarm %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+module BUTTON :
+
+% Input interface
+
+input UL, % upper-left button
+      UR, % upper-right button
+      LL, % lower-left button
+      LR; % lower-right button
+
+relation UL # UR # LL # LR;    % all buttons are incompatible
+
+% Outputs for the watch mode
+
+output WATCH_MODE_COMMAND;
+
+output ENTER_SET_WATCH_MODE_COMMAND,
+       SET_WATCH_COMMAND,
+       NEXT_WATCH_TIME_POSITION_COMMAND,
+       EXIT_SET_WATCH_MODE_COMMAND;
+
+output TOGGLE_24H_MODE_COMMAND; % also to the alarm
+output TOGGLE_CHIME_COMMAND;
+
+% Outputs for the stopwatch mode
+
+output STOPWATCH_MODE_COMMAND;
+
+output START_STOP_COMMAND,
+       LAP_COMMAND;
+
+% Outputs for the alarm mode
+
+output ALARM_MODE_COMMAND;
+
+output ENTER_SET_ALARM_MODE_COMMAND,
+       SET_ALARM_COMMAND,
+       NEXT_ALARM_TIME_POSITION_COMMAND,
+       EXIT_SET_ALARM_MODE_COMMAND;
+
+output TOGGLE_ALARM_COMMAND,
+       STOP_ALARM_BEEP_COMMAND;
+
+% Body
+
+[
+   loop
+
+      % Watch and set-watch mode (exit by LL in watch mode only, 
+      %                           not in set-watch mode)
+
+      emit WATCH_MODE_COMMAND;
+      trap WATCH_AND_SET_WATCH_MODE in
+         loop
+
+            % watch mode
+
+            abort       % when UL, that turns to set-watch mode
+                  await LL do exit WATCH_AND_SET_WATCH_MODE end
+               ||
+                  every LR do emit TOGGLE_24H_MODE_COMMAND end
+            when UL;
+
+            % set-watch mode
+
+            emit ENTER_SET_WATCH_MODE_COMMAND;
+            abort       % when UL, that brings back to watch mode
+                  every LL do emit NEXT_WATCH_TIME_POSITION_COMMAND end
+               ||
+                  every LR do emit SET_WATCH_COMMAND end
+            when UL;
+            emit EXIT_SET_WATCH_MODE_COMMAND
+         end loop
+      end trap;
+
+      % Stopwatch mode (exit by LL); LR is START/STOP, UR is LAP
+
+      emit STOPWATCH_MODE_COMMAND;
+      abort       % when LL
+            every LR do emit START_STOP_COMMAND end
+         ||
+            every UR do emit LAP_COMMAND end
+      when LL;
+
+      % Alarm and set-alarm mode (exit by LL in alarm mode only, 
+      %                           not in set-alarm mode)
+
+      trap ALARM_AND_SET_ALARM_MODE in
+         emit ALARM_MODE_COMMAND;
+         loop
+
+            % alarm mode
+
+            abort       % when UL, that turns to set-alarm mode
+                  await LL do exit ALARM_AND_SET_ALARM_MODE end
+               ||
+                  every LR do emit TOGGLE_CHIME_COMMAND end
+               ||
+                  every UR do emit TOGGLE_ALARM_COMMAND end
+            when UL;
+
+            % set-alarm mode
+
+            emit ENTER_SET_ALARM_MODE_COMMAND;
+
+            abort % when UL, that returns to alarm mode
+                  every LL do emit NEXT_ALARM_TIME_POSITION_COMMAND end
+               ||
+                  every LR do emit SET_ALARM_COMMAND end
+            when UL;
+            emit EXIT_SET_ALARM_MODE_COMMAND
+         end loop
+      end trap
+   end loop
+
+||
+
+   % transforms permanently UR into STOP_ALARM_BEEP_COMMAND
+
+   every UR do emit STOP_ALARM_BEEP_COMMAND end
+]
+end module
+
+
