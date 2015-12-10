@@ -1,0 +1,144 @@
+foo { hours: 0, minutes: 0, seconds: 0, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+0:0:1
+foo { hours: 0, minutes: 0, seconds: 1, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+0:0:2
+foo { hours: 0, minutes: 0, seconds: 2, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+0:0:3
+foo { hours: 0, minutes: 0, seconds: 3, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+0:1:0
+foo { hours: 0, minutes: 1, seconds: 0, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+0:1:1
+foo { hours: 0, minutes: 1, seconds: 1, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+0:1:2
+foo { hours: 0, minutes: 1, seconds: 2, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+0:1:3
+foo { hours: 0, minutes: 1, seconds: 3, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+0:2:0
+foo { hours: 0, minutes: 2, seconds: 0, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+0:2:1
+foo { hours: 0, minutes: 2, seconds: 1, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+0:2:2
+foo { hours: 0, minutes: 2, seconds: 2, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+0:2:3
+foo { hours: 0, minutes: 2, seconds: 3, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+0:3:0
+foo { hours: 0, minutes: 3, seconds: 0, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+0:3:1
+foo { hours: 0, minutes: 3, seconds: 1, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+0:3:2
+foo { hours: 0, minutes: 3, seconds: 2, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+0:3:3
+foo { hours: 0, minutes: 3, seconds: 3, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+1:0:0
+foo { hours: 1, minutes: 0, seconds: 0, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+1:0:1
+foo { hours: 1, minutes: 0, seconds: 1, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+1:0:2
+foo { hours: 1, minutes: 0, seconds: 2, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+1:0:3
+foo { hours: 1, minutes: 0, seconds: 3, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+1:1:0
+foo { hours: 1, minutes: 1, seconds: 0, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+1:1:1
+foo { hours: 1, minutes: 1, seconds: 1, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+1:1:2
+foo { hours: 1, minutes: 1, seconds: 2, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+1:1:3
+foo { hours: 1, minutes: 1, seconds: 3, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+1:2:0
+foo { hours: 1, minutes: 2, seconds: 0, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+1:2:1
+foo { hours: 1, minutes: 2, seconds: 1, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+1:2:2
+foo { hours: 1, minutes: 2, seconds: 2, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+1:2:3
+foo { hours: 1, minutes: 2, seconds: 3, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+1:3:0
+foo { hours: 1, minutes: 3, seconds: 0, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+1:3:1
+foo { hours: 1, minutes: 3, seconds: 1, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+1:3:2
+foo { hours: 1, minutes: 3, seconds: 2, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+1:3:3
+foo { hours: 1, minutes: 3, seconds: 3, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+2:0:0
+foo { hours: 2, minutes: 0, seconds: 0, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+2:0:1
+foo { hours: 2, minutes: 0, seconds: 1, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+2:0:2
+foo { hours: 2, minutes: 0, seconds: 2, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+2:0:3
+foo { hours: 2, minutes: 0, seconds: 3, ampm: false }
+Foo> ;
+--- Output: Time([object Object])
+2:1:0
