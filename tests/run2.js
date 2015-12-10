@@ -22,16 +22,11 @@ var m1 = <rjs.reactivemachine debug name="m1">
   </rjs.parallel>
 </rjs.reactivemachine>;
 
-var sigS = new rjs.Signal("S");
-var sigU = new rjs.Signal("U");
-var sigA = new rjs.Signal("A");
-var sigB = new rjs.Signal("B");
-
 var m2 = <rjs.reactivemachine debug name="run22">
-  <rjs.inputsignal ref=${sigS}/>
-  <rjs.inputsignal ref=${sigU}/>
-  <rjs.outputsignal ref=${sigA}/>
-  <rjs.outputsignal ref=${sigB}/>
+  <rjs.inputsignal name="S"/>
+  <rjs.inputsignal name="U"/>
+  <rjs.outputsignal name="A"/>
+  <rjs.outputsignal name="B"/>
   <rjs.sequence>
     <rjs.localsignal signal_name="L">
       <rjs.emit signal_name="L"/>
