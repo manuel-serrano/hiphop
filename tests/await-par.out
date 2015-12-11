@@ -1,0 +1,26 @@
+awaitpar> A;
+--- Output: 
+awaitpar> ;
+--- Output: 
+awaitpar> B;
+--- Output: 
+awaitpar> A;
+--- Output: O 
+awaitpar> ;
+--- Output: 
+awaitpar> ;
+--- Output: 
+awaitpar> B;
+--- Output: 
+awaitpar> A;
+--- Output: 
+awaitpar> !reset;
+--- Automaton awaitpar reset
+awaitpar> ;
+--- Output: 
+awaitpar> A;
+--- Output: 
+awaitpar> B;
+--- Output: O 
+awaitpar> ;
+--- Output: 

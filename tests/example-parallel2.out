@@ -1,0 +1,10 @@
+parallel2> ;
+--- Output: J 
+parallel2> ;
+--- Output: 
+parallel2> ;
+--- Output: 
+parallel2> !reset;
+--- Automaton parallel2 reset
+parallel2> ;
+--- Output: J 

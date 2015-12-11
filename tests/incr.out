@@ -1,0 +1,30 @@
+Incr> I;
+--- Output: 
+Incr> I;
+--- Output: O(1) 
+Incr> I;
+--- Output: 
+Incr> ;
+--- Output: 
+Incr> I;
+--- Output: O(2) 
+Incr> I;
+--- Output: 
+Incr> ;
+--- Output: 
+Incr> ;
+--- Output: 
+Incr> R;
+--- Output: 
+Incr> I;
+--- Output: O(3) 
+Incr> I;
+--- Output: 
+Incr> R;
+--- Output: 
+Incr> I;
+--- Output: O(4) 
+Incr> I R;
+--- Output: 
+Incr> R I;
+--- Output: 

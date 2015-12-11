@@ -1,0 +1,10 @@
+P18valued> ;
+--- Output: not_S1_and_not_S2(30) 
+P18valued> ;
+--- Output: S1_and_S2(30) S1_and_not_S2(30) not_S1_and_not_S2(30) 
+P18valued> ;
+--- Output: S1_and_S2(30) S1_and_not_S2(30) not_S1_and_not_S2(30) 
+P18valued> ;
+--- Output: S1_and_S2(30) S1_and_not_S2(30) not_S1_and_not_S2(30) 
+P18valued> ;
+--- Output: S1_and_S2(30) S1_and_not_S2(30) not_S1_and_not_S2(30) 

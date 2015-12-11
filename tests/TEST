@@ -1,21 +1,12 @@
 #!/bin/bash
 
-space="                    "
+space="               "
 dir=$(pwd)
 hop=/usr/local/bin/hop
 hop_opt="--no-server"
 batch=/tmp/batch.js
 CC=/usr/bin/gcc
 output_hop=/tmp/TEST-HOPJS.out
-output_est=/tmp/TEST-EST.out
-
-batch_esterel() {
-    $ESTEREL/bin/esterel -simul $file.strl -D /tmp/ \
-    	&& $CC /tmp/$file.c $ESTEREL/lib/libcoresim.a \
-    	       -o /tmp/$file \
-	&& /tmp/$file \
-    	&& rm /tmp/$file /tmp/$file.c
-}
 
 run_kernel_test() {
     i=$((i + 1))
@@ -30,14 +21,7 @@ batch.interpreter(example.prg);
 EOF
 
     $hop $hop_opt $batch < $file.in > $output_hop 2>&1
-
-    if [ -f "$file.strl" ]
-    then
-	batch_esterel $file < $file.in > $output_est
-	diff_out=$(diff -Z $output_hop $output_est)
-    else
-	diff_out=$(diff $output_hop $file.out)
-    fi
+    diff_out=$(diff -Z $output_hop $file.out)
 
     if [ "$diff_out" != "" ]
     then
@@ -61,12 +45,6 @@ print_stats() {
     echo -e "\e[1m$space*** $success success   $failure failure ***\e[0m"
 }
 
-if [ -z $ESTEREL ]
-then
-    echo "ERROR: Esterel needs to be installed."
-    exit 1
-fi
-
 if [ "$(dirname $0)" != "." ]
 then
     echo "ERROR: The tests must be run inside test directory"
@@ -78,7 +56,8 @@ clear
 if [ "$1" != "" ]; then
     file=${1%.*}
     if [ -f $file.in ]; then
-	echo -e "\e[1m$space*** DEBUG $2 TEST FOR $file. TMP FILES WILL NOT BE REMOVED ***\e[0m"
+	echo -en "\e[1m$space*** DEBUG $2 TEST FOR $file. TMP FILES WILL NOT BE REMOVED"
+	echo -e " ***\e[0m"
 	hop_opt+=" -g"
 	run_kernel_test
 	exit 0
@@ -95,5 +74,4 @@ done
 print_stats
 
 rm $batch
-rm $output_est
 rm $output_hop

@@ -1,0 +1,32 @@
+example4> ;
+--- Output: T 
+example4> ;
+--- Output: T V 
+example4> ;
+--- Output: T V 
+example4> ;
+--- Output: T V 
+example4> ;
+--- Output: T V 
+example4> A;
+--- Output: T 
+example4> ;
+--- Output: T V 
+example4> ;
+--- Output: T V 
+example4> ;
+--- Output: T V 
+example4> ;
+--- Output: T V 
+example4> !reset;
+--- Automaton example4 reset
+example4> ;
+--- Output: T 
+example4> ;
+--- Output: T V 
+example4> ;
+--- Output: T V 
+example4> ;
+--- Output: T V 
+example4> ;
+--- Output: T V 

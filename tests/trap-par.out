@@ -1,0 +1,14 @@
+trappar> ;
+--- Output: A B 
+trappar> ;
+--- Output: 
+trappar> ;
+--- Output: 
+trappar> ;
+--- Output: 
+trappar> !reset;
+--- Automaton trappar reset
+trappar> ;
+--- Output: A B 
+trappar> ;
+--- Output: 
