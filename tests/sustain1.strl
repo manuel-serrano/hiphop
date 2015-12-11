@@ -1,0 +1,13 @@
+module sustain1:
+
+input I;
+output J, K;
+
+loop
+	abort
+		sustain J;
+	when I;
+	emit K;
+end loop
+
+end module
