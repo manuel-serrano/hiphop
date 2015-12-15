@@ -1,0 +1,17 @@
+module ABCRO :
+
+input A, B, C, R;
+output O;
+
+loop
+  [
+    await A
+  ||
+    await B
+  ||
+    await C
+  ];
+  emit O
+each R
+
+end module
