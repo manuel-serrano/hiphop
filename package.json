@@ -1,5 +1,5 @@
 {
-   "name": "reactive-js",
+   "name": "hiphop.js",
    "version": "0.0",
    "description": "Reactive module for Hop.js",
    "main": "lib/reactive-js.js"
