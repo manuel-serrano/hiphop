@@ -2,5 +2,7 @@
    "name": "hiphop.js",
    "version": "0.0",
    "description": "Reactive module for Hop.js",
-   "main": "lib/reactive-js.js"
+   "main": "lib/reactive-js.js",
+   "client": [ "lib/reactive-js.js", "lib/reactive-kernel.js", "lib/ast.js",
+	       "lib/xml-compiler.js", "lib/compiler.js" ]
 }
