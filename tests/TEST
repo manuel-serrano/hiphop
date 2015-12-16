@@ -16,7 +16,8 @@ run_kernel_test() {
     cat <<EOF > $batch
 "use hopscript"
 var batch = require("$dir/../lib/batch-interpreter.js");
-example = require("$dir/$file.js"); // global for eval_mode
+try{example = require("$dir/$file.js"); /*global for eval_mode*/}
+catch(e){console.log(e.message);process.exit(1)}
 batch.interpreter(example.prg);
 EOF
 
