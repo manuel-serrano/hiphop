@@ -9,7 +9,7 @@ var machine =
       <hh.inputsignal name="C"/>
       <hh.inputsignal name="R"/>
       <hh.outputsignal name="O"/>
-      <hh.localsignal signal_name="X">
+      <hh.localsignal name="X">
 	<hh.emit signal_name="X"/>
       </hh.localsignal>
       <hh.loopeach signal_name="R">
@@ -33,7 +33,7 @@ machine.setInput("C", undefined);
 machine.react();
 
 machine.insertAfter(machine.getElementById("7"),
-		    <hh.localsignal signal_name="Z">
+		    <hh.localsignal name="Z">
 		      <hh.emit signal_name="Z"/>
 		      <hh.present signal_name="Z">
 			<hh.emit signal_name="D"/>
