@@ -1,6 +1,6 @@
 #!/bin/bash
 
-space="               "
+space="     "
 dir=$(pwd)
 hop=/usr/local/bin/hop
 hop_opt="--no-server"
@@ -57,8 +57,8 @@ clear
 if [ "$1" != "" ]; then
     file=${1%.*}
     if [ -f $file.in ]; then
-	echo -en "\e[1m$space*** DEBUG $2 TEST FOR $file. TMP FILES WILL NOT BE REMOVED"
-	echo -e " ***\e[0m"
+	echo -e "\e[1m$space*** DEBUG TEST FOR $file. ***"
+	echo -e "$space*** TMP FILES WILL NOT BE REMOVED ***\e[0m"
 	hop_opt+=" -g"
 	run_kernel_test
 	exit 0

@@ -1,0 +1,9 @@
+module crossawait:
+
+output A, B, END1, END2;
+
+[ emit A; await immediate B; emit END1 ]
+||
+[ emit B; await immediate A; emit END2 ]
+
+end module
