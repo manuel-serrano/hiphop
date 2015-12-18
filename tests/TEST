@@ -4,7 +4,6 @@ space="     "
 dir=$(pwd)
 hop=/usr/local/bin/hop
 hop_opt="--no-server"
-batch=/tmp/batch.js
 CC=/usr/bin/gcc
 output_hop=/tmp/TEST-HOPJS.out
 
@@ -13,15 +12,19 @@ run_kernel_test() {
 
     echo -n "$i. $file ... "
 
-    cat <<EOF > $batch
+    if [ -f $file.in ]; then
+	local batchfile=/tmp/batch.js
+	cat <<EOF > $batchfile
 "use hopscript"
 var batch = require("$dir/../lib/batch-interpreter.js");
 try{example = require("$dir/$file.js"); /*global for eval_mode*/}
 catch(e){console.log(e.message);process.exit(1)}
 batch.interpreter(example.prg);
 EOF
-
-    $hop $hop_opt $batch < $file.in > $output_hop 2>&1
+	$hop $hop_opt $batchfile < $file.in > $output_hop 2>&1
+    else
+	$hop $hop_opt $file.js > $output_hop 2>&1
+    fi
     diff_out=$(diff -Z $output_hop $file.out)
 
     if [ "$diff_out" != "" ]
@@ -56,7 +59,7 @@ clear
 
 if [ "$1" != "" ]; then
     file=${1%.*}
-    if [ -f $file.in ]; then
+    if [ -f $file.out ]; then
 	echo -e "\e[1m$space*** DEBUG TEST FOR $file. ***"
 	echo -e "$space*** TMP FILES WILL NOT BE REMOVED ***\e[0m"
 	hop_opt+=" -g"
@@ -67,10 +70,12 @@ fi
 
 init_stats
 echo -e "\e[1m$space*** HIPHOP.JS TESTS ***\e[0m"
-for file in *.in
+for file in *.out
 do
     file=${file%.*}
-    run_kernel_test
+    if [ -f $file.js ]; then
+	run_kernel_test
+    fi
 done
 print_stats
 
