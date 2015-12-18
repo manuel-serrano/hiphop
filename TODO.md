@@ -20,10 +20,10 @@ Syntax
 Debugging
 ---------
 
-1. (2015-12-18) `!abstract-tree` command in batch must display the
-   internal representation of the program (with embedded circuits
-   inside abort, every, loopeach, for example). /!\ Display the
-   location of nodes in this tree !!
+1. (DONE) `!abstract-tree` command in batch must display the internal
+   representation of the program (with embedded circuits inside abort,
+   every, loopeach, for example). /!\ Display the location of nodes in
+   this tree !!
 2. (2015-12-18) If `debug` flag is set on reactive machine, it must
    start a web service that display to program source, and highlight
    the instructions containing selected pause. It must automatically
