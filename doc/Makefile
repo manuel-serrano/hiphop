@@ -1,9 +1,8 @@
 #*=====================================================================*/
-#*    serrano/prgm/project/hop/weblets/hopimpress/doc/Makefile         */
+#*    hiphop/doc/Makefile                                              */
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Mon Nov 16 10:15:32 2015                          */
-#*    Last change :  Thu Nov 19 09:55:40 2015 (serrano)                */
 #*    Copyright   :  2015 Manuel Serrano                               */
 #*    -------------------------------------------------------------    */
 #*    Build the documentation                                          */
