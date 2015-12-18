@@ -6,7 +6,7 @@ Syntax
 ------
 
 1. (2015-12-18) Allowing parallel with only one branch
-2. (2015-12-18) Reject program if an unused attribute is set in a XML node
+2. (DONE) Reject program if an unused attribute is set in a XML node
 3. (2015-12-18) Atom must get expression, like emit statement
 4. (2015-12-18) Make optional type of valued signal
 5. (2015-12-18) All signals are valued
