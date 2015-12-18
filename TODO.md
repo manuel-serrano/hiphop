@@ -5,7 +5,7 @@ HipHop.js TODO List
 Syntax
 ------
 
-1. (2015-12-18) Allowing parallel with only one branch
+1. (DONE) Allowing parallel with only one branch
 2. (DONE) Reject program if an unused attribute is set in a XML node
 3. (2015-12-18) Atom must get expression, like emit statement
 4. (2015-12-18) Make optional type of valued signal
@@ -56,7 +56,7 @@ Documentation
 Core language / compiler
 ------------------------
 
-1. (2015-12-18) Don't brake AST on last compilation phase
+1. (2015-12-18) Don't broke AST on last compilation phase
    (BuildCircuitVisitor). The AST could be reuse, and it allow
    getElementById the be non-oneshot method.
 2. (2015-12-18) Save and restore machine state when use

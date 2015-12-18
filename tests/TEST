@@ -5,6 +5,7 @@ dir=$(pwd)
 hop=/usr/local/bin/hop
 hop_opt="--no-server"
 CC=/usr/bin/gcc
+batchfile=/tmp/batch.js
 output_hop=/tmp/TEST-HOPJS.out
 
 run_kernel_test() {
@@ -13,7 +14,6 @@ run_kernel_test() {
     echo -n "$i. $file ... "
 
     if [ -f $file.in ]; then
-	local batchfile=/tmp/batch.js
 	cat <<EOF > $batchfile
 "use hopscript"
 var batch = require("$dir/../lib/batch-interpreter.js");
@@ -79,5 +79,5 @@ do
 done
 print_stats
 
-rm $batch
+rm $batchfile
 rm $output_hop
