@@ -4,7 +4,7 @@ var rjs = require("hiphop");
 
 var machine = <rjs.ReactiveMachine debug name="parvalued2">
   <rjs.outputsignal name="J" type="number"/>
-  <rjs.localsignal signal_name="I" type="number">
+  <rjs.localsignal name="I" type="number">
     <rjs.Parallel>
       <rjs.emit signal_name="I" exprs=5 />
       <rjs.present signal_name="I">

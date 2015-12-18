@@ -7,7 +7,7 @@ var prg = <rjs.reactivemachine debug name="example3">
   <rjs.outputsignal name="T"/>
   <rjs.outputsignal name="V"/>
   <rjs.abort signal_name="A">
-    <rjs.localsignal signal_name="S">
+    <rjs.localsignal name="S">
       <rjs.loop>
 	<rjs.sequence>
 	  <rjs.emit signal_name="S"/>

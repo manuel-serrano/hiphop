@@ -5,7 +5,7 @@ var rjs = require("hiphop");
 var prg = <rjs.reactivemachine debug name="abortpar">
   <rjs.inputsignal name="I"/>
   <rjs.outputsignal name="O"/>
-  <rjs.localsignal signal_name="L">
+  <rjs.localsignal name="L">
     <rjs.parallel>
       <rjs.abort signal_name="L">
 	<rjs.loop>

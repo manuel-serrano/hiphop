@@ -7,8 +7,8 @@ var prg = <rjs.reactivemachine debug name="trappar3">
   <rjs.outputsignal name="S1_and_not_S2"/>
   <rjs.outputsignal name="not_S1_and_S2"/>
   <rjs.outputsignal name="not_S1_and_not_S2"/>
-  <rjs.localsignal signal_name="S1">
-    <rjs.localsignal signal_name="S2">
+  <rjs.localsignal name="S1">
+    <rjs.localsignal name="S2">
       <rjs.loop>
 	<rjs.trap trap_name="T1">
 	  <rjs.parallel>

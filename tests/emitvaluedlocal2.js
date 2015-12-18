@@ -10,7 +10,7 @@ var prg = <rjs.ReactiveMachine debug name="emitvaluedlocal2">
   <rjs.outputsignal name="O" type="number"/>
   <rjs.loop>
     <rjs.sequence>
-      <rjs.localsignal signal_name="S" combine_with="+" type="number"
+      <rjs.localsignal name="S" combine_with="+" type="number"
 		       init_value=1 >
 	<rjs.sequence>
 	  <rjs.emit signal_name="S" func=${sum} exprs=${[rjs.preValue("S"),1]}/>

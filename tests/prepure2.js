@@ -5,7 +5,7 @@ var rjs = require("hiphop");
 var prg = <rjs.ReactiveMachine debug name="prepure2">
   <rjs.outputsignal name="O1"/>
   <rjs.outputsignal name="O2"/>
-  <rjs.localsignal signal_name="S">
+  <rjs.localsignal name="S">
     <rjs.loop>
       <rjs.sequence>
 	<rjs.present test_pre signal_name="S">

@@ -9,7 +9,7 @@ var m1 = <rjs.reactivemachine debug name="m1">
   <rjs.outputsignal name="Z"/>
   <rjs.parallel>
     <rjs.present signal_name="T">
-      <rjs.localsignal signal_name="L">
+      <rjs.localsignal name="L">
 	<rjs.sequence>
 	  <rjs.emit signal_name="L"/>
 	  <rjs.emit signal_name="V"/>
@@ -28,7 +28,7 @@ var m2 = <rjs.reactivemachine debug name="run22">
   <rjs.outputsignal name="A"/>
   <rjs.outputsignal name="B"/>
   <rjs.sequence>
-    <rjs.localsignal signal_name="L">
+    <rjs.localsignal name="L">
       <rjs.emit signal_name="L"/>
     </rjs.localsignal>
     <rjs.run machine=${m1} sigs_assoc=${{"T":"S",

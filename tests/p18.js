@@ -9,7 +9,7 @@ var prg = <rjs.reactivemachine debug name="P18">
   <rjs.outputsignal name="not_S1_and_not_S2"/>
   <rjs.loop>
     <rjs.trap trap_name="T1">
-      <rjs.localsignal signal_name="S1">
+      <rjs.localsignal name="S1">
 	<rjs.parallel>
 	  <rjs.sequence>
 	    <rjs.pause/>
@@ -18,7 +18,7 @@ var prg = <rjs.reactivemachine debug name="P18">
 	  </rjs.sequence>
 	  <rjs.loop>
 	    <rjs.trap trap_name="T2">
-	      <rjs.localsignal signal_name="S2">
+	      <rjs.localsignal name="S2">
 		<rjs.parallel>
 		  <rjs.sequence>
 		    <rjs.pause/>
