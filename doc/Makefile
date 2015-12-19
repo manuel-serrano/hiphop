@@ -83,4 +83,4 @@ clean:
 	$(RM) -rf lib hss
 
 cleanall: clean
-	$(RM) doc.json
+	#$(RM) doc.json
