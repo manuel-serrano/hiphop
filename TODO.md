@@ -68,3 +68,5 @@ Core language / compiler
    create a local signal (only readable by child nodes), that is set
    (with possible value) when the exec instruction terminate. Exec
    must be implemented with Hop.js worker.
+4. (2015-12-23) Type of signals, make a true type check, and get the
+   type value
