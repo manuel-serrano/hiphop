@@ -1,29 +1,29 @@
 atom> ;
 --- Output:
-atom works!
+atom works! 1 foo bar
 atom> ;
 --- Output:
-atom works!
+atom works! 1 foo bar
 atom> ;
 --- Output:
-atom works!
+atom works! 1 foo bar
 atom> ;
 --- Output:
-atom works!
+atom works! 1 foo bar
 atom> ;
 --- Output:
-atom works!
+atom works! 1 foo bar
 atom> ;
 --- Output:
-atom works!
+atom works! 1 foo bar
 atom> ;
 --- Output:
-atom works!
+atom works! 1 foo bar
 atom> ;
 --- Output:
-atom works!
+atom works! 1 foo bar
 atom> ;
 --- Output:
-atom works!
+atom works! 1 foo bar
 atom> ;
 --- Output:

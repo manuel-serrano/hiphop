@@ -1,0 +1,27 @@
+module reincar2:
+
+output S: integer;
+output I;
+output J: integer;
+
+loop
+	signal M := 5 : combine integer with + in
+	       emit J(?M);
+	       pause;
+	       emit M(5);
+	end signal;
+||
+	signal N in
+	       present N then emit I end;
+	       pause;
+	       emit N;
+	end signal
+||
+	signal L: integer in
+	       emit L(4);
+	       pause;
+	       emit S(?L + 5);
+	end signal
+end loop
+
+end module
