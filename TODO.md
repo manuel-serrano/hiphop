@@ -51,7 +51,7 @@ Documentation
 
 1. (2015-12-18) Update and fix documentation. Use same explanation and
    structure than in v5 primer.
-2. (2015-12-18) Explain how to use the interpreter, the object inspector,
+2. (2015-12-18) Explain how to use the interpreter, the object inspector.
 
 
 
