@@ -71,3 +71,4 @@ Core language / compiler
 4. (2015-12-23) Type of signals, make a true type check, and get the
    type value
 5. (2015-12-23) Remove `eval` call in reactive-kernel
+6. (2015-12-23) Remove predefined combinaison function
