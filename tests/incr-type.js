@@ -43,7 +43,7 @@ var prg =
     <rjs.reactivemachine debug name="Foo">
       <rjs.inputsignal name="I"/>
       <rjs.outputsignal name="Time"
-			type="WatchTimeType"
+			type=${WatchTimeType}
 			init_value=${WatchTime}/>
       <rjs.loop>
 	<rjs.sequence>
