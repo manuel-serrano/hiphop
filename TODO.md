@@ -40,9 +40,9 @@ Debugging
 Automatic tests
 ---------------
 
-1. (2015-12-18) Start test with interpreter if .in and .js file are
-   present, otherwise, start test without interpreter (and directly
-   diff the output to .out file). Never start test if .out file is missing.
+1. (DONE) Start test with interpreter if .in and .js file are present,
+   otherwise, start test without interpreter (and directly diff the
+   output to .out file). Never start test if .out file is missing.
 
 
 
