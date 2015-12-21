@@ -24,13 +24,16 @@ Debugging
    representation of the program (with embedded circuits inside abort,
    every, loopeach, for example). /!\ Display the location of nodes in
    this tree !!
-2. (2015-12-18) If `debug` flag is set on reactive machine, it must
-   start a web service that display to program source, and highlight
-   the instructions containing selected pause. It must automatically
+2. (2015-12-18) Ability to start a web service in the batch
+   interpreter that display to program source, and highlight the
+   instructions containing selected pause. It must automatically
    update when the machine react.
 3. (2015-12-18) Allow a pretty-print of the program in the interpreter
    (with symbol that tell the statements with an selected pause), with
    a command like `!pretty-print`.
+4. (2015-12-21) Full isolation between reactive-kernel and
+   batch-interpreter modules : the reactive machine must not have code
+   about interpreter (display input/output when react in debug mode).
 
 
 
