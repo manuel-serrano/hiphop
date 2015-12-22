@@ -28,7 +28,7 @@ Debugging
    interpreter that display to program source, and highlight the
    instructions containing selected pause. It must automatically
    update when the machine react.
-3. (2015-12-18) Allow a pretty-print of the program in the interpreter
+3. (DONE) Allow a pretty-print of the program in the interpreter
    (with symbol that tell the statements with an selected pause), with
    a command like `!pretty-print`.
 4. (2015-12-21) Full isolation between reactive-kernel and
