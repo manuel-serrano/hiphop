@@ -4,7 +4,7 @@ var rjs = require("hiphop");
 
 var prg = <rjs.ReactiveMachine debug name="valuepre1">
   <rjs.outputsignal name="I" type="number"/>
-  <rjs.outputsignal name="O" type="number" init_value=5 combine_with="+"/>
+  <rjs.outputsignal name="O" type="number" init_value=5 />
   <rjs.outputsignal name="U" type="number"/>
   <rjs.loop>
     <rjs.sequence>

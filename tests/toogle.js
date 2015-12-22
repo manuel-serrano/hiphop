@@ -2,12 +2,24 @@
 
 var rjs = require("hiphop");
 
+function bool_and(x, y) {
+   return x && y
+}
+
+function bool_or(x, y) {
+   return x || y
+}
+
+function plus(x, y) {
+   return x + y
+}
+
 var prg = <rjs.reactivemachine debug name="toogle">
-  <rjs.outputsignal name="SEQ" type="number" init_value=1 combine_with="+"/>
+  <rjs.outputsignal name="SEQ" type="number" init_value=1 combine_with=${plus}/>
   <rjs.outputsignal name="STATE1" type="boolean" init_value=false
-		    combine_with="or"/>
+		    combine_with=${bool_or}/>
   <rjs.outputsignal name="STATE2" type="boolean" init_value=false
-		    combine_with="and"/>
+		    combine_with=${bool_and}/>
   <rjs.outputsignal name="S"/>
   <rjs.outputsignal name="TOOGLE" type="boolean"/>
   <rjs.loop>

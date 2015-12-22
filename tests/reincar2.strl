@@ -5,7 +5,7 @@ output I;
 output J: integer;
 
 loop
-	signal M := 5 : combine integer with + in
+	signal M := 5 : integer in
 	       emit J(?M);
 	       pause;
 	       emit M(5);

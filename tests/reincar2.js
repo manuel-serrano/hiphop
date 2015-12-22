@@ -16,7 +16,6 @@ var prg =
 
 	  <hh.localsignal name="M"
 			  init_value=5
-			  combine_with="+"
 			  type="number">
 	    <hh.emit signal_name="J" exprs=${hh.value("M")}/>
 	    <hh.pause/>

@@ -7,7 +7,7 @@ function plus(arg1, arg2) { return arg1 + arg2 };
 
 var prg = <rjs.ReactiveMachine debug name="value2">
   <rjs.outputsignal name="I" type="number"/>
-  <rjs.outputsignal name="O" type="number" init_value=5 combine_with="*"/>
+  <rjs.outputsignal name="O" type="number" init_value=5 />
   <rjs.outputsignal name="U" type="number"/>
   <rjs.loop>
     <rjs.sequence>

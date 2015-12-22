@@ -18,7 +18,7 @@ var prg = <rjs.reactivemachine debug name="mirror">
   <rjs.outputsignal name="O2" type="number" react_functions=${bar}/>
   <rjs.inputsignal name="I3" type="string"/>
   <rjs.outputsignal name="O3" type="string" react_functions=${bar}/>
-  <rjs.inputsignal name="I4" type="number" combine_with="+"/>
+  <rjs.inputsignal name="I4" type="number" />
   <rjs.outputsignal name="O4" type="number" react_functions=${bar}/>
   <rjs.loop>
     <rjs.sequence>
