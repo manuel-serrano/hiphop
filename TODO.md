@@ -24,10 +24,10 @@ Debugging
    representation of the program (with embedded circuits inside abort,
    every, loopeach, for example). /!\ Display the location of nodes in
    this tree !!
-2. (2015-12-18) Ability to start a web service in the batch
-   interpreter that display to program source, and highlight the
-   instructions containing selected pause. It must automatically
-   update when the machine react.
+2. (DONE) Ability to start a web service in the batch interpreter that
+   display to program source, and highlight the instructions
+   containing selected pause. It must automatically update when the
+   machine react.
 3. (DONE) Allow a pretty-print of the program in the interpreter
    (with symbol that tell the statements with an selected pause), with
    a command like `!pretty-print`.
