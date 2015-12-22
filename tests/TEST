@@ -21,9 +21,9 @@ try{example = require("$dir/$file.js"); /*global for eval_mode*/}
 catch(e){console.log(e.message);process.exit(1)}
 batch.interpreter(example.prg);
 EOF
-	$hop $hop_opt $batchfile < $file.in > $output_hop 2>&1
+	$hop $hop_opt $batchfile < $file.in > $output_hop
     else
-	$hop $hop_opt $file.js > $output_hop 2>&1
+	$hop $hop_opt $file.js > $output_hop 
     fi
     diff_out=$(diff -Z $output_hop $file.out)
 
