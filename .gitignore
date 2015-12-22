@@ -1,7 +1,6 @@
 doc/*.html
 doc/*.css
 doc/lib/bootstrap/css/bootstrap*.map
-doc/doc2web
 doc/idx.json
 doc/lib
 doc/hss
