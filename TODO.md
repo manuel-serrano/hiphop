@@ -8,7 +8,7 @@ Syntax
 1. (DONE) Allowing parallel with only one branch
 2. (DONE) Reject program if an unused attribute is set in a XML node
 3. (DONE) Atom must get expression, like emit statement
-4. (2015-12-18) Make optional type of valued signal
+4. (DONE) Make optional type of valued signal
 5. (2015-12-18) All signals are valued
 6. (2015-12-18) Signal are directly written in an XML node as a
    standard attribute, following this example :
