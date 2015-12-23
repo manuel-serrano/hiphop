@@ -77,3 +77,15 @@ Core language / compiler
 4. (DONE) Make a true type check, and the debug display type name
 5. (DONE) Remove `eval` call in reactive-kernel
 6. (DONE) Remove predefined combinaison function
+8. (2015-12-23) Attribute "debug" of reactive machine became a field
+   which contains a callback called at the begening of a reaction on
+   debug mode. The debug mode is enabled on a reaction if react() is
+   called with one argument: `true`.
+7. (2015-12-23) Implements prototype of signals :
+	  * debug: callback called instantaneously when a signal is
+        emitted and the reaction is on debug mode (event for local signals)
+	  * onemit: default event listener
+	  * combineWith
+	  * check: callback to check type
+	  * init: initial value
+8. Add stopPropagation() on event object given to signal emission callback
