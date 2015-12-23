@@ -1,0 +1,10 @@
+Foo> ;
+--- Output: Time(0:0:1 PM)
+Foo> ;
+--- Output:
+Foo> TIN([object Object]);
+--- Output: Time(4:5:6 AM)
+Foo> ;
+--- Output: Time(4:5:7 AM)
+Foo> ;
+--- Output:
