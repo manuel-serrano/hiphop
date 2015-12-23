@@ -31,7 +31,13 @@ Debugging
 3. (DONE) Allow a pretty-print of the program in the interpreter
    (with symbol that tell the statements with an selected pause), with
    a command like `!pretty-print`.
-4. (2015-12-21) Full isolation between reactive-kernel and
+4. (2015-12-23) To avoid particular case / pattern-matching to know
+   which nodes we need to display embeded instruction (for
+   pretty-print), applies the following rule : if the node contains
+   childs, display child only if the location of the child is
+   different of the position of the parent. Disable pretty-print if -g
+   is not present.
+5. (2015-12-21) Full isolation between reactive-kernel and
    batch-interpreter modules : the reactive machine must not have code
    about interpreter (display input/output when react in debug mode).
 
