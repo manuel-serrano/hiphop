@@ -64,4 +64,4 @@ var prg =
       </rjs.loop>
     </rjs.reactivemachine>;
 
-rjs.batch_interpreter(prg);
+exports.prg = prg;
