@@ -37,7 +37,9 @@ Debugging
    childs, display child only if the location of the child is
    different of the position of the parent. Disable pretty-print if -g
    is not present.
-5. (2015-12-21) Full isolation between reactive-kernel and
+5. (2015-12-23) In pretty-printer, hightlight an emitted signal, and
+   display it's value
+6. (2015-12-21) Full isolation between reactive-kernel and
    batch-interpreter modules : the reactive machine must not have code
    about interpreter (display input/output when react in debug mode).
 
