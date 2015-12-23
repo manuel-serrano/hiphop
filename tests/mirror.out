@@ -3,10 +3,10 @@ mirror> ;
 mirror> ;
 --- Output:
 mirror> I3(lala);
---- Output: O3(lala)
+--- Output: O3("lala")
 hi from bar signal O3 is set with value lala !
 mirror> I4(34) I1 I3(hihihiihi);
---- Output: O1 O3(hihihiihi) O4(34)
+--- Output: O1 O3("hihihiihi") O4(34)
 hi from foo signal O1 is set!
 hi from bar signal O3 is set with value hihihiihi !
 hi from bar signal O4 is set with value 34 !

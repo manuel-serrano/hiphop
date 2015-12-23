@@ -1,10 +1,10 @@
 Foo> ;
---- Output: Time(0:0:1 PM)
+--- Output: Time({"hours":0,"minutes":0,"seconds":1,"ampm":false})
 Foo> ;
 --- Output:
 Foo> TIN([object Object]);
---- Output: Time(4:5:6 AM)
+--- Output: Time({"hours":4,"minutes":5,"seconds":6,"ampm":true})
 Foo> ;
---- Output: Time(4:5:7 AM)
+--- Output: Time({"hours":4,"minutes":5,"seconds":7,"ampm":true})
 Foo> ;
 --- Output:
