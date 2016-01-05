@@ -31,12 +31,11 @@ Debugging
 3. (DONE) Allow a pretty-print of the program in the interpreter
    (with symbol that tell the statements with an selected pause), with
    a command like `!pretty-print`.
-4. (2015-12-23) To avoid particular case / pattern-matching to know
-   which nodes we need to display embeded instruction (for
-   pretty-print), applies the following rule : if the node contains
-   childs, display child only if the location of the child is
-   different of the position of the parent. Disable pretty-print if -g
-   is not present.
+4. (DONE) To avoid particular case / pattern-matching to know which
+   nodes we need to display embeded instruction (for pretty-print),
+   applies the following rule : if the node contains childs, display
+   child only if the location of the child is different of the
+   position of the parent. Disable pretty-print if -g is not present.
 5. (2015-12-23) In pretty-printer, hightlight an emitted signal, and
    display it's value
 6. (2015-12-21) Full isolation between reactive-kernel and
@@ -90,4 +89,9 @@ Core language / compiler
 	  * combineWith
 	  * check: callback to check type
 	  * init: initial value
-8. Add stopPropagation() on event object given to signal emission callback
+8. (2015-12-23) Add stopPropagation() on event object given to signal emission
+   callback
+9. (2016-01-05) Make all static tests in XML compiler, instead of
+   trying to factorize all in ExpressionVisitor (for instance, because
+   there is to much specific cases in the syntax), never mind if the
+   code size grown a little bit.
