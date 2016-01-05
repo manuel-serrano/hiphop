@@ -91,7 +91,7 @@ Core language / compiler
 	  * init: initial value
 8. (2015-12-23) Add stopPropagation() on event object given to signal emission
    callback
-9. (2016-01-05) Make all static tests in XML compiler, instead of
-   trying to factorize all in ExpressionVisitor (for instance, because
-   there is to much specific cases in the syntax), never mind if the
-   code size grown a little bit.
+9. (DONE) Make all static tests in XML compiler, instead of trying to
+   factorize all in ExpressionVisitor (for instance, because there is
+   to much specific cases in the syntax), never mind if the code size
+   grown a little bit.
