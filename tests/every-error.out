@@ -1,2 +1,2 @@
 *** FATAL ERROR at [LOC DISABLED --- run hop -g to get location]
-*** `immediate` can't be used with `count` delay.
+*** Attribute `immediate` can't be set with `count` delay.
