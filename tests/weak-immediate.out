@@ -1,0 +1,12 @@
+wabortimmediate> S;
+--- Output: O F 
+wabortimmediate> ;
+--- Output: 
+wabortimmediate> !reset;
+--- Automaton wabortimmediate reset
+wabortimmediate> ;
+--- Output: O 
+wabortimmediate> S;
+--- Output: O F W 
+wabortimmediate> ;
+--- Output: 
