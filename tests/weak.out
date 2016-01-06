@@ -1,0 +1,8 @@
+wabort> ;
+--- Output: O 
+wabort> ;
+--- Output: O W 
+wabort> S;
+--- Output: O F W 
+wabort> ;
+--- Output: 
