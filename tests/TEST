@@ -8,7 +8,7 @@ CC=/usr/bin/gcc
 batchfile=/tmp/batch.js
 output_hop=/tmp/TEST-HOPJS.out
 
-run_kernel_test() {
+run_test() {
     i=$((i + 1))
 
     echo -n "$i. $file ... "
@@ -19,7 +19,7 @@ run_kernel_test() {
 var batch = require("$dir/../lib/batch-interpreter.js");
 try{example = require("$dir/$file.js"); /*global for eval_mode*/}
 catch(e){console.log(e.message);process.exit(1)}
-batch.interpreter(example.prg);
+if (example.prg)batch.interpreter(example.prg);
 EOF
 	$hop $hop_opt $batchfile < $file.in > $output_hop
     else
@@ -61,7 +61,7 @@ if [ "$1" != "" ]; then
 	echo -e "\e[1m$space*** DEBUG TEST FOR $file. ***"
 	echo -e "$space*** TMP FILES WILL NOT BE REMOVED ***\e[0m"
 	hop_opt+=" -g"
-	run_kernel_test
+	run_test
 	exit 0
     fi
 fi
@@ -73,7 +73,7 @@ for file in *.out
 do
     file=${file%.*}
     if [ -f $file.js ]; then
-	run_kernel_test
+	run_test
     fi
 done
 print_stats
