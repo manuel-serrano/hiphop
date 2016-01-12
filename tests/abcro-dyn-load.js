@@ -41,13 +41,13 @@ machine.insertAfter(machine.getElementById("7"),
 		    </hh.localsignal>
 		   );
 
- machine.react();
- machine.setInput("R", undefined);
- machine.react();
- machine.setInput("B", undefined);
- machine.setInput("C", undefined);
- machine.setInput("A", undefined);
- machine.react();
+machine.react();
+machine.setInput("R", undefined);
+machine.react();
+machine.setInput("B", undefined);
+machine.setInput("C", undefined);
+machine.setInput("A", undefined);
+machine.react();
 // machine.react();
 // machine.setInput("R", undefined);
 // machine.react();
