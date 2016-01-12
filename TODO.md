@@ -94,5 +94,3 @@ Core language / compiler
    factorize all in ExpressionVisitor (for instance, because there is
    to much specific cases in the syntax), never mind if the code size
    grown a little bit.
-10. (2016-01-06) Remove MultipleCircuit of reactive-kernel, it's more
-    simple to only keep statement and circuit entities.
