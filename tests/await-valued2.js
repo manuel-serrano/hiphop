@@ -17,7 +17,7 @@ function foo3(evt) {
 
 var prg = <rjs.reactivemachine debug name="awaitvalued2">
   <rjs.inputsignal name="I" type="number"/>
-  <rjs.outputsignal name="O" type="number" react_functions=${foo}/>
+  <rjs.outputsignal name="O" type="number"/>
   <rjs.loop>
     <rjs.sequence>
       <rjs.await signal_name="I" />
@@ -25,6 +25,8 @@ var prg = <rjs.reactivemachine debug name="awaitvalued2">
     </rjs.sequence>
   </rjs.loop>
 </rjs.reactive.machine>;
+
+prg.addEventListener("O", foo);
 
 exports.prg = prg;
 exports.foo = foo;

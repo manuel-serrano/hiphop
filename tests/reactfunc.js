@@ -21,9 +21,9 @@ function bar2(evt) {
 var prg = <rjs.reactivemachine debug name="reactfunc">
   <rjs.inputsignal name="I1" />
   <rjs.inputsignal name="I2" type="number"/>
-  <rjs.outputsignal name="O1" react_functions=${foo}/>
-  <rjs.outputsignal name="O11" react_functions=${[foo,bar]}/>
-  <rjs.outputsignal name="O2" type="number" react_functions=${[foo2, bar2]}/>
+  <rjs.outputsignal name="O1"/>
+  <rjs.outputsignal name="O11"/>
+  <rjs.outputsignal name="O2" type="number"/>
   <rjs.loop>
     <rjs.sequence>
       <rjs.present signal_name="I1">
@@ -39,5 +39,11 @@ var prg = <rjs.reactivemachine debug name="reactfunc">
     </rjs.sequence>
   </rjs.loop>
 </rjs.reactivemachine>
+
+prg.addEventListener("O1", foo);
+prg.addEventListener("O11", foo);
+prg.addEventListener("O11", bar);
+prg.addEventListener("O2", foo2)
+prg.addEventListener("O2", bar2);
 
 exports.prg = prg;
