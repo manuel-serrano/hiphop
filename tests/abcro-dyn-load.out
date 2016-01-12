@@ -1,12 +1,6 @@
-ABCRO> ;
---- Output:
-ABCRO> A;
---- Output:
-ABCRO> B C;
---- Output: O
-ABCRO> ;
---- Output:
-ABCRO> R;
---- Output:
-ABCRO> B C A;
---- Output: O D
+[]
+[]
+[ 'O' ]
+[]
+[]
+[ 'O', 'D' ]

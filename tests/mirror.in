@@ -1,11 +1,7 @@
 ;
 ;
 I3(lala);
-!eval-begin;
-example.prg.setInput("I4", 34);
-example.prg.setInput("I1", undefined)
-example.prg.setInput("I3", "hihihiihi");
-!eval-end;
+I4(34) I1 I3(hihihiihi)
 ;
 I4(5);
 I4;

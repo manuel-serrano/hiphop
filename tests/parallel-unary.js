@@ -19,6 +19,4 @@ var prg = <hh.reactivemachine debug name="parallelunary">
   </hh.loop>
 </hh.reactivemachine>;
 
-prg.react();
-prg.react();
-prg.react();
+exports.prg = prg;

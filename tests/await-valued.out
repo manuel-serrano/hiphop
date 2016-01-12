@@ -1,1 +1,7 @@
-/tmp/TEST-HOPJS.out
+awaitvalued> ;
+--- Output:
+awaitvalued> I(23);
+foo called by O with value 23
+--- Output: O(23)
+awaitvalued> ;
+--- Output:

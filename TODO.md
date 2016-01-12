@@ -38,9 +38,18 @@ Debugging
    position of the parent. Disable pretty-print if -g is not present.
 5. (2015-12-23) In pretty-printer, hightlight an emitted signal, and
    display it's value
-6. (2015-12-21) Full isolation between reactive-kernel and
-   batch-interpreter modules : the reactive machine must not have code
-   about interpreter (display input/output when react in debug mode).
+6. (DONE) Full isolation between reactive-kernel and batch-interpreter
+   modules : the reactive machine must not have code about interpreter
+   (display input/output when react in debug mode).
+
+
+
+Automatic tests
+---------------
+
+1. (DONE) Start test with interpreter if .in and .js file are present,
+   otherwise, start test without interpreter (and directly diff the
+   output to .out file). Never start test if .out file is missing.
 
 
 

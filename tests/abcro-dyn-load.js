@@ -22,15 +22,15 @@ var machine =
       </hh.loopeach>
     </hh.reactivemachine>;
 
-machine.react();
+console.log(machine.react());
 machine.setInput("A", undefined);
 
 machine.insertSignal(<hh.outputSignal name="D"/>);
 
-machine.react();
+console.log(machine.react());
 machine.setInput("B", undefined);
 machine.setInput("C", undefined);
-machine.react();
+console.log(machine.react());
 
 machine.insertAfter(machine.getElementById("7"),
 		    <hh.localsignal name="Z">
@@ -41,18 +41,12 @@ machine.insertAfter(machine.getElementById("7"),
 		    </hh.localsignal>
 		   );
 
-machine.react();
+console.log(machine.react());
 machine.setInput("R", undefined);
-machine.react();
+console.log(machine.react());
 machine.setInput("B", undefined);
 machine.setInput("C", undefined);
 machine.setInput("A", undefined);
-machine.react();
-// machine.react();
-// machine.setInput("R", undefined);
-// machine.react();
-// machine.setInput("B", undefined);
-// machine.setInput("C", undefined);
-// machine.setInput("A", undefined);
-// machine.react();
-//(new hh.Inspector(machine, 0)).inspect();
+console.log(machine.react());
+
+exports.prg = machine;

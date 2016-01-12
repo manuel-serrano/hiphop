@@ -2,6 +2,7 @@
 
 var hh = require("hiphop");
 
+try {
 var prg =
     <hh.reactivemachine debug name="everydelay">
       <hh.inputsignal name="I"/>
@@ -10,5 +11,6 @@ var prg =
 	<hh.emit signal_name="O"/>
       </hh.every>
     </hh.reactivemachine>;
-
-hh.batch_interpreter(prg);
+} catch (e) {
+   console.log(e.message)
+}
