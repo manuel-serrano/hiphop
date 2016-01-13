@@ -37,10 +37,14 @@ Debugging
    child only if the location of the child is different of the
    position of the parent. Disable pretty-print if -g is not present.
 5. (2015-12-23) In pretty-printer, hightlight an emitted signal, and
-   display it's value
+   display it's value when mouse is over it (also for local signals
+   and traps)
 6. (DONE) Full isolation between reactive-kernel and batch-interpreter
    modules : the reactive machine must not have code about interpreter
    (display input/output when react in debug mode).
+7. (2016-01-13) !show locals and !show traps must return the state of
+   all locals signals (and all reincarnations), also the state of all
+   traps.
 
 
 
