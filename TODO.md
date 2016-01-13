@@ -100,3 +100,4 @@ Core language / compiler
    grown a little bit.
 10. (2016-01-13) !!!!!!!!!!! URGENT !!!!!!!!!!!! Add repeat
     instruction : <repeat count=5> ... </repeat>
+11. (2016-01-13) Add handle to traps
