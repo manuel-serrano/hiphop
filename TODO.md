@@ -98,3 +98,5 @@ Core language / compiler
    factorize all in ExpressionVisitor (for instance, because there is
    to much specific cases in the syntax), never mind if the code size
    grown a little bit.
+10. (2016-01-13) !!!!!!!!!!! URGENT !!!!!!!!!!!! Add repeat
+    instruction : <repeat count=5> ... </repeat>
