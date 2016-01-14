@@ -2,25 +2,30 @@
 
 var rjs = require("hiphop");
 
-var m1 = <rjs.reactivemachine debug name="m1">
-  <rjs.inputsignal name="T"/>
-  <rjs.inputsignal name="W"/>
-  <rjs.outputsignal name="V"/>
-  <rjs.outputsignal name="Z"/>
-  <rjs.parallel>
-    <rjs.present signal_name="T">
-      <rjs.localsignal name="L">
-	<rjs.sequence>
-	  <rjs.emit signal_name="L"/>
-	  <rjs.emit signal_name="V"/>
-	</rjs.sequence>
-      </rjs.localsignal>
-    </rjs.present>
-    <rjs.present signal_name="W">
-      <rjs.emit signal_name="Z"/>
-    </rjs.present>
-  </rjs.parallel>
-</rjs.reactivemachine>;
+function makeM1() {
+   return <rjs.reactivemachine debug name="m1">
+     <rjs.inputsignal name="T"/>
+     <rjs.inputsignal name="W"/>
+     <rjs.outputsignal name="V"/>
+     <rjs.outputsignal name="Z"/>
+     <rjs.parallel>
+       <rjs.present signal_name="T">
+	 <rjs.localsignal name="L">
+	   <rjs.sequence>
+	     <rjs.emit signal_name="L"/>
+	     <rjs.emit signal_name="V"/>
+	   </rjs.sequence>
+	 </rjs.localsignal>
+       </rjs.present>
+       <rjs.present signal_name="W">
+	 <rjs.emit signal_name="Z"/>
+       </rjs.present>
+     </rjs.parallel>
+   </rjs.reactivemachine>;
+}
+
+var m1first = makeM1();
+var m1second = makeM1();
 
 var m2 = <rjs.reactivemachine debug name="run22">
   <rjs.inputsignal name="S"/>
@@ -31,14 +36,14 @@ var m2 = <rjs.reactivemachine debug name="run22">
     <rjs.localsignal name="L">
       <rjs.emit signal_name="L"/>
     </rjs.localsignal>
-    <rjs.run machine=${m1} sigs_assoc=${{"T":"S",
-					 "W":"U",
-					 "V":"A",
-					 "Z":"B"}}/>
-    <rjs.run machine=${m1} sigs_assoc=${{"T":"S",
-					 "W":"U",
-					 "V":"A",
-					 "Z":"B"}}/>
+    <rjs.run machine=${m1first} sigs_assoc=${{"T":"S",
+					      "W":"U",
+					      "V":"A",
+					      "Z":"B"}}/>
+    <rjs.run machine=${m1second} sigs_assoc=${{"T":"S",
+					       "W":"U",
+					       "V":"A",
+					       "Z":"B"}}/>
   </rjs.sequence>
 </rjs.reactivemachine>;
 
