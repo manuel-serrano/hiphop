@@ -1,0 +1,30 @@
+foo> ;
+first { machine: 'foo',
+  signal: 'O',
+  stopPropagation: [Function],
+  state: { stop: false } }
+second { machine: 'foo',
+  signal: 'O',
+  stopPropagation: [Function],
+  state: { stop: true } }
+--- Output: O
+foo> ;
+first { machine: 'foo',
+  signal: 'O',
+  stopPropagation: [Function],
+  state: { stop: false } }
+second { machine: 'foo',
+  signal: 'O',
+  stopPropagation: [Function],
+  state: { stop: true } }
+--- Output: O
+foo> ;
+first { machine: 'foo',
+  signal: 'O',
+  stopPropagation: [Function],
+  state: { stop: false } }
+second { machine: 'foo',
+  signal: 'O',
+  stopPropagation: [Function],
+  state: { stop: true } }
+--- Output: O

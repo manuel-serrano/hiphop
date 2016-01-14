@@ -92,8 +92,8 @@ Core language / compiler
 	  * combineWith
 	  * check: callback to check type
 	  * init: initial value
-8. (2015-12-23) Add stopPropagation() on event object given to signal emission
-   callback
+8. (DONE) Add stopPropagation() on event object given to signal
+   emission callback
 9. (DONE) Make all static tests in XML compiler, instead of trying to
    factorize all in ExpressionVisitor (for instance, because there is
    to much specific cases in the syntax), never mind if the code size
