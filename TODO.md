@@ -9,7 +9,6 @@ Syntax
 2. (DONE) Reject program if an unused attribute is set in a XML node
 3. (DONE) Atom must get expression, like emit statement
 4. (DONE) Make optional type of valued signal
-5. (2015-12-18) All signals are valued
 6. (2015-12-18) Signal are directly written in an XML node as a
    standard attribute, following this example :
 		* `<inputsignal A B C=5 D=6/plusFunc F/minusFunc />`
@@ -98,6 +97,6 @@ Core language / compiler
    factorize all in ExpressionVisitor (for instance, because there is
    to much specific cases in the syntax), never mind if the code size
    grown a little bit.
-10. (2016-01-13) !!!!!!!!!!! URGENT !!!!!!!!!!!! Add repeat
-    instruction : <repeat count=5> ... </repeat>
-11. (2016-01-13) Add handle to traps
+10. (2016-01-13) Add repeat instruction : <repeat count=5> </repeat>
+11. (2016-01-13) Add multiple handle to traps
+12. (2016-01-15) Add handle to abort (abort  when do [ handle here ] end)
