@@ -16,6 +16,7 @@ run_test() {
     if [ -f $file.in ]; then
 	cat <<EOF > $batchfile
 "use hopscript"
+var example;//to remove - needs of example on global object
 var batch = require("$dir/../lib/batch-interpreter.js");
 try{example = require("$dir/$file.js"); /*global for eval_mode*/}
 catch(e){console.log(e.message);process.exit(1)}

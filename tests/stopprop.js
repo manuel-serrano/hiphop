@@ -13,7 +13,7 @@ var m =
 
 m.addEventListener("O", function(evt) {
    console.log("first", evt);
-   evt.signal = "foo bar";
+   //evt.signal = "foo bar";
 });
 
 m.addEventListener("O", function(evt) {
