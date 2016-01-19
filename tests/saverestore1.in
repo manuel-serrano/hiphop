@@ -1,5 +1,5 @@
 !eval-begin;
-state = example.prg.save();
+var state = example.prg.save();
 !eval-end;
 ;
 !eval-begin;

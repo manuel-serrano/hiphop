@@ -1,13 +1,13 @@
 !eval-begin;
-state1 = example.prg.save();
+var state1 = example.prg.save();
 !eval-end;
 ;
 !eval-begin;
-state2 = example.prg.save();
+var state2 = example.prg.save();
 !eval-end;
 ;
 !eval-begin;
-state3 = example.prg.save();
+var state3 = example.prg.save();
 !eval-end;
 ;
 !eval-begin;
