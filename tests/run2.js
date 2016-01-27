@@ -1,50 +1,45 @@
 "use hopscript"
 
-var rjs = require("hiphop");
+var hh = require("hiphop");
 
-function makeM1() {
-   return <rjs.reactivemachine debug name="m1">
-     <rjs.inputsignal name="T"/>
-     <rjs.inputsignal name="W"/>
-     <rjs.outputsignal name="V"/>
-     <rjs.outputsignal name="Z"/>
-     <rjs.parallel>
-       <rjs.present signal_name="T">
-	 <rjs.localsignal name="L">
-	   <rjs.sequence>
-	     <rjs.emit signal_name="L"/>
-	     <rjs.emit signal_name="V"/>
-	   </rjs.sequence>
-	 </rjs.localsignal>
-       </rjs.present>
-       <rjs.present signal_name="W">
-	 <rjs.emit signal_name="Z"/>
-       </rjs.present>
-     </rjs.parallel>
-   </rjs.reactivemachine>;
-}
+var m1 = <hh.module>
+     <hh.inputsignal name="T"/>
+     <hh.inputsignal name="W"/>
+     <hh.outputsignal name="V"/>
+     <hh.outputsignal name="Z"/>
+     <hh.parallel>
+       <hh.present signal_name="T">
+	 <hh.localsignal name="L">
+	   <hh.sequence>
+	     <hh.emit signal_name="L"/>
+	     <hh.emit signal_name="V"/>
+	   </hh.sequence>
+	 </hh.localsignal>
+       </hh.present>
+       <hh.present signal_name="W">
+	 <hh.emit signal_name="Z"/>
+       </hh.present>
+     </hh.parallel>
+   </hh.module>;
 
-var m1first = makeM1();
-var m1second = makeM1();
+var m2 = <hh.module>
+  <hh.inputsignal name="S"/>
+  <hh.inputsignal name="U"/>
+  <hh.outputsignal name="A"/>
+  <hh.outputsignal name="B"/>
+  <hh.sequence>
+    <hh.localsignal name="L">
+      <hh.emit signal_name="L"/>
+    </hh.localsignal>
+    <hh.run module=${m1} sigs_assoc=${{"T":"S",
+					"W":"U",
+					"V":"A",
+					"Z":"B"}}/>
+    <hh.run module=${m1} sigs_assoc=${{"T":"S",
+					"W":"U",
+					"V":"A",
+					"Z":"B"}}/>
+  </hh.sequence>
+</hh.module>;
 
-var m2 = <rjs.reactivemachine debug name="run22">
-  <rjs.inputsignal name="S"/>
-  <rjs.inputsignal name="U"/>
-  <rjs.outputsignal name="A"/>
-  <rjs.outputsignal name="B"/>
-  <rjs.sequence>
-    <rjs.localsignal name="L">
-      <rjs.emit signal_name="L"/>
-    </rjs.localsignal>
-    <rjs.run machine=${m1first} sigs_assoc=${{"T":"S",
-					      "W":"U",
-					      "V":"A",
-					      "Z":"B"}}/>
-    <rjs.run machine=${m1second} sigs_assoc=${{"T":"S",
-					       "W":"U",
-					       "V":"A",
-					       "Z":"B"}}/>
-  </rjs.sequence>
-</rjs.reactivemachine>;
-
-exports.prg = m2;
+exports.prg = new hh.ReactiveMachine(m2, "run22");

@@ -2,14 +2,16 @@
 
 var hh = require("hiphop")
 
-var m =
-    <hh.reactivemachine name="foo">
+var prg =
+    <hh.module>
       <hh.outputsignal name="O"/>
       <hh.loop>
 	<hh.emit signal_name="O"/>
 	<hh.pause/>
       </hh.loop>
-    </hh.reactivemachine>;
+    </hh.module>;
+
+var m = new hh.ReactiveMachine(prg, "foo");
 
 m.addEventListener("O", function(evt) {
    console.log("first", evt);

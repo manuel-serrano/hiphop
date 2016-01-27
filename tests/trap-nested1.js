@@ -1,28 +1,28 @@
 "use hopscript"
 
-var rjs = require("hiphop");
+var hh = require("hiphop");
 
-var prg = <rjs.reactivemachine debug name="trapnested1">
-  <rjs.outputsignal name="A"/>
-  <rjs.outputsignal name="B"/>
-  <rjs.outputsignal name="C"/>
-  <rjs.outputsignal name="D"/>
-  <rjs.sequence>
-    <rjs.emit signal_name="A"/>
-    <rjs.trap trap_name="U">
-      <rjs.sequence>
-	<rjs.trap trap_name="T">
-	  <rjs.sequence>
-	    <rjs.exit trap_name="T"/>
-	    <rjs.emit signal_name="B"/>
-	  </rjs.sequence>
-	</rjs.trap>
-	<rjs.exit trap_name="U"/>
-	<rjs.emit signal_name="C"/>
-      </rjs.sequence>
-    </rjs.trap>
-    <rjs.emit signal_name="D"/>
-  </rjs.sequence>
-</rjs.reactivemachine>;
+var prg = <hh.module>
+  <hh.outputsignal name="A"/>
+  <hh.outputsignal name="B"/>
+  <hh.outputsignal name="C"/>
+  <hh.outputsignal name="D"/>
+  <hh.sequence>
+    <hh.emit signal_name="A"/>
+    <hh.trap trap_name="U">
+      <hh.sequence>
+	<hh.trap trap_name="T">
+	  <hh.sequence>
+	    <hh.exit trap_name="T"/>
+	    <hh.emit signal_name="B"/>
+	  </hh.sequence>
+	</hh.trap>
+	<hh.exit trap_name="U"/>
+	<hh.emit signal_name="C"/>
+      </hh.sequence>
+    </hh.trap>
+    <hh.emit signal_name="D"/>
+  </hh.sequence>
+</hh.module>;
 
-exports.prg = prg;
+exports.prg = new hh.ReactiveMachine(prg, "trapnested1");

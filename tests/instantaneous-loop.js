@@ -1,23 +1,24 @@
 "use strict"
 
-var rjs = require("hiphop");
+var hh = require("hiphop");
 
 try {
-   var prg = <rjs.ReactiveMachine debug name="instloop">
-     <rjs.outputsignal name="O" type="string"/>
-     <rjs.loop>
-       <rjs.localsignal name="L" type="string">
-	 <rjs.emit signal_name="L" exprs=${"foo bar"}/>
-	 <rjs.emit signal_name="O" exprs=${rjs.value("L")}/>
-       </rjs.localsignal>
-     </rjs.loop>
-   </rjs.ReactiveMachine>;
+   var prg = <hh.module>
+     <hh.outputsignal name="O" type="string"/>
+     <hh.loop>
+       <hh.localsignal name="L" type="string">
+	 <hh.emit signal_name="L" exprs=${"foo bar"}/>
+	 <hh.emit signal_name="O" exprs=${hh.value("L")}/>
+       </hh.localsignal>
+     </hh.loop>
+   </hh.module>;
 
+   var m = new hh.ReactiveMachine(prg, "instloop");
 
-   prg.react();
-   prg.react();
-   prg.react();
-   prg.react();
+   m.react();
+   m.react();
+   m.react();
+   m.react();
 } catch (e) {
    console.log(e.message)
 }

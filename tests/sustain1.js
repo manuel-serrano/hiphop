@@ -3,7 +3,7 @@
 var hh = require("hiphop");
 
 var prg =
-    <hh.reactivemachine debug name="sustain1">
+    <hh.module>
       <hh.inputsignal name="I"/>
       <hh.outputsignal name="J"/>
       <hh.outputsignal name="K"/>
@@ -15,6 +15,6 @@ var prg =
 	  <hh.emit signal_name="K"/>
 	</hh.sequence>
       </hh.loop>
-    </hh.reactivemachine>;
+    </hh.module>;
 
-exports.prg = prg;
+exports.prg = new hh.ReactiveMachine(prg, "sustain1");
