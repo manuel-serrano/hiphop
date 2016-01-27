@@ -15,10 +15,10 @@ run_test() {
 
     if [ -f $file.in ]; then
 	cat <<EOF > $batchfile
-var batch = require("$dir/../lib/batch-interpreter.js");
+var batch = require("hiphop");
 try{example = require("$dir/$file.js"); /*global for eval_mode*/}
 catch(e){console.log(e.message);process.exit(1)}
-if (example.prg)batch.interpreter(example.prg);
+if (example.prg){batch.batch(example.prg);}
 EOF
 	$hop $hop_opt $batchfile < $file.in > $output_hop
     else
