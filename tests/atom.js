@@ -1,18 +1,18 @@
 "use strict"
 
-var rjs = require("hiphop");
+var hh = require("hiphop");
 
 var func = function() {
    console.log("atom works!");
 }
 
-var prg = <rjs.ReactiveMachine debug name="atom">
-  <rjs.loop>
-    <rjs.sequence>
-      <rjs.pause/>
-      <rjs.atom func=${func}/>
-    </rjs.sequence>
-  </rjs.loop>
-</rjs.ReactiveMachine>;
+var prg = <hh.module>
+  <hh.loop>
+    <hh.sequence>
+      <hh.pause/>
+      <hh.atom func=${func}/>
+    </hh.sequence>
+  </hh.loop>
+</hh.module>;
 
-exports.prg = prg;
+exports.prg = new hh.ReactiveMachine(prg, "atom");
