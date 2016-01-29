@@ -2,8 +2,8 @@
 
 var hh = require("hiphop");
 
-var machine =
-    <hh.reactivemachine debug name="ABCRO">
+var prg =
+    <hh.module>
       <hh.inputsignal name="A"/>
       <hh.inputsignal name="B"/>
       <hh.inputsignal name="C"/>
@@ -17,6 +17,6 @@ var machine =
 	</hh.parallel>
 	<hh.emit signal_name="O"/>
       </hh.loopeach>
-    </hh.reactivemachine>;
+    </hh.module>;
 
-exports.prg = machine;
+exports.prg = new hh.ReactiveMachine(prg, "ABCRO");

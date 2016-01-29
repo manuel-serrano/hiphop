@@ -3,12 +3,12 @@
 var hh = require("hiphop");
 
 var prg =
-    <hh.reactivemachine debug name="loopeach">
+    <hh.module>
       <hh.inputsignal name="I"/>
       <hh.outputsignal name="O"/>
       <hh.loopeach signal_name="I">
 	<hh.emit signal_name="O"/>
       </hh.loopeach>
-    </hh.reactivemachine>;
+    </hh.module>;
 
-exports.prg = prg;
+exports.prg = new hh.ReactiveMachine(prg, "loopeach");
