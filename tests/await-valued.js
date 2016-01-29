@@ -1,20 +1,21 @@
 "use hopscript"
 
-var rjs = require("hiphop");
+var hh = require("hiphop");
 
 function foo(evt) {
    console.log("foo called by", evt.signal, "with value", evt.value);
 }
 
-var prg = <rjs.reactivemachine debug name="awaitvalued">
-  <rjs.inputsignal name="I" type="number"/>
-  <rjs.outputsignal name="O" type="number"/>
-  <rjs.sequence>
-    <rjs.await signal_name="I" />
-    <rjs.emit signal_name="O" exprs=${rjs.value("I")}/>
-  </rjs.sequence>
-</rjs.reactive.machine>;
+var prg = <hh.module>
+  <hh.inputsignal name="I" type="number"/>
+  <hh.outputsignal name="O" type="number"/>
+  <hh.sequence>
+    <hh.await signal_name="I" />
+    <hh.emit signal_name="O" exprs=${hh.value("I")}/>
+  </hh.sequence>
+</hh.module>;
 
-prg.addEventListener("O", foo);
+var m = new hh.ReactiveMachine(prg, "awaitvalued");
+m.addEventListener("O", foo);
 
-exports.prg = prg;
+exports.prg = m;
