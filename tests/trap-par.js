@@ -1,24 +1,24 @@
 "use hopscript"
 
-var rjs = require("hiphop");
+var hh = require("hiphop");
 
-var prg = <rjs.reactivemachine debug name="trappar">
-  <rjs.outputsignal name="A"/>
-  <rjs.outputsignal name="B"/>
-  <rjs.outputsignal name="C"/>
-  <rjs.trap trap_name="T">
-    <rjs.parallel>
-      <rjs.sequence>
-	<rjs.emit signal_name="A"/>
-	<rjs.exit trap_name="T"/>
-      </rjs.sequence>
-      <rjs.sequence>
-	<rjs.emit signal_name="B"/>
-	<rjs.pause/>
-	<rjs.emit signal_name="C"/>
-      </rjs.sequence>
-    </rjs.parallel>
-  </rjs.trap>
-</rjs.reactivemachine>;
+var prg = <hh.module>
+  <hh.outputsignal name="A"/>
+  <hh.outputsignal name="B"/>
+  <hh.outputsignal name="C"/>
+  <hh.trap trap_name="T">
+    <hh.parallel>
+      <hh.sequence>
+	<hh.emit signal_name="A"/>
+	<hh.exit trap_name="T"/>
+      </hh.sequence>
+      <hh.sequence>
+	<hh.emit signal_name="B"/>
+	<hh.pause/>
+	<hh.emit signal_name="C"/>
+      </hh.sequence>
+    </hh.parallel>
+  </hh.trap>
+</hh.module>;
 
-exports.prg = prg
+exports.prg = new hh.ReactiveMachine(prg, "trappar");
