@@ -1,23 +1,23 @@
 "use hopscript"
 
-var rjs = require("hiphop");
+var hh = require("hiphop");
 
-var prg = <rjs.reactivemachine debug name="if1">
-  <rjs.inputsignal name="I1" />
-  <rjs.outputsignal name="O1" />
-  <rjs.inputsignal name="I2" type="number" />
-  <rjs.outputsignal name="O2" />
-  <rjs.loop>
-    <rjs.sequence>
-      <rjs.if exprs=${rjs.present("I1")}>
-	<rjs.emit signal_name="O1"/>
-      </rjs.if>
-      <rjs.if func=${x => x > 2} exprs=${rjs.value("I2")}>
-	<rjs.emit signal_name="O2"/>
-      </rjs.if>
-      <rjs.pause/>
-    </rjs.sequence>
-  </rjs.loop>
-</rjs.reactivemachine>;
+var prg = <hh.module>
+  <hh.inputsignal name="I1" />
+  <hh.outputsignal name="O1" />
+  <hh.inputsignal name="I2" type="number" />
+  <hh.outputsignal name="O2" />
+  <hh.loop>
+    <hh.sequence>
+      <hh.if exprs=${hh.present("I1")}>
+	<hh.emit signal_name="O1"/>
+      </hh.if>
+      <hh.if func=${x => x > 2} exprs=${hh.value("I2")}>
+	<hh.emit signal_name="O2"/>
+      </hh.if>
+      <hh.pause/>
+    </hh.sequence>
+  </hh.loop>
+</hh.module>;
 
-exports.prg = prg;
+exports.prg = new hh.ReactiveMachine(prg, "if1");
