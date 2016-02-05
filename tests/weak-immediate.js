@@ -3,19 +3,19 @@
 var hh = require("hiphop");
 
 var m =
-    <hh.reactivemachine debug name="wabortimmediate">
+    <hh.module>
       <hh.inputsignal name="S"/>
       <hh.outputsignal name="O"/>
       <hh.outputsignal name="F"/>
       <hh.outputsignal name="W"/>
-      <hh.abort weak immediate signal_name="S">
+      <hh.weakabort immediate signal_name="S">
 	<hh.loop>
 	  <hh.emit signal_name="O"/>
 	  <hh.pause/>
 	  <hh.emit signal_name="W"/>
 	</hh.loop>
-      </hh.abort>
+      </hh.weakabort>
       <hh.emit signal_name="F"/>
-    </hh.reactivemachine>
+    </hh.module>
 
-exports.prg = m;
+exports.prg = new hh.ReactiveMachine(m, "wabortimmediate")

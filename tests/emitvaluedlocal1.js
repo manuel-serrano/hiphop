@@ -1,27 +1,27 @@
 "use hopscript"
 
-var rjs = require("hiphop");
+var hh = require("hiphop");
 
 function sum(arg1, arg2) {
    return arg1 + arg2;
 }
 
-var prg = <rjs.ReactiveMachine debug name="emitvaluedlocal1">
-  <rjs.outputsignal name="O" type="number"/>
-  <rjs.loop>
-    <rjs.sequence>
-      <rjs.localsignal name="S" type="number" init_value=1 >
-	<rjs.sequence>
-	  <rjs.emit signal_name="S" func=${sum}
-		    exprs=${[rjs.preValue("S"), 1]}/>
-	  <rjs.emit signal_name="O" exprs=${rjs.value("S")}/>
-	</rjs.sequence>
-      </rjs.localsignal>
-      <rjs.pause/>
-      <rjs.emit signal_name="O" exprs=${rjs.preValue("O")}/>
-      <rjs.pause/>
-    </rjs.sequence>
-  </rjs.loop>
-</rjs.ReactiveMachine>;
+var prg = <hh.module>
+  <hh.outputsignal name="O" type="number"/>
+  <hh.loop>
+    <hh.sequence>
+      <hh.localsignal name="S" type="number" init_value=1 >
+	<hh.sequence>
+	  <hh.emit signal_name="S" func=${sum}
+		    exprs=${[hh.preValue("S"), 1]}/>
+	  <hh.emit signal_name="O" exprs=${hh.value("S")}/>
+	</hh.sequence>
+      </hh.localsignal>
+      <hh.pause/>
+      <hh.emit signal_name="O" exprs=${hh.preValue("O")}/>
+      <hh.pause/>
+    </hh.sequence>
+  </hh.loop>
+</hh.module>;
 
-exports.prg = prg;
+exports.prg = new hh.ReactiveMachine(prg, "emitvaluedlocal1");

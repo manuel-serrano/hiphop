@@ -37,24 +37,26 @@ function print_time(evt) {
 }
 
 
-var rjs = require("hiphop");
+var hh = require("hiphop");
 
 var prg =
-    <rjs.reactivemachine debug name="Foo">
-      <rjs.inputsignal name="I"/>
-      <rjs.outputsignal name="Time"
+    <hh.module>
+      <hh.inputsignal name="I"/>
+      <hh.outputsignal name="Time"
 			type=${WatchTimeType}
 			init_value=${WatchTime}/>
-      <rjs.loop>
-	<rjs.sequence>
-	  <rjs.emit signal_name="Time"
+      <hh.loop>
+	<hh.sequence>
+	  <hh.emit signal_name="Time"
 		    func=${IncrementTimeInPlace}
-		    exprs=${rjs.preValue("Time")}/>
-	  <rjs.pause/>
-	</rjs.sequence>
-      </rjs.loop>
-    </rjs.reactivemachine>;
+		    exprs=${hh.preValue("Time")}/>
+	  <hh.pause/>
+	</hh.sequence>
+      </hh.loop>
+    </hh.module>;
 
-prg.addEventListener("Time", print_time);
+var m = new hh.ReactiveMachine(prg, "Foo");
 
-exports.prg = prg;
+m.addEventListener("Time", print_time);
+
+exports.prg = m;

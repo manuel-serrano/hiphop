@@ -3,7 +3,7 @@
 var hh = require("hiphop");
 
 var prg =
-    <hh.reactivemachine debug name="crossawait">
+    <hh.module>
       <hh.outputsignal name="A"/>
       <hh.outputsignal name="B"/>
       <hh.outputsignal name="END1"/>
@@ -20,6 +20,6 @@ var prg =
 	  <hh.emit signal_name="END2"/>
 	</hh.sequence>
       </hh.parallel>
-    </hh.reactivemachine>;
+    </hh.module>;
 
-exports.prg = prg;
+exports.prg = new hh.ReactiveMachine(prg, "crossawait");

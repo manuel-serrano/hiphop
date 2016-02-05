@@ -1,15 +1,15 @@
 "use hopscript"
 
-var rjs = require("hiphop");
+var hh = require("hiphop");
 
-var prg = <rjs.reactivemachine debug name="nothingpar">
-  <rjs.parallel>
-    <rjs.sequence>
-      <rjs.nothing/>
-      <rjs.pause/>
-    </rjs.sequence>
-    <rjs.nothing/>
-  </rjs.parallel>
-</rjs.reactivemachine>;
+var prg = <hh.module>
+  <hh.parallel>
+    <hh.sequence>
+      <hh.nothing/>
+      <hh.pause/>
+    </hh.sequence>
+    <hh.nothing/>
+  </hh.parallel>
+</hh.module>;
 
-exports.prg = prg;
+exports.prg = new hh.ReactiveMachine(prg, "nothingpar");

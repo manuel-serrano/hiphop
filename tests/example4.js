@@ -1,25 +1,25 @@
 "use hopscript"
 
-var rjs = require("hiphop");
+var hh = require("hiphop");
 
-var prg = <rjs.reactivemachine debug name="example4">
-  <rjs.inputsignal name="A"/>
-  <rjs.outputsignal name="T"/>
-  <rjs.outputsignal name="V"/>
-  <rjs.localsignal name="S">
-    <rjs.loop>
-      <rjs.abort signal_name="A">
-	<rjs.sequence>
-	  <rjs.emit signal_name="S"/>
-	  <rjs.present signal_name="S">
-	    <rjs.emit signal_name="T"/>
-	  </rjs.present>
-	  <rjs.pause/>
-	  <rjs.emit signal_name="V"/>
-	</rjs.sequence>
-      </rjs.abort>
-    </rjs.loop>
-  </rjs.localsignal>
-</rjs.ReactiveMachine>
+var prg = <hh.module>
+  <hh.inputsignal name="A"/>
+  <hh.outputsignal name="T"/>
+  <hh.outputsignal name="V"/>
+  <hh.localsignal name="S">
+    <hh.loop>
+      <hh.abort signal_name="A">
+	<hh.sequence>
+	  <hh.emit signal_name="S"/>
+	  <hh.present signal_name="S">
+	    <hh.emit signal_name="T"/>
+	  </hh.present>
+	  <hh.pause/>
+	  <hh.emit signal_name="V"/>
+	</hh.sequence>
+      </hh.abort>
+    </hh.loop>
+  </hh.localsignal>
+</hh.module>
 
-exports.prg = prg;
+exports.prg = new hh.ReactiveMachine(prg, "example4");

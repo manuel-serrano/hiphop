@@ -1,20 +1,20 @@
 "use strict"
 
-var rjs = require("hiphop");
+var hh = require("hiphop");
 
-var prg = <rjs.reactivemachine debug name="example1">
-  <rjs.outputsignal name="T"/>
-  <rjs.sequence>
-    <rjs.pause/>
-    <rjs.localsignal name="S">
-      <rjs.sequence>
-	<rjs.emit signal_name="S"/>
-	<rjs.present signal_name="S">
-	  <rjs.emit signal_name="T"/>
-	</rjs.present>
-      </rjs.sequence>
-    </rjs.localsignal>
-  </rjs.sequence>
-</rjs.ReactiveMachine>
+var prg = <hh.module>
+  <hh.outputsignal name="T"/>
+  <hh.sequence>
+    <hh.pause/>
+    <hh.localsignal name="S">
+      <hh.sequence>
+	<hh.emit signal_name="S"/>
+	<hh.present signal_name="S">
+	  <hh.emit signal_name="T"/>
+	</hh.present>
+      </hh.sequence>
+    </hh.localsignal>
+  </hh.sequence>
+</hh.module>
 
-exports.prg = prg;
+exports.prg = new hh.ReactiveMachine(prg, "example1");

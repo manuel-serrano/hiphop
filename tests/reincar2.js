@@ -7,7 +7,7 @@ function plus(a, b) {
 }
 
 var prg =
-    <hh.reactivemachine debug name="reincar2">
+    <hh.module>
       <hh.outputsignal name="S" type="number"/>
       <hh.outputsignal name="I"/>
       <hh.outputsignal name="J" type="number"/>
@@ -38,6 +38,6 @@ var prg =
 
 	</hh.parallel>
       </hh.loop>
-    </hh.reactivemachine>;
+    </hh.module>;
 
-exports.prg = prg;
+exports.prg = new hh.ReactiveMachine(prg, "reincar2");

@@ -1,4 +1,4 @@
-"require hopscript"
+"use hopscript"
 
 var hh = require("hiphop");
 

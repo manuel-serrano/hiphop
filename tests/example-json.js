@@ -42,26 +42,26 @@ function updateFromOutside(inwatch, outwatch) {
 }
 
 
-var rjs = require("hiphop");
+var hh = require("hiphop");
 
 var prg =
-    <rjs.reactivemachine debug name="Foo">
-      <rjs.inputsignal name="I"/>
-      <rjs.inputsignal name="TIN" valued />
-      <rjs.outputsignal name="Time"
+    <hh.module>
+      <hh.inputsignal name="I"/>
+      <hh.inputsignal name="TIN" valued />
+      <hh.outputsignal name="Time"
 			type=${WatchTimeType}
 			init_value=${WatchTime}/>
-      <rjs.loop>
-	<rjs.emit signal_name="Time"
+      <hh.loop>
+	<hh.emit signal_name="Time"
 		  func=${IncrementTimeInPlace}
-		  exprs=${rjs.preValue("Time")}/>
-	<rjs.pause/>
-	<rjs.await signal_name="TIN"/>
-	<rjs.emit signal_name="Time"
+		  exprs=${hh.preValue("Time")}/>
+	<hh.pause/>
+	<hh.await signal_name="TIN"/>
+	<hh.emit signal_name="Time"
 		  func=${updateFromOutside}
-		  exprs=${[rjs.preValue("Time"), rjs.value("TIN")]}/>
-	<rjs.pause/>
-      </rjs.loop>
-    </rjs.reactivemachine>;
+		  exprs=${[hh.preValue("Time"), hh.value("TIN")]}/>
+	<hh.pause/>
+      </hh.loop>
+    </hh.module>;
 
-exports.prg = prg;
+exports.prg = new hh.ReactiveMachine(prg, "Foo");

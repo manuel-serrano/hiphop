@@ -2,7 +2,7 @@
 
 var hh = require("hiphop");
 
-var prg = <hh.reactivemachine debug name="parallelunary">
+var prg = <hh.module>
   <hh.outputsignal name="O"/>
   <hh.loop>
     <hh.localsignal name="L">
@@ -17,6 +17,6 @@ var prg = <hh.reactivemachine debug name="parallelunary">
     </hh.localsignal>
     <hh.pause/>
   </hh.loop>
-</hh.reactivemachine>;
+</hh.module>;
 
-exports.prg = prg;
+exports.prg = new hh.ReactiveMachine(prg, "parallelunary");

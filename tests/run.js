@@ -1,31 +1,31 @@
 "use hopscript"
 
-var rjs = require("hiphop");
+var hh = require("hiphop");
 
-var m1 = <rjs.reactivemachine debug name="m1">
-  <rjs.inputsignal name=T />
-  <rjs.inputsignal name=W />
-  <rjs.outputsignal name=V />
-  <rjs.outputsignal name=Z />
-  <rjs.parallel>
-    <rjs.present signal_name="T">
-      <rjs.emit signal_name="V"/>
-    </rjs.present>
-    <rjs.present signal_name="W">
-      <rjs.emit signal_name="Z"/>
-    </rjs.present>
-  </rjs.parallel>
-</rjs.reactivemachine>;
+var m1 = <hh.module>
+  <hh.inputsignal name=T />
+  <hh.inputsignal name=W />
+  <hh.outputsignal name=V />
+  <hh.outputsignal name=Z />
+  <hh.parallel>
+    <hh.present signal_name="T">
+      <hh.emit signal_name="V"/>
+    </hh.present>
+    <hh.present signal_name="W">
+      <hh.emit signal_name="Z"/>
+    </hh.present>
+  </hh.parallel>
+</hh.module>;
 
-var run2 = <rjs.reactivemachine debug name="run2">
-  <rjs.inputsignal name=S />
-  <rjs.inputsignal name=U />
-  <rjs.outputsignal name=A />
-  <rjs.outputsignal name=B />
-  <rjs.run machine=${m1} sigs_assoc=${{"T":"S",
-				       "W":"U",
-				       "V":"A",
-				       "Z":"B"}}/>
-</rjs.reactivemachine>;
+var run2 = <hh.module>
+  <hh.inputsignal name=S />
+  <hh.inputsignal name=U />
+  <hh.outputsignal name=A />
+  <hh.outputsignal name=B />
+  <hh.run module=${m1} sigs_assoc=${{"T":"S",
+				     "W":"U",
+				     "V":"A",
+				     "Z":"B"}}/>
+</hh.module>;
 
-exports.prg = run2;
+exports.prg = new hh.ReactiveMachine(run2, "run2");
