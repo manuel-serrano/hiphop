@@ -13,8 +13,7 @@ DOCJS=`$(HOP) --no-server --evaljs 'console.log( require( hop.config ).docDir + 
 #*---------------------------------------------------------------------*/
 #*    Targets                                                          */
 #*---------------------------------------------------------------------*/
-API_TARGETS=user-api.html devel-api.html
-TARGETS=index.html idx.html api.html download.html $(API_TARGETS)
+TARGETS=index.html idx.html api.html download.html
 
 all: $(TARGETS) lib hss
 
@@ -30,11 +29,6 @@ hss:
 .SUFFIXES: .md .html .json
 
 #*---------------------------------------------------------------------*/
-#*    Search path                                                      */
-#*---------------------------------------------------------------------*/
-VPATH=api
-
-#*---------------------------------------------------------------------*/
 #*    doc                                                              */
 #*---------------------------------------------------------------------*/
 index.html: _index.md
@@ -45,7 +39,7 @@ index.html: _index.md
 #*---------------------------------------------------------------------*/
 #*    idx.json ...                                                     */
 #*---------------------------------------------------------------------*/
-idx.json: $(API_TARGETS)
+idx.json: api.html
 	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "html-to-idx" . $^ > $@ \
           || ($(RM) $@; exit 1)

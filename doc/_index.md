@@ -19,17 +19,20 @@ var hiphop = require("hiphop")
 ## Hello world example
 
 ```hopscript
-var prg = <hiphop.ReactiveMachine debug name="hello_world">
-   <hiphop.InputSignal name="IN" />
-   <hiphop.OutputSignal name="OUT" />
-   <hiphop.Loop>
+var prg =
+  <hiphop.Module>
+    <hiphop.InputSignal name="IN"/>
+    <hiphop.OutputSignal name="OUT"/>
+    <hiphop.Loop>
       <hiphop.Present signal_name="IN">
-         <hiphop.Emit signal_name="OUT" />
+        <hiphop.Emit signal_name="OUT"/>
       </hiphop.Present>
-      <hiphop.Pause />
-   </hiphop.Loop>
-   </hiphop.ReactiveMachine>;
+      <hiphop.Pause/>
+    </hiphop.Loop>
+  </hiphop.Module>;
 
-prg.set_input("IN");
-prg.react(prg.seq + 1); // Check run time console, and see HipHop running!
+var machine = new hiphop.ReactiveMachine(prg, "Hello, world!");
+
+machine.setInput("IN");
+machine.react(); // Check run time console, and see HipHop running!
 ```

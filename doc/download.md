@@ -29,8 +29,7 @@ HipHop.js requires
 [Bigloo](http://www-sop.inria.fr/members/Manuel.Serrano/bigloo/) and
 [Hop.js](http://hop-dev.inria.fr/home/index.html) to works.
 
-You have to put the HipHop.js directory inside the node path
-(eg. `$HOME/.nodes_modules`).
+Move the HipHop.js directory inside the node path, for instance, `$HOME/.node\_modules/`.
 
 ## Git ##
 
