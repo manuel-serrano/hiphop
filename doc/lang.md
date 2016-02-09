@@ -260,11 +260,14 @@ the language.
 [:@glyphicon glyphicon-tag tag]
 
 The body of the instruction will be started the first instant, and
-then restarted each times the given signal is set. It takes the
-following attribute:
+then restarted each times (or each several times) a signal is set. It
+takes the following attributes:
 
 * `signal\_name`: the name of the signal that must be present to
-  restart the loop.
+  restart the loop;
+
+* `count`: an integer that tell the number of times the signal must be
+  set before restarted the loop (optional).
 
 ### <hiphop.every> ###
 [:@glyphicon glyphicon-tag tag]
