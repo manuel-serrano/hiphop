@@ -97,6 +97,8 @@ and get value from output signal). HipHop.js allow to create local
 signal, invisible from outside the reactive machine. They create a
 scope, and only instructions embodied inside can access them.
 
+TODO: explains reincarnation, user point of view
+
 ```hopscript
 ${ doc.include("../tests/reincar.js", 9, 15) }
 ```
@@ -131,94 +133,6 @@ ${ doc.include("../tests/value1.js", 6, 13) }
 ```
 
 # Statements
-
-### <hiphop.reactivemachine> ###
-[:@glyphicon glyphicon-tag tag]
-
-This is by order the root node of the XML tree that will build the
-reactive machine. It must take a `name` attribute, and several children which are :
-
-* zero or more input or output signals nodes (the ordering is
-  moot point) ;
-
-* the last child must be the first reactive instruction of the
-  machine. If there is more than one instruction, consider the
-  `sequence` node.
-
-This node return an object, which is the reactive machine runtime. It
-is needed to start reactions and set input signals.
-
-#### Debug mode
-For debugging purposes, you can set `debug` attribute on XML node,
-without value. Any reaction will be logged on the console.
-
-#### Start reactions
-There is different way to trigger reactions. The following methods
-applies on the object return by this XML node (the reactive machine runtime).
-
-* automatic reaction : the attribute `auto\_react` take a positive
-  integer, which is the time between two reaction. You also can use
-  the method `auto\_react(milliseconds)`. If you want to stop the
-  automatic reaction of the machine, just call `halt()` method.
-
-* manual reaction : `react(seq\_number)` method with trigger a reaction
-  of the machine. You must give as parameter a number strictly bigger
-  than `seq` attribute of the reactive machine object.
-
-### <hiphop.inputsignal> ###
-[:@glyphicon glyphicon-tag tag]
-
-Defines an input signal of the reactive machine. It must be named
-with the `name` attribute.
-
-It can be valued by the `type` attribute. The type is a regular
-predefined or user JavaScript type. If the signal is valued, it also
-can have initialization value, with `init\_value` attribute (the type
-must match with `type` attribute). If the type is `number` or
-`boolean`, there also is a `combine\_with` attribute which can take
-`+` or `\*` if number, or `and` or `or` if boolean. The
-semantics is to applies this operator on the previous value and the
-new value, when setting a value to the signal.
-
-One can set an input signal from JavaScript regular code using the
-`set\_input` method of the reactive machine. This method take the name
-of the signal at first parameters, and a second optional parameters
-which is the value to set on the signal, if valued. It's possible to
-set a valued signal without new value, if it has been initialized before.
-
-### <hiphop.outputsignal> ###
-[:@glyphicon glyphicon-tag tag]
-
-Defines an output signal of the reactive machine. It must be named
-with the `name` attribute.
-
-As the input signal, this kind of signal can have a `type`,
-`combine\_with` and `init\_value` attributes, with the same semantics.
-
-The `react\_functions` attribute takes a JavaScript function, or an
-array of JavaScript functions, which will be call at the end of the
-reaction if the signal has been emitted.
-
-As standard DOM-objects, you can use the followings methods to bind
-listener to the emission of signals (instead of `react\_functions`) :
-
-* `addEventListener(signalName, callback)`
-* `removeEventListener(signalName, callback)`.
-
-The listener method take one arguments, which is an object containing
-the `machine` name attribute, `signal` name attribute, and then, if
-the signal is valued, the `value` attribute.
-
-### <hiphop.localsignal> ###
-[:@glyphicon glyphicon-tag tag]
-
-Defines a signal which access is limited inside the reactive code :
-it's not possible to set or get the presence or the value of this
-signal outside the reactive machine. As the input or output signals,
-it can be valued with `type`, `combine\_with` and `init\_value`
-attributes.
-
-It takes one child, which is the code embedded the local signal.
 
 ### <hiphop.present> ###
 [:@glyphicon glyphicon-tag tag]
