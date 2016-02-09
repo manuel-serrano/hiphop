@@ -420,4 +420,3 @@ second emission. So `O` value's will be `15` at the end of reaction.
 ```hopscript
 ${ doc.include("../tests/value2.js", 0, 20) }
 ```
-
