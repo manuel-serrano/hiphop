@@ -19,8 +19,9 @@ be call inside another module, via the `run` HipHop.js statement (see `<hiphop.r
 ### hiphop.ReactiveMachine ###
 [:@glyphicon glyphicon-tag tag]
 
-A reactive machine is an object that wrap an HipHop.js program, and
-allow to interact with it.
+A reactive machine is an object that wrap an HipHop.js module, and
+allow to interact with it. In other word, in instantiate a module to a
+runnable program.
 
 ```hopscript
 var prg =
@@ -65,13 +66,13 @@ the following properties:
 # Signal declarations
 
 Signals are logical object that can be received and emitted by a
-HipHop.js program. There also can be used to interact from the outside
+HipHop.js module. There also can be used to interact from the outside
 of HipHop.js world (with input or output signals), and for internal
 execution of a program (local signals). Each signal declaration must
 have `name` attribute declared.
 
 Declaration of input or output signal must always be on the top of
-HipHop.js program:
+HipHop.js module:
 
 ```hopscript
 <hiphop.module>
@@ -80,7 +81,7 @@ HipHop.js program:
   <!-- any HipHop.js statement or local signal declaration -->
 </hiphop.module>
 ```
-Declaration of local signal can be anywhere in a HipHop.js program:
+Declaration of local signal can be anywhere in a HipHop.js module:
 
 ```hopscript
 <hiphop.localsignal name="I">
@@ -90,7 +91,7 @@ Declaration of local signal can be anywhere in a HipHop.js program:
 
 ### Local signals
 
-Input and output signals are defined at scope of the program, so every
+Input and output signals are defined at scope of the module, so every
 instructions can access to them, and there are visible from the
 outside of the reactive machine (you can set value on input signal,
 and get value from output signal). HipHop.js allow to create local
