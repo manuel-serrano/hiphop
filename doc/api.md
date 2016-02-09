@@ -1,5 +1,8 @@
 ${ var doc = require("hopdoc") }
 
+We use the following convention: XML nodes which has `/` at the end of
+they name are always leafs, therefore, didn't accept any children.
+
 # Modules and reactive machines
 
 ### <hiphop.module> ###
@@ -323,7 +326,7 @@ instruction 2 and 3 must not be in parallel, using sequence is needed:
   </hiphop.sequence>
 </hiphop.parallel>
 ```
-### <hiphop.run> ###
+### <hiphop.run/> ###
 [:@glyphicon glyphicon-tag tag]
 
 A module can "call" another module via the run instruction. The callee
