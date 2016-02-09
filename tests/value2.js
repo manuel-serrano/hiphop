@@ -17,6 +17,6 @@ var prg = <hh.module>
       <hh.pause/>
     </hh.sequence>
   </hh.loop>
-</hh.module>;
+</hh.module>
 
 exports.prg = new hh.ReactiveMachine(prg, "value2");

@@ -1,7 +1,7 @@
 ${ var doc = require("hopdoc") }
 
 We use the following convention: XML nodes which has `/` at the end of
-they name are always leafs, therefore, didn't accept any children.
+they name are always leafs. Therefore they didn't accept any children.
 
 # Modules and reactive machines
 
@@ -58,7 +58,7 @@ Callbacks given to `addEventListener(signalName, functionalValue)`
 must take exactly one argument. This argument is an object containing
 the following properties:
 
-* `name`: name of the emitted output signal;
+* `signal`: name of the emitted output signal;
 
 * `value`: value of the signal at the end of the reaction. This field
   exists only for valued signals. This field is immutable;
@@ -358,66 +358,56 @@ be use with the following attributes:
   (optional).
 
 
-# Examples
+# Full examples
 
 ## Pure signal example
 
 ABRO is a common reactive program in the synchronous languages
-world. The program waits for a signal A and a signal B (in parallel,
-so B can comes before A), and the emit a signal O. At any times, the
-state of A or B can be reset via the emission of signal R.
+world. The program waits for a signal `A` and a signal `B` (in
+parallel, so `B` can comes before `A`), and the emit a signal `O`. The
+state of `A` or `B` can be reset via the emission of signal `R` at any
+moment.
 
 ```hopscript
-${ doc.include("../tests/abro.js", 5, 22) }
+${ doc.include("../tests/abro.js", 0, 18) }
 ```
 
-Then, you can use `prg` to set signal A, B or R with the method
-`set\_input` :
+Then, you can define a reactive machine to instantiate the module, and
+bind functions to emission of `O`:
 
 ```hopscript
-prg.set_input("A");
+var machine = new hh.ReactiveMachine(prg, "ABRO");
+
+machine.addEventListener("O", function(evt) {
+   console.log(evt.signal + " emitted!");
+});
+
+console.log("emit B and react");
+prg.inputAndReact("B");
+console.log("emit A and react");
+prg.inputAndReact("A");
+```
+You will see in the console:
+
+```
+emit B and react
+emit A and react
+O emitted!
 ```
 
-will set the signal A for the following reaction. Here follow an
-complete example of execution :
+## Valued signal example, with combined signal
 
 ```hopscript
-prg.set_input("B");
-prg.react(prg.seq + 1);
-prg.set_input("A");
-prg.react(prg.seq + 1);
-```
-
-As the `debug` attribute is given to the reactive machine, you will
-see in the console :
-```
-ABRO> B;
---- Output:
-ABRO> A;
---- Output: O
-```
-
-You can bind callbacks on output signals with `react\_functions`
-attribute, according to the API.
-
-## Valued signal example, with combine_with
-
-```hopscript
-${ doc.include("../tests/value1.js") }
+${ doc.include("../tests/value1.js", 0, 13) }
 ```
 
 On this example, the first `emit` instruction will erase the current
-value of signal O and set it to 5, but will add the value of the
-second emission. So O value's will be 15 at the end of reaction.
+value of signal `O` and set it to `5`, but will add the value of the
+second emission. So `O` value's will be `15` at the end of reaction.
 
 ## More complex valued example
 
 ```hopscript
-${ doc.include("../tests/value2.js") }
+${ doc.include("../tests/value2.js", 0, 20) }
 ```
 
-## Full example, with valued signal, interactions between JavaScript and HipHop.js
-
-```hopscript
-${ doc.include("../tests/mirror.js", 0, 42) }
-```
