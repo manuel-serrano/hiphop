@@ -9,7 +9,26 @@ This documentation
 Signals are logical object that can be received and emitted by a
 HipHop.js program. There also can be used to interact from the outside
 of HipHop.js world (with input or output signals), and for internal
-execution of a program (local signals).
+execution of a program (local signals). Each signal declaration must
+have `name` attribute declared.
+
+Declaration of input or output signal must always be on the top of
+HipHop.js program:
+
+```hopscript
+<hiphop.module>
+  <hiphop.inputsignal name="I"/>
+  <hiphop.outputsignal name="O"/>
+  <!-- any HipHop.js statement or local signal declaration -->
+</hiphop.module>
+```
+Declaration of local signal can be anywhere in a HipHop.js program:
+
+```hopscript
+<hiphop.localsignal name="I">
+  <!-- any HipHop.js statement -->
+</hiphop.localsignal>
+```
 
 ### Local signals
 
