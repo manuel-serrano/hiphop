@@ -1,8 +1,66 @@
 ${ var doc = require("hopdoc") }
 
-# Introduction
+# Modules and reactive machines
 
-This documentation
+### <hiphop.module> ###
+[:@glyphicon glyphicon-tag tag]
+
+A module is an object that wrap an entire HipHop.js program, it's a
+programming unit of HipHop.js. As any first class object, a module can
+be call inside another module, via the `run` HipHop.js statement (see `<hiphop.run>`).
+
+```hopscript
+<hiphop.module>
+  <!-- HipHop.js signal declarations -->
+  <!-- HipHop.js statements and local signals -->
+<hiphop.module>
+```
+
+### hiphop.ReactiveMachine ###
+[:@glyphicon glyphicon-tag tag]
+
+A reactive machine is an object that wrap an HipHop.js program, and
+allow to interact with it.
+
+```hopscript
+var prg =
+<hiphop.module>
+  <!-- HipHop.js program -->
+<hiphop.module>
+
+var machine = new hiphop.ReactiveMachine(prg, "prgName");
+
+machine.react(); // trigger a reaction of the program
+```
+
+Instances of reactive machines provide the following API:
+
+* `react()`: method that trigger an immediate reaction of the reactive
+  machine, it returns an array of emitted output signals (with a
+  possible value);
+
+* `inputAndReact(signalName, value)`: method that set the input signal
+  named by string `signalName`, and a possible value given by optional
+  parameter `value`. Then, it trigger a reaction (and has the same
+  return of `react()`).
+
+* `addEventListener(signalName, functionalValue)`: method that map an
+  output signal named by string `signalName` to a callback given by
+  `functionalValue`. Then, at the end of following reactions, the
+  callback will be called it the signal has been emitted. Several
+  callbacks can be mapped to a same signal.
+
+Callbacks given to `addEventListener(signalName, functionalValue)`
+must take exactly one argument. This argument is an object containing
+the following properties:
+
+* `name`: name of the emitted output signal;
+
+* `value`: value of the signal at the end of the reaction. This field
+  exists only for valued signals. This field is immutable;
+
+* `stopPropagation()` a method that, if called in the callback, will
+  inhibit the call of others callback mapped on this signal.
 
 # Signal declarations
 
