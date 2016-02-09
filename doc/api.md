@@ -282,15 +282,12 @@ instruction 2 and 3 must not be in parallel, using sequence is needed:
 ### <hiphop.run> ###
 [:@glyphicon glyphicon-tag tag]
 
-Run instruction be be consider as a function call, but the callee is a
-reactive machine and not a regular function. Because of the internal
-state of a reactive machine, the callee reactive machine is copied
-inside the caller, and the input / output signals of the callee must
-be associated to input / output / local signals of the caller (local
-signals of the callee must not be reached from the called). It takes
-two arguments :
+A module can "call" another module via the run instruction. The callee
+module is expanded inside the caller. In order to access to input and
+output signals of the callee, we have to maps those signals on the
+caller signals. It takes two arguments :
 
-* `run\_machine` which is the runtime object of a reactive machine ;
+* `module` which is the runtime object of a reactive machine ;
 
 * `sigs\_assoc` which is a JavaScript hashmap, where the key
   correspond to the name of a input / output signal of the callee and
