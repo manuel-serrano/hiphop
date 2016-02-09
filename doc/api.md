@@ -211,12 +211,22 @@ ${ doc.include("../tests/if1.js", 5, 21) }
 
 ## Others statements
 
-### <hiphop.await> ###
+### <hiphop.await/> ###
 [:@glyphicon glyphicon-tag tag]
 
-Block the execution of the reactive machine if the signal named
-by `signal\_name` attribute is not present when this statement is
-reached. If no parallel branches are running, it will end the current reaction.
+This statement waits for a signal, and terminate when this signal is
+emitted. It can be use with the following attributes:
+
+* `signal_name`: the name of waited signal;
+
+* `test_pre`: test the presence of the signal at the previous reaction
+  (optional, didn't take value);
+
+* `immediate`: terminate if the signal is present at the very first
+  reaction of the program (optional, didn't take value);
+
+* `count`: an integer which is the number of times the signal must be
+  present before terminate (optional).
 
 ### <hiphop.parallel> ###
 [:@glyphicon glyphicon-tag tag]
