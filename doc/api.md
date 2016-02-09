@@ -137,6 +137,45 @@ ${ doc.include("../tests/value1.js", 6, 13) }
 
 ## Signal accessors
 
+Signal accessors are used to give the value or the presence of a
+signal as argument of an expression function. HipHop.js runtime ensure
+the correct scheduling of the program (the expression evaluation will
+wait for the emitters of a signal in case of signal access).
+
+### hiphop.present(signalName) ###
+[:@glyphicon glyphicon-tag tag]
+
+This constructor takes the name of the signal as argument, an return a
+boolean to the expression the presence of the signal during the
+current reaction.
+
+### hiphop.prePresent(signalName) ###
+[:@glyphicon glyphicon-tag tag]
+
+This constructor takes the name of the signal as argument, an return a
+boolean to the expression the presence of the signal during the
+previous reaction.
+
+### hiphop.value(signalName) ###
+[:@glyphicon glyphicon-tag tag]
+
+This constructor takes the name of the signal as argument, an return
+the value of the signal during the current reaction. Note that the
+language forbid to use the current value of a signal to emit itself.
+
+### hiphop.preValue(signalName) ###
+[:@glyphicon glyphicon-tag tag]
+
+This constructor takes the name of the signal as argument, an return
+the value of the signal during the previous reaction.
+
+The following example will emit signal `I` with value `3`, `O` with
+value of `I` (which is `3`), `U` with the value of `O` (which is `3`):
+
+```hopscript
+${ doc.include("../tests/valuepre1.js", 6, 16) }
+```
+
 # Statements
 
 ## Basic control statement
