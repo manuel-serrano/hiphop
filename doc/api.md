@@ -252,7 +252,7 @@ ${ doc.include("../tests/if1.js", 5, 21) }
 ### <hiphop.every> ###
 [:@glyphicon glyphicon-tag tag]
 
-## Traps
+## Preemption
 
 ### <hiphop.trap> ###
 [:@glyphicon glyphicon-tag tag]
@@ -271,7 +271,17 @@ The exit point of a trap. In must be enclosed in the trap to
 exit. This instruction immediately terminate the trap to exit. It takes
 the following attribute:
 
-* `trap\_name`: a string that matches with the name of the trap to exit.
+* `trap\_name`: a string that matches with the name of the trap to
+  exit.
+
+### <hiphop.abort> ###
+[:@glyphicon glyphicon-tag tag]
+
+### <hiphop.weakabort> ###
+[:@glyphicon glyphicon-tag tag]
+
+### <hiphop.suspend> ###
+[:@glyphicon glyphicon-tag tag]
 
 ## Others statements
 
