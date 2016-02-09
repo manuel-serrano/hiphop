@@ -215,16 +215,21 @@ ${ doc.include("../tests/if1.js", 5, 21) }
 ### <hiphop.trap> ###
 [:@glyphicon glyphicon-tag tag]
 
-A trap must be named with `trap\_name` attribute. It takes one child,
-with is the reactive code that could be preempted by the trap.
+A trap defined a scope that can be exited at a specific point. The
+scope (body) of the trap is immediately started when control reach the
+trap. It takes children which is the enclosed code, and the following
+attribute:
 
-### <hiphop.exit> ###
+* `trap\_name`: a string that is the name of the trap.
+
+### <hiphop.exit/> ###
 [:@glyphicon glyphicon-tag tag]
 
-An exit instruction must take the name of the related trap, via
-`trap\_name` attribute. The following instructions will not be
-executed, the the execution continues at the instruction following the
-related trap.
+The exit point of a trap. In must be enclosed in the trap to
+exit. This instruction immediately terminate the trap to exit. It takes
+the following attribute:
+
+* `trap\_name`: a string that matches with the name of the trap to exit.
 
 ## Others statements
 
