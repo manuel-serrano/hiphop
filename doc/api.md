@@ -134,7 +134,32 @@ ${ doc.include("../tests/value1.js", 6, 13) }
 
 # Expressions
 
+## Signal accessors
+
 # Statements
+
+## Basic control statement
+
+### <hiphop.nothing/> ###
+[:@glyphicon glyphicon-tag tag]
+
+This statement terminate instantaneously when started, and give
+control on the following statement. In other words, it just do nothing.
+
+### <hiphop.pause/> ###
+[:@glyphicon glyphicon-tag tag]
+
+This statement pauses the branch where it is defined for the current
+reaction. The following instructions of the branch will be executed at
+the next reaction.
+
+### <hiphop.halt/> ###
+[:@glyphicon glyphicon-tag tag]
+
+This statement pauses the branch where it is defined forever, it will
+never terminate.
+
+## Conditional branching
 
 ### <hiphop.present> ###
 [:@glyphicon glyphicon-tag tag]
@@ -165,34 +190,26 @@ and `O2` if the value of the signal `O2` is superior or equals to 2.
 ${ doc.include("../tests/if1.js", 5, 21) }
 ```
 
-### <hiphop.emit> ###
+## Signal emission
+
+### <hiphop.emit/> ###
 [:@glyphicon glyphicon-tag tag]
 
-Set the signal named by `signal\_name` attribute present for the
-current reaction. If the signal is valued, it is possible to give to
-it a new value, with the `exprs` attribute. The value of this attribute
-can be an object or primitive value of JavaScript, or the value of a
-signal of the machine, according the following functions :
+### <hiphop.sustain/> ###
+[:@glyphicon glyphicon-tag tag]
 
-* `hiphop.value(signalName)` : get the value of `signalName`
-* `hiphop.preValue(signalName)` : get the value of `signalName`, at the
-previous reaction
-* `hiphop.present(signalName)` : boolean of presence of `signalName`
-* `hiphop.prePresent(signalName)` : boolean of presence of `signalName` at
-the previous reaction
+## Looping
 
-If `exprs` must have more than one value, it must be nested inside a
-JavaScript array, and `func` attribute must be set with a JavaScript
-function, which the arity matches with the size of given array.
+### <hiphop.loop> ###
+[:@glyphicon glyphicon-tag tag]
 
-The following example will set the sum of the value of two valued
-signal :
+### <hiphop.loopeach> ###
+[:@glyphicon glyphicon-tag tag]
 
-```hopscript
-<hiphop.emit signal_name="FOO"
-          func=${(x, y) => x + y}
-          exprs=${[ hiphop.value("S"), hiphop.preValue("O") ]} />
-```
+### <hiphop.every> ###
+[:@glyphicon glyphicon-tag tag]
+
+## Others statements
 
 ### <hiphop.await> ###
 [:@glyphicon glyphicon-tag tag]
@@ -233,11 +250,6 @@ instruction 2 and 3 must not be in parallel, using sequence is needed:
   </hiphop.sequence>
 </hiphop.parallel>
 ```
-
-### <hiphop.loop> ###
-[:@glyphicon glyphicon-tag tag]
-
-
 ### <hiphop.run> ###
 [:@glyphicon glyphicon-tag tag]
 
