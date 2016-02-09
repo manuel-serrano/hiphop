@@ -209,6 +209,22 @@ ${ doc.include("../tests/if1.js", 5, 21) }
 ### <hiphop.every> ###
 [:@glyphicon glyphicon-tag tag]
 
+## Traps
+
+### <hiphop.trap> ###
+[:@glyphicon glyphicon-tag tag]
+
+A trap must be named with `trap\_name` attribute. It takes one child,
+with is the reactive code that could be preempted by the trap.
+
+### <hiphop.exit> ###
+[:@glyphicon glyphicon-tag tag]
+
+An exit instruction must take the name of the related trap, via
+`trap\_name` attribute. The following instructions will not be
+executed, the the execution continues at the instruction following the
+related trap.
+
 ## Others statements
 
 ### <hiphop.await/> ###
@@ -217,9 +233,9 @@ ${ doc.include("../tests/if1.js", 5, 21) }
 This statement waits for a signal, and terminate when this signal is
 emitted. It can be use with the following attributes:
 
-* `signal_name`: the name of waited signal;
+* `signal\_name`: the name of waited signal;
 
-* `test_pre`: test the presence of the signal at the previous reaction
+* `test\_pre`: test the presence of the signal at the previous reaction
   (optional, didn't take value);
 
 * `immediate`: terminate if the signal is present at the very first
@@ -231,14 +247,16 @@ emitted. It can be use with the following attributes:
 ### <hiphop.parallel> ###
 [:@glyphicon glyphicon-tag tag]
 
-Takes two children.
+Execute its children in parallel. The parallel statement can be use
+with at least one child.
 
 ### <hiphop.sequence> ###
 [:@glyphicon glyphicon-tag tag]
 
-Allow a sequence of multiples instructions. In most cases, the
-sequence is implicit and user doesn't need it. However, because of XML
-syntax, some cases can be ambiguous:
+Execute its children in sequence. The sequence statement can be use
+with at least two child. In most cases, the sequence is implicit and
+user doesn't need it. However, because of XML syntax, some cases can
+be ambiguous:
 
 ```hopscript
 <hiphop.parallel>
@@ -283,27 +301,17 @@ In the following example, the caller is `run2` and the callee `m1` :
 ${ doc.include("../tests/run.js", 5, 29) }
 ```
 
-### <hiphop.atom> ###
+### <hiphop.atom/> ###
 [:@glyphicon glyphicon-tag tag]
 
-Allow the execution of a JavaScript function, given to `func`
-attribute. Not any modification of the internal state of the machine
-(eg. update signal value) is allowed inside the callee function :
-`set\_input` method will be inhibited.
+Instantaneously executes a JavaScript function, and terminate. It can
+be use with the following attributes:
 
-### <hiphop.trap> ###
-[:@glyphicon glyphicon-tag tag]
+* `func`: JavaScript callback to execute;
 
-A trap must be named with `trap\_name` attribute. It takes one child,
-with is the reactive code that could be preempted by the trap.
+* `expr`: expression attribute, if arguments provided to the callback
+  (optional).
 
-### <hiphop.exit> ###
-[:@glyphicon glyphicon-tag tag]
-
-An exit instruction must take the name of the related trap, via
-`trap\_name` attribute. The following instructions will not be
-executed, the the execution continues at the instruction following the
-related trap.
 
 # Examples
 
