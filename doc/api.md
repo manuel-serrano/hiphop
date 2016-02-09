@@ -132,6 +132,8 @@ the function is the new value of the signal.
 ${ doc.include("../tests/value1.js", 6, 13) }
 ```
 
+# Expressions
+
 # Statements
 
 ### <hiphop.present> ###
@@ -192,13 +194,6 @@ signal :
           exprs=${[ hiphop.value("S"), hiphop.preValue("O") ]} />
 ```
 
-### <hiphop.pause> ###
-[:@glyphicon glyphicon-tag tag]
-
-Stop the execution of the ReactiveMachine. Next reaction will begin
-after this instruction.
-
-
 ### <hiphop.await> ###
 [:@glyphicon glyphicon-tag tag]
 
@@ -214,22 +209,34 @@ Takes two children.
 ### <hiphop.sequence> ###
 [:@glyphicon glyphicon-tag tag]
 
-Allow a sequence of multiples instructions. It is useful as child of
-ReactiveMachine, Loop, or others instructions which takes only one child.
+Allow a sequence of multiples instructions. In most cases, the
+sequence is implicit and user doesn't need it. However, because of XML
+syntax, some cases can be ambiguous:
 
-### <hiphop.halt> ###
-[:@glyphicon glyphicon-tag tag]
+```hopscript
+<hiphop.parallel>
+  <!-- instruction 1 -->
+  <!-- instruction 2 -->
+  <!-- instruction 3 -->
+</hiphop.parallel>
+```
+Here, there will be three branches on the parallel. But if the
+instruction 2 and 3 must not be in parallel, using sequence is needed:
 
-Stop the current reaction, and block any others reactions at this
-point. It's possible to recover it by embed it inside a Abort
-instruction, for instance.
+
+```hopscript
+<hiphop.parallel>
+  <!-- instruction 1 -->
+  <hiphop.sequence>
+    <!-- instruction 2 -->
+    <!-- instruction 3 -->
+  </hiphop.sequence>
+</hiphop.parallel>
+```
 
 ### <hiphop.loop> ###
 [:@glyphicon glyphicon-tag tag]
 
-__Warning__ : HipHip.js not detect cycles because of Loop yet. Be
-careful to avoid it with Pause or others statements which are not
-instantaneous.
 
 ### <hiphop.run> ###
 [:@glyphicon glyphicon-tag tag]
@@ -253,17 +260,6 @@ In the following example, the caller is `run2` and the callee `m1` :
 ```hopscript
 ${ doc.include("../tests/run.js", 5, 29) }
 ```
-
-### <hiphop.sustain> ###
-[:@glyphicon glyphicon-tag tag]
-
-__Warning__ : not tested yet.
-
-### <hiphop.nothing> ###
-[:@glyphicon glyphicon-tag tag]
-
-Do nothing, equivalent of `nop` assembly instruction. Therefore, the
-execution control directly jump to the next sequence instruction.
 
 ### <hiphop.atom> ###
 [:@glyphicon glyphicon-tag tag]
