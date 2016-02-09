@@ -287,8 +287,6 @@ An exit instruction must take the name of the related trap, via
 executed, the the execution continues at the instruction following the
 related trap.
 
-# Compile from Esterel source code
-
 # Examples
 
 ## Pure signal example
