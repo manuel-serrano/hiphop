@@ -246,8 +246,25 @@ ${ doc.include("../tests/if1.js", 5, 21) }
 ### <hiphop.loop> ###
 [:@glyphicon glyphicon-tag tag]
 
+The body of the instruction is started at the first instant, and then
+instantaneously restarted when it reach the end of the loop. If the
+loop is enclosed in a trap, and encloses an exit statement, it is
+propagated (in can be a way to exit the loop). If the loop is enclosed
+in a preemption statement (like abort) it also be stop.
+
+Because the loop is instantaneously restarted, ones must take care of
+avoid instantaneous loop (a body without pause), which is forbidden by
+the language.
+
 ### <hiphop.loopeach> ###
 [:@glyphicon glyphicon-tag tag]
+
+The body of the instruction will be started the first instant, and
+then restarted each times the given signal is set. It takes the
+following attribute:
+
+* `signal\_name`: the name of the signal that must be present to
+  restart the loop.
 
 ### <hiphop.every> ###
 [:@glyphicon glyphicon-tag tag]
