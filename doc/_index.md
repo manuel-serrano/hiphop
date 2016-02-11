@@ -33,6 +33,9 @@ var prg =
 
 var machine = new hiphop.ReactiveMachine(prg, "Hello, world!");
 
+machine.addEventListener("OUT", function(evt) {
+	alert(evt.signalName + "emitted!");
+});
 machine.setInput("IN");
-machine.react(); // Check run time console, and see HipHop running!
+machine.react();
 ```
