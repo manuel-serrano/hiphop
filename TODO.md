@@ -44,6 +44,8 @@ Debugging
 7. (2016-01-13) !show locals and !show traps must return the state of
    all locals signals (and all reincarnations), also the state of all
    traps.
+8. (2016-02-11) print instruction circuits, see
+   http://gojs.net/latest/samples/logicCircuit.html
 
 
 
