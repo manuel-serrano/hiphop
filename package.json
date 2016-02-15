@@ -5,5 +5,5 @@
    "main": "lib/hiphop.js",
    "client": [ "lib/hiphop.js", "lib/lang.js", "lib/error.js", "lib/net.js",
 	       "lib/ast.js", "lib/compiler.js", "lib/machine.js",
-	       "lib/signal.js", "lib/inheritance.js" ];
+	       "lib/signal.js", "lib/inheritance.js" ]
 }
