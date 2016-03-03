@@ -70,35 +70,30 @@ Documentation
 Core language / compiler
 ------------------------
 
-1. (2015-12-18) Don't broke AST on last compilation phase
-   (BuildCircuitVisitor). The AST could be reuse, and it allow
-   getElementById the be non-oneshot method.
-2. (2015-12-18) Save and restore machine state when use
+1. (2015-12-18) Save and restore machine state when use
    appendChild/insertBefore/insertAfter methods
-3. (2015-12-18) Add `exec` instruction. It must take child nodes, and
+2. (2015-12-18) Add `exec` instruction. It must take child nodes, and
    create a local signal (only readable by child nodes), that is set
    (with possible value) when the exec instruction terminate. Exec
    must be implemented with Hop.js worker.
-4. (DONE) Make a true type check, and the debug display type name
-5. (DONE) Remove `eval` call in reactive-kernel
-6. (DONE) Remove predefined combinaison function
-8. (2015-12-23) Attribute "debug" of reactive machine became a field
-   which contains a callback called at the begening of a reaction on
-   debug mode. The debug mode is enabled on a reaction if react() is
-   called with one argument: `true`.
-7. (2015-12-23) Implements prototype of signals :
+3. (DONE) Make a true type check, and the debug display type name
+4. (DONE) Remove `eval` call in reactive-kernel
+5. (DONE) Remove predefined combinaison function
+6. (2015-12-23) Implements prototype of signals :
 	  * debug: callback called instantaneously when a signal is
         emitted and the reaction is on debug mode (event for local signals)
 	  * onemit: default event listener
 	  * combineWith
 	  * check: callback to check type
 	  * init: initial value
-8. (DONE) Add stopPropagation() on event object given to signal
+7. (DONE) Add stopPropagation() on event object given to signal
    emission callback
-9. (DONE) Make all static tests in XML compiler, instead of trying to
+8. (DONE) Make all static tests in XML compiler, instead of trying to
    factorize all in ExpressionVisitor (for instance, because there is
    to much specific cases in the syntax), never mind if the code size
    grown a little bit.
-10. (2016-01-13) Add repeat instruction : <repeat count=5> </repeat>
-11. (2016-01-13) Add multiple handle to traps
-12. (2016-01-15) Add handle to abort (abort  when do [ handle here ] end)
+9. (2016-01-13) Add multiple handle to traps
+10. (2016-01-15) Add handle to abort (abort  when do [ handle here ] end)
+11. (2016-03-03) Connect K0[p/q] where p < q (all surface incarnation)
+    of p* to a non-fanout action gate that trigger an error
+    (instantaneous loop)
