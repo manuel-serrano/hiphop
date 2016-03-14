@@ -3,7 +3,7 @@
 space="     "
 dir=$(pwd)
 hop="/usr/local/bin/hop"
-hop_opt="--no-server"
+hop_opt="--no-server -g"
 CC=/usr/bin/gcc
 batchfile=/tmp/batch.js
 output_hop=/tmp/TEST-HOPJS.out
@@ -15,10 +15,19 @@ run_test() {
 
     if [ -f $file.in ]; then
 	cat <<EOF > $batchfile
-var batch = require("hiphop");
-try{example = require("$dir/$file.js"); /*global for eval_mode*/}
-catch(e){console.log(e.message);process.exit(1)}
-if (example.prg){batch.batch(example.prg);}
+"use hopscript"
+"use strict"
+
+const batch = require("hiphop");
+let test = require("$dir/$file.js");
+
+if (test.prg)
+   try {
+      batch.batch(test.prg);
+   } catch(e){
+      console.log(e.message);
+      process.exit(1);
+   }
 EOF
 	$hop $hop_opt $batchfile < $file.in > $output_hop
     else
@@ -59,7 +68,6 @@ if [ "$1" != "" ]; then
     if [ -f $file.out ]; then
 	echo -e "\e[1m$space*** DEBUG TEST FOR $file. ***"
 	echo -e "$space*** TMP FILES WILL NOT BE REMOVED ***\e[0m"
-	hop_opt+=" -g"
 	run_test
 	exit 0
     fi

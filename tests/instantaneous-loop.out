@@ -1,2 +1,3 @@
-*** ERROR at [LOC DISABLED --- run hop -g to get location]
-*** Instantaneous loop
+*** RUNTIME ERROR
+*** /home/colin/phd/hiphop/tests/instantaneous-loop.js:119
+*** Instantaneous loop on incarnation 0.
