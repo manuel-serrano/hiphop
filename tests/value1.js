@@ -6,8 +6,8 @@ var prg =
 <hh.module>
   <hh.outputsignal name="O" init_value=5 combine_with=${(x, y) => x + y}/>
   <hh.loop>
-    <hh.emit signal_name="O" exprs=5 />
-    <hh.emit signal_name="O" exprs=10 />
+    <hh.emit signal_name="O" args=5 />
+    <hh.emit signal_name="O" args=10 />
     <hh.pause/>
   </hh.loop>
 </hh.module>

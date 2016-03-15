@@ -3,27 +3,27 @@
 var hh = require("hiphop");
 
 function foo(evt) {
-   console.log("hi from foo signal", evt.signal, "is set!")
+   console.log("hi from foo signal", evt.signalName, "is set!")
 }
 
 function bar(evt) {
-   console.log("hi from bar signal", evt.signal, "is set!")
+   console.log("hi from bar signal", evt.signalName, "is set!")
 }
 
 function foo2(evt) {
-   console.log("hi from foo2 signal", evt.signal, "is set with", evt.value, "!")
+   console.log("hi from foo2 signal", evt.signalName, "is set with", evt.signalValue, "!")
 }
 
 function bar2(evt) {
-   console.log("hi from bar2 signal", evt.signal, "is set with", evt.value, "!")
+   console.log("hi from bar2 signal", evt.signalName, "is set with", evt.signalValue, "!")
 }
 
 var prg = <hh.module>
   <hh.inputsignal name="I1" />
-  <hh.inputsignal name="I2" type="number"/>
+  <hh.inputsignal name="I2" valued/>
   <hh.outputsignal name="O1"/>
   <hh.outputsignal name="O11"/>
-  <hh.outputsignal name="O2" type="number"/>
+  <hh.outputsignal name="O2" valued/>
   <hh.loop>
     <hh.sequence>
       <hh.present signal_name="I1">
@@ -33,7 +33,7 @@ var prg = <hh.module>
 	</hh.sequence>
       </hh.present>
       <hh.present signal_name="I2">
-	<hh.emit signal_name="O2" exprs=${hh.value("I2")}/>
+	<hh.emit signal_name="O2" args=${hh.value("I2")}/>
       </hh.present>
       <hh.pause/>
     </hh.sequence>

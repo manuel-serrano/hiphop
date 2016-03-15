@@ -3,15 +3,15 @@
 var hh = require("hiphop");
 
 var prg = <hh.module>
-  <hh.outputsignal name="J" type="number"/>
-  <hh.localsignal name="I" type="number">
+  <hh.outputsignal name="J" valued/>
+  <hh.localsignal name="I" valued>
     <hh.Parallel>
       <hh.present signal_name="I">
-	<hh.emit signal_name="J" exprs=${hh.value("I")} />
+	<hh.emit signal_name="J" args=${hh.value("I")} />
       </hh.present>
-      <hh.emit signal_name="I" exprs=5 />
+      <hh.emit signal_name="I" args=5 />
     </hh.Parallel>
   </hh.localsignal>
 </hh.module>;
 
-exports.prg = new hh.ReactiveMachine(prg, "prevalued");
+exports.prg = new hh.ReactiveMachine(prg, "parvalued");
