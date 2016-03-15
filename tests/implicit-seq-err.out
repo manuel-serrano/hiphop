@@ -1,2 +1,3 @@
-*** FATAL ERROR at [LOC DISABLED --- run hop -g to get location]
-*** Can't use innput/output signal declaration inside reactive  machine code.
+*** SYNTAX ERROR
+*** [LOC DISABLED --- run hop -g to get location]
+*** Can't use innput/output signaldeclaration inside reactive instruction code.

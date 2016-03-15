@@ -42,14 +42,12 @@ var hh = require("hiphop");
 var prg =
     <hh.module>
       <hh.inputsignal name="I"/>
-      <hh.outputsignal name="Time"
-			type=${WatchTimeType}
-			init_value=${WatchTime}/>
+      <hh.outputsignal name="Time" init_value=${WatchTime}/>
       <hh.loop>
 	<hh.sequence>
 	  <hh.emit signal_name="Time"
 		    func=${IncrementTimeInPlace}
-		    exprs=${hh.preValue("Time")}/>
+		    args=${hh.preValue("Time")}/>
 	  <hh.pause/>
 	</hh.sequence>
       </hh.loop>

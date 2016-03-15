@@ -8,14 +8,14 @@ var prg =
     <hh.module>
       <hh.inputsignal name="I"/>
       <hh.inputsignal name="R"/>
-      <hh.outputsignal name="O" type="number" init_value=0 />
+      <hh.outputsignal name="O" init_value=0 />
       <hh.loop>
 	<hh.abort signal_name="R">
           <hh.sequence>
             <hh.await signal_name="I"/>
             <hh.emit signal_name="O"
                      func=${plus}
-                     exprs=${[hh.preValue("O"), 1]}/>
+                     args=${[hh.preValue("O"), 1]}/>
             <hh.pause/>
           </hh.sequence>
 	</hh.abort>
