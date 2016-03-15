@@ -1,26 +1,30 @@
 "require  hopscript"
 
-var hh = require("hiphop");
+throw new Error("Dyn load of statement NYI");
 
-var machine =
-    <hh.reactivemachine debug name="ABCRO">
-      <hh.inputsignal name="A"/>
-      <hh.inputsignal name="B"/>
-      <hh.inputsignal name="C"/>
-      <hh.inputsignal name="R"/>
-      <hh.outputsignal name="O"/>
-      <hh.localsignal name="X">
-	<hh.emit signal_name="X"/>
-      </hh.localsignal>
-      <hh.loopeach signal_name="R">
-	<hh.parallel>
-	  <hh.await signal_name="A"/>
-	  <hh.await  signal_name="B"/>
-	  <hh.await signal_name="C"/>
-	</hh.parallel>
-	<hh.emit id=7 signal_name="O"/>
-      </hh.loopeach>
-    </hh.reactivemachine>;
+const hh = require("hiphop");
+
+const prg =
+      <hh.module>
+	<hh.inputsignal name="A"/>
+	<hh.inputsignal name="B"/>
+	<hh.inputsignal name="C"/>
+	<hh.inputsignal name="R"/>
+	<hh.outputsignal name="O"/>
+	<hh.localsignal name="X">
+	  <hh.emit signal_name="X"/>
+	</hh.localsignal>
+	<hh.loopeach signal_name="R">
+	  <hh.parallel>
+	    <hh.await signal_name="A"/>
+	    <hh.await  signal_name="B"/>
+	    <hh.await signal_name="C"/>
+	  </hh.parallel>
+	  <hh.emit id=7 signal_name="O"/>
+	</hh.loopeach>
+      </hh.module>;
+
+const machine = new hh.ReactiveMachine(prg, "ABCRO-DYN-LOAD");
 
 console.log(machine.react());
 machine.setInput("A", undefined);

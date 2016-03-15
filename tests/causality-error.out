@@ -1,9 +1,6 @@
 presentemit> ;
-*** ERROR at [LOC DISABLED --- run hop -g to get location]
-*** sequential causality
+*** CAUSALITY ERROR
+*** missing 15 nets
 presentemit> ;
---- Output:
 presentemit> ;
---- Output:
 presentemit> ;
---- Output:
