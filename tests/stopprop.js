@@ -15,7 +15,6 @@ var m = new hh.ReactiveMachine(prg, "foo");
 
 m.addEventListener("O", function(evt) {
    console.log("first", evt);
-   //evt.signal = "foo bar";
 });
 
 m.addEventListener("O", function(evt) {
