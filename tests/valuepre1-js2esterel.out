@@ -1,9 +1,0 @@
-module valuepre1:
-output I : integer, O := 5 : combine integer with +, U : integer;
-loop
-    emit I(3);
-    emit O(?I);
-    emit U(pre(?O));
-    pause
-end loop
-end module
