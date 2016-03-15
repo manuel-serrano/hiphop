@@ -1,15 +1,15 @@
-awaitvalued2> ;
---- Output:
-awaitvalued2> I(34);
+;
+[]
+I(34)
 foo called by O with value 34
 foo2 called by O with value 34
---- Output: O(34)
-awaitvalued2> I;
+[ 'O(34)' ]
+I
 foo called by O with value 34
 foo2 called by O with value 34
 foo3 called by O with value 34
---- Output: O(34)
-awaitvalued2> I(15);
+[ 'O(34)' ]
+I(15)
 foo called by O with value 15
 foo2 called by O with value 15
---- Output: O(15)
+[ 'O(15)' ]
