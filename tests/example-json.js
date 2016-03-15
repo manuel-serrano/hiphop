@@ -49,17 +49,16 @@ var prg =
       <hh.inputsignal name="I"/>
       <hh.inputsignal name="TIN" valued />
       <hh.outputsignal name="Time"
-			type=${WatchTimeType}
 			init_value=${WatchTime}/>
       <hh.loop>
 	<hh.emit signal_name="Time"
 		  func=${IncrementTimeInPlace}
-		  exprs=${hh.preValue("Time")}/>
+		  args=${hh.preValue("Time")}/>
 	<hh.pause/>
 	<hh.await signal_name="TIN"/>
 	<hh.emit signal_name="Time"
 		  func=${updateFromOutside}
-		  exprs=${[hh.preValue("Time"), hh.value("TIN")]}/>
+		  args=${[hh.preValue("Time"), hh.value("TIN")]}/>
 	<hh.pause/>
       </hh.loop>
     </hh.module>;

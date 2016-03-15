@@ -1,6 +1,9 @@
-*** FATAL ERROR at [LOC DISABLED --- run hop -g to get location]
-*** Unexpected attribute: `signal_name`
-*** FATAL ERROR at [LOC DISABLED --- run hop -g to get location]
+*** SYNTAX ERROR
+*** [LOC DISABLED --- run hop -g to get location]
+*** Missing children.
+*** SYNTAX ERROR
+*** [LOC DISABLED --- run hop -g to get location]
 *** Unexpected attribute: `sig`
-*** FATAL ERROR at [LOC DISABLED --- run hop -g to get location]
+*** SYNTAX ERROR
+*** [LOC DISABLED --- run hop -g to get location]
 *** Expected attribute: `signal_name`

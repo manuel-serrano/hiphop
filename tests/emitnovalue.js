@@ -3,10 +3,10 @@
 var hh = require("hiphop");
 
 var prg = <hh.module>
-  <hh.outputsignal name="O" type="number"/>
+  <hh.outputsignal name="O" valued/>
   <hh.loop>
     <hh.sequence>
-      <hh.emit signal_name="O" exprs=5 />
+      <hh.emit signal_name="O" args=5 />
       <hh.pause/>
       <hh.emit signal_name="O" />
     </hh.sequence>

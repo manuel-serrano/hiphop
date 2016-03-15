@@ -7,18 +7,18 @@ function sum(arg1, arg2) {
 }
 
 var prg = <hh.module>
-  <hh.outputsignal name="O" type="number"/>
+  <hh.outputsignal name="O" valued/>
   <hh.loop>
     <hh.sequence>
-      <hh.localsignal name="S" type="number" init_value=1 >
+      <hh.localsignal name="S" init_value=1 >
 	<hh.sequence>
 	  <hh.emit signal_name="S" func=${sum}
-		    exprs=${[hh.preValue("S"), 1]}/>
-	  <hh.emit signal_name="O" exprs=${hh.value("S")}/>
+		    args=${[hh.preValue("S"), 1]}/>
+	  <hh.emit signal_name="O" args=${hh.value("S")}/>
 	</hh.sequence>
       </hh.localsignal>
       <hh.pause/>
-      <hh.emit signal_name="O" exprs=${hh.preValue("O")}/>
+      <hh.emit signal_name="O" args=${hh.preValue("O")}/>
       <hh.pause/>
     </hh.sequence>
   </hh.loop>
