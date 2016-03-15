@@ -18,3 +18,5 @@ var prg =
     </hh.module>
 
 exports.prg = new hh.ReactiveMachine(prg, "ABRO");
+
+hh.batch(exports.prg);
