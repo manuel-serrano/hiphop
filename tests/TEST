@@ -3,7 +3,7 @@
 space="     "
 dir=$(pwd)
 hop="/usr/local/bin/hop"
-hop_opt="--no-server -g"
+hop_opt="--no-server"
 CC=/usr/bin/gcc
 batchfile=/tmp/batch.js
 output_hop=/tmp/TEST-HOPJS.out
@@ -61,6 +61,10 @@ if [ "$(dirname $0)" != "." ]
 then
     echo "ERROR: The tests must be run inside test directory"
     exit 1
+fi
+
+if [ "$1" == "-g" ] || [ "$2" == "-g" ]; then
+    hop_opt+=" -g"
 fi
 
 if [ "$1" != "" ]; then

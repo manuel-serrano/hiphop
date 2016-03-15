@@ -1,5 +1,3 @@
-emiterror> ;
-*** ERROR at [LOC DISABLED --- run hop -g to get location]
-*** Multiple writes on single signal O
-emiterror> ;
---- Output:
+*** SIGNAL ERROR on signal `O`
+*** [LOC DISABLED --- run hop -g to get location]
+*** Can't set values more that one time in a reaction to a singlesignal
