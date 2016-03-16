@@ -1,2 +1,3 @@
-*** FATAL ERROR at [LOC DISABLED --- run hop -g to get location]
-*** Can't get the value of O to update itself.
+*** SIGNAL ERROR on signal `O`
+*** [LOC DISABLED --- run hop -g to get location]
+*** Can't get current value of a signal to update itself.
