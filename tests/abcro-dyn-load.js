@@ -1,6 +1,7 @@
 "require  hopscript"
 
-throw new Error("Dyn load of statement NYI");
+console.error("Dyn load of statement NYI");
+process.exit(1);
 
 const hh = require("hiphop");
 
