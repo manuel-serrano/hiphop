@@ -1,2 +1,3 @@
-*** FATAL ERROR at [LOC DISABLED --- run hop -g to get location]
-*** Attribute `immediate` can't be set with `count` delay.
+*** SYNTAX ERROR
+*** [LOC DISABLED --- run hop -g to get location]
+*** Can't use `immediate` with count or count expression.
