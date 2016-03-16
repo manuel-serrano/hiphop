@@ -15,30 +15,30 @@ WatchTimeType.prototype.toString = function() {
 var WatchTime = new WatchTimeType(0, 0, 0, false);
 
 function IncrementTimeInPlace (t) {
+   let hours = t.hours;
+   let minutes = t.minutes;
+   let seconds = t.seconds;
+
    if (t.seconds == 3) {
-      t.seconds = 0;
+      seconds = 0;
       if (t.minutes == 3) {
-	 t.minutes = 0;
+	 minutes = 0;
 	 if (t.hours == 3) {
-	    t.hours = 0;
+	    hours = 0;
 	 } else {
-	    t.hours++;
+	    hours++;
 	 }
       } else {
-	 t.minutes++;
+	 minutes++;
       }
    } else {
-      t.seconds++;
+      seconds++;
    }
-   return t;
+   return new WatchTimeType(hours, minutes, seconds, t.ampm);
 }
 
-function updateFromOutside(inwatch, outwatch) {
-   inwatch.hours = outwatch.hours;
-   inwatch.minutes = outwatch.minutes;
-   inwatch.seconds = outwatch.seconds;
-   inwatch.ampm = outwatch.ampm;
-   return inwatch;
+function updateFromOutside(watch) {
+   return new WatchTimeType(watch.hours, watch.minutes, watch.seconds, watch.ampm);
 }
 
 
@@ -58,7 +58,7 @@ var prg =
 	<hh.await signal_name="TIN"/>
 	<hh.emit signal_name="Time"
 		  func=${updateFromOutside}
-		  args=${[hh.preValue("Time"), hh.value("TIN")]}/>
+		  args=${hh.value("TIN")}/>
 	<hh.pause/>
       </hh.loop>
     </hh.module>;
