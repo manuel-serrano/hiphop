@@ -11,29 +11,33 @@ function WatchTimeType(h, m, s, ampm) {
 var WatchTime = new WatchTimeType(0, 0, 0, false);
 
 function IncrementTimeInPlace (t) {
+   let hours = t.hours;
+   let minutes = t.minutes;
+   let seconds = t.seconds;
+
    console.log("foo", t);
    if (t.seconds == 3) {
-      t.seconds = 0;
+      seconds = 0;
       if (t.minutes == 3) {
-	 t.minutes = 0;
+	 minutes = 0;
 	 if (t.hours == 3) {
-	    t.hours = 0;
+	    hours = 0;
 	 } else {
-	    t.hours++;
+	    hours++;
 	 }
       } else {
-	 t.minutes++;
+	 minutes++;
       }
    } else {
-      t.seconds++;
+      seconds++;
    }
-   return t;
+   return new WatchTimeType(hours, minutes, seconds, t.ampm);
 }
 
 function print_time(evt) {
-   console.log(evt.value.hours
-	       + ":" + evt.value.minutes
-	       + ":" + evt.value.seconds);
+   console.log(evt.signalValue.hours
+	       + ":" + evt.signalValue.minutes
+	       + ":" + evt.signalValue.seconds);
 }
 
 
