@@ -1,24 +1,12 @@
-valuepre1> ;
---- Output: I(3) O(3) U(5)
-valuepre1> ;
---- Output: I(3) O(3) U(3)
-valuepre1> ;
---- Output: I(3) O(3) U(3)
-valuepre1> ;
---- Output: I(3) O(3) U(5)
-valuepre1> ;
---- Output: I(3) O(3) U(3)
-valuepre1> ;
---- Output: I(3) O(3) U(5)
-valuepre1> ;
---- Output: I(3) O(3) U(3)
-valuepre1> ;
---- Output: I(3) O(3) U(3)
-valuepre1> ;
---- Output: I(3) O(3) U(3)
-valuepre1> ;
---- Output: I(3) O(3) U(3)
-valuepre1> ;
---- Output: I(3) O(3) U(3)
-valuepre1> ;
---- Output: I(3) O(3) U(5)
+[ 'I(3)', 'O(3)', 'U(5)' ]
+[ 'I(3)', 'O(3)', 'U(3)' ]
+[ 'I(3)', 'O(3)', 'U(3)' ]
+[ 'I(3)', 'O(3)', 'U(5)' ]
+[ 'I(3)', 'O(3)', 'U(3)' ]
+[ 'I(3)', 'O(3)', 'U(5)' ]
+[ 'I(3)', 'O(3)', 'U(3)' ]
+[ 'I(3)', 'O(3)', 'U(3)' ]
+[ 'I(3)', 'O(3)', 'U(3)' ]
+[ 'I(3)', 'O(3)', 'U(3)' ]
+[ 'I(3)', 'O(3)', 'U(3)' ]
+[ 'I(3)', 'O(3)', 'U(5)' ]

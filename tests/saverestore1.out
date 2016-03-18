@@ -1,8 +1,4 @@
-P18> ;
---- Output: not_S1_and_not_S2
-P18> ;
---- Output: not_S1_and_not_S2
-P18> ;
---- Output: not_S1_and_not_S2
-P18> ;
---- Output: not_S1_and_not_S2
+[ 'not_S1_and_not_S2' ]
+[ 'not_S1_and_not_S2' ]
+[ 'not_S1_and_not_S2' ]
+[ 'not_S1_and_not_S2' ]

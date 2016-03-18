@@ -1,5 +1,15 @@
-console.error("Save/restore NYI");
-process.exit(1);
+"use hopscript"
 
-exports.prg = require("./p18.js").prg;
+const machine = require("./p18.js").prg;
+let state = machine.save();
 
+console.log(machine.react());
+
+machine.restore(state);
+console.log(machine.react());
+
+machine.restore(state);
+console.log(machine.react());
+
+machine.restore(state);
+console.log(machine.react());
