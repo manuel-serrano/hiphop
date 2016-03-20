@@ -1,34 +1,34 @@
 awaitseq> ;
---- Output: 
+--- Output:
 awaitseq> ;
---- Output: 
+--- Output:
 awaitseq> B;
---- Output: 
+--- Output:
 awaitseq> A;
---- Output: 
+--- Output:
 awaitseq> ;
---- Output: 
+--- Output:
 awaitseq> ;
---- Output: 
+--- Output:
 awaitseq> B;
---- Output: O 
+--- Output: O
 awaitseq> ;
---- Output: 
+--- Output:
 awaitseq> !reset;
 --- Automaton awaitseq reset
 awaitseq> ;
---- Output: 
+--- Output:
 awaitseq> ;
---- Output: 
+--- Output:
 awaitseq> B;
---- Output: 
+--- Output:
 awaitseq> A;
---- Output: 
+--- Output:
 awaitseq> ;
---- Output: 
+--- Output:
 awaitseq> ;
---- Output: 
+--- Output:
 awaitseq> B;
---- Output: O 
+--- Output: O
 awaitseq> ;
---- Output: 
+--- Output:

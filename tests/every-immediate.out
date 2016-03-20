@@ -1,18 +1,18 @@
 everyimmediate> I;
---- Output: O 
+--- Output: O
 everyimmediate> ;
---- Output: 
+--- Output:
 everyimmediate> ;
---- Output: 
+--- Output:
 everyimmediate> I;
---- Output: O 
+--- Output: O
 everyimmediate> I;
---- Output: O 
+--- Output: O
 everyimmediate> ;
---- Output: 
+--- Output:
 everyimmediate> ;
---- Output: 
+--- Output:
 everyimmediate> I;
---- Output: O 
+--- Output: O
 everyimmediate> ;
---- Output: 
+--- Output:

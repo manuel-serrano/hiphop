@@ -1,12 +1,12 @@
 awaitimmediate> I;
---- Output: O 
+--- Output: O
 awaitimmediate> ;
---- Output: 
+--- Output:
 awaitimmediate> ;
---- Output: 
+--- Output:
 awaitimmediate> I;
---- Output: O 
+--- Output: O
 awaitimmediate> I;
---- Output: O 
+--- Output: O
 awaitimmediate> ;
---- Output: 
+--- Output:

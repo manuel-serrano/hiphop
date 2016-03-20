@@ -1,8 +1,8 @@
 abortpresent> I;
---- Output: J 
+--- Output: J
 abortpresent> ;
---- Output: V 
+--- Output: V
 abortpresent> I;
---- Output: J K 
+--- Output: J K
 abortpresent> ;
---- Output: V 
+--- Output: V

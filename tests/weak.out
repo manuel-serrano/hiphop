@@ -1,8 +1,8 @@
 wabort> ;
---- Output: O 
+--- Output: O
 wabort> ;
---- Output: O W 
+--- Output: O W
 wabort> S;
---- Output: O F W 
+--- Output: O F W
 wabort> ;
---- Output: 
+--- Output:

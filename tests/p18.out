@@ -1,8 +1,8 @@
 P18> ;
---- Output: not_S1_and_not_S2 
+--- Output: not_S1_and_not_S2
 P18> ;
---- Output: S1_and_S2 S1_and_not_S2 not_S1_and_not_S2 
+--- Output: S1_and_S2 S1_and_not_S2 not_S1_and_not_S2
 P18> ;
---- Output: S1_and_S2 S1_and_not_S2 not_S1_and_not_S2 
+--- Output: S1_and_S2 S1_and_not_S2 not_S1_and_not_S2
 P18> ;
---- Output: S1_and_S2 S1_and_not_S2 not_S1_and_not_S2 
+--- Output: S1_and_S2 S1_and_not_S2 not_S1_and_not_S2

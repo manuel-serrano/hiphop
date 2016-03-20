@@ -1,6 +1,6 @@
 emitvaluedlocal1> ;
---- Output: O(2) 
+--- Output: O(2)
 emitvaluedlocal1> ;
---- Output: O(2) 
+--- Output: O(2)
 emitvaluedlocal1> ;
---- Output: O(2) 
+--- Output: O(2)

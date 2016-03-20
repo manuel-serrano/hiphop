@@ -1,22 +1,22 @@
 example2> ;
---- Output: T 
+--- Output: T
 example2> ;
---- Output: T V 
+--- Output: T V
 example2> ;
---- Output: T V 
+--- Output: T V
 example2> ;
---- Output: T V 
+--- Output: T V
 example2> ;
---- Output: T V 
+--- Output: T V
 example2> !reset;
 --- Automaton example2 reset
 example2> ;
---- Output: T 
+--- Output: T
 example2> ;
---- Output: T V 
+--- Output: T V
 example2> ;
---- Output: T V 
+--- Output: T V
 example2> ;
---- Output: T V 
+--- Output: T V
 example2> ;
---- Output: T V 
+--- Output: T V

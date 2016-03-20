@@ -33,7 +33,7 @@ EOF
     else
 	$hop $hop_opt $file.js > $output_hop
     fi
-    diff_out=$(diff -Z $output_hop $file.out)
+    diff_out=$(diff $output_hop $file.out)
 
     if [ "$diff_out" != "" ]
     then

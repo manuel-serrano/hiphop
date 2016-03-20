@@ -1,22 +1,22 @@
 example1> ;
---- Output: 
+--- Output:
 example1> ;
---- Output: T 
+--- Output: T
 example1> ;
---- Output: 
+--- Output:
 example1> ;
---- Output: 
+--- Output:
 example1> ;
---- Output: 
+--- Output:
 example1> !reset;
 --- Automaton example1 reset
 example1> ;
---- Output: 
+--- Output:
 example1> ;
---- Output: T 
+--- Output: T
 example1> ;
---- Output: 
+--- Output:
 example1> ;
---- Output: 
+--- Output:
 example1> ;
---- Output: 
+--- Output:

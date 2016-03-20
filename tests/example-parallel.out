@@ -1,10 +1,10 @@
 parallel> ;
---- Output: 
+--- Output:
 parallel> ;
---- Output: 
+--- Output:
 parallel> !reset;
 --- Automaton parallel reset
 parallel> ;
---- Output: 
+--- Output:
 parallel> ;
---- Output: 
+--- Output:

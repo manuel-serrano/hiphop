@@ -1,26 +1,26 @@
 awaitpar> A;
---- Output: 
+--- Output:
 awaitpar> ;
---- Output: 
+--- Output:
 awaitpar> B;
---- Output: 
+--- Output:
 awaitpar> A;
---- Output: O 
+--- Output: O
 awaitpar> ;
---- Output: 
+--- Output:
 awaitpar> ;
---- Output: 
+--- Output:
 awaitpar> B;
---- Output: 
+--- Output:
 awaitpar> A;
---- Output: 
+--- Output:
 awaitpar> !reset;
 --- Automaton awaitpar reset
 awaitpar> ;
---- Output: 
+--- Output:
 awaitpar> A;
---- Output: 
+--- Output:
 awaitpar> B;
---- Output: O 
+--- Output: O
 awaitpar> ;
---- Output: 
+--- Output:

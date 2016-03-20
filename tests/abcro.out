@@ -1,42 +1,42 @@
 ABCRO> A;
---- Output: 
+--- Output:
 ABCRO> B;
---- Output: 
+--- Output:
 ABCRO> C;
---- Output: 
+--- Output:
 ABCRO> ;
---- Output: 
+--- Output:
 ABCRO> A B;
---- Output: O 
+--- Output: O
 ABCRO> A B;
---- Output: 
+--- Output:
 ABCRO> R C;
---- Output: 
+--- Output:
 ABCRO> A B;
---- Output: 
+--- Output:
 ABCRO> A B;
---- Output: 
+--- Output:
 ABCRO> R;
---- Output: 
+--- Output:
 ABCRO> C B;
---- Output: 
+--- Output:
 ABCRO> A;
---- Output: O 
+--- Output: O
 ABCRO> A;
---- Output: 
+--- Output:
 ABCRO> B;
---- Output: 
+--- Output:
 ABCRO> R B;
---- Output: 
+--- Output:
 ABCRO> A;
---- Output: 
+--- Output:
 ABCRO> ;
---- Output: 
+--- Output:
 ABCRO> B;
---- Output: 
+--- Output:
 ABCRO> R;
---- Output: 
+--- Output:
 ABCRO> C;
---- Output: 
+--- Output:
 ABCRO> A B;
---- Output: O 
+--- Output: O
