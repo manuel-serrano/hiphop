@@ -6,8 +6,11 @@ const prg =
       <hh.module>
 	<hh.outputsignal name="AUX"
 			 init_value=1
-			 reinit_func=${function() {return 1}}/>
-	<hh.outputsignal name="O" reinit_func=${function() {return 2}}/>
+			 reinit_func=${function() {return 1}}
+			 combine_with=${function(a, b) { return (a * b) + 1}}/>
+	<hh.outputsignal name="O"
+			 reinit_func=${function() {return 2}}
+			 combine_with=${function(a, b) {return a * b}}/>
 	<hh.emit signal_name="O" args=5/>
 	<hh.emit signal_name="AUX" args=245/>
 	<hh.pause/>
