@@ -1,7 +1,7 @@
 "require  hopscript"
 
-// console.error("Dyn load of statement NYI");
-// process.exit(1);
+console.error("Dyn load of statement NYI");
+process.exit(1);
 
 const hh = require("hiphop");
 
@@ -17,7 +17,7 @@ const prg =
 	  <hh.emit signal_name="X"/>
 	</hh.localsignal>
 	<hh.loopeach signal_name="R">
-	  <hh.sequence id="seq">
+	  <hh.sequence>
 	    <hh.parallel>
 	      <hh.await signal_name="A"/>
 	      <hh.await  signal_name="B"/>
