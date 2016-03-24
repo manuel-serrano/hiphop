@@ -21,7 +21,7 @@ var prg = <hh.module>
   <hh.loop>
     <hh.sequence>
       <hh.await signal_name="I" />
-      <hh.emit signal_name="O" args=${hh.value("I")} />
+      <hh.emit signal_name="O" arg=${hh.value("I")} />
     </hh.sequence>
   </hh.loop>
 </hh.module>;
