@@ -18,7 +18,7 @@ const prg =
 	  <hh.emit signal_name="O"
 		   func=${function(a, b) { return a + b }}
 		   arg0=1
-		   arg1=${hh.preValue("O")/>
+		   arg1=${hh.preValue("O")}/>
 	  <hh.emit signal_name="AUX"/>
 	  <hh.pause/>
 	</hh.loop>
