@@ -10,8 +10,8 @@ var prg = <hh.module>
   <hh.outputsignal name="O" valued/>
   <hh.loop>
     <hh.localsignal name="S"  init_value=1 >
-      <hh.emit signal_name="S" func=${sum} args=${[hh.preValue("S"),1]}/>
-      <hh.emit signal_name="O" args=${hh.value("S")}/>
+      <hh.emit signal_name="S" func=${sum} arg0=${hh.preValue("S")} arg1=1/>
+      <hh.emit signal_name="O" arg=${hh.value("S")}/>
     </hh.localsignal>
     <hh.pause/>
   </hh.loop>

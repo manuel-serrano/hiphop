@@ -8,7 +8,7 @@ var prg = <hh.module>
     <hh.Parallel>
       <hh.emit signal_name="I" args=5 />
       <hh.present signal_name="I">
-	<hh.emit signal_name="J" args=${hh.value("I")} />
+	<hh.emit signal_name="J" arg=${hh.value("I")} />
       </hh.present>
     </hh.Parallel>
   </hh.localsignal>

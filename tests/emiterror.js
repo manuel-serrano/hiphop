@@ -6,8 +6,8 @@ const prg = <hh.module>
   <hh.outputsignal name="O" valued/>
   <hh.loop>
     <hh.sequence>
-      <hh.emit signal_name="O" args=5 />
-      <hh.emit signal_name="O" args=5 />
+      <hh.emit signal_name="O" arg=5 />
+      <hh.emit signal_name="O" arg=5 />
       <hh.pause/>
     </hh.sequence>
   </hh.loop>

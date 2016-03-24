@@ -12,7 +12,7 @@ var prg = <hh.module>
       <hh.if args=${hh.present("I1")}>
 	<hh.emit signal_name="O1"/>
       </hh.if>
-      <hh.if func=${x => x > 2} args=${hh.value("I2")}>
+      <hh.if func=${x => x > 2} arg=${hh.value("I2")}>
 	<hh.emit signal_name="O2"/>
       </hh.if>
       <hh.pause/>

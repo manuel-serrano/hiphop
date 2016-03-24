@@ -26,15 +26,16 @@ var prg = <hh.module>
     <hh.sequence>
       <hh.emit signal_name="SEQ"
 		func=${(x, y) => x + y}
-		args=${[hh.preValue("SEQ"), 1]}/>
-      <hh.emit signal_name="STATE1" args=true />
-      <hh.emit signal_name="STATE1" args=false />
-      <hh.emit signal_name="STATE2" args=true />
-      <hh.emit signal_name="STATE2" args=false />
+		arg0=${hh.preValue("SEQ")}
+		arg1=1/>
+      <hh.emit signal_name="STATE1" arg=true />
+      <hh.emit signal_name="STATE1" arg=false />
+      <hh.emit signal_name="STATE2" arg=true />
+      <hh.emit signal_name="STATE2" arg=false />
       <hh.present test_pre signal_name="S">
-	<hh.emit signal_name="TOOGLE" args=true />
+	<hh.emit signal_name="TOOGLE" arg=true />
 	<hh.sequence>
-	  <hh.emit signal_name="TOOGLE" args=false />
+	  <hh.emit signal_name="TOOGLE" arg=false />
 	  <hh.emit signal_name="S"/>
 	</hh.sequence>
       </hh.present>

@@ -51,7 +51,7 @@ var prg =
 	<hh.sequence>
 	  <hh.emit signal_name="Time"
 		    func=${IncrementTimeInPlace}
-		    args=${hh.preValue("Time")}/>
+		    arg=${hh.preValue("Time")}/>
 	  <hh.pause/>
 	</hh.sequence>
       </hh.loop>

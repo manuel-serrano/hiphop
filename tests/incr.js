@@ -15,7 +15,8 @@ var prg =
             <hh.await signal_name="I"/>
             <hh.emit signal_name="O"
                      func=${plus}
-                     args=${[hh.preValue("O"), 1]}/>
+                     arg0=${hh.preValue("O")}
+		     arg1=1/>
             <hh.pause/>
           </hh.sequence>
 	</hh.abort>
