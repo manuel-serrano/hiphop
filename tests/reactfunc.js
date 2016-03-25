@@ -33,7 +33,7 @@ var prg = <hh.module>
 	</hh.sequence>
       </hh.present>
       <hh.present signal_name="I2">
-	<hh.emit signal_name="O2" args=${hh.value("I2")}/>
+	<hh.emit signal_name="O2" arg=${hh.value("I2")}/>
       </hh.present>
       <hh.pause/>
     </hh.sequence>

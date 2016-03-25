@@ -8,19 +8,19 @@ const prg =
 
       <hh.parallel>
 	<hh.loop>
-	  <hh.emit signal_name="A" args=0 />
+	  <hh.emit signal_name="A" arg=0 />
 	  <hh.pause/>
 	</hh.loop>
 
 	<hh.loop>
-	  <hh.emit signal_name="A" args=1 />
-	  <hh.atom func=${x => {console.log(x)}} args=${hh.value("A")}/>
+	  <hh.emit signal_name="A" arg=1 />
+	  <hh.atom func=${x => {console.log(x)}} arg=${hh.value("A")}/>
 	  <hh.pause/>
 	</hh.loop>
 
 	<hh.loop>
-	  <hh.emit signal_name="A" args=2 />
-	  <hh.atom func=${x => {console.log(x)}} args=${hh.value("A")}/>
+	  <hh.emit signal_name="A" arg=2 />
+	  <hh.atom func=${x => {console.log(x)}} arg=${hh.value("A")}/>
 	  <hh.pause/>
 	</hh.loop>
       </hh.parallel>

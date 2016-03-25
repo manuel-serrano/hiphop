@@ -13,12 +13,13 @@ var prg = <hh.module>
       <hh.localsignal name="S" init_value=1 >
 	<hh.sequence>
 	  <hh.emit signal_name="S" func=${sum}
-		    args=${[hh.preValue("S"), 1]}/>
-	  <hh.emit signal_name="O" args=${hh.value("S")}/>
+		   arg0=${hh.preValue("S")}
+		   arg1=1/>
+	  <hh.emit signal_name="O" arg=${hh.value("S")}/>
 	</hh.sequence>
       </hh.localsignal>
       <hh.pause/>
-      <hh.emit signal_name="O" args=${hh.preValue("O")}/>
+      <hh.emit signal_name="O" arg=${hh.preValue("O")}/>
       <hh.pause/>
     </hh.sequence>
   </hh.loop>

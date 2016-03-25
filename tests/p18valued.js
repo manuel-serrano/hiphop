@@ -17,7 +17,7 @@ var prg = <hh.module>
 	<hh.parallel>
 	  <hh.sequence>
 	    <hh.pause/>
-            <hh.emit signal_name="S1" args=${hh.preValue("S1")}/>
+            <hh.emit signal_name="S1" arg=${hh.preValue("S1")}/>
 	    <hh.exit trap_name="T1"/>
 	  </hh.sequence>
 	  <hh.loop>
@@ -26,7 +26,7 @@ var prg = <hh.module>
 		<hh.parallel>
 		  <hh.sequence>
 		    <hh.pause/>
-                    <hh.emit signal_name="S2" args=${hh.preValue("S2")}/>
+                    <hh.emit signal_name="S2" arg=${hh.preValue("S2")}/>
 		    <hh.exit trap_name="T2"/>
 		  </hh.sequence>
 		  <hh.loop>
@@ -35,22 +35,22 @@ var prg = <hh.module>
 			<hh.present signal_name="S2">
                           <hh.emit signal_name="S1_and_S2"
 				    func=${sum}
-				    args=${[hh.value("S1"),
-					    hh.value("S2")]}/>
+				    arg0=${hh.value("S1")}
+				    arg1=${hh.value("S2")}/>
 			  <hh.emit signal_name="S1_and_not_S2"
 				    func=${sum}
-				    args=${[hh.value("S1"),
-					    hh.value("S2")]}/>
+				    arg0=${hh.value("S1")}
+				    arg1=${hh.value("S2")}/>
 			</hh.present>
 			<hh.present signal_name="S2">
 			  <hh.emit signal_name="not_S1_and_S2"
 				    func=${sum}
-				    args=${[hh.value("S1"),
-					    hh.value("S2")]}/>
+				    arg0=${hh.value("S1")}
+				    arg1=${hh.value("S2")}/>
 			  <hh.emit signal_name="not_S1_and_not_S2"
 				    func=${sum}
-				    args=${[hh.value("S1"),
-					    hh.value("S2")]}/>
+				    arg0=${hh.value("S1")}
+				    arg1=${hh.value("S2")}/>
 			</hh.present>
 		      </hh.present>
 		      <hh.pause/>

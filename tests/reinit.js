@@ -11,13 +11,14 @@ const prg =
 	<hh.outputsignal name="O"
 			 reinit_func=${function() {return 2}}
 			 combine_with=${function(a, b) {return a * b}}/>
-	<hh.emit signal_name="O" args=5/>
-	<hh.emit signal_name="AUX" args=245/>
+	<hh.emit signal_name="O" arg=5/>
+	<hh.emit signal_name="AUX" arg=245/>
 	<hh.pause/>
 	<hh.loop>
 	  <hh.emit signal_name="O"
 		   func=${function(a, b) { return a + b }}
-		   args=${[1, hh.preValue("O")]}/>
+		   arg0=1
+		   arg1=${hh.preValue("O")}/>
 	  <hh.emit signal_name="AUX"/>
 	  <hh.pause/>
 	</hh.loop>
