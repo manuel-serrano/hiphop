@@ -13,7 +13,7 @@ DOCJS=`$(HOP) --no-server --evaljs 'console.log( require( hop.config ).docDir + 
 #*---------------------------------------------------------------------*/
 #*    Targets                                                          */
 #*---------------------------------------------------------------------*/
-TARGETS=index.html idx.html language.html debug.html download.html
+TARGETS=index.html idx.html language-map.html api.html debug.html download.html
 
 all: $(TARGETS) lib hss
 
@@ -39,7 +39,7 @@ index.html: _index.md
 #*---------------------------------------------------------------------*/
 #*    idx.json ...                                                     */
 #*---------------------------------------------------------------------*/
-idx.json: language.html debug.html
+idx.json: language-map.html debug.html api.html
 	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "html-to-idx" . $^ > $@ \
           || ($(RM) $@; exit 1)

@@ -1,0 +1,1 @@
+${ var doc = require("hopdoc") }
