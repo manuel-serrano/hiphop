@@ -55,7 +55,7 @@ idx.html: idx.json
 #*---------------------------------------------------------------------*/
 #*    .md -> .html                                                     */
 #*---------------------------------------------------------------------*/
-%.html: %.md
+%.html: %.md language-map.js
 	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "compile-section" $< > $@ \
           || ($(RM) $@; exit 1)

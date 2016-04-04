@@ -1,1 +1,1 @@
-${ var doc = require("hopdoc") }
+${ require("./language-map.js").langage_map }
