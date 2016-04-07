@@ -18,14 +18,13 @@ function header(label, symbol=null) {
 }
 
 function md_line(left, right=null) {
-   console.error(markdown.eval(left));
    if (right)
       return <tr>
-	<td>${markdown.eval(left).XML.car}</td>
-	<td>${markdown.eval(right).XML.car}</td>
+	<td>${markdown.load(left).XML.car}</td>
+	<td>${markdown.load(right).XML.car}</td>
       </tr>
    return <tr>
-     <td colspan=2>${markdown.eval(left).XML.car}</td>
+     <td colspan=2>${markdown.load(left).XML.car}</td>
    </tr>
 }
 
