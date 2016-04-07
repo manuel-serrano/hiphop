@@ -94,6 +94,24 @@ function OPT(attrs) {
 exports.langage_map =
    <table class="table table-striped table-hover">
      ${header("Conventions")}
+     <tr>
+       <td>
+	 <ul>
+	   <li>JSFunction is a reference to any JavaScript function.</li>
+	   <li>JSValue is a refernce to any JavaScript value (primitive or objects).</li>
+	   <li>JSUInt is a JavsScript positive integer.</li>
+	   <li>JSString is a JavaScript string.</li>
+	 </ul>
+       </td>
+       <td>
+	 <ul>
+	   <li>Synbols of the language are in <strong>bold</strong>.</li>
+	   <li>Non terminal symbols have the following typo:
+	     <span style="font-size:140%;"><em>non-terminal</em></span>.
+	   </li>
+	 </ul>
+       </td>
+     </tr>
      ${header("Statements", "stat")}
      ${header("Expressions")}
      ${header("Interface")}
@@ -114,7 +132,7 @@ exports.langage_map =
 	 Entry point of a reactive program.
        </td>
      </tr>
-     ${header("Module header", "module-header")})
+     ${header("Module header", "module-header")}
      <tr>
        <td colspan=2>
 	 <term_node name="InputSignal">
