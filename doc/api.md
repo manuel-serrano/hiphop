@@ -8,28 +8,28 @@ they name are always leafs. Therefore they didn't accept any children.
 ### <hiphop.module> ###
 [:@glyphicon glyphicon-tag tag]
 
-A module is an object that wrap an entire HipHop.js program, it's a
-programming unit of HipHop.js. As any first class object, a module can
-be call inside another module, via the `run` HipHop.js statement (see `<hiphop.run>`).
+A module is an object that wrap an entire Hiphop.js program, it's a
+programming unit of Hiphop.js. As any first class object, a module can
+be call inside another module, via the `run` Hiphop.js statement (see `<hiphop.run>`).
 
 ```hopscript
 <hiphop.module>
-  <!-- HipHop.js signal declarations -->
-  <!-- HipHop.js statements and local signals -->
+  <!-- Hiphop.js signal declarations -->
+  <!-- Hiphop.js statements and local signals -->
 <hiphop.module>
 ```
 
 ### hiphop.ReactiveMachine ###
 [:@glyphicon glyphicon-tag tag]
 
-A reactive machine is an object that wrap an HipHop.js module, and
+A reactive machine is an object that wrap an Hiphop.js module, and
 allow to interact with it. In other word, in instantiate a module to a
 runnable program.
 
 ```hopscript
 var prg =
 <hiphop.module>
-  <!-- HipHop.js program -->
+  <!-- Hiphop.js program -->
 <hiphop.module>
 
 var machine = new hiphop.ReactiveMachine(prg, "prgName");
@@ -69,26 +69,26 @@ the following properties:
 # Signal declarations
 
 Signals are logical object that can be received and emitted by a
-HipHop.js module. There also can be used to interact from the outside
-of HipHop.js world (with input or output signals), and for internal
+Hiphop.js module. There also can be used to interact from the outside
+of Hiphop.js world (with input or output signals), and for internal
 execution of a program (local signals). Each signal declaration must
 have `name` attribute declared.
 
 Declaration of input or output signal must always be on the top of
-HipHop.js module:
+Hiphop.js module:
 
 ```hopscript
 <hiphop.module>
   <hiphop.inputsignal name="I"/>
   <hiphop.outputsignal name="O"/>
-  <!-- any HipHop.js statement or local signal declaration -->
+  <!-- any Hiphop.js statement or local signal declaration -->
 </hiphop.module>
 ```
-Declaration of local signal can be anywhere in a HipHop.js module:
+Declaration of local signal can be anywhere in a Hiphop.js module:
 
 ```hopscript
 <hiphop.localsignal name="I">
-  <!-- any HipHop.js statement -->
+  <!-- any Hiphop.js statement -->
 </hiphop.localsignal>
 ```
 
@@ -97,7 +97,7 @@ Declaration of local signal can be anywhere in a HipHop.js module:
 Input and output signals are defined at scope of the module, so every
 instructions can access to them, and there are visible from the
 outside of the reactive machine (you can set value on input signal,
-and get value from output signal). HipHop.js allow to create local
+and get value from output signal). Hiphop.js allow to create local
 signal, invisible from outside the reactive machine. They create a
 scope, and only instructions embodied inside can access them.
 
@@ -141,7 +141,7 @@ ${ doc.include("../tests/value1.js", 6, 13) }
 ## Signal accessors
 
 Signal accessors are used to give the value or the presence of a
-signal as argument of an expression function. HipHop.js runtime ensure
+signal as argument of an expression function. Hiphop.js runtime ensure
 the correct scheduling of the program (the expression evaluation will
 wait for the emitters of a signal in case of signal access).
 

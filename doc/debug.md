@@ -2,6 +2,6 @@
 
 TODO
 
-# Hack HipHop.js
+# Hack Hiphop.js
 
 TODO: PDF arch-hiphopjs.pdf

@@ -23,13 +23,13 @@ This is the file you should download if you want to get HipHop.js
   </div>
 </div>}
 
-#### HipHip.js installation ####
+#### Hiphop.js installation ####
 
-HipHop.js requires
+Hiphop.js requires
 [Bigloo](http://www-sop.inria.fr/members/Manuel.Serrano/bigloo/) and
 [Hop.js](http://hop-dev.inria.fr/home/index.html) to works.
 
-Move the HipHop.js directory inside the node path, for instance, `$HOME/.node\_modules/`.
+Move the Hiphop.js directory inside the node path, for instance, `$HOME/.node\_modules/`.
 
 ## Git ##
 
