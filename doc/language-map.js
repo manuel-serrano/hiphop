@@ -189,6 +189,33 @@ exports.langage_map =
 		  "<em style=\"font-size:140%\">stmt</em> must not be instantaneous.")}
      </tr>
      ${header("Expressions", "expr")}
+     <tr>
+       <td>
+	 <term name="func" JSFunction /> | <term name="arg" JSValue />
+       </td>
+       ${comment(true,
+		 "<strong>func</strong> is called without parameters.",
+		 "Or <strong>arg</strong> is directelly returns whithout function call.")}
+     </tr>
+     <tr>
+       <td>
+	 <term name="func" JSFunction /> <term name="arg" JSValue />
+       </td>
+       ${comment(true,
+		 "<strong>func</strong> is called with <strong>arg</strong> as parameter.")}
+     </tr>
+     <tr>
+       <td>
+	 <term name="func" JSFunction />
+	 <term name="arg0" JSValue />
+	 <term name="arg1" JSValue />
+	 <indent>
+	   ...
+	   <term name="argN" JSValue />
+	 </indent>
+       </td>
+       ${comment(true, "<strong>func</strong> is called with <em>N</em> parameters.")}
+     </tr>
 
      ${header("Module")}
      <tr>
