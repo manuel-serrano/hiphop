@@ -27,6 +27,18 @@ function header(label, symbol=null) {
    return ret;
 }
 
+function comment(col, ...args) {
+   let lines = <ul>
+      ${args.map(function(el, idx, arr) {
+	 return <li>${el}</li>
+      })}
+    </ul>;
+
+   if (col)
+      return <td>${lines}</td>;
+   return lines;
+}
+
 function INDENT() {
    let ret;
 
@@ -95,26 +107,51 @@ exports.langage_map =
    <table class="table table-striped table-hover">
      ${header("Conventions")}
      <tr>
-       <td>
-	 <ul>
-	   <li>JSFunction is a reference to any JavaScript function.</li>
-	   <li>JSValue is a refernce to any JavaScript value (primitive or objects).</li>
-	   <li>JSUInt is a JavsScript positive integer.</li>
-	   <li>JSString is a JavaScript string.</li>
-	 </ul>
-       </td>
-       <td>
-	 <ul>
-	   <li>Synbols of the language are in <strong>bold</strong>.</li>
-	   <li>Non terminal symbols have the following typo:
-	     <span style="font-size:140%;"><em>non-terminal</em></span>.
-	   </li>
-	 </ul>
-       </td>
+     ${comment(true,
+	       "JSFunction is a reference to any JavaScript function.",
+	       "JSValue is a refernce to any JavaScript value (primitive or objects).",
+	       "JSUInt is a JavsScript positive integer.",
+	       "JSString is a JavaScript string.")}
+     ${comment(true,
+	       "Hiphop.js symbols are in <strong>bold</strong>.",
+	       "Non terminal symbols have the following typo: " +
+	       "<span style=\"font-size:140%;\"><em>non-terminal</em></span>.",
+	       "[ ] contains optional term.",
+	       "{ } contains repeatable term.",
+	       "::= represents an expansion term.")}
      </tr>
      ${header("Statements", "stat")}
-     ${header("Expressions")}
-     ${header("Interface")}
+     <tr>
+       <td>
+	 <term_node name="Nothing"/>
+       </td>
+       ${comment(true, "Empty statement.", "Terminates instantaneously.")}
+     </tr>
+     <tr>
+       <td>
+	 <term_node name="Pause"/>
+       </td>
+       ${comment(true, "Pause for one instant.")}
+     </tr>
+     <tr>
+       <td>
+	 <term_node name="Halt"/>
+       </td>
+       ${comment(true, "Never terminates.", "Can be aborted.")}
+     </tr>
+     <tr>
+       <td>
+	 <term_node name="Emit">
+	   <term name="signal_name" JSString/>
+	   <opt>
+	     <nterm name="expr"/>
+	   </opt>
+	 </term_node>
+       </td>
+       <td>
+       </td>
+     </tr>
+     ${header("Expressions", "expr")}
 
      ${header("Module")}
      <tr>
@@ -128,10 +165,9 @@ exports.langage_map =
 	   </indent>
 	 </term_cnode>
        </td>
-       <td>
-	 Entry point of a reactive program.
-       </td>
+       ${comment(true, "Entry point of a reactive program.")}
      </tr>
+
      ${header("Module header", "module-header")}
      <tr>
        <td colspan=2>
@@ -158,12 +194,9 @@ exports.langage_map =
 	   </indent>
          </term_node>
        </td>
-       <td>
-	 <ul>
-	   <li>bla bla 1 sur output signal</li>
-	   <li>bla bla 2 sur output signal</li>
-	   <li>bla bla 3 sur output signal</li>
-	 </ul>
-       </td>
+       ${comment(true,
+		 "bla bla 1 sur output signal",
+		 "bla bla 2 sur output signal",
+		 "bla bla 3 sur output signal")}
      </tr>
    </table>
