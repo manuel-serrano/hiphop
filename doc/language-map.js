@@ -16,44 +16,48 @@ function header(label, symbol=null) {
 	       <strong>${label}</strong>
 	       ${(function() {
 		  if (symbol)
-		     return <em>${symbol}::=</em>
+		     return <span>
+		       <em style="font-size:140%;margin-left:2%">
+                          ${symbol}
+		       </em> ::=
+		     </span>
 	       })()}
 	     </td>
 	   </tr>
    return ret;
 }
 
-function indent() {
-   let buf = "";
+function INDENT() {
+   let ret;
 
-   for (let i = 0; i < cur_indent; i++)
-      buf += "&nbsp;";
-   return buf;
+   cur_indent += 5;
+   ret = <div style=${"margin-left:" + cur_indent + "%"}>
+     ${children(arguments)}
+   </div>
+   cur_indent -= 5;
+
+   return ret;
 }
 
 function TERM_NODE(attrs) {
    return <span>
-     ${indent()}
      <strong>&lt;${attrs.name}&gt;</strong>
-     ${(function() {if (attrs.br) {cur_indent += 3; return <br/>}x})()}
+     ${(function() {if (attrs.br) return <br/>})()}
      ${children(arguments)}
-     ${(function() {if (attrs.br) {cur_indent -= 3; return <br/>}})()}
-     ${indent()}
+     ${(function() {if (attrs.br) return <br/>})()}
      <strong>&lt;/${attrs.name}&gt;</strong>
    </span>;
 }
 
 function TERM(attrs) {
    return <span>
-     ${indent()}
      ${attrs.name}
      ${(function() {if (attrs.br) return <br/>})()}
    </span>
 }
 
 function NTERM(attrs) {
-   return <em>
-     ${indent()}
+   return <em style=${"font-size:140%;"}>
      ${attrs.name}
      ${(function() {if (attrs.br) return <br/>})()}
    </em>
@@ -61,7 +65,7 @@ function NTERM(attrs) {
 
 function OPT(attrs) {
    return <span>
-     [${indent()} ${children(arguments)} ]
+     [ ${children(arguments)} ]
      ${(function() {if (attrs.br) return <br/>})()}
    </span>;
 }
@@ -74,16 +78,18 @@ exports.langage_map =
      ${header("Interface")}
      ${header("Module")}
      <tr>
-       <td colspan=2>
-	 <term_node name="Module" br>
-	   <opt br>
-	     <nterm name="module-header"/>
-	   </opt>
-	   <nterm name="stmt"/>
+       <td>
+	 <term_node name="Module">
+	   <indent>
+	     <opt br>
+	       <nterm name="module-header"/>
+	     </opt>
+	     <nterm name="stmt"/>
+	   </indent>
 	 </term_node>
+       </td>
+       <td>
+	 Entry point of a reactive program.
        </td>
      </tr>
    </table>
-
-   // ${md_line("__<Module>__ \\[_module-header_\\] _stmt_ __</Module>__",
-     // 	      "Entry point of a reactive program.")}
