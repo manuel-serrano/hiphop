@@ -139,7 +139,14 @@ exports.langage_map =
 	       "{ } contains repeatable term.",
 	       "::= represents an expansion term.")}
      </tr>
-     ${header("Statements", "stat")}
+     ${header("Statements", "stmt")}
+     <tr>
+       <td colspan=2>
+	 <repeat>
+	   <nterm name="stmt"/>
+	 </repeat>
+       </td>
+     </tr>
      <tr>
        <td>
 	 <term_node name="Nothing"/>
@@ -169,6 +176,17 @@ exports.langage_map =
        </td>
        <td>
        </td>
+     </tr>
+     <tr>
+       <td>
+	 <term_cnode name="Loop">
+	   <nterm name="stmt"/>
+	 </term_cnode>
+       </td>
+        ${comment(true,
+		  "Infinite loop, immediately restarts its body when terminated.",
+		  "Never terminates, can be aborted or exited.",
+		  "<em style=\"font-size:140%\">stmt</em> must not be instantaneous.")}
      </tr>
      ${header("Expressions", "expr")}
 
