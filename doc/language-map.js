@@ -97,9 +97,28 @@ function NTERM(attrs) {
 }
 
 function OPT(attrs) {
+   let repeat_l = attrs && attrs.repeat ? "{ " : "";
+   let repeat_r = attrs && attrs.repeat ? " }" : "";
+
    return <span>
-     [ ${children(arguments)} ]
+     [ ${repeat_l}
+       ${children(arguments)}
+       ${repeat_r} ]
      ${(function() {if (attrs && attrs.br) return <br/>})()}
+   </span>;
+}
+
+function REPEAT(attrs) {
+   let opt_l = attrs && attrs.opt ? "[ " : "";
+   let opt_r = attrs && attrs.opt ? " ]" : "";
+
+   return <span>
+      ${"{ "}
+      ${opt_l}
+      ${children(arguments)}
+      ${opt_r}
+      ${" }"}
+      ${(function() {if (attrs && attrs.br) return <br/>})()}
    </span>;
 }
 
@@ -158,7 +177,7 @@ exports.langage_map =
        <td>
 	 <term_cnode name="Module">
 	   <indent>
-	     <opt br>
+	     <opt repeat br>
 	       <nterm name="module-header"/>
 	     </opt>
 	     <nterm name="stmt"/>
