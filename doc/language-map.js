@@ -392,7 +392,9 @@ exports.langage_map =
 	   </indent>
 	 </term_cnode>
        </td>
-       ${comment(true, "")}
+       ${comment(true,
+		 "Temporal loop which is body is initialy started.",
+		 "The signal guard can't be <strong>immediate</strong>.")}
      </tr>
 
      <tr>
