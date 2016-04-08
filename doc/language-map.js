@@ -143,8 +143,7 @@ function REPEAT(attrs) {
 }
 
 exports.langage_map =
-   <table class="table table-striped table-hover"
-	  style="td.nowrap {min-width: 129px;}">
+   <table class="table table-striped table-hover">
 
      ${header("Conventions")}
 
@@ -166,7 +165,7 @@ exports.langage_map =
      ${header("Module")}
 
      <tr>
-       <td>
+       <td width="46%">
 	 <term_cnode name="Module">
 	   <indent>
 	     <opt repeat br>
@@ -314,12 +313,10 @@ exports.langage_map =
      <tr>
        <td>
 	 <term_node name="Await">
-	   <indent>
-	     <nterm name="sig" br/>
-	     <opt br>
-	       <nterm name="countexpr"/> | <term name="immediate"/>
-	     </opt>
-	 </indent>
+	   <nterm name="sig"/>
+	   <opt >
+	     <nterm name="countexpr"/> | <term name="immediate"/>
+	   </opt>
 	 </term_node>
        </td>
         ${comment(true,
@@ -348,11 +345,9 @@ exports.langage_map =
        <td>
 	 <term_cnode name="WeakAbort">
 	   <cnode_args>
-	     <indent>
 	     ( <nterm name="sig" />
-	       <opt><nterm name="countexpr"/></opt> )<br />
+	       <opt><nterm name="countexpr"/></opt> )
 	     | <nterm name="expr" />
-	       </indent>
 	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt"/>
