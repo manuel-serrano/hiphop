@@ -143,7 +143,8 @@ function REPEAT(attrs) {
 }
 
 exports.langage_map =
-   <table class="table table-striped table-hover">
+   <table class="table table-striped table-hover"
+	  style="td.nowrap {min-width: 129px;}">
 
      ${header("Conventions")}
 
