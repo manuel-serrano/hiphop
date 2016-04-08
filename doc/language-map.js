@@ -310,7 +310,8 @@ exports.langage_map =
 	 </term_node>
        </td>
         ${comment(true,
-		  "Terminates when the signal is present.",
+		  "Terminates when the signal is present (or was " +
+		  "present on the previous reaction is <strong>pre</strong> is present",
 		  "Instantaneous is <strong>immediate</strong> keyword is present.")}
      </tr>
      ${header("Expressions", "expr")}
