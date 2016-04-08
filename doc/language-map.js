@@ -17,7 +17,7 @@ function header(label, symbol=null) {
 	       ${(function() {
 		  if (symbol)
 		     return <span>
-		       <em style="font-size:140%;margin-left:2%">
+		       <em style="font-size:130%;margin-left:2%">
                           ${symbol}
 		       </em> ::=
 		     </span>
@@ -110,7 +110,7 @@ function TERM(attrs) {
 }
 
 function NTERM(attrs) {
-   return <em style=${"font-size:140%;"}>
+   return <em style=${"font-size:130%;"}>
      ${attrs.name}
      ${(function() {if (attrs && attrs.br) return <br/>})()}
    </em>
@@ -144,7 +144,9 @@ function REPEAT(attrs) {
 
 exports.langage_map =
    <table class="table table-striped table-hover">
+
      ${header("Conventions")}
+
      <tr>
      ${comment(true,
 	       "JSFunction is a reference to any JavaScript function.",
@@ -154,12 +156,14 @@ exports.langage_map =
      ${comment(true,
 	       "Hiphop.js symbols are in <strong>bold</strong>.",
 	       "Non terminal symbols have the following typo: " +
-	       "<span style=\"font-size:140%;\"><em>non-terminal</em></span>.",
+	       "<span style=\"font-size:130%;\"><em>non-terminal</em></span>.",
 	       "[ ] contains optional term.",
 	       "{ } contains repeatable term.",
 	       "::= represents an expansion term.")}
      </tr>
+
      ${header("Module")}
+
      <tr>
        <td>
 	 <term_cnode name="Module">
@@ -175,8 +179,9 @@ exports.langage_map =
      </tr>
 
      ${header("Module header", "module-header")}
+
      <tr>
-       <td colspan=2>
+       <td>
 	 <term_node name="InputSignal">
 	   <indent>
 	     <term br name="name" JSString />
@@ -187,7 +192,12 @@ exports.langage_map =
 	   </indent>
          </term_node>
        </td>
+       ${comment(true,
+		 "Input signal declaration.",
+		 "Can be emitted fron inside the reactive program.",
+		 "Has a global scope.")}
      </tr>
+
      <tr>
        <td>
 	 <term_node name="OutputSignal">
@@ -201,12 +211,12 @@ exports.langage_map =
          </term_node>
        </td>
        ${comment(true,
-		 "bla bla 1 sur output signal",
-		 "bla bla 2 sur output signal",
-		 "bla bla 3 sur output signal")}
+		 "Output signal declaration.",
+		 "Has a global scope.")}
      </tr>
 
      ${header("Statements", "stmt")}
+
      <tr>
        <td colspan=2>
 	 <repeat>
@@ -214,46 +224,46 @@ exports.langage_map =
 	 </repeat>
        </td>
      </tr>
+
      <tr>
        <td>
 	 <term_node name="Nothing"/>
        </td>
        ${comment(true, "Empty statement.", "Terminates instantaneously.")}
      </tr>
+
      <tr>
        <td>
 	 <term_node name="Pause"/>
        </td>
        ${comment(true, "Pause for one instant.")}
      </tr>
+
      <tr>
        <td>
 	 <term_node name="Halt"/>
        </td>
        ${comment(true, "Never terminates.", "Can be aborted.")}
      </tr>
+
      <tr>
        <td>
 	 <term_node name="Emit">
-	   <term name="signal_name" JSString/>
-	   <opt>
-	     <nterm name="expr"/>
-	   </opt>
+	   <nterm name="sigemit"/>
 	 </term_node>
        </td>
        ${comment(true, "Terminates instantaneously.")}
      </tr>
+
      <tr>
        <td>
 	 <term_node name="Sustain">
-	   <term name="signal_name" JSString/>
-	   <opt>
-	     <nterm name="expr"/>
-	   </opt>
+	   <nterm name="sigemit"/>
 	 </term_node>
        </td>
        ${comment(true, "Never terminates.", "Can be aborted.")}
      </tr>
+
      <tr>
        <td>
 	 <term_cnode name="Loop">
@@ -263,13 +273,14 @@ exports.langage_map =
         ${comment(true,
 		  "Infinite loop, immediately restarts its body when terminated.",
 		  "Never terminates, can be aborted or exited.",
-		  "<em style=\"font-size:140%\">stmt</em> must not be instantaneous.")}
+		  "<em style=\"font-size:130%\">stmt</em> must not be instantaneous.")}
      </tr>
+
      <tr>
        <td>
 	 <term_cnode name="Present">
 	   <cnode_args>
-	     <term name="signal_name" JSString />
+	     <nterm name="sig"/>
 	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt" br/>
@@ -281,6 +292,7 @@ exports.langage_map =
 		  "Branching according to the presence of the signal.",
 		  "Test and branching are instantaneous.")}
      </tr>
+
      <tr>
        <td>
 	 <term_cnode name="If">
@@ -297,16 +309,16 @@ exports.langage_map =
 		  "Branching according to the value of test expression.",
 		  "Test and branching are instantaneous.")}
      </tr>
+
      <tr>
        <td>
 	 <term_node name="Await">
 	   <indent>
-	     <opt br><term name="pre"/></opt>
-	     <term name="signal_name" JSString br/>
+	     <nterm name="sig" br/>
 	     <opt br>
 	       <nterm name="countexpr"/> | <term name="immediate"/>
 	     </opt>
-	   </indent>
+	 </indent>
 	 </term_node>
        </td>
         ${comment(true,
@@ -314,6 +326,129 @@ exports.langage_map =
 		  "present on the previous reaction is <strong>pre</strong> is present",
 		  "Instantaneous is <strong>immediate</strong> keyword is present.")}
      </tr>
+
+     <tr>
+       <td>
+	 <term_cnode name="Abort">
+	   <cnode_args>
+	     ( <nterm name="sig" />
+	       <opt><nterm name="countexpr"/></opt> )
+	     | <nterm name="expr" />
+	   </cnode_args>
+	   <indent>
+	     <nterm name="stmt"/>
+	   </indent>
+	 </term_cnode>
+       </td>
+       ${comment(true, "")}
+     </tr>
+
+     <tr>
+       <td>
+	 <term_cnode name="WeakAbort">
+	   <cnode_args>
+	     <indent>
+	     ( <nterm name="sig" />
+	       <opt><nterm name="countexpr"/></opt> )<br />
+	     | <nterm name="expr" />
+	       </indent>
+	   </cnode_args>
+	   <indent>
+	     <nterm name="stmt"/>
+	   </indent>
+	 </term_cnode>
+       </td>
+       ${comment(true, "")}
+     </tr>
+
+     <tr>
+       <td>
+	 <term_cnode name="LoopEach">
+	   <cnode_args>
+	   </cnode_args>
+	   <nterm name="stmt"/>
+	 </term_cnode>
+       </td>
+       ${comment(true, "")}
+     </tr>
+
+     <tr>
+       <td>
+	 <term_cnode name="Every">
+	   <cnode_args>
+	   </cnode_args>
+	   <nterm name="stmt"/>
+	 </term_cnode>
+       </td>
+       ${comment(true, "")}
+     </tr>
+
+     <tr>
+       <td>
+	 <term_cnode name="Suspend">
+	   <cnode_args>
+	   </cnode_args>
+	   <nterm name="stmt"/>
+	 </term_cnode>
+       </td>
+       ${comment(true, "")}
+     </tr>
+
+     <tr>
+       <td>
+	 <term_cnode name="Trap">
+	   <cnode_args>
+	   </cnode_args>
+	   <nterm name="stmt"/>
+	 </term_cnode>
+       </td>
+       ${comment(true, "")}
+     </tr>
+
+     <tr>
+       <td>
+	 <term_node name="Exit">
+	   <term name="trap_name" JSString/>
+	 </term_cnode>
+       </td>
+       ${comment(true, "")}
+     </tr>
+
+     <tr>
+       <td>
+	 <term_node name="LocalSignal">
+	   <indent>
+	     <term br name="name" JSString />
+	     <opt br><term name="valued" /></opt>
+	     <opt br><term name="combine_with" JSFunction /></opt>
+	     <opt br><term name="init_value" JSValue /></opt>
+	     <opt br><term name="reinit_func" JSFunction /></opt>
+	   </indent>
+         </term_node>
+       </td>
+       ${comment(true,
+		 "Local declaration of a signal.",
+		 "Determines its scope.")}
+     </tr>
+
+     ${header("Signal access", "sig")}
+     <tr colspan=2>
+       <td>
+	 <opt><term name="pre"/></opt>
+	 <term name="signal_name" JSString />
+       </td>
+     </tr>
+
+     ${header("Signal emission", "sigemit")}
+     <tr colspan=2>
+       <td>
+	 <term name="signal_name" JSString />
+	 <opt>
+	   <nterm name="expr"/>
+	 </opt>
+       </td>
+     </tr>
+
      ${header("Expressions", "expr")}
      <tr>
        <td>
