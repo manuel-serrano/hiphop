@@ -410,7 +410,10 @@ exports.langage_map =
 	   </indent>
 	 </term_cnode>
        </td>
-       ${comment(true, "")}
+       ${comment(true,
+		 "Tempooral loop which initial waiting of true signal " +
+		 "guard or expression.",
+		 "Unlike LoopEach, the signal guard can be <strong>immediate</strong>.")}
      </tr>
 
      <tr>
@@ -424,7 +427,9 @@ exports.langage_map =
 	   </indent>
 	 </term_cnode>
        </td>
-       ${comment(true, "")}
+       ${comment(true,
+		 "If the signal guard or the expression is true, keeps the " +
+		 "state of the body statement and pauses for the current instant.")}
      </tr>
 
      <tr>
@@ -480,8 +485,8 @@ exports.langage_map =
      </tr>
 
      ${header("Signal emission", "sigemit")}
-     <tr colspan=2>
-       <td>
+     <tr>
+       <td colspan=2>
 	 <term name="signal_name" JSString />
 	 <opt>
 	   <nterm name="expr"/>
