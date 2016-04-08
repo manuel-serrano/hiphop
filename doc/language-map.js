@@ -289,7 +289,7 @@ exports.langage_map =
 	 </term_cnode>
        </td>
         ${comment(true,
-		  "Branching according to the presence of the signal.",
+		  "Branching according to result of the signal guard.",
 		  "Test and branching are instantaneous.")}
      </tr>
 
@@ -315,13 +315,12 @@ exports.langage_map =
 	 <term_node name="Await">
 	   <nterm name="sig"/>
 	   <opt >
-	     <nterm name="countexpr"/> | <term name="immediate"/>
+	     <nterm name="countexpr"/>
 	   </opt>
 	 </term_node>
        </td>
         ${comment(true,
-		  "Terminates when the signal is present (or was " +
-		  "present on the previous reaction is <strong>pre</strong> is present",
+		  "Terminates when the signal guard is true.",
 		  "Instantaneous is <strong>immediate</strong> keyword is present.")}
      </tr>
 
@@ -338,7 +337,9 @@ exports.langage_map =
 	   </indent>
 	 </term_cnode>
        </td>
-       ${comment(true, "")}
+       ${comment(true,
+		 "Absortion; kills the statement when the signal guard or " +
+		 "the expression is true.")}
      </tr>
 
      <tr>
@@ -354,7 +355,9 @@ exports.langage_map =
 	   </indent>
 	 </term_cnode>
        </td>
-       ${comment(true, "")}
+       ${comment(true,
+		 "Weak variant of absortion; starts the statement in " +
+		 "the current instant when the guard expression is true, before killing it.")}
      </tr>
 
      <tr>
@@ -427,12 +430,18 @@ exports.langage_map =
 		 "Determines its scope.")}
      </tr>
 
-     ${header("Signal access", "sig")}
-     <tr colspan=2>
+     ${header("Signal access guard", "sig")}
+     <tr>
        <td>
 	 <opt><term name="pre"/></opt>
+	 <opt><term name="immediate"/></opt>
 	 <term name="signal_name" JSString />
        </td>
+       ${comment(true,
+		 "Signal access guard. Return true if the signal is present.",
+		 "If <strong>pre</strong> keyword is present, return true if " +
+		 "the signal was present on the previous instant.")}
+
      </tr>
 
      ${header("Signal emission", "sigemit")}
