@@ -51,9 +51,27 @@ function INDENT() {
    return ret;
 }
 
+function CNODE_ARGS(attrs) {
+   return {cnode_args: true,
+	   children: children(arguments)}
+}
+
 function TERM_CNODE(attrs) {
+   let node_children = children(arguments);
+   let args = [];
+
+   for (let i in node_children)
+      if (node_children[i].cnode_args) {
+	 args = node_children[i].children
+	 node_children.slice(0, 1);
+	 break;
+      }
+
+   // not jump line after </strong> and })} (avoid space)
    return <span>
-     <strong>&lt;${attrs.name}&gt;</strong>
+     <strong>&lt;${attrs.name}</strong>${args.map(function(el, idx, arr) {
+	return el
+     })}<strong>&gt;</strong>
      ${(function() {if (attrs.br) return <br/>})()}
      ${children(arguments)}
      ${(function() {if (attrs.br) return <br/>})()}
@@ -67,7 +85,7 @@ function TERM_NODE(attrs) {
      ${(function() {if (attrs.br) return <br/>})()}
      ${children(arguments)}
      ${(function() {if (attrs.br) return <br/>})()}
-     <strong> /&gt;</strong>
+     <strong>/&gt;</strong>
    </span>;
 }
 
@@ -248,6 +266,9 @@ exports.langage_map =
      <tr>
        <td>
 	 <term_cnode name="Present">
+	   <cnode_args>
+	     <term name="signal_name" JSString />
+	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt" br/>
 	     <opt><nterm name="stmt"/></opt>
@@ -257,6 +278,38 @@ exports.langage_map =
         ${comment(true,
 		  "Branching according to the presence of the signal.",
 		  "Test and branching are instantaneous.")}
+     </tr>
+     <tr>
+       <td>
+	 <term_cnode name="If">
+	   <cnode_args>
+	     <nterm name=expr/>
+	   </cnode_args>
+	   <indent>
+	     <nterm name="stmt" br/>
+	     <opt><nterm name="stmt"/></opt>
+	   </indent>
+	 </term_cnode>
+       </td>
+        ${comment(true,
+		  "Branching according to the value of test expression.",
+		  "Test and branching are instantaneous.")}
+     </tr>
+     <tr>
+       <td>
+	 <term_node name="Await">
+	   <indent>
+	     <opt br><term name="pre"/></opt>
+	     <term name="signal_name" JSString br/>
+	     <opt br>
+	       <nterm name="countexpr"/> | <term name="immediate"/>
+	     </opt>
+	   </indent>
+	 </term_node>
+       </td>
+        ${comment(true,
+		  "Terminates when the signal is present.",
+		  "Instantaneous is <strong>immediate</strong> keyword is present.")}
      </tr>
      ${header("Expressions", "expr")}
      <tr>
