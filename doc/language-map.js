@@ -248,6 +248,25 @@ exports.langage_map =
 
      <tr>
        <td>
+	 <term_node name="Atom">
+	   <term name="func" JSFunction br />
+	   <indent>
+	     <opt><term name="arg" JSValue /></opt>
+
+	   |
+
+	     [ <term name="arg0" JSValue/>
+	     <term name="arg1" JSValue />
+	     ...
+	     <term name="argN" JSValue /> ]
+	 </indent>
+	 </term_node>
+       </td>
+       ${comment(true, "Instantaneous execution of given JavaScript function.")}
+     </tr>
+
+     <tr>
+       <td>
 	 <term_node name="Emit">
 	   <nterm name="sigemit"/>
 	 </term_node>
@@ -364,8 +383,13 @@ exports.langage_map =
        <td>
 	 <term_cnode name="LoopEach">
 	   <cnode_args>
+	     ( <nterm name="sig" />
+	       <opt><nterm name="countexpr"/></opt> )
+	     | <nterm name="expr" />
 	   </cnode_args>
-	   <nterm name="stmt"/>
+	   <indent>
+	     <nterm name="stmt"/>
+	   </indent>
 	 </term_cnode>
        </td>
        ${comment(true, "")}
@@ -375,8 +399,13 @@ exports.langage_map =
        <td>
 	 <term_cnode name="Every">
 	   <cnode_args>
+	     ( <nterm name="sig" />
+	       <opt><nterm name="countexpr"/></opt> )
+	     | <nterm name="expr" />
 	   </cnode_args>
-	   <nterm name="stmt"/>
+	   <indent>
+	     <nterm name="stmt"/>
+	   </indent>
 	 </term_cnode>
        </td>
        ${comment(true, "")}
@@ -386,8 +415,11 @@ exports.langage_map =
        <td>
 	 <term_cnode name="Suspend">
 	   <cnode_args>
+	     <nterm name="sig" /> | <nterm name="expr" />
 	   </cnode_args>
-	   <nterm name="stmt"/>
+	   <indent>
+	     <nterm name="stmt"/>
+	   </indent>
 	 </term_cnode>
        </td>
        ${comment(true, "")}
@@ -397,11 +429,12 @@ exports.langage_map =
        <td>
 	 <term_cnode name="Trap">
 	   <cnode_args>
+	     <term name="trap_name" JSString/>
 	   </cnode_args>
 	   <nterm name="stmt"/>
 	 </term_cnode>
        </td>
-       ${comment(true, "")}
+       ${comment(true, "Mechanism to catch exceptions raised by the body statement.")}
      </tr>
 
      <tr>
@@ -410,7 +443,7 @@ exports.langage_map =
 	   <term name="trap_name" JSString/>
 	 </term_cnode>
        </td>
-       ${comment(true, "")}
+       ${comment(true, "Raises an exception.")}
      </tr>
 
      <tr>
