@@ -139,84 +139,6 @@ exports.langage_map =
 	       "{ } contains repeatable term.",
 	       "::= represents an expansion term.")}
      </tr>
-     ${header("Statements", "stmt")}
-     <tr>
-       <td colspan=2>
-	 <repeat>
-	   <nterm name="stmt"/>
-	 </repeat>
-       </td>
-     </tr>
-     <tr>
-       <td>
-	 <term_node name="Nothing"/>
-       </td>
-       ${comment(true, "Empty statement.", "Terminates instantaneously.")}
-     </tr>
-     <tr>
-       <td>
-	 <term_node name="Pause"/>
-       </td>
-       ${comment(true, "Pause for one instant.")}
-     </tr>
-     <tr>
-       <td>
-	 <term_node name="Halt"/>
-       </td>
-       ${comment(true, "Never terminates.", "Can be aborted.")}
-     </tr>
-     <tr>
-       <td>
-	 <term_node name="Emit">
-	   <term name="signal_name" JSString/>
-	   <opt>
-	     <nterm name="expr"/>
-	   </opt>
-	 </term_node>
-       </td>
-       <td>
-       </td>
-     </tr>
-     <tr>
-       <td>
-	 <term_cnode name="Loop">
-	   <nterm name="stmt"/>
-	 </term_cnode>
-       </td>
-        ${comment(true,
-		  "Infinite loop, immediately restarts its body when terminated.",
-		  "Never terminates, can be aborted or exited.",
-		  "<em style=\"font-size:140%\">stmt</em> must not be instantaneous.")}
-     </tr>
-     ${header("Expressions", "expr")}
-     <tr>
-       <td>
-	 <term name="func" JSFunction /> | <term name="arg" JSValue />
-       </td>
-       ${comment(true,
-		 "<strong>func</strong> is called without parameters.",
-		 "Or <strong>arg</strong> is directelly returns whithout function call.")}
-     </tr>
-     <tr>
-       <td>
-	 <term name="func" JSFunction /> <term name="arg" JSValue />
-       </td>
-       ${comment(true,
-		 "<strong>func</strong> is called with <strong>arg</strong> as parameter.")}
-     </tr>
-     <tr>
-       <td>
-	 <term name="func" JSFunction />
-	 <term name="arg0" JSValue />
-	 <term name="arg1" JSValue />
-	 <indent>
-	   ...
-	   <term name="argN" JSValue />
-	 </indent>
-       </td>
-       ${comment(true, "<strong>func</strong> is called with <em>N</em> parameters.")}
-     </tr>
-
      ${header("Module")}
      <tr>
        <td>
@@ -263,4 +185,106 @@ exports.langage_map =
 		 "bla bla 2 sur output signal",
 		 "bla bla 3 sur output signal")}
      </tr>
+
+     ${header("Statements", "stmt")}
+     <tr>
+       <td colspan=2>
+	 <repeat>
+	   <nterm name="stmt"/>
+	 </repeat>
+       </td>
+     </tr>
+     <tr>
+       <td>
+	 <term_node name="Nothing"/>
+       </td>
+       ${comment(true, "Empty statement.", "Terminates instantaneously.")}
+     </tr>
+     <tr>
+       <td>
+	 <term_node name="Pause"/>
+       </td>
+       ${comment(true, "Pause for one instant.")}
+     </tr>
+     <tr>
+       <td>
+	 <term_node name="Halt"/>
+       </td>
+       ${comment(true, "Never terminates.", "Can be aborted.")}
+     </tr>
+     <tr>
+       <td>
+	 <term_node name="Emit">
+	   <term name="signal_name" JSString/>
+	   <opt>
+	     <nterm name="expr"/>
+	   </opt>
+	 </term_node>
+       </td>
+       ${comment(true, "Terminates instantaneously.")}
+     </tr>
+     <tr>
+       <td>
+	 <term_node name="Sustain">
+	   <term name="signal_name" JSString/>
+	   <opt>
+	     <nterm name="expr"/>
+	   </opt>
+	 </term_node>
+       </td>
+       ${comment(true, "Never terminates.", "Can be aborted.")}
+     </tr>
+     <tr>
+       <td>
+	 <term_cnode name="Loop">
+	   <nterm name="stmt"/>
+	 </term_cnode>
+       </td>
+        ${comment(true,
+		  "Infinite loop, immediately restarts its body when terminated.",
+		  "Never terminates, can be aborted or exited.",
+		  "<em style=\"font-size:140%\">stmt</em> must not be instantaneous.")}
+     </tr>
+     <tr>
+       <td>
+	 <term_cnode name="Present">
+	   <indent>
+	     <nterm name="stmt" br/>
+	     <opt><nterm name="stmt"/></opt>
+	   </indent>
+	 </term_cnode>
+       </td>
+        ${comment(true,
+		  "Branching according to the presence of the signal.",
+		  "Test and branching are instantaneous.")}
+     </tr>
+     ${header("Expressions", "expr")}
+     <tr>
+       <td>
+	 <term name="func" JSFunction /> | <term name="arg" JSValue />
+       </td>
+       ${comment(true,
+		 "<strong>func</strong> is called without parameters.",
+		 "Or <strong>arg</strong> is directelly returns whithout function call.")}
+     </tr>
+     <tr>
+       <td>
+	 <term name="func" JSFunction /> <term name="arg" JSValue />
+       </td>
+       ${comment(true,
+		 "<strong>func</strong> is called with <strong>arg</strong> as parameter.")}
+     </tr>
+     <tr>
+       <td>
+	 <term name="func" JSFunction />
+	 <term name="arg0" JSValue />
+	 <term name="arg1" JSValue />
+	 <indent>
+	   ...
+	   <term name="argN" JSValue />
+	 </indent>
+       </td>
+       ${comment(true, "<strong>func</strong> is called with <em>N</em> parameters.")}
+     </tr>
+
    </table>
