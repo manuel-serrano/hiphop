@@ -100,6 +100,8 @@ function TERM(attrs) {
 	   return <span><strong>${attrs.name}</strong>=JSString</span>;
 	else if (attrs.JSValue)
 	   return <span><strong>${attrs.name}</strong>=JSValue</span>;
+	else if (attrs.JSUInt)
+	   return <span><strong>${attrs.name}</strong>=JSUInt</span>;
 	else
 	   return <span><strong>${attrs.name}</strong></span>;
      })()}
@@ -314,30 +316,71 @@ exports.langage_map =
      ${header("Expressions", "expr")}
      <tr>
        <td>
-	 <term name="func" JSFunction /> | <term name="arg" JSValue />
+	 <term name="func" JSFunction />
        </td>
-       ${comment(true,
-		 "<strong>func</strong> is called without parameters.",
-		 "Or <strong>arg</strong> is directelly returns whithout function call.")}
+       ${comment(true, "The value of the expression is the return value of <strong>func</strong> func call, which is called without parameters.")}
+     </tr>
+     <tr>
+       <td>
+	 <term name="arg" JSValue />
+       </td>
+       ${comment(true, "The value of the expression is <strong>arg</strong> (directly returns whithout function call).")}
      </tr>
      <tr>
        <td>
 	 <term name="func" JSFunction /> <term name="arg" JSValue />
        </td>
        ${comment(true,
-		 "<strong>func</strong> is called with <strong>arg</strong> as parameter.")}
+		 "The value of the expression is the return value of <strong>func</strong>, which is called with <strong>arg</strong> as parameter.")}
      </tr>
      <tr>
        <td>
 	 <term name="func" JSFunction />
-	 <term name="arg0" JSValue />
-	 <term name="arg1" JSValue />
 	 <indent>
-	   ...
+	   <term name="arg0" JSValue br/>
+	   <term name="arg1" JSValue br/>
+	   ...<br />
 	   <term name="argN" JSValue />
 	 </indent>
        </td>
-       ${comment(true, "<strong>func</strong> is called with <em>N</em> parameters.")}
+       ${comment(true, "The value of the expression is the return value of <strong>func</strong>, which is called with <em>N</em> parameters.")}
      </tr>
 
+     ${header("Counter expressions", "countexpr")}
+     <tr>
+       <td>
+	 <term name="count" JSUInt />
+       </td>
+       ${comment(true, "todo")}
+     </tr>
+     <tr>
+       <td>
+	 <term name="func_count" JSFunction />
+       </td>
+       ${comment(true, "todo")}
+     </tr>
+     <tr>
+       <td>
+	 <term name="arg_count" JSValue />
+       </td>
+       ${comment(true, "todo")}
+     </tr>
+     <tr>
+       <td>
+	 <term name="func_count" JSFunction /> <term name="arg_count" JSValue />
+       </td>
+       ${comment(true, "todo")}
+     </tr>
+     <tr>
+       <td>
+	 <term name="func_count" JSFunction />
+	 <indent>
+	   <term name="arg_count0" JSValue br/>
+	   <term name="arg_count1" JSValue br/>
+	   ...<br />
+	   <term name="arg_countN" JSValue />
+	 </indent>
+       </td>
+       ${comment(true, "todo")}
+     </tr>
    </table>
