@@ -102,6 +102,10 @@ function TERM(attrs) {
 	   return <span><strong>${attrs.name}</strong>=JSValue</span>;
 	else if (attrs.JSUInt)
 	   return <span><strong>${attrs.name}</strong>=JSUInt</span>;
+	else if (attrs.HHModule)
+	   return <span><strong>${attrs.name}</strong>=HHModule</span>;
+	else if (attrs.JSMapSS)
+	   return <span><strong>${attrs.name}</strong>=JSMap[JSString, JSString]</span>;
 	else
 	   return <span><strong>${attrs.name}</strong></span>;
      })()}
@@ -152,7 +156,9 @@ exports.langage_map =
 	       "JSFunction is a reference to any JavaScript function.",
 	       "JSValue is a refernce to any JavaScript value (primitive or objects).",
 	       "JSUInt is a JavsScript positive integer.",
-	       "JSString is a JavaScript string.")}
+	       "JSString is a JavaScript string.",
+	       "HHModule is a JavaScript object containing an Hiphop.js program code.",
+	       "JSMap[<em>type</em>, <em>type</em>] is a JavaScript map.")}
      ${comment(true,
 	       "Hiphop.js symbols are in <strong>bold</strong>.",
 	       "Non terminal symbols have the following typo: " +
@@ -299,6 +305,7 @@ exports.langage_map =
        <td>
 	 <term_cnode name="Present">
 	   <cnode_args>
+	     <opt><term name="not"/></opt>
 	     <nterm name="sig"/>
 	   </cnode_args>
 	   <indent>
@@ -316,6 +323,7 @@ exports.langage_map =
        <td>
 	 <term_cnode name="If">
 	   <cnode_args>
+	     <opt><term name="not"/></opt>
 	     <nterm name=expr/>
 	   </cnode_args>
 	   <indent>
@@ -470,7 +478,23 @@ exports.langage_map =
 		 "Determines its scope.")}
      </tr>
 
-     ${header("Signal access guard", "sig")}
+     <tr>
+       <td>
+	 <term_node name="Run">
+	   <indent>
+	     <term name="module" HHModule br />
+	     <term name="sigs_assoc" JSMapSS />
+	   </indent>
+	 </term_node>
+       </td>
+       ${comment(true,
+		 "Create an instance of a Hiphop.js module, and embeded " +
+		 "in the location of the Run instruction.",
+		 "The map associate signals of callee module " +
+		 "(keys of the map) to signals of caller module (values of the map).")}
+     </tr>
+
+     ${header("Signal guard", "sig")}
      <tr>
        <td>
 	 <opt><term name="pre"/></opt>
@@ -478,7 +502,7 @@ exports.langage_map =
 	 <term name="signal_name" JSString />
        </td>
        ${comment(true,
-		 "Signal access guard. Return true if the signal is present.",
+		 "Signal guard. Return true if the signal is present.",
 		 "If <strong>pre</strong> keyword is present, return true if " +
 		 "the signal was present on the previous instant.")}
 
@@ -499,20 +523,26 @@ exports.langage_map =
        <td>
 	 <term name="func" JSFunction />
        </td>
-       ${comment(true, "The value of the expression is the return value of <strong>func</strong> func call, which is called without parameters.")}
+       ${comment(true,
+		 "The value of the expression is the return value of " +
+		 "<strong>func</strong> func call, which is called without parameters.")}
      </tr>
      <tr>
        <td>
 	 <term name="arg" JSValue />
        </td>
-       ${comment(true, "The value of the expression is <strong>arg</strong> (directly returns whithout function call).")}
+       ${comment(true,
+		 "The value of the expression is <strong>arg</strong> " +
+		 "(directly returns whithout function call).")}
      </tr>
      <tr>
        <td>
 	 <term name="func" JSFunction /> <term name="arg" JSValue />
        </td>
        ${comment(true,
-		 "The value of the expression is the return value of <strong>func</strong>, which is called with <strong>arg</strong> as parameter.")}
+		 "The value of the expression is the return value of " +
+		 "<strong>func</strong>, which is called with " +
+		 "<strong>arg</strong> as parameter.")}
      </tr>
      <tr>
        <td>
@@ -524,7 +554,9 @@ exports.langage_map =
 	   <term name="argN" JSValue />
 	 </indent>
        </td>
-       ${comment(true, "The value of the expression is the return value of <strong>func</strong>, which is called with <em>N</em> parameters.")}
+       ${comment(true,
+		 "The value of the expression is the return value of " +
+		 "<strong>func</strong>, which is called with <em>N</em> parameters.")}
      </tr>
 
      ${header("Counter expressions", "countexpr")}
@@ -532,7 +564,9 @@ exports.langage_map =
        <td>
 	 <term name="count" JSUInt />
        </td>
-       ${comment(true, "todo")}
+       ${comment(true,
+		 "Temporal guard that count the number of times " +
+		 "the signal gard or expression must be true.")}
      </tr>
      <tr>
        <td>
