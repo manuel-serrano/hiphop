@@ -572,19 +572,27 @@ exports.langage_map =
        <td>
 	 <term name="func_count" JSFunction />
        </td>
-       ${comment(true, "todo")}
+       ${comment(true,
+		 "The value of the temporal expression is the return " +
+		 "value of <strong>func_count</strong>, which is called without " +
+		 "parameters.")}
      </tr>
      <tr>
        <td>
 	 <term name="arg_count" JSValue />
        </td>
-       ${comment(true, "todo")}
+       ${comment(true,
+		 "The value of the temporal expression is <strong>arg_count</strong>" +
+		 "directly returns without function call.")}
      </tr>
      <tr>
        <td>
 	 <term name="func_count" JSFunction /> <term name="arg_count" JSValue />
        </td>
-       ${comment(true, "todo")}
+       ${comment(true,
+		 "The value of the temporal expression is the return " +
+		 "value of <strong>func_count</strong>, which is called with " +
+		 "<strong>arg_count</strong> as parameter.")}
      </tr>
      <tr>
        <td>
@@ -596,6 +604,9 @@ exports.langage_map =
 	   <term name="arg_countN" JSValue />
 	 </indent>
        </td>
-       ${comment(true, "todo")}
+       ${comment(true,
+		 "The value of the temporal expression is the return value of " +
+		 "<strong>func_count</strong>, which is called with <em>N</em> " +
+		 "parameters.")}
      </tr>
    </table>
