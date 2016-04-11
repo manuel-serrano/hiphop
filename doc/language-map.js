@@ -257,18 +257,41 @@ exports.langage_map =
 	 <term_node name="Atom">
 	   <term name="func" JSFunction br />
 	   <indent>
-	     <opt><term name="arg" JSValue /></opt>
-
-	   |
-
-	     [ <term name="arg0" JSValue/>
-	     <term name="arg1" JSValue />
-	     ...
-	     <term name="argN" JSValue /> ]
+	     <opt><term name="arg" JSValue /></opt> | [ <term name="arg0" JSValue br/>
+			<indent>
+			  <term name="arg1" JSValue br />
+	     ... <br />
+			  <term name="argN" JSValue /> ]
+			</indent>
 	 </indent>
 	 </term_node>
        </td>
        ${comment(true, "Instantaneous execution of given JavaScript function.")}
+     </tr>
+
+     <tr>
+       <td>
+	 <term_node name="Exec">
+	   <indent>
+	     <term name="func_start" JSFunction br />
+	     <term name="func_kill" JSFunction br />
+	     <term name="func_resume" JSFunction br />
+	     <term name="func_suspend" JSFunction br />
+	     <term name="return_signal_name" JSString br />
+	     <opt ><term name="arg" JSValue /></opt> | [ <term name="arg0" JSValue br/>
+			 <indent>
+			   <term name="arg1" JSValue br/>
+	     ...<br />
+			   <term name="argN" JSValue /> ]
+			 </indent>
+	   </indent>
+
+	 </term_node>
+       </td>
+       ${comment(true,
+		 "Execution of JavaScript function referenced by <strong>func_start" +
+		 "</strong>, that is not instantaneous by order.",
+		 "Noy yet implemented.")}
      </tr>
 
      <tr>
