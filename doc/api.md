@@ -403,6 +403,9 @@ be use with the following attributes:
   (optional).
 
 
+### <hiphop.exec/> ###
+[:@glyphicon glyphicon-tag tag]
+
 # Full examples
 
 ## Pure signal example
