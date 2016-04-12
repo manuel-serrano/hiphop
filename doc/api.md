@@ -147,12 +147,16 @@ beginning of each reaction:
 
 # Expressions
 
+## Standard expressions
+
 ## Signal accessors
 
 Signal accessors are used to give the value or the presence of a
 signal as argument of an expression function. Hiphop.js runtime ensure
 the correct scheduling of the program (the expression evaluation will
 wait for the emitters of a signal in case of signal access).
+
+Warning: a Hiphop.js signal must be used **only** on expression arguments.
 
 ### hiphop.present(signalName) ###
 [:@glyphicon glyphicon-tag tag]
@@ -187,6 +191,8 @@ value of `I` (which is `3`), `U` with the value of `O` (which is `3`):
 ```hopscript
 ${ doc.include("../tests/valuepre1.js", 6, 16) }
 ```
+
+## Counter expressions
 
 # Statements
 
