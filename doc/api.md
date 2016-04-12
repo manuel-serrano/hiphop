@@ -130,11 +130,20 @@ Combined signals can be emitted several times during a reaction. To
 this end, the signal declaration must provide a combination function,
 which must be commutative and that takes two parameters: the old value,
 and a value provided from a emit statement. Then the return value of
-the function is the new value of the signal.
+the function is the new value of the signal. A combination function is
+given with the following keyword:
+
+* `combine\_with` takes a JavaScript function.
 
 ```hopscript
 ${ doc.include("../tests/value1.js", 6, 13) }
 ```
+
+It is possible to automatically reinitialize an combined signal at the
+beginning of each reaction:
+
+* `reinit\_func` takes a JavaScript function, that return a value that
+  initializes the signal.
 
 # Expressions
 
