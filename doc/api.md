@@ -293,6 +293,10 @@ takes the following attributes:
 ### <hiphop.every> ###
 [:@glyphicon glyphicon-tag tag]
 
+As LoopEach, this temporal loop start its body each times the guard is
+true. However, as the contrary of LoopEach, Every initially waits for
+the guard before starting its body.
+
 ## Preemption
 
 ### <hiphop.trap> ###
