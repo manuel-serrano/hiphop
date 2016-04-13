@@ -318,8 +318,23 @@ the following attribute:
 ### <hiphop.abort> ###
 [:@glyphicon glyphicon-tag tag]
 
+This statements take a body, and a guard witch is:
+
+* `signal\_name` and an optional count expression, true when the
+  signal is present (and when the count expression reaches 0,
+  otherwise its decremented of signal presence);
+
+* or an standard expression.
+
+When the guard return true, the body is immediately preempted, and the
+instruction terminates.
+
 ### <hiphop.weakabort> ###
 [:@glyphicon glyphicon-tag tag]
+
+Like Abort statement, this instruction makes a preemption of its
+body. However, when the guard is true, WeakAbort preempts its body
+only after the reaction which made the guard true.
 
 ### <hiphop.suspend> ###
 [:@glyphicon glyphicon-tag tag]
@@ -347,7 +362,18 @@ emitted. It can be use with the following attributes:
 [:@glyphicon glyphicon-tag tag]
 
 Execute its children in parallel. The parallel statement can be use
-with at least one child.
+with at least one child. An unique identifier can be given by the
+attribute `id`, that allow a user to get the parallel program node,
+like an HTML DOM node. It can by done via `getElementById()` method of
+the reactive machine.
+
+Then, it is possible to dynamically add branches to the parallel
+between two reactions, via the `appendChild()` method of the parallel
+node. If the user keeps a reference to the branch which is added, it
+is also possible to remove the branch to further reactions, via
+`removeChild()` method.
+
+TODO: give examples
 
 ### <hiphop.sequence> ###
 [:@glyphicon glyphicon-tag tag]
@@ -400,13 +426,10 @@ ${ doc.include("../tests/run.js", 5, 29) }
 ### <hiphop.atom/> ###
 [:@glyphicon glyphicon-tag tag]
 
-Instantaneously executes a JavaScript function, and terminate. It can
-be use with the following attributes:
-
-* `func`: JavaScript callback to execute;
-
-* `expr`: expression attribute, if arguments provided to the callback
-  (optional).
+Instantaneously executes a JavaScript function, and terminate. It
+takes a standard expression as attributes. However, the `func`
+argument of the expression is mandatory, and its potential return
+value is meaningless.
 
 
 ### <hiphop.exec/> ###
