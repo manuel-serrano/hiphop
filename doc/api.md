@@ -58,9 +58,9 @@ Callbacks given to `addEventListener(signalName, functionalValue)`
 must take exactly one argument. This argument is an object containing
 the following properties:
 
-* `signal`: name of the emitted output signal;
+* `signalName`: name of the emitted output signal;
 
-* `value`: value of the signal at the end of the reaction. This field
+* `signalValue`: value of the signal at the end of the reaction. This field
   exists only for valued signals. This field is immutable;
 
 * `stopPropagation()` a method that, if called in the callback, will
@@ -233,13 +233,9 @@ reaction, with `test\_pre` attribute, without value.
 ### <hiphop.if> ###
 [:@glyphicon glyphicon-tag tag]
 
-Evaluate an expression which must return a boolean value. The
-expression is given by a callback to the `exprs` attribute, or by a
-signal presence (`rjs.present(sigName)` for instance), or a signal
-value, if boolean.
-
-This node takes one or two children, which are respectively the then
-and else branches.
+Evaluate a standard expression which must return a boolean value. This
+node takes one or two children, which are respectively the then and
+else branches.
 
 The following example will emit `O1` if the signal `I1` is present,
 and `O2` if the value of the signal `O2` is superior or equals to 2.
@@ -253,8 +249,18 @@ ${ doc.include("../tests/if1.js", 5, 21) }
 ### <hiphop.emit/> ###
 [:@glyphicon glyphicon-tag tag]
 
+This statement makes an emission of a signal, given by attribute
+`signal\_name` and terminates instantaneously. If the signal is
+valued, a standard expression can be use to modify the value of the
+signal.
+
 ### <hiphop.sustain/> ###
 [:@glyphicon glyphicon-tag tag]
+
+This statement makes an emission of a signal, given by attribute
+`signal\_name`, and stay active forever, as it never terminates. As
+the emit statement, it can modify the value of a valued signal if a
+standard expression is given.
 
 ## Looping
 
