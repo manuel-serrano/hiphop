@@ -1,8 +1,5 @@
 ${ var doc = require("hopdoc") }
 
-We use the following convention: XML nodes which has `/` at the end of
-they name are always leafs. Therefore they didn't accept any children.
-
 # Modules and reactive machines
 
 ### <hiphop.module> ###
