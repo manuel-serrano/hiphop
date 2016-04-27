@@ -31,9 +31,14 @@ Values can be given to valued signal as the following:
   reaction, and sets its value to a JavaScript object corresponding to
   the given JSON representation.
 
-# Symbolic debugger
+# Symbolic web debugger
 
-Note that Hop must be started with `-g` option to enable the web symbolic debugger.
+A symbolic web debugger is also provided by Hiphop.js. When a batch
+interpreter is started, a Hop service is exported to the path
+`/hop/debug`. This web page will display the AST of the program.
+
+As pretty printer of the batch, selected instructions will be display
+in red. The web debugger is automatically updated at each reaction.
 
 # Hack Hiphop.js
 
