@@ -16,7 +16,7 @@ The commands of the batch interpreter are the following:
 
 * `;` triggers a reaction;
 * `X` sets the input signal X to present for the next reaction;
-* `.` quits the batch interpreter: `batch` function call returns;
+* `.` quits the batch interpreter (`batch` function call returns);
 * `!reset;` reinitialize the internal state of the reactive, as if it
   was just compiled.
 
