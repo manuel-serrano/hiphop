@@ -1,7 +1,7 @@
 # Batch interpreter
 
-TODO
+# Symbolic debugger
 
 # Hack Hiphop.js
 
-TODO: PDF arch-hiphopjs.pdf
+PDF arch-hiphopjs.pdf
