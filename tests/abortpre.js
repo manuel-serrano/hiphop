@@ -16,6 +16,6 @@ var prg =
       </hh.loop>
     </hh.module>;
 
-console.error(prg.pretty_print())
+//console.error(prg.pretty_print())
 
 exports.prg = new hh.ReactiveMachine(prg, "abortpre");
