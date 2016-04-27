@@ -18,7 +18,9 @@ The commands of the batch interpreter are the following:
 * `X` sets the input signal X to present for the next reaction;
 * `.` quits the batch interpreter (`batch` function call returns);
 * `!reset;` reinitialize the internal state of the reactive, as if it
-  was just compiled.
+  was just compiled;
+* `!pretty-print;` display the AST of the program. Instructions
+  suffixed by `\*` are selected.
 
 Values can be given to valued signal as the following:
 
@@ -29,10 +31,10 @@ Values can be given to valued signal as the following:
   reaction, and sets its value to a JavaScript object corresponding to
   the given JSON representation.
 
-
-
 # Symbolic debugger
+
+Note that Hop must be started with `-g` option to enable the web symbolic debugger.
 
 # Hack Hiphop.js
 
-PDF arch-hiphopjs.pdf
+PDF specification hiphop.js
