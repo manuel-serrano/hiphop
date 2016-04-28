@@ -154,6 +154,15 @@ and Atom statement, any other use of expression is as guard.
 
 ## Counter expressions
 
+A counter expression is a Hiphop.js expression used as guard that
+is true after a counter reaches 0. This counter embedded inside
+Hiphop.js runtime. It is initialized each time the instruction
+containing the counter is started, and it is decremented in different
+contexts, according to the instruction.
+
+The initialization value can be an integer, or the value return by an
+expression (evaluated when the instruction is started).
+
 ## Signal accessors
 
 Signal accessors allows to get the state or the value of a signal
