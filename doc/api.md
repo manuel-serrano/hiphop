@@ -327,16 +327,8 @@ exit. This instruction immediately terminate the trap to exit.
 ### <hiphop.abort> ###
 [:@glyphicon glyphicon-tag tag]
 
-This statements take a body, and a guard witch is:
-
-* `signal\_name` and an optional count expression, true when the
-  signal is present (and when the count expression reaches 0,
-  otherwise its decremented of signal presence);
-
-* or an standard expression.
-
-When the guard return true, the body is immediately preempted, and the
-instruction terminates.
+This statement immediately preempted its body when its guard is true,
+and terminates.
 
 ### <hiphop.weakabort> ###
 [:@glyphicon glyphicon-tag tag]
@@ -347,6 +339,13 @@ only after the reaction which made the guard true.
 
 ### <hiphop.suspend> ###
 [:@glyphicon glyphicon-tag tag]
+
+This instruction immediately preempts its body when its guard is true
+in the instant. In this case, the state (registers) of the body are
+unmodified.
+
+Unlike the preemption Abort, Suspend doesn't terminates when it
+preempts its body, but makes a pause.
 
 ## Others statements
 
