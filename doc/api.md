@@ -142,16 +142,25 @@ beginning of each reaction:
 * `reinit\_func` takes a JavaScript function, that return a value that
   initializes the signal.
 
-# Expressions
+# Expressions and guards
 
 ## Standard expressions
 
+Standard expressions can be use as guard. The guard is true if the
+value returned by the evaluation of the expression is true, according
+to JavaScript conventions (so, it can be any value different that
+`false`, `null`, `0` or `undefined`). Except for emission statements
+and Atom statement, any other use of expression is as guard.
+
+## Counter expressions
+
 ## Signal accessors
 
-Signal accessors are used to give the value or the presence of a
-signal as argument of an expression function. Hiphop.js runtime ensure
-the correct scheduling of the program (the expression evaluation will
-wait for the emitters of a signal in case of signal access).
+Signal accessors allows to get the state or the value of a signal in
+an Hiphop.js expression. Using theses accessors ensure that the
+Hiphop.js runtime will correctly schedule the access to the signal
+(e.g. read the value only when all emission instruction has been
+executed).
 
 **Warning**: a Hiphop.js signal must be used **only** on expression arguments.
 
@@ -188,8 +197,6 @@ value of `I` (which is `3`), `U` with the value of `O` (which is `3`):
 ```hopscript
 ${ doc.include("../tests/valuepre1.js", 6, 16) }
 ```
-
-## Counter expressions
 
 # Statements
 
