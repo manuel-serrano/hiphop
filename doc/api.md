@@ -235,20 +235,13 @@ never terminate.
 ### <hiphop.present> ###
 [:@glyphicon glyphicon-tag tag]
 
-The present node test the presence of a signal. It takes a
-`signal\_name` attribute (that could be the name of any kind of
-signal), and one or two children, which are the then branch, and the
-optional else branch.
-
-It is possible to test the presence of the signal on the previous
-reaction, with `test\_pre` attribute, without value.
+Tests the presence of a signal, and immediately terminates.
 
 ### <hiphop.if> ###
 [:@glyphicon glyphicon-tag tag]
 
-Evaluate a standard expression which must return a boolean value. This
-node takes one or two children, which are respectively the then and
-else branches.
+Immediately evaluate the given expression, and gives control to the
+_then_ or _else_ branch, according to the result of the expression.
 
 The following example will emit `O1` if the signal `I1` is present,
 and `O2` if the value of the signal `O2` is superior or equals to 2.
@@ -262,18 +255,24 @@ ${ doc.include("../tests/if1.js", 5, 21) }
 ### <hiphop.emit/> ###
 [:@glyphicon glyphicon-tag tag]
 
-This statement makes an emission of a signal, given by attribute
-`signal\_name` and terminates instantaneously. If the signal is
-valued, a standard expression can be use to modify the value of the
-signal.
+This statement immediately set a signal present. If an expression is
+given (and the signal is valued), the expression is evaluated an the
+return value is affected to the signal, according the following rules:
+
+* if the signal has never been emitted during the instant, the return
+  value is the value of the signal;
+* if the signal has already been emitted during the instant, and the
+  signal provides a combination function, the value is the value
+  return by the combination function evaluation;
+* otherwise, the emission is forbidden, the reactive machine stops and
+  an throws an error.
 
 ### <hiphop.sustain/> ###
 [:@glyphicon glyphicon-tag tag]
 
-This statement makes an emission of a signal, given by attribute
-`signal\_name`, and stay active forever, as it never terminates. As
-the emit statement, it can modify the value of a valued signal if a
-standard expression is given.
+This statement is the same of Emit, but never terminates, and will
+always re-emit the signal on following reactions. The rules of Emit
+statement applies here.
 
 ## Looping
 
@@ -317,20 +316,13 @@ the guard before starting its body.
 
 A trap defined a scope that can be exited at a specific point. The
 scope (body) of the trap is immediately started when control reach the
-trap. It takes children which is the enclosed code, and the following
-attribute:
-
-* `trap\_name`: a string that is the name of the trap.
+trap.
 
 ### <hiphop.exit/> ###
 [:@glyphicon glyphicon-tag tag]
 
 The exit point of a trap. In must be enclosed in the trap to
-exit. This instruction immediately terminate the trap to exit. It takes
-the following attribute:
-
-* `trap\_name`: a string that matches with the name of the trap to
-  exit.
+exit. This instruction immediately terminate the trap to exit.
 
 ### <hiphop.abort> ###
 [:@glyphicon glyphicon-tag tag]
