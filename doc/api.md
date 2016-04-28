@@ -156,8 +156,8 @@ and Atom statement, any other use of expression is as guard.
 
 ## Signal accessors
 
-Signal accessors allows to get the state or the value of a signal in
-an Hiphop.js expression. Using theses accessors ensure that the
+Signal accessors allows to get the state or the value of a signal
+inside a Hiphop.js expression. Using theses accessors ensure that the
 Hiphop.js runtime will correctly schedule the access to the signal
 (e.g. read the value only when all emission instruction has been
 executed).
