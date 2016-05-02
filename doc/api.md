@@ -146,6 +146,15 @@ beginning of each reaction:
 
 ## Standard expressions
 
+A standard expressions is a way to compute and provide values to
+signals. It can be of diffrent nature:
+
+* a JavaScript value;
+* the value or the presence of a Hiphop.js signal (via signal accessors);
+* the result of evaluation of a JavaScript function (with optional
+  arguments, which can be JavaScript value, of signals value and
+  presence).
+
 Standard expressions can be use as guard. The guard is true if the
 value returned by the evaluation of the expression is true, according
 to JavaScript conventions (so, it can be any value different that
