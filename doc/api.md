@@ -303,14 +303,8 @@ the language.
 [:@glyphicon glyphicon-tag tag]
 
 The body of the instruction will be started the first instant, and
-then restarted each times (or each several times) a signal is set. It
-takes the following attributes:
-
-* `signal\_name`: the name of the signal that must be present to
-  restart the loop;
-
-* `count`: an integer that tell the number of times the signal must be
-  set before restarted the loop (optional).
+then restarted each time the guard is true. This statement can't make
+instantaneous loops.
 
 ### <hiphop.every> ###
 [:@glyphicon glyphicon-tag tag]
@@ -363,18 +357,9 @@ preempts its body, but makes a pause.
 [:@glyphicon glyphicon-tag tag]
 
 This statement waits for a signal, and terminate when this signal is
-emitted. It can be use with the following attributes:
-
-* `signal\_name`: the name of waited signal;
-
-* `test\_pre`: test the presence of the signal at the previous reaction
-  (optional, didn't take value);
-
-* `immediate`: terminate if the signal is present at the very first
-  reaction of the program (optional, didn't take value);
-
-* `count`: an integer which is the number of times the signal must be
-  present before terminate (optional).
+emitted. Note that if the signal is emitted of the very first reaction
+of the reactive machine, it will be ignored, except if `immediate`
+keyword is present.
 
 ### <hiphop.parallel> ###
 [:@glyphicon glyphicon-tag tag]
@@ -398,8 +383,8 @@ TODO: give examples
 
 Execute its children in sequence. The sequence statement can be use
 with at least two child. In most cases, the sequence is implicit and
-user doesn't need it. However, because of XML syntax, some cases can
-be ambiguous:
+user doesn't need it. However, because of XML syntax, some cases are
+ambiguous:
 
 ```hopscript
 <hiphop.parallel>
@@ -427,15 +412,9 @@ instruction 2 and 3 must not be in parallel, using sequence is needed:
 A module can "call" another module via the run instruction. The callee
 module is expanded inside the caller. In order to access to input and
 output signals of the callee, we have to maps those signals on the
-caller signals. It takes two arguments :
+caller signals.
 
-* `module` which is the runtime object of a reactive machine ;
-
-* `sigs\_assoc` which is a JavaScript hashmap, where the key
-  correspond to the name of a input / output signal of the callee and
-  the value is the name of a signal in the caller.
-
-In the following example, the caller is `run2` and the callee `m1` :
+In the following example, the module `run2` calls `m1` :
 
 ```hopscript
 ${ doc.include("../tests/run.js", 5, 29) }
