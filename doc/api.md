@@ -146,8 +146,8 @@ beginning of each reaction:
 
 ## Standard expressions
 
-A standard expressions is a way to compute and provide values to
-signals. It can be of diffrent nature:
+A standard expressions is a way to compute and provide values
+during a reaction. It can be of different nature:
 
 * a JavaScript value;
 * the value or the presence of a Hiphop.js signal (via signal accessors);
@@ -155,9 +155,10 @@ signals. It can be of diffrent nature:
   arguments, which can be JavaScript value, of signals value and
   presence).
 
-Standard expressions can be use as guard. The guard is true if the
-value returned by the evaluation of the expression is true, according
-to JavaScript conventions (so, it can be any value different that
+Standard expressions can be use to provide values to signals (on
+emission statements), and as guard. The guard is true if the value
+returned by the evaluation of the expression is true, according to
+JavaScript conventions (so, it can be any value different that
 `false`, `null`, `0` or `undefined`). Except for emission statements
 and Atom statement, any other use of expression is as guard.
 
