@@ -144,6 +144,8 @@ beginning of each reaction:
 
 # Expressions and guards
 
+TODO: itemize attributes of expressions
+
 ## Standard expressions
 
 A standard expressions is a way to compute and provide values
@@ -245,10 +247,24 @@ never terminate.
 ### <hiphop.present> ###
 [:@glyphicon glyphicon-tag tag]
 
+Attributes and children of the node:
+
+* `signal\_name`: a string that represents the signal to test;
+* `test\_pre`: test presence of the signal at the previous instant;
+* `not` (optional): logic negation of the result of the test;
+* one child (then branch) or two (then and else branch).
+
+
 Tests the presence of a signal, and immediately terminates.
 
 ### <hiphop.if> ###
 [:@glyphicon glyphicon-tag tag]
+
+Attributes and children of the node:
+
+* a standard expression;
+* `not` (optional): logic negation of the result of the test;
+* takes one child (then branch) or two (then and else branch).
 
 Immediately evaluate the given expression, and gives control to the
 _then_ or _else_ branch, according to the result of the expression.
@@ -265,6 +281,11 @@ ${ doc.include("../tests/if1.js", 5, 21) }
 ### <hiphop.emit/> ###
 [:@glyphicon glyphicon-tag tag]
 
+Attributes of the node:
+
+* `signal\_name`: a string that represents the signal to emit;
+* if the signal is valued, an optional standard expression.
+
 This statement immediately set a signal present. If an expression is
 given (and the signal is valued), the expression is evaluated an the
 return value is affected to the signal, according the following rules:
@@ -280,6 +301,11 @@ return value is affected to the signal, according the following rules:
 ### <hiphop.sustain/> ###
 [:@glyphicon glyphicon-tag tag]
 
+Attributes of the node:
+
+* `signal\_name`: a string that represents the signal to emit;
+* if the signal is valued, an optional standard expression.
+
 This statement is the same of Emit, but never terminates, and will
 always re-emit the signal on following reactions. The rules of Emit
 statement applies here.
@@ -288,6 +314,8 @@ statement applies here.
 
 ### <hiphop.loop> ###
 [:@glyphicon glyphicon-tag tag]
+
+Takes at least one child.
 
 The body of the instruction is started at the first instant, and then
 instantaneously restarted when it reach the end of the loop. If the
@@ -302,12 +330,26 @@ the language.
 ### <hiphop.loopeach> ###
 [:@glyphicon glyphicon-tag tag]
 
+Attributes and children of the node:
+
+* __Either__ `signal\_name`: a string that represents the signal to
+  emit; and an optional a counter expression;
+* __or__, a standard expression;
+* takes at least one child.
+
 The body of the instruction will be started the first instant, and
 then restarted each time the guard is true. This statement can't make
 instantaneous loops.
 
 ### <hiphop.every> ###
 [:@glyphicon glyphicon-tag tag]
+
+Attributes and children of the node:
+
+* __Either__ `signal\_name`: a string that represents the signal to
+  emit; and an optional a counter expression;
+* __or__, a standard expression;
+* takes at least one child.
 
 As LoopEach, this temporal loop start its body each times the guard is
 true. However, as the contrary of LoopEach, Every initially waits for
@@ -318,6 +360,11 @@ the guard before starting its body.
 ### <hiphop.trap> ###
 [:@glyphicon glyphicon-tag tag]
 
+Attribute and children of the node:
+
+* `trap\_name`: a string that represents the trap;
+* takes at least one child.
+
 A trap defined a scope that can be exited at a specific point. The
 scope (body) of the trap is immediately started when control reach the
 trap.
@@ -325,11 +372,22 @@ trap.
 ### <hiphop.exit/> ###
 [:@glyphicon glyphicon-tag tag]
 
+Attribute of the node:
+
+* `trap\_name`: a string that represents the name of the trap to exit.
+
 The exit point of a trap. In must be enclosed in the trap to
 exit. This instruction immediately terminate the trap to exit.
 
 ### <hiphop.abort> ###
 [:@glyphicon glyphicon-tag tag]
+
+Attributes and children of the node:
+
+* __Either__ `signal\_name`: a string that represents the signal to
+  emit; and an optional counter expression;
+* __or__ a standard expression;
+* takes at least one child.
 
 This statement immediately preempted its body when its guard is true,
 and terminates.
@@ -337,12 +395,26 @@ and terminates.
 ### <hiphop.weakabort> ###
 [:@glyphicon glyphicon-tag tag]
 
+Attributes and children of the node:
+
+* __Either__ `signal\_name`: a string that represents the signal to
+  emit; and an optional counter expression;
+* __or__ a standard expression;
+* takes at least one child.
+
 Like Abort statement, this instruction makes a preemption of its
 body. However, when the guard is true, WeakAbort preempts its body
 only after the reaction which made the guard true.
 
 ### <hiphop.suspend> ###
 [:@glyphicon glyphicon-tag tag]
+
+Attributes and children of the node:
+
+* __Either__ `signal\_name`: a string that represents the signal to
+  emit;
+* __or__ a standard expression;
+* takes at least one child.
 
 This instruction immediately preempts its body when its guard is true
 in the instant. In this case, the state (registers) of the body are
@@ -356,6 +428,11 @@ preempts its body, but makes a pause.
 ### <hiphop.await/> ###
 [:@glyphicon glyphicon-tag tag]
 
+Attributes of the node:
+
+* `signal\_name`: a string that represents the signal to emit;
+* an optional counter expression.
+
 This statement waits for a signal, and terminate when this signal is
 emitted. Note that if the signal is emitted of the very first reaction
 of the reactive machine, it will be ignored, except if `immediate`
@@ -363,6 +440,11 @@ keyword is present.
 
 ### <hiphop.parallel> ###
 [:@glyphicon glyphicon-tag tag]
+
+Attribute and children of the node:
+
+* `id` (optional): a string to get the node via `machine.getElementById(id)`;
+* takes at least one child.
 
 Execute its children in parallel. The parallel statement can be use
 with at least one child. An unique identifier can be given by the
@@ -376,10 +458,12 @@ node. If the user keeps a reference to the branch which is added, it
 is also possible to remove the branch to further reactions, via
 `removeChild()` method.
 
-TODO: give examples
+TODO: examples
 
 ### <hiphop.sequence> ###
 [:@glyphicon glyphicon-tag tag]
+
+Takes at least two children.
 
 Execute its children in sequence. The sequence statement can be use
 with at least two child. In most cases, the sequence is implicit and
@@ -409,6 +493,12 @@ instruction 2 and 3 must not be in parallel, using sequence is needed:
 ### <hiphop.run/> ###
 [:@glyphicon glyphicon-tag tag]
 
+Attributes of the node:
+
+* `module`: a Hiphop.js module;
+* `sigs_assoc`: a hashmap that keys are names of signals of the callee
+  module, and values are names of signals of the caller module.
+
 A module can "call" another module via the run instruction. The callee
 module is expanded inside the caller. In order to access to input and
 output signals of the callee, we have to maps those signals on the
@@ -422,6 +512,15 @@ ${ doc.include("../tests/run.js", 5, 29) }
 
 ### <hiphop.atom/> ###
 [:@glyphicon glyphicon-tag tag]
+
+Attributes of the node:
+
+* `func` (nested only if zero of more than one argument): a JavaScript
+  function;
+* `arg` (only if exactly one argunent): value given to `func` when its
+  called;
+* `argX` (`X` from 0 to N, increment by 1, when more that one
+  argument): values given to `func` when its called.
 
 Instantaneously executes a JavaScript function, and terminate. It
 takes a standard expression as attributes. However, the `func`
