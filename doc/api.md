@@ -39,12 +39,10 @@ Instances of reactive machines provide the following API:
 * `react()`: method that trigger an immediate reaction of the reactive
   machine, it returns an array of emitted output signals (with a
   possible value);
-
 * `inputAndReact(signalName, value)`: method that set the input signal
   named by string `signalName`, and a possible value given by optional
   parameter `value`. Then, it trigger a reaction (and has the same
   return of `react()`).
-
 * `addEventListener(signalName, functionalValue)`: method that map an
   output signal named by string `signalName` to a callback given by
   `functionalValue`. Then, at the end of following reactions, the
@@ -56,10 +54,8 @@ must take exactly one argument. This argument is an object containing
 the following properties:
 
 * `signalName`: name of the emitted output signal;
-
 * `signalValue`: value of the signal at the end of the reaction. This field
   exists only for valued signals. This field is immutable;
-
 * `stopPropagation()` a method that, if called in the callback, will
   inhibit the call of others callback mapped on this signal.
 
@@ -115,7 +111,6 @@ To declare a valued signal, use the regular signal declaration (input,
 output or local), and then add one of the following keyword:
 
 * `valued` tells the signal is valued, and has not initial value;
-
 * `init\_value=X` tells the signal is valued and initialized with `X` value.
 
 There is two kind of valued signal, by default, the signal is
@@ -144,9 +139,19 @@ beginning of each reaction:
 
 # Expressions and guards
 
-TODO: itemize attributes of expressions
+Expressions are embedded inside several Hiphop.js' nodes as part a
+set of attributes.
 
 ## Standard expressions
+
+Attributes that compose a standard expression:
+
+* `func` (nested only if zero of more than one argument): a JavaScript
+  function;
+* `arg` (only if exactly one argunent): value given to `func` when its
+  called;
+* `argX` (`X` from 0 to N, increment by 1, when more that one
+  argument): values given to `func` when its called.
 
 A standard expressions is a way to compute and provide values
 during a reaction. It can be of different nature:
@@ -166,6 +171,17 @@ and Atom statement, any other use of expression is as guard.
 
 ## Counter expressions
 
+Attributes that compose a counter expression:
+
+* __Either__ `func\_count` (nested only if zero of more than one
+  argument): a JavaScript function;
+* `arg\_count` (only if exactly one argunent): value given to
+  `func\_count` when its called;
+* `arg\_countX` (`X` from 0 to N, increment by 1, when more that one
+  argument): values given to `func\_count` when its called;
+* __or__ `count`: an integer that represents a temporal guard. This is
+  the number of times the signal guard or expression must be true.
+
 A counter expression is a Hiphop.js expression used as guard that
 is true after a counter reaches 0. This counter embedded inside
 Hiphop.js runtime. It is initialized each time the instruction
@@ -183,7 +199,7 @@ Hiphop.js runtime will correctly schedule the access to the signal
 (e.g. read the value only when all emission instruction has been
 executed).
 
-**Warning**: a Hiphop.js signal must be used **only** on expression arguments.
+**Warning**: a Hiphop.js signal must be used **only** with expression arguments.
 
 ### hiphop.present(signalName) ###
 [:@glyphicon glyphicon-tag tag]
