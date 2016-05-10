@@ -323,15 +323,14 @@ ${ doc.include("../tests/run.js", 5, 29) }
 
 Attributes of the node:
 
-* `func` (nested only if zero of more than one argument): a JavaScript
-  function;
+* `func`: a JavaScript function;
 * `arg` (only if exactly one argunent): value given to `func` when its
   called;
 * `argX` (`X` from 0 to N, increment by 1, when more that one
   argument): values given to `func` when its called.
 
 Instantaneously executes a JavaScript function, and terminate. It
-takes a standard expression as attributes. However, the `func`
+takes a standard expression as attribute; however, the `func`
 argument of the expression is mandatory, and its potential return
 value is meaningless.
 
