@@ -606,13 +606,13 @@ bind functions to emission of `O`:
 var machine = new hh.ReactiveMachine(prg, "ABRO");
 
 machine.addEventListener("O", function(evt) {
-   console.log(evt.signal + " emitted!");
+   console.log(evt.signalName + " emitted!");
 });
 
 console.log("emit B and react");
-prg.inputAndReact("B");
+machine.inputAndReact("B");
 console.log("emit A and react");
-prg.inputAndReact("A");
+machine.inputAndReact("A");
 ```
 You will see in the console:
 
