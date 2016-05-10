@@ -323,7 +323,7 @@ ${ doc.include("../tests/run.js", 5, 29) }
 
 Attributes of the node:
 
-* `func`: a JavaScript function;
+* `func`: takes a JavaScript function;
 * `arg` (only if exactly one argunent): value given to `func` when its
   called;
 * `argX` (`X` from 0 to N, increment by 1, when more that one
@@ -357,7 +357,12 @@ Hiphop.js module:
 </hiphop.module>
 ```
 
-The attribute `name` is mandatory: it is the identifier of the signal.
+The attribute `name` is mandatory: it is the identifier of the
+signal. Theses kind of signal are known as _pure signals_: they only
+hold a presence of absence information for an instant. Signal presence
+is reset at each instant; therefore, a signal emitted on a instant
+will not be present on the following instant (except if it is
+re-emitted).
 
 ### Local signals
 
@@ -379,8 +384,8 @@ ${ doc.include("../tests/reincar.js", 9, 15) }
 ### Valued signals
 
 Signals can also hold a value of any JavaScript type. The value
-persist between two reactions. However, the first emission of the
-signal during the reaction (or before, in case of input signal), will
+persist between two instant. However, the first emission of the
+signal during the instant (or before, in case of input signal), will
 erase the value.
 
 To declare a valued signal, use the regular signal declaration (input,
@@ -390,18 +395,19 @@ output or local), and then add one of the following keyword:
 * `init\_value=X` tells the signal is valued and initialized with `X` value.
 
 There is two kind of valued signal, by default, the signal is
-"single", that means it can be emitted only one by reaction.
+_single_, that means it can be emitted only once for each instant.
 
 #### Combined valued signals
 
-Combined signals can be emitted several times during a reaction. To
-this end, the signal declaration must provide a combination function,
-which must be commutative and that takes two parameters: the old value,
-and a value provided from a emit statement. Then the return value of
-the function is the new value of the signal. A combination function is
-given with the following keyword:
+_Combined signals_ can be emitted several times during in a
+instant. To this end, the signal declaration must provide a
+combination function, which must be commutative and that takes two
+parameters: the old value, and a value provided from a emit
+statement. Then the return value of the function becomes the value of
+the signal. A combination function is given with the following
+keyword:
 
-* `combine\_with` takes a JavaScript function.
+* `combine\_with`: takes a JavaScript function.
 
 ```hopscript
 ${ doc.include("../tests/value1.js", 6, 13) }
