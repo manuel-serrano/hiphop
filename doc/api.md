@@ -558,11 +558,21 @@ Instances of reactive machines provide the following API:
   `functionalValue`. Then, at the end of following reactions, the
   callback will be called it the signal has been emitted. Several
   callbacks can be mapped to a same signal.
-* `removeEventListener(signalName, functionalValue)`
-* `getElementById(parallelIdentifier)`
-* `save()`
-* `restore(state)`
-* `reactProxy(signalName)`
+* `removeEventListener(signalName, functionalValue)`: remove a
+  previously added event listener via `addEventListener`.
+* `getElementById(parallelIdentifier)`: returns a parallel node
+  corresponding to the given identifier, if exists.
+* `save()`: save and returns the state of the reactive machine (value
+  of signals, registers).
+* `restore(state)`: restore a previous state of the reactive machine.
+* `reactProxy(signalName)`: returns a JavaScript proxy that contains a
+  value referenced by the `value` attribute. This value can be set to
+  any DOM element. It will build a dependency between the DOM element
+  which contains this value and the Hiphop.js signal. Therefore, at
+  the end of each reaction that modified the value of the signal, the
+  DOM element will automatically be updated by the new value. It is
+  some kind of dataflow approach. It can be use only on valued
+  signals.
 
 Callbacks given to `addEventListener` must take exactly one
 argument. This argument is an object containing the following
