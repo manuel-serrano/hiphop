@@ -341,11 +341,10 @@ value is meaningless.
 
 # Signal declarations
 
-Signals are logical object that can be received and emitted by a
-Hiphop.js module. There also can be used to interact from the outside
-of Hiphop.js world (with input or output signals), and for internal
-execution of a program (local signals). Each signal declaration must
-have `name` attribute declared.
+A Hiphop.js program talks with the environment (a Hop.js program) via
+_signals_. _Input signals_ intents to give information from
+environment to Hiphop.js program, whereas _output signals_ intents to
+give information from Hiphop.js program to the environment.
 
 Declaration of input or output signal must always be on the top of
 Hiphop.js module:
@@ -357,24 +356,21 @@ Hiphop.js module:
   <!-- any Hiphop.js statement or local signal declaration -->
 </hiphop.module>
 ```
-Declaration of local signal can be anywhere in a Hiphop.js module:
 
-```hopscript
-<hiphop.localsignal name="I">
-  <!-- any Hiphop.js statement -->
-</hiphop.localsignal>
-```
+The attribute `name` is mandatory: it is the identifier of the signal.
 
 ### Local signals
 
 Input and output signals are defined at scope of the module, so every
-instructions can access to them, and there are visible from the
-outside of the reactive machine (you can set value on input signal,
-and get value from output signal). Hiphop.js allow to create local
-signal, invisible from outside the reactive machine. They create a
+instructions can access to them, and there are visible on the
+environment via the reactive machine's API. However, Hiphop.js allow
+to create local signal, invisible for the environment. They create a
 scope, and only instructions embodied inside can access them.
 
 TODO: explains reincarnation, user point of view
+
+Declaration of local signal can be anywhere in a Hiphop.js module, for
+instance, the following code create a scope for a local signal `S`:
 
 ```hopscript
 ${ doc.include("../tests/reincar.js", 9, 15) }
