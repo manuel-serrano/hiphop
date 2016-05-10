@@ -419,6 +419,9 @@ beginning of each reaction:
 * `reinit\_func` takes a JavaScript function, that return a value that
   initializes the signal.
 
+As `combine\_with` or `reinit\_func` implicitly tells that the signal
+is valued, `valued` keyword is optional.
+
 # Expressions and guards
 
 Expressions are embedded inside several Hiphop.js' nodes as part a
