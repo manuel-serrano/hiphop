@@ -307,7 +307,7 @@ Attributes of the node:
 * `sigs\_assoc`: a hashmap that keys are names of signals of the callee
   module, and values are names of signals of the caller module.
 
-A module can "call" another module via the run instruction. The callee
+A module can "call" another module with this instruction. The callee
 module is expanded inside the caller. In order to access to input and
 output signals of the callee, we have to maps those signals on the
 caller signals.
