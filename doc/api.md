@@ -531,12 +531,14 @@ allow to interact with it. In other word, in instantiate a module to a
 runnable program.
 
 ```hopscript
-var prg =
-<hiphop.module>
-  <!-- Hiphop.js program -->
-<hiphop.module>
+const hh = require("hiphop");
 
-var machine = new hiphop.ReactiveMachine(prg, "prgName");
+const prg =
+<hh.module>
+  <!-- Hiphop.js program -->
+<hh.module>
+
+var machine = new hh.ReactiveMachine(prg, "prgName");
 
 machine.react(); // trigger a reaction of the program
 ```
@@ -546,19 +548,25 @@ Instances of reactive machines provide the following API:
 * `react()`: method that trigger an immediate reaction of the reactive
   machine, it returns an array of emitted output signals (with a
   possible value);
-* `inputAndReact(signalName, value)`: method that set the input signal
+* `setInput(signalName, \[, value\])`
+* `inputAndReact(signalName \[, value\])`: method that set the input signal
   named by string `signalName`, and a possible value given by optional
   parameter `value`. Then, it trigger a reaction (and has the same
-  return of `react()`).
+  return that `react()`).
 * `addEventListener(signalName, functionalValue)`: method that map an
   output signal named by string `signalName` to a callback given by
   `functionalValue`. Then, at the end of following reactions, the
   callback will be called it the signal has been emitted. Several
   callbacks can be mapped to a same signal.
+* `removeEventListener(signalName, functionalValue)`
+* `getElementById(parallelIdentifier)`
+* `save()`
+* `restore(state)`
+* `reactProxy(signalName)`
 
-Callbacks given to `addEventListener(signalName, functionalValue)`
-must take exactly one argument. This argument is an object containing
-the following properties:
+Callbacks given to `addEventListener` must take exactly one
+argument. This argument is an object containing the following
+properties:
 
 * `signalName`: name of the emitted output signal;
 * `signalValue`: value of the signal at the end of the reaction. This field
