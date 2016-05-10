@@ -254,22 +254,19 @@ ignored, except if `immediate` keyword is set.
 
 Attribute and children of the node:
 
-* `id` (optional): a string to get the node via `machine.getElementById(id)`;
+* `id` (optional): a string that acts as an identifier;
 * takes at least one child.
 
-Execute its children in parallel. The parallel statement can be use
-with at least one child. An unique identifier can be given by the
-attribute `id`, that allow a user to get the parallel program node,
-like an HTML DOM node. It can by done via `getElementById()` method of
-the reactive machine.
+Execute its children in parallel. An unique identifier can be given by
+the attribute `id`, that allow a user to get the parallel program
+node, like an HTML DOM node. It can by done via `getElementById()`
+method of the reactive machine.
 
 Then, it is possible to dynamically add branches to the parallel
 between two reactions, via the `appendChild()` method of the parallel
 node. If the user keeps a reference to the branch which is added, it
 is also possible to remove the branch to further reactions, via
 `removeChild()` method.
-
-TODO: examples
 
 ### <hiphop.sequence> ###
 [:@glyphicon glyphicon-tag tag]
@@ -278,7 +275,7 @@ Takes at least two children.
 
 Execute its children in sequence. The sequence statement can be use
 with at least two child. In most cases, the sequence is implicit and
-user doesn't need it. However, because of XML syntax, some cases are
+ones doesn't need it. However, because of XML syntax, some cases are
 ambiguous:
 
 ```hopscript
@@ -288,8 +285,8 @@ ambiguous:
   <!-- instruction 3 -->
 </hiphop.parallel>
 ```
-Here, there will be three branches on the parallel. But if the
-instruction 2 and 3 must not be in parallel, using sequence is needed:
+Here, there will be three branches executed in parallel. But if the
+instruction 2 and 3 must not be in parallel, using sequence is mandatory:
 
 
 ```hopscript
