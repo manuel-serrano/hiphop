@@ -304,7 +304,7 @@ instruction 2 and 3 must not be in parallel, using sequence is mandatory:
 Attributes of the node:
 
 * `module`: a Hiphop.js module;
-* `sigs_assoc`: a hashmap that keys are names of signals of the callee
+* `sigs\_assoc`: a hashmap that keys are names of signals of the callee
   module, and values are names of signals of the caller module.
 
 A module can "call" another module via the run instruction. The callee
