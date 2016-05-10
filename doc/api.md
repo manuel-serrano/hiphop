@@ -11,7 +11,7 @@ ${ var doc = require("hopdoc") }
 Module is the programming unit of a Hiphop.js program. Therefore, any
 Hiphop.js statement must be embedded inside a module. As any first
 class object, a module can be call inside another module, via the
-`run` Hiphop.js statement (see `<hiphop.run>`).
+Run Hiphop.js statement (see `<hiphop.run>`).
 
 ```hopscript
 <hiphop.module>
@@ -26,7 +26,7 @@ class object, a module can be call inside another module, via the
 [:@glyphicon glyphicon-tag tag]
 
 This statement terminate instantaneously when started, and give
-control on the following statement; it is like a `nop` assembly
+control on the following statement; it is like a _nop_ assembly
 instruction.
 
 ### <hiphop.pause/> ###
@@ -87,17 +87,20 @@ Attributes of the node:
 * `signal\_name`: a string that represents the signal to emit;
 * if the signal is valued, an optional standard expression.
 
-This statement immediately set a signal present. If an expression is
+This statement immediately set the signal present. If an expression is
 given (and the signal is valued), the expression is evaluated an the
 return value is affected to the signal, according the following rules:
 
 * if the signal has never been emitted during the instant, the return
-  value is the value of the signal;
+  value become the value of the signal;
 * if the signal has already been emitted during the instant, and the
-  signal provides a combination function, the value is the value
-  return by the combination function evaluation;
+  signal provides a combination function, the value of the signal
+  become the value return by the combination function evaluation;
 * otherwise, the emission is forbidden, the reactive machine stops and
   an throws an error.
+
+At instant level, a signal has only one value, which is the value when
+all emitters has been executed.
 
 ### <hiphop.sustain/> ###
 [:@glyphicon glyphicon-tag tag]
@@ -118,15 +121,13 @@ statement applies here.
 
 Takes at least one child.
 
-The body of the instruction is started at the first instant, and then
-instantaneously restarted when it reach the end of the loop. If the
-loop is enclosed in a trap, and encloses an exit statement, it is
-propagated (in can be a way to exit the loop). If the loop is enclosed
-in a preemption statement (like abort) it also be stop.
+The body of the instruction is instantaneously started, and then
+instantaneously restarted when it reach the end of the loop. The Loop
+can be preempted.
 
 Because the loop is instantaneously restarted, ones must take care of
-avoid instantaneous loop (a body without pause), which is forbidden by
-the language.
+avoid instantaneous loop (a body that will terminate instantaneously;
+in other words, without pause), which is forbidden by the language.
 
 ### <hiphop.loopeach> ###
 [:@glyphicon glyphicon-tag tag]
@@ -138,9 +139,9 @@ Attributes and children of the node:
 * __or__, a standard expression;
 * takes at least one child.
 
-The body of the instruction will be started the first instant, and
-then restarted each time the guard is true. This statement can't make
-instantaneous loops.
+The body of the instruction is instantaneously started, and then
+restarted each time the guard is true. This statement can't make
+instantaneous loop, so the body can instantaneously terminates.
 
 ### <hiphop.every> ###
 [:@glyphicon glyphicon-tag tag]
@@ -166,7 +167,7 @@ Attribute and children of the node:
 * `trap\_name`: a string that represents the trap;
 * takes at least one child.
 
-A trap defined a scope that can be exited at a specific point. The
+A trap defines a scope that can be exited at a specific point. The
 scope (body) of the trap is immediately started when control reach the
 trap.
 
@@ -177,8 +178,16 @@ Attribute of the node:
 
 * `trap\_name`: a string that represents the name of the trap to exit.
 
-The exit point of a trap. In must be enclosed in the trap to
-exit. This instruction immediately terminate the trap to exit.
+The exit point of a trap; it must be enclosed in the trap to
+exit. This instruction immediately terminate and jump to the following
+instruction of the exited trap.
+
+In the following example, the output signal `B` will not be
+emitted, whereas `A` and `C` will be emitted:
+
+```hopscript
+${ doc.include("../tests/trap.js", 6, 20) }
+```
 
 ### <hiphop.abort> ###
 [:@glyphicon glyphicon-tag tag]

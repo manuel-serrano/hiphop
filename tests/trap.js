@@ -2,7 +2,8 @@
 
 var hh = require("hiphop");
 
-var prg = <hh.module>
+var prg =
+ <hh.module>
   <hh.outputsignal name="A"/>
   <hh.outputsignal name="B"/>
   <hh.outputsignal name="C"/>
