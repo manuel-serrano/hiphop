@@ -1,6 +1,9 @@
 ${ var doc = require("hopdoc") }
 
-# Modules and reactive machines
+
+# Statements
+
+## Module
 
 ### <hiphop.module> ###
 [:@glyphicon glyphicon-tag tag]
@@ -15,227 +18,6 @@ be call inside another module, via the `run` Hiphop.js statement (see `<hiphop.r
   <!-- Hiphop.js statements and local signals -->
 <hiphop.module>
 ```
-
-### hiphop.ReactiveMachine ###
-[:@glyphicon glyphicon-tag tag]
-
-A reactive machine is an object that wrap an Hiphop.js module, and
-allow to interact with it. In other word, in instantiate a module to a
-runnable program.
-
-```hopscript
-var prg =
-<hiphop.module>
-  <!-- Hiphop.js program -->
-<hiphop.module>
-
-var machine = new hiphop.ReactiveMachine(prg, "prgName");
-
-machine.react(); // trigger a reaction of the program
-```
-
-Instances of reactive machines provide the following API:
-
-* `react()`: method that trigger an immediate reaction of the reactive
-  machine, it returns an array of emitted output signals (with a
-  possible value);
-* `inputAndReact(signalName, value)`: method that set the input signal
-  named by string `signalName`, and a possible value given by optional
-  parameter `value`. Then, it trigger a reaction (and has the same
-  return of `react()`).
-* `addEventListener(signalName, functionalValue)`: method that map an
-  output signal named by string `signalName` to a callback given by
-  `functionalValue`. Then, at the end of following reactions, the
-  callback will be called it the signal has been emitted. Several
-  callbacks can be mapped to a same signal.
-
-Callbacks given to `addEventListener(signalName, functionalValue)`
-must take exactly one argument. This argument is an object containing
-the following properties:
-
-* `signalName`: name of the emitted output signal;
-* `signalValue`: value of the signal at the end of the reaction. This field
-  exists only for valued signals. This field is immutable;
-* `stopPropagation()` a method that, if called in the callback, will
-  inhibit the call of others callback mapped on this signal.
-
-# Signal declarations
-
-Signals are logical object that can be received and emitted by a
-Hiphop.js module. There also can be used to interact from the outside
-of Hiphop.js world (with input or output signals), and for internal
-execution of a program (local signals). Each signal declaration must
-have `name` attribute declared.
-
-Declaration of input or output signal must always be on the top of
-Hiphop.js module:
-
-```hopscript
-<hiphop.module>
-  <hiphop.inputsignal name="I"/>
-  <hiphop.outputsignal name="O"/>
-  <!-- any Hiphop.js statement or local signal declaration -->
-</hiphop.module>
-```
-Declaration of local signal can be anywhere in a Hiphop.js module:
-
-```hopscript
-<hiphop.localsignal name="I">
-  <!-- any Hiphop.js statement -->
-</hiphop.localsignal>
-```
-
-### Local signals
-
-Input and output signals are defined at scope of the module, so every
-instructions can access to them, and there are visible from the
-outside of the reactive machine (you can set value on input signal,
-and get value from output signal). Hiphop.js allow to create local
-signal, invisible from outside the reactive machine. They create a
-scope, and only instructions embodied inside can access them.
-
-TODO: explains reincarnation, user point of view
-
-```hopscript
-${ doc.include("../tests/reincar.js", 9, 15) }
-```
-
-### Valued signals
-
-Signals can also hold a value of any JavaScript type. The value
-persist between two reactions. However, the first emission of the
-signal during the reaction (or before, in case of input signal), will
-erase the value.
-
-To declare a valued signal, use the regular signal declaration (input,
-output or local), and then add one of the following keyword:
-
-* `valued` tells the signal is valued, and has not initial value;
-* `init\_value=X` tells the signal is valued and initialized with `X` value.
-
-There is two kind of valued signal, by default, the signal is
-"single", that means it can be emitted only one by reaction.
-
-#### Combined valued signals
-
-Combined signals can be emitted several times during a reaction. To
-this end, the signal declaration must provide a combination function,
-which must be commutative and that takes two parameters: the old value,
-and a value provided from a emit statement. Then the return value of
-the function is the new value of the signal. A combination function is
-given with the following keyword:
-
-* `combine\_with` takes a JavaScript function.
-
-```hopscript
-${ doc.include("../tests/value1.js", 6, 13) }
-```
-
-It is possible to automatically reinitialize an combined signal at the
-beginning of each reaction:
-
-* `reinit\_func` takes a JavaScript function, that return a value that
-  initializes the signal.
-
-# Expressions and guards
-
-Expressions are embedded inside several Hiphop.js' nodes as part a
-set of attributes.
-
-## Standard expressions
-
-Attributes that compose a standard expression:
-
-* `func` (nested only if zero of more than one argument): a JavaScript
-  function;
-* `arg` (only if exactly one argunent): value given to `func` when its
-  called;
-* `argX` (`X` from 0 to N, increment by 1, when more that one
-  argument): values given to `func` when its called.
-
-A standard expressions is a way to compute and provide values
-during a reaction. It can be of different nature:
-
-* a JavaScript value;
-* the value or the presence of a Hiphop.js signal (via signal accessors);
-* the result of evaluation of a JavaScript function (with optional
-  arguments, which can be JavaScript value, of signals value and
-  presence).
-
-Standard expressions can be use to provide values to signals (on
-emission statements), and as guard. The guard is true if the value
-returned by the evaluation of the expression is true, according to
-JavaScript conventions (so, it can be any value different that
-`false`, `null`, `0` or `undefined`). Except for emission statements
-and Atom statement, any other use of expression is as guard.
-
-## Counter expressions
-
-Attributes that compose a counter expression:
-
-* __Either__ `func\_count` (nested only if zero of more than one
-  argument): a JavaScript function;
-* `arg\_count` (only if exactly one argunent): value given to
-  `func\_count` when its called;
-* `arg\_countX` (`X` from 0 to N, increment by 1, when more that one
-  argument): values given to `func\_count` when its called;
-* __or__ `count`: an integer that represents a temporal guard. This is
-  the number of times the signal guard or expression must be true.
-
-A counter expression is a Hiphop.js expression used as guard that
-is true after a counter reaches 0. This counter embedded inside
-Hiphop.js runtime. It is initialized each time the instruction
-containing the counter is started, and it is decremented in different
-contexts, according to the instruction.
-
-The initialization value can be an integer, or the value return by an
-expression (evaluated when the instruction is started).
-
-## Signal accessors
-
-Signal accessors allows to get the state or the value of a signal
-inside a Hiphop.js expression. Using theses accessors ensure that the
-Hiphop.js runtime will correctly schedule the access to the signal
-(e.g. read the value only when all emission instruction has been
-executed).
-
-**Warning**: a Hiphop.js signal must be used **only** with expression arguments.
-
-### hiphop.present(signalName) ###
-[:@glyphicon glyphicon-tag tag]
-
-This constructor takes the name of the signal as argument, an return a
-boolean to the expression the presence of the signal during the
-current reaction.
-
-### hiphop.prePresent(signalName) ###
-[:@glyphicon glyphicon-tag tag]
-
-This constructor takes the name of the signal as argument, an return a
-boolean to the expression the presence of the signal during the
-previous reaction.
-
-### hiphop.value(signalName) ###
-[:@glyphicon glyphicon-tag tag]
-
-This constructor takes the name of the signal as argument, an return
-the value of the signal during the current reaction. Note that the
-language forbid to use the current value of a signal to emit itself.
-
-### hiphop.preValue(signalName) ###
-[:@glyphicon glyphicon-tag tag]
-
-This constructor takes the name of the signal as argument, an return
-the value of the signal during the previous reaction.
-
-The following example will emit signal `I` with value `3`, `O` with
-value of `I` (which is `3`), `U` with the value of `O` (which is `3`):
-
-```hopscript
-${ doc.include("../tests/valuepre1.js", 6, 16) }
-```
-
-# Statements
 
 ## Basic control statement
 
@@ -546,6 +328,230 @@ value is meaningless.
 
 ### <hiphop.exec/> ###
 [:@glyphicon glyphicon-tag tag]
+
+
+# Signal declarations
+
+Signals are logical object that can be received and emitted by a
+Hiphop.js module. There also can be used to interact from the outside
+of Hiphop.js world (with input or output signals), and for internal
+execution of a program (local signals). Each signal declaration must
+have `name` attribute declared.
+
+Declaration of input or output signal must always be on the top of
+Hiphop.js module:
+
+```hopscript
+<hiphop.module>
+  <hiphop.inputsignal name="I"/>
+  <hiphop.outputsignal name="O"/>
+  <!-- any Hiphop.js statement or local signal declaration -->
+</hiphop.module>
+```
+Declaration of local signal can be anywhere in a Hiphop.js module:
+
+```hopscript
+<hiphop.localsignal name="I">
+  <!-- any Hiphop.js statement -->
+</hiphop.localsignal>
+```
+
+### Local signals
+
+Input and output signals are defined at scope of the module, so every
+instructions can access to them, and there are visible from the
+outside of the reactive machine (you can set value on input signal,
+and get value from output signal). Hiphop.js allow to create local
+signal, invisible from outside the reactive machine. They create a
+scope, and only instructions embodied inside can access them.
+
+TODO: explains reincarnation, user point of view
+
+```hopscript
+${ doc.include("../tests/reincar.js", 9, 15) }
+```
+
+### Valued signals
+
+Signals can also hold a value of any JavaScript type. The value
+persist between two reactions. However, the first emission of the
+signal during the reaction (or before, in case of input signal), will
+erase the value.
+
+To declare a valued signal, use the regular signal declaration (input,
+output or local), and then add one of the following keyword:
+
+* `valued` tells the signal is valued, and has not initial value;
+* `init\_value=X` tells the signal is valued and initialized with `X` value.
+
+There is two kind of valued signal, by default, the signal is
+"single", that means it can be emitted only one by reaction.
+
+#### Combined valued signals
+
+Combined signals can be emitted several times during a reaction. To
+this end, the signal declaration must provide a combination function,
+which must be commutative and that takes two parameters: the old value,
+and a value provided from a emit statement. Then the return value of
+the function is the new value of the signal. A combination function is
+given with the following keyword:
+
+* `combine\_with` takes a JavaScript function.
+
+```hopscript
+${ doc.include("../tests/value1.js", 6, 13) }
+```
+
+It is possible to automatically reinitialize an combined signal at the
+beginning of each reaction:
+
+* `reinit\_func` takes a JavaScript function, that return a value that
+  initializes the signal.
+
+# Expressions and guards
+
+Expressions are embedded inside several Hiphop.js' nodes as part a
+set of attributes.
+
+## Standard expressions
+
+Attributes that compose a standard expression:
+
+* `func` (nested only if zero of more than one argument): a JavaScript
+  function;
+* `arg` (only if exactly one argunent): value given to `func` when its
+  called;
+* `argX` (`X` from 0 to N, increment by 1, when more that one
+  argument): values given to `func` when its called.
+
+A standard expressions is a way to compute and provide values
+during a reaction. It can be of different nature:
+
+* a JavaScript value;
+* the value or the presence of a Hiphop.js signal (via signal accessors);
+* the result of evaluation of a JavaScript function (with optional
+  arguments, which can be JavaScript value, of signals value and
+  presence).
+
+Standard expressions can be use to provide values to signals (on
+emission statements), and as guard. The guard is true if the value
+returned by the evaluation of the expression is true, according to
+JavaScript conventions (so, it can be any value different that
+`false`, `null`, `0` or `undefined`). Except for emission statements
+and Atom statement, any other use of expression is as guard.
+
+## Counter expressions
+
+Attributes that compose a counter expression:
+
+* __Either__ `func\_count` (nested only if zero of more than one
+  argument): a JavaScript function;
+* `arg\_count` (only if exactly one argunent): value given to
+  `func\_count` when its called;
+* `arg\_countX` (`X` from 0 to N, increment by 1, when more that one
+  argument): values given to `func\_count` when its called;
+* __or__ `count`: an integer that represents a temporal guard. This is
+  the number of times the signal guard or expression must be true.
+
+A counter expression is a Hiphop.js expression used as guard that
+is true after a counter reaches 0. This counter embedded inside
+Hiphop.js runtime. It is initialized each time the instruction
+containing the counter is started, and it is decremented in different
+contexts, according to the instruction.
+
+The initialization value can be an integer, or the value return by an
+expression (evaluated when the instruction is started).
+
+## Signal accessors
+
+Signal accessors allows to get the state or the value of a signal
+inside a Hiphop.js expression. Using theses accessors ensure that the
+Hiphop.js runtime will correctly schedule the access to the signal
+(e.g. read the value only when all emission instruction has been
+executed).
+
+**Warning**: a Hiphop.js signal must be used **only** with expression arguments.
+
+### hiphop.present(signalName) ###
+[:@glyphicon glyphicon-tag tag]
+
+This constructor takes the name of the signal as argument, an return a
+boolean to the expression the presence of the signal during the
+current reaction.
+
+### hiphop.prePresent(signalName) ###
+[:@glyphicon glyphicon-tag tag]
+
+This constructor takes the name of the signal as argument, an return a
+boolean to the expression the presence of the signal during the
+previous reaction.
+
+### hiphop.value(signalName) ###
+[:@glyphicon glyphicon-tag tag]
+
+This constructor takes the name of the signal as argument, an return
+the value of the signal during the current reaction. Note that the
+language forbid to use the current value of a signal to emit itself.
+
+### hiphop.preValue(signalName) ###
+[:@glyphicon glyphicon-tag tag]
+
+This constructor takes the name of the signal as argument, an return
+the value of the signal during the previous reaction.
+
+The following example will emit signal `I` with value `3`, `O` with
+value of `I` (which is `3`), `U` with the value of `O` (which is `3`):
+
+```hopscript
+${ doc.include("../tests/valuepre1.js", 6, 16) }
+```
+
+
+# Runtime & Reactive machines
+
+### hiphop.ReactiveMachine ###
+[:@glyphicon glyphicon-tag tag]
+
+A reactive machine is an object that wrap an Hiphop.js module, and
+allow to interact with it. In other word, in instantiate a module to a
+runnable program.
+
+```hopscript
+var prg =
+<hiphop.module>
+  <!-- Hiphop.js program -->
+<hiphop.module>
+
+var machine = new hiphop.ReactiveMachine(prg, "prgName");
+
+machine.react(); // trigger a reaction of the program
+```
+
+Instances of reactive machines provide the following API:
+
+* `react()`: method that trigger an immediate reaction of the reactive
+  machine, it returns an array of emitted output signals (with a
+  possible value);
+* `inputAndReact(signalName, value)`: method that set the input signal
+  named by string `signalName`, and a possible value given by optional
+  parameter `value`. Then, it trigger a reaction (and has the same
+  return of `react()`).
+* `addEventListener(signalName, functionalValue)`: method that map an
+  output signal named by string `signalName` to a callback given by
+  `functionalValue`. Then, at the end of following reactions, the
+  callback will be called it the signal has been emitted. Several
+  callbacks can be mapped to a same signal.
+
+Callbacks given to `addEventListener(signalName, functionalValue)`
+must take exactly one argument. This argument is an object containing
+the following properties:
+
+* `signalName`: name of the emitted output signal;
+* `signalValue`: value of the signal at the end of the reaction. This field
+  exists only for valued signals. This field is immutable;
+* `stopPropagation()` a method that, if called in the callback, will
+  inhibit the call of others callback mapped on this signal.
+
 
 # Full examples
 
