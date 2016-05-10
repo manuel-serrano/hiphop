@@ -8,14 +8,15 @@ ${ var doc = require("hopdoc") }
 ### <hiphop.module> ###
 [:@glyphicon glyphicon-tag tag]
 
-A module is an object that wrap an entire Hiphop.js program, it's a
-programming unit of Hiphop.js. As any first class object, a module can
-be call inside another module, via the `run` Hiphop.js statement (see `<hiphop.run>`).
+Module is the programming unit of a Hiphop.js program. Therefore, any
+Hiphop.js statement must be embedded inside a module. As any first
+class object, a module can be call inside another module, via the
+`run` Hiphop.js statement (see `<hiphop.run>`).
 
 ```hopscript
 <hiphop.module>
-  <!-- Hiphop.js signal declarations -->
-  <!-- Hiphop.js statements and local signals -->
+  <!-- Hiphop.js input/output signal declarations -->
+  <!-- Hiphop.js statements and local signals declarations -->
 <hiphop.module>
 ```
 
@@ -25,20 +26,21 @@ be call inside another module, via the `run` Hiphop.js statement (see `<hiphop.r
 [:@glyphicon glyphicon-tag tag]
 
 This statement terminate instantaneously when started, and give
-control on the following statement. In other words, it just do nothing.
+control on the following statement; it is like a `nop` assembly
+instruction.
 
 ### <hiphop.pause/> ###
 [:@glyphicon glyphicon-tag tag]
 
 This statement pauses the branch where it is defined for the current
-reaction. The following instructions of the branch will be executed at
-the next reaction.
+instant. The following instructions of the branch will be executed at
+the next instant.
 
 ### <hiphop.halt/> ###
 [:@glyphicon glyphicon-tag tag]
 
-This statement pauses the branch where it is defined forever, it will
-never terminate.
+This statement pauses forever the branch where it is defined; it will
+never terminate. However, it can be preempted (see preemption section).
 
 ## Conditional branching
 
@@ -53,7 +55,8 @@ Attributes and children of the node:
 * one child (then branch) or two (then and else branch).
 
 
-Tests the presence of a signal, and immediately terminates.
+Tests the presence of a signal, and immediately terminates, giving the
+control to the _then_ or _else_ branch, according to the result of the test.
 
 ### <hiphop.if> ###
 [:@glyphicon glyphicon-tag tag]
@@ -64,7 +67,7 @@ Attributes and children of the node:
 * `not` (optional): logic negation of the result of the test;
 * takes one child (then branch) or two (then and else branch).
 
-Immediately evaluate the given expression, and gives control to the
+Evaluate the given expression, and immediately gives control to the
 _then_ or _else_ branch, according to the result of the expression.
 
 The following example will emit `O1` if the signal `I1` is present,
