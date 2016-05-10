@@ -212,9 +212,9 @@ Attributes and children of the node:
 * __or__ a standard expression;
 * takes at least one child.
 
-Like Abort statement, this instruction makes a preemption of its
-body. However, when the guard is true, WeakAbort preempts its body
-only after the reaction which made the guard true.
+Like Abort, this instruction makes a preemption of its body. However,
+when the guard is true, WeakAbort preempts its body only after the
+instant which made the guard true.
 
 ### <hiphop.suspend> ###
 [:@glyphicon glyphicon-tag tag]
@@ -241,12 +241,13 @@ preempts its body, but makes a pause.
 Attributes of the node:
 
 * `signal\_name`: a string that represents the signal to emit;
+* `immediate` (optional)
 * an optional counter expression.
 
-This statement waits for a signal, and terminate when this signal is
-emitted. Note that if the signal is emitted of the very first reaction
-of the reactive machine, it will be ignored, except if `immediate`
-keyword is present.
+This statement waits for a signal, and instantaneously terminate in
+the instant that the signal is present. Note that if the signal is
+emitted of the very first reaction of the reactive machine, it will be
+ignored, except if `immediate` keyword is set.
 
 ### <hiphop.parallel> ###
 [:@glyphicon glyphicon-tag tag]
