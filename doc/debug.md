@@ -42,4 +42,6 @@ in red. The web debugger is automatically updated at each reaction.
 
 # Hack Hiphop.js
 
-PDF specification hiphop.js
+* PDF spec hiphop.js
+* TODO: impl. doc in PDF
+* TODO: ReactiveMachine.stats() in PDF
