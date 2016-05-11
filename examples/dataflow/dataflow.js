@@ -35,17 +35,13 @@ service bubble() {
 		  </hh.loop>
 		</hh.module>, "bubble");
 	     proxy = m.reactProxy("bubble");
-	     console.error(proxy.value);
-	     document
-		.getElementById("bubble").innerHTML = proxy.value;
-		//.appendChild(<react>~{proxy.value}</react>);
 	  }
        }
      </head>
      <body>
        <button onclick=~{m.inputAndReact("left");
 			 console.error("<", proxy.value)}>&lt;</button>
-       <span id="bubble"></span>
+       <span><react>~{proxy.value}</react></span>
        <button onclick=~{m.inputAndReact("right");
 			 console.error(">", proxy.value)}>&gt;</button>
      </body>
