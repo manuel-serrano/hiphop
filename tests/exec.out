@@ -1,0 +1,18 @@
+[0] +--- Module*
+[0]    +--- OutputSignal O
+[0]    +--- OutputSignal OT
+[0]    +--- TaskSignal T
+[1]    +--- Parallel
+[1]       +--- Sequence
+[1]          +--- Exec start() return T
+[1]          +--- Emit OT(?T)
+[1]       +--- Emit O
+
+Oi.
+[ 'O' ]
+[]
+[]
+.......
+Oi timeout.
+[ 'OT(5)' ]
+[]
