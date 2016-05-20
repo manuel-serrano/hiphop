@@ -34,15 +34,25 @@ service clock() {
 		digital_tick(time.hours, time.minutes, time.seconds, time.mode);
 	     });
 
+	     machine.addEventListener("STOP_ENHANCING", function(evt) {
+		document.getElementById("setmode-btn").style.display = "inline";
+		document.getElelentById("exit-setmode-btn").style.display = "none";
+		document.getElelentById("next-btn").style.display = "none";
+		document.getElelentById("set-btn").style.display = "none";
+	     });
+
+	     machine.addEventListener("START_ENHANCING", function(evt) {
+		document.getElementById("setmode-btn").style.display = "none";
+		document.getElelentById("exit-setmode-btn").style.display = "inline";
+		document.getElelentById("next-btn").style.display = "inline";
+		document.getElelentById("set-btn").style.display = "inline";
+	     });
+
 	     clock();
 	     digital_init();
 	     setInterval(function() {
 		machine.inputAndReact("S");
 	     }, 1000);
-	  }
-
-	  function mode() {
-	     machine.inputAndReact("TOGGLE_24H_MODE_COMMAND");
 	  }
        }
      </head>
@@ -61,11 +71,37 @@ service clock() {
 
        <div id="clock" class="light">
 	 <div class="display">
-	   <div class="ampm" onclick=~{mode()}></div>
+	   <div class="ampm"
+		onclick=~{machine.inputAndReact("TOGGLE_24H_MODE_COMMAND")}>
+	   </div>
 	   <div class="alarm"></div>
 	   <div class="digits"></div>
 	 </div>
        </div>
+
+       <div style="margin:auto;">
+	 <button id="setmode-btn"
+		 onclick=~{machine.inputAndReact("ENTER_SET_WATCH_MODE_COMMAND")}
+		 style="display:inline;">
+	   Set
+	 </button>
+	 <button id="exit-setmode-btn"
+		 onclick=~{machine.inputAndReact("EXIT_SET_WATCH_MODE_COMMAND")}
+		 style="display:none;">
+	   Exit
+	 </button>
+	 <button id="next-btn"
+		 onclick=~{machine.inputAndReact("NEXT_WATCH_TIME_POSITION_COMMAND")}
+		 style="display:none;">
+	   Next position
+	 </button>
+	 <button id="set-btn"
+		 onclick=~{machine.inputAndReact("WATCH_BEING_SET")}
+		 style="display:none;">
+	   Change
+	 </button>
+       </div>
+
      </body>
    </html>
 }

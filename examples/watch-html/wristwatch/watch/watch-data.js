@@ -112,7 +112,7 @@ exports.NextWatchTimePosition = NextWatchTimePosition;
 // To set a WatchTime, increment only at a given position (no carry)
 
 function IncrementWatchTimeAtPosition (wt, pos) {
-   var res = wt;
+   var res = new WatchTime(wt.hours, wt.minutes, wt.seconds, wt.mode);
    if (wt.mode != "24H") ToggleWatchTimeMode(res);
    switch (pos) {
    case 0 :
