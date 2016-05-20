@@ -1,0 +1,2 @@
+#!/bin/ksh
+hop -vo -no_display try-button.js

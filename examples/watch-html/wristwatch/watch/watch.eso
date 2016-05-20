@@ -1,0 +1,90 @@
+WATCH> ;
+--- Output: WATCH_TIME({"hours":0,"minutes":0,"seconds":0,"mode":"24H"}) CHIME_STATUS(false)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":0,"minutes":0,"seconds":1,"mode":"24H"}) BEEP(0)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":0,"minutes":1,"seconds":0,"mode":"24H"}) BEEP(0)
+WATCH> TOGGLE_24H_MODE_COMMAND;
+--- Output: WATCH_TIME({"hours":2,"minutes":1,"seconds":0,"mode":"PM"})
+WATCH> S;
+--- Output: WATCH_TIME({"hours":2,"minutes":1,"seconds":1,"mode":"PM"}) BEEP(0)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":2,"minutes":2,"seconds":0,"mode":"PM"}) BEEP(0)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":2,"minutes":2,"seconds":1,"mode":"PM"}) BEEP(0)
+WATCH> TOGGLE_CHIME_COMMAND;
+--- Output: CHIME_STATUS(true)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":2,"minutes":3,"seconds":0,"mode":"PM"}) BEEP(0)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":2,"minutes":3,"seconds":1,"mode":"PM"}) BEEP(0)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":1.0,"minutes":0,"seconds":0,"mode":"AM"}) BEEP(1)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":1.0,"minutes":0,"seconds":1,"mode":"AM"}) BEEP(0)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":1.0,"minutes":1,"seconds":0,"mode":"AM"}) BEEP(0)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":1.0,"minutes":1,"seconds":1,"mode":"AM"}) BEEP(0)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":1.0,"minutes":2,"seconds":0,"mode":"AM"}) BEEP(0)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":1.0,"minutes":2,"seconds":1,"mode":"AM"}) BEEP(0)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":1.0,"minutes":3,"seconds":0,"mode":"AM"}) BEEP(0)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":1.0,"minutes":3,"seconds":1,"mode":"AM"}) BEEP(0)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":2.0,"minutes":0,"seconds":0,"mode":"AM"}) BEEP(1)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":2.0,"minutes":0,"seconds":1,"mode":"AM"}) BEEP(0)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":2.0,"minutes":1,"seconds":0,"mode":"AM"}) BEEP(0)
+WATCH> TOGGLE_CHIME_COMMAND;
+--- Output: CHIME_STATUS(false)
+WATCH> ENTER_SET_WATCH_MODE_COMMAND;
+--- Output: START_ENHANCING(0)
+WATCH> SET_WATCH_COMMAND;
+--- Output: WATCH_TIME({"hours":1.0,"minutes":1,"seconds":0,"mode":"PM"})
+WATCH> SET_WATCH_COMMAND;
+--- Output: WATCH_TIME({"hours":2,"minutes":1,"seconds":0,"mode":"PM"})
+WATCH> NEXT_WATCH_TIME_POSITION_COMMAND;
+--- Output: START_ENHANCING(1) STOP_ENHANCING(0)
+WATCH> SET_WATCH_COMMAND;
+--- Output: WATCH_TIME({"hours":2,"minutes":2,"seconds":0,"mode":"PM"})
+WATCH> SET_WATCH_COMMAND;
+--- Output: WATCH_TIME({"hours":2,"minutes":3,"seconds":0,"mode":"PM"})
+WATCH> NEXT_WATCH_TIME_POSITION_COMMAND;
+--- Output: START_ENHANCING(2) STOP_ENHANCING(1)
+WATCH> SET_WATCH_COMMAND;
+--- Output: WATCH_TIME({"hours":2,"minutes":3,"seconds":1,"mode":"PM"})
+WATCH> SET_WATCH_COMMAND;
+--- Output: WATCH_TIME({"hours":2,"minutes":3,"seconds":0.0,"mode":"PM"})
+WATCH> NEXT_WATCH_TIME_POSITION_COMMAND;
+--- Output: START_ENHANCING(0.0) STOP_ENHANCING(2)
+WATCH> SET_WATCH_COMMAND;
+--- Output: WATCH_TIME({"hours":1.0,"minutes":3,"seconds":0.0,"mode":"AM"})
+WATCH> SET_WATCH_COMMAND;
+--- Output: WATCH_TIME({"hours":2.0,"minutes":3,"seconds":0.0,"mode":"AM"})
+WATCH> NEXT_WATCH_TIME_POSITION_COMMAND;
+--- Output: START_ENHANCING(1.0) STOP_ENHANCING(0.0)
+WATCH> SET_WATCH_COMMAND;
+--- Output: WATCH_TIME({"hours":2.0,"minutes":0.0,"seconds":0.0,"mode":"AM"})
+WATCH> SET_WATCH_COMMAND;
+--- Output: WATCH_TIME({"hours":2.0,"minutes":1.0,"seconds":0.0,"mode":"AM"})
+WATCH> NEXT_WATCH_TIME_POSITION_COMMAND;
+--- Output: START_ENHANCING(2.0) STOP_ENHANCING(1.0)
+WATCH> SET_WATCH_COMMAND;
+--- Output: WATCH_TIME({"hours":2.0,"minutes":1.0,"seconds":1.0,"mode":"AM"})
+WATCH> SET_WATCH_COMMAND;
+--- Output: WATCH_TIME({"hours":2.0,"minutes":1.0,"seconds":0.0,"mode":"AM"})
+WATCH> NEXT_WATCH_TIME_POSITION_COMMAND;
+--- Output: START_ENHANCING(0.0) STOP_ENHANCING(2.0)
+WATCH> SET_WATCH_COMMAND;
+--- Output: WATCH_TIME({"hours":1.0,"minutes":1.0,"seconds":0.0,"mode":"PM"})
+WATCH> SET_WATCH_COMMAND;
+--- Output: WATCH_TIME({"hours":2,"minutes":1.0,"seconds":0.0,"mode":"PM"})
+WATCH> EXIT_SET_WATCH_MODE_COMMAND;
+--- Output: STOP_ENHANCING(0.0)
+WATCH> S;
+--- Output: WATCH_TIME({"hours":2,"minutes":1.0,"seconds":1.0,"mode":"PM"}) BEEP(0)

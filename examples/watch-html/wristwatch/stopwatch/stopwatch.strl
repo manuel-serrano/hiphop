@@ -1,0 +1,185 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The Esterel split-time stopwatch %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% There are three submodules : a basic stopwatch, which only handles
+% the start/stop command, a lap filter, which handles the lap command,
+% and a reset handler, which determines when to reset the stopwatch. 
+% These modules are put in parallel in the main STOPWATCH module, 
+% with suitable renamings.
+
+% The BASIC_STOPWATCH module
+%---------------------------
+
+module BASIC_STOPWATCH :
+
+% To handle the stopwatch time:
+
+type STOPWATCH_TIME_TYPE;
+constant ZERO_STOPWATCH_TIME : STOPWATCH_TIME_TYPE;
+function INCREMENT_STOPWATCH_TIME (STOPWATCH_TIME_TYPE) : STOPWATCH_TIME_TYPE;
+
+% To beep:
+
+type BEEP_TYPE;
+constant STOPWATCH_BEEP_VALUE : BEEP_TYPE;
+function STOPWATCH_BEEP (STOPWATCH_TIME_TYPE) : BEEP_TYPE;
+         % returns either the value STOPWATCH_BEEP_VALUE if the stopwatch has
+         % to beep or the value NO_BEEP_VALUE otherwise
+
+% Interface
+
+input HS;
+input START_STOP_COMMAND;
+
+relation   HS
+         # START_STOP_COMMAND;
+
+output STOPWATCH_TIME : STOPWATCH_TIME_TYPE;
+output STOPWATCH_RUN_STATUS : boolean;
+output BEEP : BEEP_TYPE;
+
+% Body
+
+emit STOPWATCH_TIME (ZERO_STOPWATCH_TIME);
+
+loop
+
+   % stopwatch not running
+   emit STOPWATCH_RUN_STATUS (false);
+   await START_STOP_COMMAND;
+
+   % starting the stopwatch
+   emit STOPWATCH_RUN_STATUS (true);
+   emit BEEP (STOPWATCH_BEEP_VALUE);
+   abort
+      every HS do
+         emit STOPWATCH_TIME (INCREMENT_STOPWATCH_TIME(pre(?STOPWATCH_TIME)));
+         emit BEEP (STOPWATCH_BEEP (?STOPWATCH_TIME))
+      end every
+   when START_STOP_COMMAND;
+
+   % stopping the stopwatch
+   emit BEEP (STOPWATCH_BEEP_VALUE)
+end loop
+end module
+
+% The LAP_FILTER module
+%----------------------
+
+module LAP_FILTER :
+
+type STOPWATCH_TIME_TYPE;
+
+% Interface
+
+input LAP_COMMAND;
+input BASIC_STOPWATCH_TIME : STOPWATCH_TIME_TYPE;
+
+output STOPWATCH_TIME : STOPWATCH_TIME_TYPE;
+output STOPWATCH_LAP_STATUS : boolean;
+
+% Body
+
+loop
+   emit STOPWATCH_LAP_STATUS (false);
+
+   % not in LAP mode
+   abort
+      loop
+         emit STOPWATCH_TIME (? BASIC_STOPWATCH_TIME)
+      each BASIC_STOPWATCH_TIME
+   when LAP_COMMAND;
+
+   % LAP_COMMAND received, enter LAP mode
+   emit STOPWATCH_LAP_STATUS (true);
+   await LAP_COMMAND
+
+end loop
+end module
+
+% The STOPWATCH_RESET_HANDLER module
+%-----------------------------------
+
+module STOPWATCH_RESET_HANDLER :
+
+% Interface
+
+input START_STOP_COMMAND,
+      LAP_COMMAND;
+
+relation START_STOP_COMMAND # LAP_COMMAND;
+
+output RESET_STOPWATCH_COMMAND;
+
+% Body
+
+loop
+   trap RESET in
+      signal STOPWATCH_STOPPED in
+         loop
+            abort
+               sustain STOPWATCH_STOPPED
+            when START_STOP_COMMAND;
+            await START_STOP_COMMAND
+         end loop
+      ||
+         loop
+            await LAP_COMMAND do
+               % LAP_COMMAND received when not in LAP mode
+               present STOPWATCH_STOPPED then
+                  exit RESET
+               end
+            end await;
+            await LAP_COMMAND
+         end loop
+      end signal
+   end trap;
+   emit RESET_STOPWATCH_COMMAND
+end loop
+end module
+
+% The main STOPWATCH module
+%--------------------------
+
+module STOPWATCH :
+
+% To handle the stopwatch time:
+
+type STOPWATCH_TIME_TYPE;
+
+% To beep:
+
+type BEEP_TYPE;
+
+% Interface
+
+input HS;
+input START_STOP_COMMAND,
+      LAP_COMMAND;
+
+relation   HS
+         # START_STOP_COMMAND
+         # LAP_COMMAND;
+
+output STOPWATCH_TIME : STOPWATCH_TIME_TYPE;
+
+output STOPWATCH_RUN_STATUS : boolean,
+       STOPWATCH_LAP_STATUS : boolean;
+
+output BEEP : BEEP_TYPE;
+
+% Body
+
+signal RESET_STOPWATCH_COMMAND,
+       BASIC_STOPWATCH_TIME : STOPWATCH_TIME_TYPE in
+   loop
+      run BASIC_STOPWATCH [signal BASIC_STOPWATCH_TIME / STOPWATCH_TIME]
+   ||
+      run LAP_FILTER
+   each RESET_STOPWATCH_COMMAND
+||
+   run STOPWATCH_RESET_HANDLER
+end signal
+end module
+

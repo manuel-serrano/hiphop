@@ -1,0 +1,121 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Module WATCH : the timekeeper %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+module WATCH :
+
+% To handle the watch time
+
+type WATCH_TIME_TYPE;
+
+function GET_INITIAL_WATCH_TIME () : WATCH_TIME_TYPE;
+function INCREMENT_WATCH_TIME (WATCH_TIME_TYPE) : WATCH_TIME_TYPE;
+function TOGGLE_24H_MODE_IN_WATCH_TIME (WATCH_TIME_TYPE) : WATCH_TIME_TYPE;
+
+% To set the watch time
+
+type WATCH_TIME_POSITION;
+constant INITIAL_WATCH_TIME_POSITION : WATCH_TIME_POSITION;
+function NEXT_WATCH_TIME_POSITION (WATCH_TIME_POSITION) 
+                                  : WATCH_TIME_POSITION;
+         % say from seconds to hours to 10 minutes to minutes to month to
+         % day to day in week and circularly ! (not relevant for ESTEREL)
+function SET_WATCH_TIME 
+            (WATCH_TIME_TYPE, WATCH_TIME_POSITION) : WATCH_TIME_TYPE;
+          % applies a setting command to the current time and position
+function INCREMENT_WATCH_TIME_IN_SET_MODE 
+            (WATCH_TIME_TYPE, WATCH_TIME_POSITION) : WATCH_TIME_TYPE;
+          % increments the time only to the position being currently set
+
+% To beep
+
+type BEEP_TYPE;
+function WATCH_BEEP (WATCH_TIME_TYPE, boolean) : BEEP_TYPE;
+         % returns either the value WATCH_BEEP_VALUE if the watch has to beep
+         % and the boolean (CHIME_STATUS) is true,
+         % or the value NO_BEEP_VALUE otherwise
+
+% Interface
+
+input S;
+input TOGGLE_24H_MODE_COMMAND;
+
+output WATCH_TIME : WATCH_TIME_TYPE;
+
+input ENTER_SET_WATCH_MODE_COMMAND,
+      SET_WATCH_COMMAND,
+      NEXT_WATCH_TIME_POSITION_COMMAND,
+      EXIT_SET_WATCH_MODE_COMMAND;
+
+output WATCH_BEING_SET;
+       % Synchronous with WATCH_TIME when the watch is set
+output START_ENHANCING : WATCH_TIME_POSITION,
+       STOP_ENHANCING : WATCH_TIME_POSITION;
+
+input TOGGLE_CHIME_COMMAND;
+output CHIME_STATUS : boolean;
+output BEEP : BEEP_TYPE;
+
+relation   S
+         # TOGGLE_24H_MODE_COMMAND
+         # TOGGLE_CHIME_COMMAND
+         # ENTER_SET_WATCH_MODE_COMMAND
+         # SET_WATCH_COMMAND
+         # NEXT_WATCH_TIME_POSITION_COMMAND
+         # EXIT_SET_WATCH_MODE_COMMAND;
+
+% initializations
+
+emit WATCH_TIME (GET_INITIAL_WATCH_TIME());
+emit CHIME_STATUS (false);
+
+% main loop
+
+loop
+   % normal mode
+   abort % when ENTER_SET_WATCH_MODE_COMMAND
+      loop
+         await
+            case S do
+               emit WATCH_TIME (INCREMENT_WATCH_TIME(pre(?WATCH_TIME))); 
+               emit BEEP (WATCH_BEEP (?WATCH_TIME, ?CHIME_STATUS))
+            case TOGGLE_24H_MODE_COMMAND do
+               emit WATCH_TIME 
+                      (TOGGLE_24H_MODE_IN_WATCH_TIME (pre(?WATCH_TIME)))
+            case TOGGLE_CHIME_COMMAND do
+               emit CHIME_STATUS (not pre(?CHIME_STATUS))
+         end await
+      end loop
+   when ENTER_SET_WATCH_MODE_COMMAND;
+
+   % set-watch mode
+   % (in set-watch mode one might as well accept the commands 
+   % TOGGLE_24H_MODE_COMMAND and TOGGLE_CHIME_COMMAND; for
+   % this one just could copy the corresponding cases above into
+   % the  select!)
+
+   abort % when  EXIT_SET_WATCH_MODE_COMMAND
+      emit START_ENHANCING (INITIAL_WATCH_TIME_POSITION);
+      loop
+         await
+            case S do
+               emit WATCH_TIME 
+                        (INCREMENT_WATCH_TIME_IN_SET_MODE(pre(?WATCH_TIME),
+                                                          ?START_ENHANCING));
+               emit WATCH_BEING_SET
+            case SET_WATCH_COMMAND do
+               emit WATCH_TIME (SET_WATCH_TIME(pre(?WATCH_TIME),
+                                               ?START_ENHANCING));
+               emit WATCH_BEING_SET
+            case NEXT_WATCH_TIME_POSITION_COMMAND do
+               emit STOP_ENHANCING (pre(?START_ENHANCING));
+               emit START_ENHANCING 
+                       (NEXT_WATCH_TIME_POSITION(pre(?START_ENHANCING)))
+         end await
+      end loop
+   when  EXIT_SET_WATCH_MODE_COMMAND;
+   emit STOP_ENHANCING (pre(?START_ENHANCING))
+end loop
+
+end module
+

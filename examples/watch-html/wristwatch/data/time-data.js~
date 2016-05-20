@@ -1,0 +1,18 @@
+//=========================
+// Time data for simulation
+//=========================
+
+var HundredthsPerSecond = 2;
+exports.HundredthsPerSecond = HundredthsPerSecond;
+
+var SecondsPerMinute = 2;
+exports.SecondsPerMinute= SecondsPerMinute;
+
+var MinutesPerHour = 3;
+exports.MinutesPerHour = MinutesPerHour;
+
+var HoursPerDay = 4;
+exports.HoursPerDay = HoursPerDay;
+
+var HoursPerHalfDay = HoursPerDay / 2;
+exports.HoursPerHalfDay = HoursPerHalfDay;

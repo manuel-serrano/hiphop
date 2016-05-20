@@ -1,0 +1,7 @@
+"use hopscript";
+
+var Stopwatch= require("./stopwatch.js");
+
+// console.log(Stopwatch.STOPWATCH);
+
+Stopwatch.hh.batch_interpreter(Stopwatch.STOPWATCH);

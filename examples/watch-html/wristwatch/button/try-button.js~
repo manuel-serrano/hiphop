@@ -1,0 +1,11 @@
+"use strict"
+
+var hh = require("hiphop");
+
+var ButtonJs = require("./button.js");
+console.log(ButtonJs.ButtonModule);
+
+var ButtonMachine = new hh.ReactiveMachine(ButtonJs.ButtonModule, "BUTTON");
+
+hh.batch(ButtonMachine);
+
