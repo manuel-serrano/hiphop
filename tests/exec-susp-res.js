@@ -29,7 +29,7 @@ const prg =
 	<hh.inputsignal name="S"/>
 	<hh.outputsignal name="O"/>
 	<hh.outputsignal name="OT" valued/>
-	<hh.tasksignal name="T"/>
+	<hh.inputsignal name="T" valued/>
 	<hh.parallel>
 	  <hh.suspend signal_name="S">
 	    <hh.exec signal_name="T" interface=${exec_interface}/>

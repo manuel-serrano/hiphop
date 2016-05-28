@@ -15,12 +15,11 @@ const exec_interface = {
 const prg =
       <hh.module>
 	<hh.outputsignal name="O"/>
-	<hh.outputsignal name="OT" valued/>
-	<hh.inputsignal name="T" valued/>
+	<hh.outputsignal name="OT"/>
 	<hh.parallel>
 	  <hh.sequence>
-	    <hh.exec signal_name="T" interface=${exec_interface}/>
-	    <hh.emit signal_name="OT" arg=${hh.value("T")}/>
+	    <hh.exec interface=${exec_interface}/>
+	    <hh.emit signal_name="OT"/>
 	  </hh.sequence>
 	  <hh.emit signal_name="O"/>
 	</hh.parallel>

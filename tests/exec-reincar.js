@@ -19,7 +19,7 @@ const prg =
 	<hh.inputsignal name="R"/>
 	<hh.outputsignal name="O"/>
 	<hh.outputsignal name="OT" valued/>
-	<hh.tasksignal name="T"/>
+	<hh.inputsignal name="T" valued/>
 	<hh.loopeach signal_name="R">
 	  <hh.parallel>
 	    <hh.abort signal_name="R">
