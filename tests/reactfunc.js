@@ -26,14 +26,14 @@ var prg = <hh.module>
   <hh.outputsignal name="O2" valued/>
   <hh.loop>
     <hh.sequence>
-      <hh.present signal_name="I1">
+      <hh.present signal="I1">
 	<hh.sequence>
-	  <hh.emit signal_name="O1"/>
-	  <hh.emit signal_name="O11"/>
+	  <hh.emit signal="O1"/>
+	  <hh.emit signal="O11"/>
 	</hh.sequence>
       </hh.present>
-      <hh.present signal_name="I2">
-	<hh.emit signal_name="O2" arg=${hh.value("I2")}/>
+      <hh.present signal="I2">
+	<hh.emit signal="O2" arg=${hh.value("I2")}/>
       </hh.present>
       <hh.pause/>
     </hh.sequence>

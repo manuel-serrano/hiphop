@@ -4,21 +4,21 @@ const hh = require("hiphop");
 const fs = require("fs");
 
 function make_atom(i) {
-   return <hh.loopeach signal_name="GO">
+   return <hh.loopeach signal="GO">
      <hh.atom func=${function() {console.log("branch", i)}}/>
    </hh.loop>;
 }
 
 function make_atom2(i) {
    return <hh.loop>
-     <hh.await immediate signal_name="GO"/>
+     <hh.await immediate signal="GO"/>
      <hh.atom func=${function() {console.log("branch", i)}}/>
      <hh.pause/>
    </hh.loop>;
 }
 
 function make_atom3(i) {
-   return <hh.every immediate signal_name="GO">
+   return <hh.every immediate signal="GO">
      <hh.atom func=${function() {console.log("branch", i)}}/>
    </hh.every>;
 }
@@ -28,7 +28,7 @@ const prg =
 	<hh.localsignal name="GO">
 	  <hh.parallel id="par">
 	    <hh.loop>
-	      <hh.emit signal_name="GO"/>
+	      <hh.emit signal="GO"/>
 	      <hh.pause/>
 	    </hh.loop>
 

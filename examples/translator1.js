@@ -14,12 +14,12 @@ service translator() {
 
 	     function EXECCOLOR( attr, body ) {
 		return <hh.sequence>
-		  <hh.emit signal_name=${`${attr.lang}-color`} arg="red"/>
-		  <hh.exec signal_name=${`${attr.lang}-out`}
+		  <hh.emit signal=${`${attr.lang}-color`} arg="red"/>
+		  <hh.exec signal=${`${attr.lang}-out`}
 			   interface=${exec_interface}
 			   arg0=${attr.lang}
 			   arg1=${hh.value("fr-in")}/>
-		  <hh.emit signal_name=${`${attr.lang}-color`} arg="blue"/>
+		  <hh.emit signal=${`${attr.lang}-color`} arg="blue"/>
 		</hh.sequence>
 	     }
 
@@ -51,7 +51,7 @@ service translator() {
                   <hh.outputsignal name="es-out" init_value="Â¿?"/>
 		  <hh.outputsignal name="es-color" init_value="green"/>
 
-		  <hh.loopeach signal_name="fr-in">
+		  <hh.loopeach signal="fr-in">
 		    <hh.parallel>
 		      <execColor lang="en"/>
 		      <execColor lang="es"/>

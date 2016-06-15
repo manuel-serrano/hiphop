@@ -7,9 +7,9 @@ var prg = <hh.module>
   <hh.outputsignal name="S"/>
   <hh.loop>
     <hh.Sequence>
-      <hh.await signal_name="I"/>
+      <hh.await signal="I"/>
       <hh.pause/>
-      <hh.emit signal_name="S"/>
+      <hh.emit signal="S"/>
     </hh.Sequence>
   </hh.loop>
 </hh.module>;

@@ -6,4 +6,4 @@
 *** Unexpected attribute: `sig`
 *** SYNTAX ERROR
 *** [LOC DISABLED --- run hop -g to get location]
-*** Expected attribute: `signal_name`
+*** Expected attribute: `signal`

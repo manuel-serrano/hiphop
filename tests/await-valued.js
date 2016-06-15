@@ -9,8 +9,8 @@ function foo(evt) {
 var prg = <hh.module>
   <hh.inputsignal name="I" valued />
   <hh.outputsignal name="O" valued />
-    <hh.await signal_name="I" />
-    <hh.emit signal_name="O" arg=${hh.value("I")}/>
+    <hh.await signal="I" />
+    <hh.emit signal="O" arg=${hh.value("I")}/>
 </hh.module>;
 
 var m = new hh.ReactiveMachine(prg, "awaitvalued");

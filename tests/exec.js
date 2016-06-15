@@ -19,10 +19,10 @@ const prg =
 	<hh.inputsignal name="T" valued/>
 	<hh.parallel>
 	  <hh.sequence>
-	    <hh.exec signal_name="T" interface=${exec_interface}/>
-	    <hh.emit signal_name="OT" arg=${hh.value("T")}/>
+	    <hh.exec signal="T" interface=${exec_interface}/>
+	    <hh.emit signal="OT" arg=${hh.value("T")}/>
 	  </hh.sequence>
-	  <hh.emit signal_name="O"/>
+	  <hh.emit signal="O"/>
 	</hh.parallel>
       </hh.module>
 

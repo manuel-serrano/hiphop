@@ -8,19 +8,19 @@ var prg = <hh.module>
   <hh.outputsignal name="C"/>
   <hh.outputsignal name="D"/>
   <hh.sequence>
-    <hh.emit signal_name="A"/>
-    <hh.trap trap_name="U">
+    <hh.emit signal="A"/>
+    <hh.trap name="U">
       <hh.sequence>
-	<hh.trap trap_name="T">
+	<hh.trap name="T">
 	  <hh.sequence>
-	    <hh.exit trap_name="U"/>
-	    <hh.emit signal_name="B"/>
+	    <hh.exit trap="U"/>
+	    <hh.emit signal="B"/>
 	  </hh.sequence>
 	</hh.trap>
-	<hh.emit signal_name="C"/>
+	<hh.emit signal="C"/>
       </hh.sequence>
     </hh.trap>
-    <hh.emit signal_name="D"/>
+    <hh.emit signal="D"/>
   </hh.sequence>
 </hh.module>;
 

@@ -10,14 +10,14 @@ var prg =
       <hh.outputsignal name="END2"/>
       <hh.parallel>
 	<hh.sequence>
-	  <hh.emit signal_name="A"/>
-	  <hh.await immediate signal_name="B"/>
-	  <hh.emit signal_name="END1"/>
+	  <hh.emit signal="A"/>
+	  <hh.await immediate signal="B"/>
+	  <hh.emit signal="END1"/>
 	</hh.sequence>
 	<hh.sequence>
-	  <hh.emit signal_name="B"/>
-	  <hh.await immediate signal_name="A"/>
-	  <hh.emit signal_name="END2"/>
+	  <hh.emit signal="B"/>
+	  <hh.await immediate signal="A"/>
+	  <hh.emit signal="END2"/>
 	</hh.sequence>
       </hh.parallel>
     </hh.module>;

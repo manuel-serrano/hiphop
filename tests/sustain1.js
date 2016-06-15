@@ -8,10 +8,10 @@ const prg =
 	<hh.outputsignal name="J"/>
 	<hh.outputsignal name="K"/>
 	<hh.loop>
-	  <hh.abort signal_name="I">
-	    <hh.sustain signal_name="J"/>
+	  <hh.abort signal="I">
+	    <hh.sustain signal="J"/>
 	  </hh.abort>
-	  <hh.emit signal_name="K"/>
+	  <hh.emit signal="K"/>
 	</hh.loop>
       </hh.module>;
 

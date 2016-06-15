@@ -19,9 +19,9 @@ const prg =
 	<hh.parallel>
 	  <hh.sequence>
 	    <hh.exec interface=${exec_interface}/>
-	    <hh.emit signal_name="OT"/>
+	    <hh.emit signal="OT"/>
 	  </hh.sequence>
-	  <hh.emit signal_name="O"/>
+	  <hh.emit signal="O"/>
 	</hh.parallel>
       </hh.module>
 

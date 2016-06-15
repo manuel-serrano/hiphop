@@ -7,15 +7,15 @@ var prg = <hh.module>
   <hh.outputsignal name="J"/>
   <hh.outputsignal name="O"/>
   <hh.sequence>
-    <hh.suspend signal_name="I">
+    <hh.suspend signal="I">
       <hh.loop>
 	<hh.sequence>
-	  <hh.emit signal_name="O"/>
+	  <hh.emit signal="O"/>
 	  <hh.pause/>
 	</hh.sequence>
       </hh.loop>
     </hh.suspend>
-    <hh.emit signal_name="J"/>
+    <hh.emit signal="J"/>
   </hh.sequence>
 </hh.module>;
 

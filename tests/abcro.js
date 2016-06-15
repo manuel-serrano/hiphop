@@ -9,13 +9,13 @@ var prg =
       <hh.inputsignal name="C"/>
       <hh.inputsignal name="R"/>
       <hh.outputsignal name="O"/>
-      <hh.loopeach signal_name="R">
+      <hh.loopeach signal="R">
 	<hh.parallel>
-	  <hh.await signal_name="A"/>
-	  <hh.await signal_name="B"/>
-	  <hh.await signal_name="C"/>
+	  <hh.await signal="A"/>
+	  <hh.await signal="B"/>
+	  <hh.await signal="C"/>
 	</hh.parallel>
-	<hh.emit signal_name="O"/>
+	<hh.emit signal="O"/>
       </hh.loopeach>
     </hh.module>;
 

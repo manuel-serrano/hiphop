@@ -51,12 +51,12 @@ var prg =
       <hh.outputsignal name="Time"
 			init_value=${WatchTime}/>
       <hh.loop>
-	<hh.emit signal_name="Time"
+	<hh.emit signal="Time"
 		  func=${IncrementTimeInPlace}
 		  arg=${hh.preValue("Time")}/>
 	<hh.pause/>
-	<hh.await signal_name="TIN"/>
-	<hh.emit signal_name="Time"
+	<hh.await signal="TIN"/>
+	<hh.emit signal="Time"
 		  func=${updateFromOutside}
 		  arg=${hh.value("TIN")}/>
 	<hh.pause/>

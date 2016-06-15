@@ -28,22 +28,22 @@ const prg =
       <hh.outputsignal name="OUT2" init_value="2|"/>
 
       <hh.loop>
-	<hh.await immediate signal_name="IN"/>
+	<hh.await immediate signal="IN"/>
 	<hh.atom func=${function() {console.log("   will trigger exec")}}/>
-	<hh.trap trap_name="trap">
+	<hh.trap name="trap">
 	  <hh.parallel>
-	    <hh.exec signal_name="OUT1"
+	    <hh.exec signal="OUT1"
 		     interface=${exec_interface}
 		     arg0=100
 		     arg1=${hh.value("IN")}/>
-	    <hh.exec signal_name="OUT2"
+	    <hh.exec signal="OUT2"
 		     interface=${exec_interface}
 		     arg0=200
 		     arg1=${hh.value("IN")}/>
 	    <hh.sequence>
-	      <hh.await signal_name="IN"/>
+	      <hh.await signal="IN"/>
 	      <hh.atom func=${function() {console.log("   will trap")}}/>
-	      <hh.exit trap_name="trap"/>
+	      <hh.exit trap="trap"/>
 	    </hh.sequence>
 	  </hh.parallel>
 	</hh.trap>

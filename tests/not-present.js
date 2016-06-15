@@ -7,8 +7,8 @@ const prg =
 	<hh.inputsignal name="I"/>
 	<hh.outputsignal name="O"/>
 	<hh.loop>
-	  <hh.present not signal_name="I">
-	    <hh.emit signal_name="O"/>
+	  <hh.present not signal="I">
+	    <hh.emit signal="O"/>
 	  </hh.present>
 	  <hh.pause/>
 	</hh.loop>

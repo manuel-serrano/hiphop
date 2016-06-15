@@ -7,11 +7,11 @@ var prg =
   <hh.outputsignal name="O"/>
   <hh.loop>
     <hh.localsignal name="S">
-      <hh.present signal_name="S">
-	<hh.emit signal_name="O"/>
+      <hh.present signal="S">
+	<hh.emit signal="O"/>
       </hh.present>
       <hh.pause/>
-      <hh.emit signal_name="S"/>
+      <hh.emit signal="S"/>
     </hh.localsignal>
   </hh.loop>
 </hh.module>

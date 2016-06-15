@@ -20,13 +20,13 @@ const prg =
 	<hh.outputsignal name="O"/>
 	<hh.outputsignal name="OT" valued/>
 	<hh.inputsignal name="T" valued/>
-	<hh.loopeach signal_name="R">
+	<hh.loopeach signal="R">
 	  <hh.parallel>
-	    <hh.abort signal_name="R">
-	      <hh.exec signal_name="T" interface=${exec_interface}/>
-	      <hh.emit signal_name="OT" arg=${hh.value("T")}/>
+	    <hh.abort signal="R">
+	      <hh.exec signal="T" interface=${exec_interface}/>
+	      <hh.emit signal="OT" arg=${hh.value("T")}/>
 	    </hh.abort>
-	    <hh.emit signal_name="O"/>
+	    <hh.emit signal="O"/>
 	  </hh.parallel>
 	</hh.loopeach>
       </hh.module>

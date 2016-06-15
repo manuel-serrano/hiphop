@@ -3,14 +3,14 @@
 var hh = require("hiphop");
 
 try {
-   <hh.localsignal signal_name="foo">
+   <hh.localsignal signal="foo">
    </hh.localsignal>
 } catch (e) {
    console.log(e.message);
 }
 
 try {
-   <hh.emit signal_name="foo" sig="werr"/>
+   <hh.emit signal="foo" sig="werr"/>
 } catch (e) {
    console.log(e.message);
 }

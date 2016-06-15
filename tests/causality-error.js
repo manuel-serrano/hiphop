@@ -7,10 +7,10 @@ var example = <hh.module>
   <hh.outputsignal name=O />
   <hh.loop>
     <hh.sequence>
-      <hh.present signal_name="O">
-	<hh.emit signal_name="I"/>
+      <hh.present signal="O">
+	<hh.emit signal="I"/>
       </hh.present>
-      <hh.emit signal_name="O"/>
+      <hh.emit signal="O"/>
       <hh.pause/>
     </hh.sequence>
   </hh.loop>

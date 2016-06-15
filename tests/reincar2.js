@@ -15,23 +15,23 @@ var prg =
 	<hh.parallel>
 
 	  <hh.localsignal name="M" init_value=5>
-	    <hh.emit signal_name="J" arg=${hh.value("M")}/>
+	    <hh.emit signal="J" arg=${hh.value("M")}/>
 	    <hh.pause/>
-	    <hh.emit signal_name="M" arg=5 />
+	    <hh.emit signal="M" arg=5 />
 	  </hh.localsignal>
 
 	  <hh.localsignal name="N">
-	    <hh.present signal_name="N">
-	      <hh.emit signal_name="I"/>
+	    <hh.present signal="N">
+	      <hh.emit signal="I"/>
 	    </hh.present>
 	    <hh.pause/>
-	    <hh.emit signal_name="N"/>
+	    <hh.emit signal="N"/>
 	  </hh.localsignal>
 
 	  <hh.localsignal name="L" valued>
-	    <hh.emit signal_name="L" arg=4 />
+	    <hh.emit signal="L" arg=4 />
 	    <hh.pause/>
-	    <hh.emit signal_name="S" func=${plus} arg0=${hh.value("L")} arg1=5/>
+	    <hh.emit signal="S" func=${plus} arg0=${hh.value("L")} arg1=5/>
 	  </hh.localsignal>
 
 	</hh.parallel>

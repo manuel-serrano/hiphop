@@ -7,7 +7,7 @@ const prg =
 	<hh.outputsignal name="O" combine_with=${(x, y) => x + y}/>
 	<hh.loop>
 	  <hh.parallel id="par">
-	    <hh.emit signal_name="O" arg=1/>
+	    <hh.emit signal="O" arg=1/>
 	  </hh.parallel>
 	  <hh.pause/>
 	  <hh.pause/>
@@ -15,7 +15,7 @@ const prg =
       </hh.module>;
 
 function add_emit(machine) {
-   let branch = <hh.emit signal_name="O" arg=1/>;
+   let branch = <hh.emit signal="O" arg=1/>;
 
    machine.getElementById("par").appendChild(branch);
    return branch;

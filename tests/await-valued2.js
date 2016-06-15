@@ -20,8 +20,8 @@ var prg = <hh.module>
   <hh.outputsignal name="O" valued/>
   <hh.loop>
     <hh.sequence>
-      <hh.await signal_name="I" />
-      <hh.emit signal_name="O" arg=${hh.value("I")} />
+      <hh.await signal="I" />
+      <hh.emit signal="O" arg=${hh.value("I")} />
     </hh.sequence>
   </hh.loop>
 </hh.module>;

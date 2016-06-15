@@ -6,10 +6,10 @@ var prg = <hh.module>
   <hh.outputsignal name="J"/>
   <hh.localsignal name="I">
     <hh.parallel>
-      <hh.emit signal_name="I"/>
+      <hh.emit signal="I"/>
       <hh.sequence>
-	<hh.await signal_name="I"/>
-	<hh.emit signal_name="J"/>
+	<hh.await signal="I"/>
+	<hh.emit signal="J"/>
       </hh.sequence>
     </hh.parallel>
   </hh.localsignal>

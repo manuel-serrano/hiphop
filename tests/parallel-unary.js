@@ -8,10 +8,10 @@ var prg =
       <hh.loop>
 	<hh.localsignal name="L">
 	  <hh.parallel>
-	    <hh.emit signal_name="L"/>
+	    <hh.emit signal="L"/>
 	    <hh.parallel>
-	      <hh.present signal_name="L">
-		<hh.emit signal_name="O"/>
+	      <hh.present signal="L">
+		<hh.emit signal="O"/>
 	      </hh.present>
 	    </hh.parallel>
 	  </hh.parallel>

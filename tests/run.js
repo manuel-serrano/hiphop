@@ -8,11 +8,11 @@ var m1 = <hh.module>
   <hh.outputsignal name=V />
   <hh.outputsignal name=Z />
   <hh.parallel>
-    <hh.present signal_name="T">
-      <hh.emit signal_name="V"/>
+    <hh.present signal="T">
+      <hh.emit signal="V"/>
     </hh.present>
-    <hh.present signal_name="W">
-      <hh.emit signal_name="Z"/>
+    <hh.present signal="W">
+      <hh.emit signal="Z"/>
     </hh.present>
   </hh.parallel>
 </hh.module>;

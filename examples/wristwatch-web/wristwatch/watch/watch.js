@@ -49,8 +49,8 @@ var WatchModule =
       
       // initialisation
     
-      <hh.emit signal_name="WATCH_TIME" arg=${WD.InitialWatchTime}/>
-      <hh.emit signal_name="CHIME_STATUS" arg=${false}/>
+      <hh.emit signal="WATCH_TIME" arg=${WD.InitialWatchTime}/>
+      <hh.emit signal="CHIME_STATUS" arg=${false}/>
 
       // loop between watch mode and set-watch mode
       
@@ -58,31 +58,31 @@ var WatchModule =
 
         // watch mode
 
-	<hh.abort signal_name="ENTER_SET_WATCH_MODE_COMMAND">
+	<hh.abort signal="ENTER_SET_WATCH_MODE_COMMAND">
           <hh.parallel>
 
             // react to seconds by incrementing time and computing beep number
-            <hh.every signal_name="S">
-		<hh.emit signal_name="WATCH_TIME"
+            <hh.every signal="S">
+		<hh.emit signal="WATCH_TIME"
                          func=${WD.IncrementWatchTime}
                          arg=${hh.preValue("WATCH_TIME")}/>
 
-              <hh.emit signal_name="BEEP"
+              <hh.emit signal="BEEP"
                         func=${WD.WatchBeep}
                         arg0=${hh.value("WATCH_TIME")}
 	                arg1=${hh.value("CHIME_STATUS")}/>
             </hh.every>
 
             // react to mode toggling command by toggling WatchTime mode
-             <hh.every signal_name="TOGGLE_24H_MODE_COMMAND">
-                <hh.emit signal_name="WATCH_TIME"
+             <hh.every signal="TOGGLE_24H_MODE_COMMAND">
+                <hh.emit signal="WATCH_TIME"
                                  func=${WD.ToggleWatchTimeMode}
                                  arg=${hh.preValue("WATCH_TIME")}/>
              </hh.every>
 
              // react to chime togging command by toggling chime status
-             <hh.every signal_name="TOGGLE_CHIME_COMMAND">
-                <hh.emit signal_name="CHIME_STATUS"
+             <hh.every signal="TOGGLE_CHIME_COMMAND">
+                <hh.emit signal="CHIME_STATUS"
                                  func=${B.bnot}
                                  arg=${hh.preValue("CHIME_STATUS")}/>
              </hh.every>
@@ -92,15 +92,15 @@ var WatchModule =
 
        // set-watch mode
 
-       <hh.abort signal_name="EXIT_SET_WATCH_MODE_COMMAND">
+       <hh.abort signal="EXIT_SET_WATCH_MODE_COMMAND">
           // enhance initial position
         // GB : CV bug !       should  be arg=${WD.InitialWatchTimePosition}
-        <hh.emit signal_name="START_ENHANCING" arg=${0}/>
+        <hh.emit signal="START_ENHANCING" arg=${0}/>
           <hh.parallel>
 
             // react to set-wacth command bu updating position
-            <hh.every signal_name="SET_WATCH_COMMAND">
-              <hh.emit signal_name="WATCH_TIME" 
+            <hh.every signal="SET_WATCH_COMMAND">
+              <hh.emit signal="WATCH_TIME" 
                         func=${WD.IncrementWatchTimeAtPosition}
                         arg0=${hh.preValue("WATCH_TIME")}
 			arg1=${hh.preValue("START_ENHANCING")}/>
@@ -109,17 +109,17 @@ var WatchModule =
 
             // react to next-position command
             // by moving enhancement to the new position 
-            <hh.every signal_name="NEXT_WATCH_TIME_POSITION_COMMAND">
-              <hh.emit signal_name="STOP_ENHANCING"
+            <hh.every signal="NEXT_WATCH_TIME_POSITION_COMMAND">
+              <hh.emit signal="STOP_ENHANCING"
                        arg0=${hh.preValue("START_ENHANCING")}/>
-              <hh.emit signal_name="START_ENHANCING"
+              <hh.emit signal="START_ENHANCING"
                        func=${WD.NextWatchTimePosition}
                        arg0=${hh.preValue("START_ENHANCING")}/>
             </hh.every>
 
           </hh.parallel>
        </hh.abort>
-       <hh.emit signal_name="STOP_ENHANCING"
+       <hh.emit signal="STOP_ENHANCING"
                  arg0=${hh.preValue("START_ENHANCING")}/>
       </hh.loop>
     </hh.module>;

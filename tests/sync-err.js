@@ -10,13 +10,13 @@ const prg =
 	  <hh.parallel>
 
 	    <hh.loop>
-	      <hh.emit signal_name="L"/>
+	      <hh.emit signal="L"/>
 	      <hh.pause/>
 	    </hh.loop>
 
 	    <hh.loop>
-	      <hh.await immediate signal_name="L"/>
-	      <hh.emit signal_name="O"/>
+	      <hh.await immediate signal="L"/>
+	      <hh.emit signal="O"/>
 	    </hh.loop>
 
 	  </hh.parallel>

@@ -9,12 +9,12 @@ var prg =
       <hh.inputsignal name="B"/>
       <hh.outputsignal name="O"/>
       <hh.loop>
-	<hh.abort signal_name="R">
+	<hh.abort signal="R">
 	  <hh.parallel>
-	    <hh.await signal_name="A" />
-	    <hh.await signal_name="B" />
+	    <hh.await signal="A" />
+	    <hh.await signal="B" />
 	  </hh.parallel>
-	  <hh.emit signal_name="O" />
+	  <hh.emit signal="O" />
 	  <hh.halt/>
 	</hh.abort>
       </hh.loop>

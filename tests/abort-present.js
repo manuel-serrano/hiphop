@@ -9,16 +9,16 @@ var prg = <hh.module>
   <hh.outputsignal name="V"/>
   <hh.loop>
     <hh.sequence>
-      <hh.abort signal_name="I">
+      <hh.abort signal="I">
 	<hh.sequence>
-	  <hh.emit signal_name="J"/>
+	  <hh.emit signal="J"/>
 	  <hh.pause/>
-	  <hh.emit signal_name="V"/>
+	  <hh.emit signal="V"/>
 	  <hh.pause/>
 	</hh.sequence>
       </hh.abort>
-      <hh.present signal_name="I">
-	<hh.emit signal_name="K"/>
+      <hh.present signal="I">
+	<hh.emit signal="K"/>
       </hh.present>
     </hh.sequence>
   </hh.loop>

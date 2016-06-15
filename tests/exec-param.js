@@ -5,7 +5,7 @@ const hh = require("hiphop");
 const prg =
       <hh.module>
 	<hh.inputsignal name="in" combine_with=${(x, y) => x + y}/>
-	<hh.emit signal_name="in" arg=5/>
+	<hh.emit signal="in" arg=5/>
 	<hh.exec arg=${hh.value("in")}
 		 interface=${{start: function(arg) {
 		    console.log("receive " + arg);

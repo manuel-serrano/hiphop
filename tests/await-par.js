@@ -8,10 +8,10 @@ var prg = <hh.module>
   <hh.outputsignal name="O"/>
   <hh.sequence>
     <hh.parallel>
-      <hh.await signal_name="A"/>
-      <hh.await signal_name="B"/>
+      <hh.await signal="A"/>
+      <hh.await signal="B"/>
     </hh.parallel>
-    <hh.emit signal_name="O"/>
+    <hh.emit signal="O"/>
   </hh.sequence>
 </hh.module>;
 

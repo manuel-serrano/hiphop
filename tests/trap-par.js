@@ -6,16 +6,16 @@ var prg = <hh.module>
   <hh.outputsignal name="A"/>
   <hh.outputsignal name="B"/>
   <hh.outputsignal name="C"/>
-  <hh.trap trap_name="T">
+  <hh.trap name="T">
     <hh.parallel>
       <hh.sequence>
-	<hh.emit signal_name="A"/>
-	<hh.exit trap_name="T"/>
+	<hh.emit signal="A"/>
+	<hh.exit trap="T"/>
       </hh.sequence>
       <hh.sequence>
-	<hh.emit signal_name="B"/>
+	<hh.emit signal="B"/>
 	<hh.pause/>
-	<hh.emit signal_name="C"/>
+	<hh.emit signal="C"/>
       </hh.sequence>
     </hh.parallel>
   </hh.trap>

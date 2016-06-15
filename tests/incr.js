@@ -10,10 +10,10 @@ var prg =
       <hh.inputsignal name="R"/>
       <hh.outputsignal name="O" init_value=0 />
       <hh.loop>
-	<hh.abort signal_name="R">
+	<hh.abort signal="R">
           <hh.sequence>
-            <hh.await signal_name="I"/>
-            <hh.emit signal_name="O"
+            <hh.await signal="I"/>
+            <hh.emit signal="O"
                      func=${plus}
                      arg0=${hh.preValue("O")}
 		     arg1=1/>

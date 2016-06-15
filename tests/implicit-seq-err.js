@@ -8,10 +8,10 @@ try {
 	 <hh.inputsignal name="A"/>
 	 <hh.inputsignal name="B"/>
 	 <hh.outputsignal name="O"/>
-	 <hh.await signal_name="A"/>
+	 <hh.await signal="A"/>
 	 <hh.inputsignal name="C"/>
-	 <hh.await signal_name="B"/>
-	 <hh.emit signal_name="O"/>
+	 <hh.await signal="B"/>
+	 <hh.emit signal="O"/>
        </hh.module>;
 } catch (e) {
    console.log(e.message);

@@ -8,14 +8,14 @@ var m =
       <hh.outputsignal name="O"/>
       <hh.outputsignal name="F"/>
       <hh.outputsignal name="W"/>
-      <hh.weakabort signal_name="S">
+      <hh.weakabort signal="S">
 	<hh.loop>
-	  <hh.emit signal_name="O"/>
+	  <hh.emit signal="O"/>
 	  <hh.pause/>
-	  <hh.emit signal_name="W"/>
+	  <hh.emit signal="W"/>
 	</hh.loop>
       </hh.abort>
-      <hh.emit signal_name="F"/>
+      <hh.emit signal="F"/>
     </hh.module>
 
 exports.prg = new hh.ReactiveMachine(m, "wabort");

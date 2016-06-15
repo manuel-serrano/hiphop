@@ -31,14 +31,14 @@ const prg =
 	<hh.outputsignal name="OT" valued/>
 	<hh.inputsignal name="T" valued/>
 	<hh.parallel>
-	  <hh.suspend signal_name="S">
-	    <hh.exec signal_name="T" interface=${exec_interface}/>
-	    <hh.emit signal_name="OT" arg=${hh.value("T")}/>
+	  <hh.suspend signal="S">
+	    <hh.exec signal="T" interface=${exec_interface}/>
+	    <hh.emit signal="OT" arg=${hh.value("T")}/>
 	  </hh.suspend>
-	  <hh.emit signal_name="O"/>
+	  <hh.emit signal="O"/>
 	</hh.parallel>
-	<hh.await signal_name="RES"/>
-	<hh.emit signal_name="OT" arg=${hh.value("T")}/>
+	<hh.await signal="RES"/>
+	<hh.emit signal="OT" arg=${hh.value("T")}/>
       </hh.module>
 
 var machine = new hh.ReactiveMachine(prg, "exec");

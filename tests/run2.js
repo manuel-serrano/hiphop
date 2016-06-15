@@ -8,16 +8,16 @@ var m1 = <hh.module>
      <hh.outputsignal name="V"/>
      <hh.outputsignal name="Z"/>
      <hh.parallel>
-       <hh.present signal_name="T">
+       <hh.present signal="T">
 	 <hh.localsignal name="L">
 	   <hh.sequence>
-	     <hh.emit signal_name="L"/>
-	     <hh.emit signal_name="V"/>
+	     <hh.emit signal="L"/>
+	     <hh.emit signal="V"/>
 	   </hh.sequence>
 	 </hh.localsignal>
        </hh.present>
-       <hh.present signal_name="W">
-	 <hh.emit signal_name="Z"/>
+       <hh.present signal="W">
+	 <hh.emit signal="Z"/>
        </hh.present>
      </hh.parallel>
    </hh.module>;
@@ -29,7 +29,7 @@ var m2 = <hh.module>
   <hh.outputsignal name="B"/>
   <hh.sequence>
     <hh.localsignal name="L">
-      <hh.emit signal_name="L"/>
+      <hh.emit signal="L"/>
     </hh.localsignal>
     <hh.run module=${m1} sigs_assoc=${{"T":"S",
 					"W":"U",

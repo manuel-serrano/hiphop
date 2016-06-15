@@ -160,11 +160,11 @@ function NUMBER( attr, _ ) {
    var numid = "num" + num.value;
    G.count++;
 
-   var trap = <hh.trap trap_name=${dead} id=${numid}>
+   var trap = <hh.trap name=${dead} id=${numid}>
      <hh.loop>
-       <hh.await signal_name="go"/>
-       <hh.emit signal_name="number" arg=${num}/>
-       <hh.emit signal_name="kill"
+       <hh.await signal="go"/>
+       <hh.emit signal="number" arg=${num}/>
+       <hh.emit signal="kill"
 		func=${findPrey}
 		arg0=${attr}
 		arg1=${num}
@@ -176,7 +176,7 @@ function NUMBER( attr, _ ) {
 	      num.dead = true;
 	      G.mach.getElementById( "numbers" ).removeChild( trap );
 	   }} />
-	   <hh.exit trap_name=${dead}/>
+	   <hh.exit trap=${dead}/>
 	 </hh.then>
 	 <hh.else>
 	   <hh.if func=${function( kills ) {
@@ -220,7 +220,7 @@ function prims( G ) {
 	     <hh.loop>
 	       <hh.atom func=${function() {
 		  G.ctx.clearRect( 0, 0, G.width, G.height )}}/>
-	       <hh.emit signal_name="go"/>
+	       <hh.emit signal="go"/>
 	       <hh.pause/>
 	     </hh.loop>
 

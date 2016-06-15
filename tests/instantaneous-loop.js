@@ -7,8 +7,8 @@ try {
      <hh.outputsignal name="O" valued/>
      <hh.loop>
        <hh.localsignal name="L" valued>
-	 <hh.emit signal_name="L" arg=${"foo bar"}/>
-	 <hh.emit signal_name="O" arg=${hh.value("L")}/>
+	 <hh.emit signal="L" arg=${"foo bar"}/>
+	 <hh.emit signal="O" arg=${hh.value("L")}/>
        </hh.localsignal>
      </hh.loop>
    </hh.module>;

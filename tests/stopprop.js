@@ -6,7 +6,7 @@ var prg =
     <hh.module>
       <hh.outputsignal name="O"/>
       <hh.loop>
-	<hh.emit signal_name="O"/>
+	<hh.emit signal="O"/>
 	<hh.pause/>
       </hh.loop>
     </hh.module>;

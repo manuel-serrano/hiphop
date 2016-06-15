@@ -8,14 +8,14 @@ var prg = <hh.module>
   <hh.outputsignal name="V"/>
   <hh.localsignal name="S">
     <hh.loop>
-      <hh.abort signal_name="A">
+      <hh.abort signal="A">
 	<hh.sequence>
-	  <hh.emit signal_name="S"/>
-	  <hh.present signal_name="S">
-	    <hh.emit signal_name="T"/>
+	  <hh.emit signal="S"/>
+	  <hh.present signal="S">
+	    <hh.emit signal="T"/>
 	  </hh.present>
 	  <hh.pause/>
-	  <hh.emit signal_name="V"/>
+	  <hh.emit signal="V"/>
 	</hh.sequence>
       </hh.abort>
     </hh.loop>
