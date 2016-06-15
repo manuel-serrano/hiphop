@@ -1,8 +1,12 @@
 #!/bin/bash
 
+if [ -z "$HOPBIN" ]; then
+    HOPBIN=hop
+fi
+
 space="     "
 dir=$(pwd)
-hop="/usr/local/bin/hop"
+hop="/usr/local/bin/$HOPBIN"
 hop_opt="--no-server"
 CC=/usr/bin/gcc
 batchfile=/tmp/batch.js
