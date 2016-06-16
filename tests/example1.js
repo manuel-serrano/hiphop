@@ -6,14 +6,15 @@ var prg = <hh.module>
   <hh.outputsignal name="T"/>
   <hh.sequence>
     <hh.pause/>
-    <hh.localsignal name="S">
+    <hh.let>
+      <hh.signal name="S"/>
       <hh.sequence>
 	<hh.emit signal="S"/>
 	<hh.present signal="S">
 	  <hh.emit signal="T"/>
 	</hh.present>
       </hh.sequence>
-    </hh.localsignal>
+    </hh.let>
   </hh.sequence>
 </hh.module>
 

@@ -6,7 +6,8 @@ var prg =
     <hh.module>
       <hh.outputsignal name="O"/>
       <hh.loop>
-	<hh.localsignal name="L">
+	<hh.let>
+	  <hh.signal name="L"/>
 	  <hh.parallel>
 	    <hh.emit signal="L"/>
 	    <hh.parallel>
@@ -15,7 +16,7 @@ var prg =
 	      </hh.present>
 	    </hh.parallel>
 	  </hh.parallel>
-	</hh.localsignal>
+	</hh.let>
 	<hh.pause/>
       </hh.loop>
     </hh.module>;

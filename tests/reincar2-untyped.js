@@ -14,26 +14,28 @@ var prg =
       <hh.loop>
 	<hh.parallel>
 
-	  <hh.localsignal name="M"
-			  init_value=5 >
+	  <hh.let>
+	    <hh.signal name="M" init_value=5 />
 	    <hh.emit signal="J" arg=${hh.value("M")}/>
 	    <hh.pause/>
 	    <hh.emit signal="M" arg=5 />
-	  </hh.localsignal>
+	  </hh.let>
 
-	  <hh.localsignal name="N">
+	  <hh.let>
+	    <hh.signal name="N"/>
 	    <hh.present signal="N">
 	      <hh.emit signal="I"/>
 	    </hh.present>
 	    <hh.pause/>
 	    <hh.emit signal="N"/>
-	  </hh.localsignal>
+	  </hh.let>
 
-	  <hh.localsignal name="L" valued >
+	  <hh.let>
+	    <hh.signal name="L" valued />
 	    <hh.emit signal="L" arg=4 />
 	    <hh.pause/>
 	    <hh.emit signal="S" func=${plus} arg0=${hh.value("L")} arg1=5/>
-	  </hh.localsignal>
+	  </hh.let>
 
 	</hh.parallel>
       </hh.loop>

@@ -6,7 +6,8 @@ var prg = <hh.module>
   <hh.inputsignal name="A"/>
   <hh.outputsignal name="T"/>
   <hh.outputsignal name="V"/>
-  <hh.localsignal name="S">
+  <hh.let>
+    <hh.signal name="S"/>
     <hh.loop>
       <hh.abort signal="A">
 	<hh.sequence>
@@ -19,7 +20,7 @@ var prg = <hh.module>
 	</hh.sequence>
       </hh.abort>
     </hh.loop>
-  </hh.localsignal>
+  </hh.let>
 </hh.module>
 
 exports.prg = new hh.ReactiveMachine(prg, "example4");

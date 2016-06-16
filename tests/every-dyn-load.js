@@ -25,7 +25,8 @@ function make_atom3(i) {
 
 const prg =
       <hh.module>
-	<hh.localsignal name="GO">
+	<hh.let>
+	  <hh.signal name="GO"/>
 	  <hh.parallel id="par">
 	    <hh.loop>
 	      <hh.emit signal="GO"/>
@@ -35,7 +36,7 @@ const prg =
 	    ${make_atom(0)}
 	    ${make_atom2(4)}
 	  </hh.parallel>
-	</hh.localsignal>
+	</hh.let>
       </hh.module>;
 
 var machine = new hh.ReactiveMachine(prg, "");

@@ -9,7 +9,8 @@ var prg = <hh.module>
   <hh.outputsignal name="not_S1_and_not_S2"/>
   <hh.loop>
     <hh.trap name="T1">
-      <hh.localsignal name="S1">
+      <hh.let>
+	<hh.signal name="S1"/>
 	<hh.parallel>
 	  <hh.sequence>
 	    <hh.pause/>
@@ -18,7 +19,8 @@ var prg = <hh.module>
 	  </hh.sequence>
 	  <hh.loop>
 	    <hh.trap name="T2">
-	      <hh.localsignal name="S2">
+	      <hh.let>
+		<hh.signal name="S2"/>
 		<hh.parallel>
 		  <hh.sequence>
 		    <hh.pause/>
@@ -41,11 +43,11 @@ var prg = <hh.module>
 		    </hh.sequence>
 		  </hh.loop>
 		</hh.parallel>
-	      </hh.localsignal>
+	      </hh.let>
 	    </hh.trap>
 	  </hh.loop>
 	</hh.parallel>
-      </hh.localsignal>
+      </hh.let>
     </hh.trap>
   </hh.loop>
 </hh.module>;

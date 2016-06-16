@@ -5,7 +5,8 @@ var hh = require("hiphop");
 var prg = <hh.module>
   <hh.outputsignal name="O"/>
   <hh.loop>
-    <hh.localsignal name="S1">
+    <hh.let>
+      <hh.signal name="S1"/>
       <hh.sequence>
 	<hh.present signal="S1">
 	  <hh.emit signal="O"/>
@@ -13,7 +14,7 @@ var prg = <hh.module>
 	<hh.pause/>
 	<hh.emit signal="S1"/>
       </hh.sequence>
-    </hh.localsignal>
+    </hh.let>
   </hh.loop>
 </hh.module>;
 

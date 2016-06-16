@@ -6,10 +6,11 @@ try {
    var prg = <hh.module>
      <hh.outputsignal name="O" valued/>
      <hh.loop>
-       <hh.localsignal name="L" valued>
+       <hh.let>
+	 <hh.signal name="L" valued/>
 	 <hh.emit signal="L" arg=${"foo bar"}/>
 	 <hh.emit signal="O" arg=${hh.value("L")}/>
-       </hh.localsignal>
+       </hh.let>
      </hh.loop>
    </hh.module>;
 

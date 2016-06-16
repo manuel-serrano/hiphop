@@ -209,27 +209,22 @@ function prims( G ) {
    }
       
    return <hh.Module>
-     <hh.localsignal name="go">
-       <hh.localsignal name="kill"
-		       reinit_func=${reinit}
-		       combine_with=${combine} >
-	 <hh.localsignal name="number"
-			 reinit_func=${reinit}
-			 combine_with=${combine} >
-	   <hh.parallel id="numbers">
-	     <hh.loop>
-	       <hh.atom func=${function() {
-		  G.ctx.clearRect( 0, 0, G.width, G.height )}}/>
-	       <hh.emit signal="go"/>
-	       <hh.pause/>
-	     </hh.loop>
+     <hh.let>
+       <hh.signal name="go"/>
+       <hh.signal name="kill" reinit_func=${reinit} combine_with=${combine} />
+       <hh.signal name="number" reinit_func=${reinit} combine_with=${combine} />
+       <hh.parallel id="numbers">
+	 <hh.loop>
+	   <hh.atom func=${function() {
+	      G.ctx.clearRect( 0, 0, G.width, G.height )}}/>
+           <hh.emit signal="go"/>
+           <hh.pause/>
+         </hh.loop>
 
-	     <number G=${G}/>
-		     
-	   </hh.parallel>
-	 </hh.localsignal>
-       </hh.localsignal>
-     </hh.localsignal>
+         <number G=${G}/>
+
+       </hh.parallel>
+     </hh.let>
    </hh.Module>;
 }
 

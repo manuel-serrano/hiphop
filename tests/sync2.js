@@ -6,7 +6,8 @@ const hh = require("hiphop");
 const prg =
       <hh.module>
 	<hh.outputsignal name="O"/>
-	<hh.localsignal name="L">
+	<hh.let>
+	  <hh.signal name="L"/>
 	  <hh.parallel>
 
 	    <hh.loop>
@@ -21,7 +22,7 @@ const prg =
 	    </hh.loop>
 
 	  </hh.parallel>
-	</hh.localsignal>
+	</hh.let>
       </hh.module>;
 
 const machine = new hh.ReactiveMachine(prg, "sync2");

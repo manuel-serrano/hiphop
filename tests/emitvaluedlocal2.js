@@ -9,10 +9,11 @@ function sum(arg1, arg2) {
 var prg = <hh.module>
   <hh.outputsignal name="O" valued/>
   <hh.loop>
-    <hh.localsignal name="S"  init_value=1 >
+    <hh.let>
+      <hh.signal name="S"  init_value=1 />
       <hh.emit signal="S" func=${sum} arg0=${hh.preValue("S")} arg1=1/>
       <hh.emit signal="O" arg=${hh.value("S")}/>
-    </hh.localsignal>
+    </hh.let>
     <hh.pause/>
   </hh.loop>
 </hh.module>

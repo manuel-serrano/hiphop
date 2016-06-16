@@ -3,8 +3,17 @@
 var hh = require("hiphop");
 
 try {
-   <hh.localsignal signal="foo">
-   </hh.localsignal>
+   <hh.let>
+   </hh.let>
+} catch (e) {
+   console.log(e.message);
+}
+
+
+try {
+   <hh.let>
+     <hh.signal name="foo"/>
+   </hh.let>
 } catch (e) {
    console.log(e.message);
 }
