@@ -7,7 +7,7 @@ fi
 space="     "
 dir=$(pwd)
 hop="/usr/local/bin/$HOPBIN"
-hop_opt="--no-server"
+hop_opt="--no-server --no-sofile"
 CC=/usr/bin/gcc
 batchfile=/tmp/batch.js
 output_hop=/tmp/TEST-HOPJS.out
