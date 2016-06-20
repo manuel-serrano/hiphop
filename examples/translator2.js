@@ -56,12 +56,12 @@ service translator2() {
 
 	     m =  new hh.ReactiveMachine(
 		<hh.module>
-		  <hh.inputsignal name="in" combine_with=${(a, b) => b}/>
-		  <hh.inputsignal name="langpair" init_value=${langpair.value}/>
-		  <hh.outputsignal name="trad" init_value="??"/>
-		  <hh.outputsignal name="tradColor" init_value="green"/>
-                  <hh.outputsignal name="tradReverse" init_value="??"/>
-		  <hh.outputsignal name="tradReverseColor" init_value="green"/>
+		  <hh.inputsignal name="in" combine=${(a, b) => b}/>
+		  <hh.inputsignal name="langpair" value=${langpair.value}/>
+		  <hh.outputsignal name="trad" value="??"/>
+		  <hh.outputsignal name="tradColor" value="green"/>
+                  <hh.outputsignal name="tradReverse" value="??"/>
+		  <hh.outputsignal name="tradReverseColor" value="green"/>
 
 		  <hh.await immediate signal="in"/>
 		  <hh.loopeach signal="langpair">

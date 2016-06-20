@@ -8,7 +8,7 @@ var prg = <hh.module>
   <hh.let>
     <hh.signal name="S"/>
     <hh.loop>
-      <hh.present test_pre signal="S">
+      <hh.present testPre signal="S">
 	<hh.emit signal="O1"/>
 	<hh.emit signal="O2"/>
       </hh.present>

@@ -4,7 +4,7 @@ const hh = require("hiphop")
 
 const prg =
     <hh.module>
-      <hh.outputsignal name="A" combine_with=${(x, y) => x + y}/>
+      <hh.outputsignal name="A" combine=${(x, y) => x + y}/>
 
       <hh.parallel>
 	<hh.loop>

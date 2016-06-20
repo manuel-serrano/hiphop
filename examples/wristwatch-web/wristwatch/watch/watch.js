@@ -24,7 +24,7 @@ var WatchModule =
       <hh.inputsignal name="TOGGLE_24H_MODE_COMMAND"/>
     
       <hh.outputsignal name="WATCH_TIME"
-		       init_value=${WD.InitialWatchTime}/>
+		       value=${WD.InitialWatchTime}/>
 
       // set-time-related IOs
 

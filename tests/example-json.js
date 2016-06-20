@@ -49,7 +49,7 @@ var prg =
       <hh.inputsignal name="I"/>
       <hh.inputsignal name="TIN" valued />
       <hh.outputsignal name="Time"
-			init_value=${WatchTime}/>
+			value=${WatchTime}/>
       <hh.loop>
 	<hh.emit signal="Time"
 		  func=${IncrementTimeInPlace}

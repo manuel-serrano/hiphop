@@ -14,7 +14,7 @@ var prg = <hh.module>
   <hh.loop>
     <hh.trap name="T1">
       <hh.let>
-	<hh.signal name="S1" init_value=10 />
+	<hh.signal name="S1" value=10 />
 	<hh.parallel>
 	  <hh.sequence>
 	    <hh.pause/>
@@ -24,7 +24,7 @@ var prg = <hh.module>
 	  <hh.loop>
 	    <hh.trap name="T2">
 	      <hh.let>
-		<hh.signal name="S2" init_value=20 />
+		<hh.signal name="S2" value=20 />
 		<hh.parallel>
 		  <hh.sequence>
 		    <hh.pause/>

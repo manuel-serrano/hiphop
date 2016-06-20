@@ -15,7 +15,7 @@ var prg =
 	<hh.parallel>
 
 	  <hh.let>
-	    <hh.signal name="M" init_value=5/>
+	    <hh.signal name="M" value=5/>
 	    <hh.emit signal="J" arg=${hh.value("M")}/>
 	    <hh.pause/>
 	    <hh.emit signal="M" arg=5 />

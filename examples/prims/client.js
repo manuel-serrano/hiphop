@@ -211,8 +211,8 @@ function prims( G ) {
    return <hh.Module>
      <hh.let>
        <hh.signal name="go"/>
-       <hh.signal name="kill" reinit_func=${reinit} combine_with=${combine} />
-       <hh.signal name="number" reinit_func=${reinit} combine_with=${combine} />
+       <hh.signal name="kill" reset=${reinit} combine=${combine} />
+       <hh.signal name="number" reset=${reinit} combine=${combine} />
        <hh.parallel id="numbers">
 	 <hh.loop>
 	   <hh.atom func=${function() {

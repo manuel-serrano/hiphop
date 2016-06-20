@@ -23,9 +23,9 @@ const exec_interface = {
 
 const prg =
     <hh.module>
-      <hh.inputsignal name="IN" combine_with=${(a, b) => b}/>
-      <hh.outputsignal name="OUT1" init_value="1|"/>
-      <hh.outputsignal name="OUT2" init_value="2|"/>
+      <hh.inputsignal name="IN" combine=${(a, b) => b}/>
+      <hh.outputsignal name="OUT1" value="1|"/>
+      <hh.outputsignal name="OUT2" value="2|"/>
 
       <hh.loop>
 	<hh.await immediate signal="IN"/>

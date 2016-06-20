@@ -11,7 +11,7 @@ var prg = <hh.module>
   <hh.loop>
     <hh.sequence>
       <hh.let>
-	<hh.signal name="S" init_value=1/>
+	<hh.signal name="S" value=1/>
 	<hh.sequence>
 	  <hh.emit signal="S" func=${sum}
 		   arg0=${hh.preValue("S")}

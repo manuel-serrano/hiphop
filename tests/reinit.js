@@ -5,12 +5,12 @@ const hh = require("hiphop");
 const prg =
       <hh.module>
 	<hh.outputsignal name="AUX"
-			 init_value=1
-			 reinit_func=${function() {return 1}}
-			 combine_with=${function(a, b) { return (a * b) + 1}}/>
+			 value=1
+			 reset=${function() {return 1}}
+			 combine=${function(a, b) { return (a * b) + 1}}/>
 	<hh.outputsignal name="O"
-			 reinit_func=${function() {return 2}}
-			 combine_with=${function(a, b) {return a * b}}/>
+			 reset=${function() {return 2}}
+			 combine=${function(a, b) {return a * b}}/>
 	<hh.emit signal="O" arg=5/>
 	<hh.emit signal="AUX" arg=245/>
 	<hh.pause/>

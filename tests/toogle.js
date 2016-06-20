@@ -15,11 +15,11 @@ function plus(x, y) {
 }
 
 var prg = <hh.module>
-  <hh.outputsignal name="SEQ" init_value=1 combine_with=${plus}/>
-  <hh.outputsignal name="STATE1"  init_value=false
-		    combine_with=${bool_or}/>
-  <hh.outputsignal name="STATE2" init_value=false
-		    combine_with=${bool_and}/>
+  <hh.outputsignal name="SEQ" value=1 combine=${plus}/>
+  <hh.outputsignal name="STATE1"  value=false
+		    combine=${bool_or}/>
+  <hh.outputsignal name="STATE2" value=false
+		    combine=${bool_and}/>
   <hh.outputsignal name="S"/>
   <hh.outputsignal name="TOOGLE" valued/>
   <hh.loop>
@@ -32,7 +32,7 @@ var prg = <hh.module>
       <hh.emit signal="STATE1" arg=false />
       <hh.emit signal="STATE2" arg=true />
       <hh.emit signal="STATE2" arg=false />
-      <hh.present test_pre signal="S">
+      <hh.present testPre signal="S">
 	<hh.emit signal="TOOGLE" arg=true />
 	<hh.sequence>
 	  <hh.emit signal="TOOGLE" arg=false />

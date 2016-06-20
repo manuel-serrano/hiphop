@@ -5,7 +5,7 @@ var hh = require("hiphop");
 var prg =
     <hh.module>
       <hh.outputsignal name="I" valued/>
-      <hh.outputsignal name="O"  init_value=5 />
+      <hh.outputsignal name="O"  value=5 />
       <hh.outputsignal name="U" valued/>
       <hh.loop>
 	<hh.emit signal="I" arg=3 />

@@ -45,11 +45,11 @@ service translator() {
 
 	     m =  new hh.ReactiveMachine(
 		<hh.module>
-		  <hh.inputsignal name="fr-in" combine_with=${(a, b) => b}/>
-		  <hh.outputsignal name="en-out" init_value="??"/>
-		  <hh.outputsignal name="en-color" init_value="green"/>
-                  <hh.outputsignal name="es-out" init_value="Â¿?"/>
-		  <hh.outputsignal name="es-color" init_value="green"/>
+		  <hh.inputsignal name="fr-in" combine=${(a, b) => b}/>
+		  <hh.outputsignal name="en-out" value="??"/>
+		  <hh.outputsignal name="en-color" value="green"/>
+                  <hh.outputsignal name="es-out" value="Â¿?"/>
+		  <hh.outputsignal name="es-color" value="green"/>
 
 		  <hh.loopeach signal="fr-in">
 		    <hh.parallel>

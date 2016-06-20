@@ -8,7 +8,7 @@ var prg =
     <hh.module>
       <hh.inputsignal name="I"/>
       <hh.inputsignal name="R"/>
-      <hh.outputsignal name="O" init_value=0 />
+      <hh.outputsignal name="O" value=0 />
       <hh.loop>
 	<hh.abort signal="R">
           <hh.sequence>

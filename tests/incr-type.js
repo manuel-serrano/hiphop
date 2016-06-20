@@ -46,7 +46,7 @@ var hh = require("hiphop");
 var prg =
     <hh.module>
       <hh.inputsignal name="I"/>
-      <hh.outputsignal name="Time" init_value=${WatchTime}/>
+      <hh.outputsignal name="Time" value=${WatchTime}/>
       <hh.loop>
 	<hh.sequence>
 	  <hh.emit signal="Time"
