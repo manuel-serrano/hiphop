@@ -49,8 +49,8 @@ never terminate. However, it can be preempted (see preemption section).
 
 Attributes and children of the node:
 
-* `signal\_name`: a string that represents the signal to test;
-* `test\_pre`: test presence of the signal at the previous instant;
+* `signal`: a string that represents the signal to test;
+* `pre`: test presence of the signal at the previous instant;
 * `not` (optional): logic negation of the result of the test;
 * one child (then branch) or two (then and else branch).
 
@@ -84,7 +84,7 @@ ${ doc.include("../tests/if1.js", 5, 21) }
 
 Attributes of the node:
 
-* `signal\_name`: a string that represents the signal to emit;
+* `signal`: a string that represents the signal to emit;
 * if the signal is valued, an optional standard expression.
 
 This statement immediately set the signal present. If an expression is
@@ -107,7 +107,7 @@ all emitters has been executed.
 
 Attributes of the node:
 
-* `signal\_name`: a string that represents the signal to emit;
+* `signal`: a string that represents the signal to emit;
 * if the signal is valued, an optional standard expression.
 
 This statement is the same of Emit, but never terminates, and will
@@ -134,7 +134,7 @@ in other words, without pause), which is forbidden by the language.
 
 Attributes and children of the node:
 
-* __Either__ `signal\_name`: a string that represents the signal to
+* __Either__ `signal`: a string that represents the signal to
   emit; and an optional a counter expression;
 * __or__, a standard expression;
 * takes at least one child.
@@ -148,7 +148,7 @@ instantaneous loop, so the body can instantaneously terminates.
 
 Attributes and children of the node:
 
-* __Either__ `signal\_name`: a string that represents the signal to
+* __Either__ `signal`: a string that represents the signal to
   emit; and an optional a counter expression;
 * __or__, a standard expression;
 * takes at least one child.
@@ -164,7 +164,7 @@ the guard before starting its body.
 
 Attribute and children of the node:
 
-* `trap\_name`: a string that represents the trap;
+* `name`: a string that represents the trap;
 * takes at least one child.
 
 A trap defines a scope that can be exited at a specific point. The
@@ -176,7 +176,7 @@ trap.
 
 Attribute of the node:
 
-* `trap\_name`: a string that represents the name of the trap to exit.
+* `trap`: a string that represents the name of the trap to exit.
 
 The exit point of a trap; it must be enclosed in the trap to
 exit. This instruction immediately terminate and jump to the following
@@ -194,7 +194,7 @@ ${ doc.include("../tests/trap.js", 6, 20) }
 
 Attributes and children of the node:
 
-* __Either__ `signal\_name`: a string that represents the signal to
+* __Either__ `signal`: a string that represents the signal to
   emit; and an optional counter expression;
 * __or__ a standard expression;
 * takes at least one child.
@@ -207,7 +207,7 @@ and terminates.
 
 Attributes and children of the node:
 
-* __Either__ `signal\_name`: a string that represents the signal to
+* __Either__ `signal`: a string that represents the signal to
   emit; and an optional counter expression;
 * __or__ a standard expression;
 * takes at least one child.
@@ -221,7 +221,7 @@ instant which made the guard true.
 
 Attributes and children of the node:
 
-* __Either__ `signal\_name`: a string that represents the signal to
+* __Either__ `signal`: a string that represents the signal to
   emit;
 * __or__ a standard expression;
 * takes at least one child.
@@ -240,7 +240,7 @@ preempts its body, but makes a pause.
 
 Attributes of the node:
 
-* `signal\_name`: a string that represents the signal to emit;
+* `signal`: a string that represents the signal to emit;
 * `immediate` (optional)
 * an optional counter expression.
 
@@ -338,6 +338,47 @@ value is meaningless.
 ### <hiphop.exec/> ###
 [:@glyphicon glyphicon-tag tag]
 
+Attributes of the node:
+
+* `interface`: a JavaScript object;
+* `signal` (optional): bind the (optional) return value of an exec to
+  a signal;
+* `arg` (only if exactly one argument): value given to `start` when
+  it's called;
+* `argX` (`X` from 0 to N, increment by 1, when more that one
+  argument): values given to the `start` when it's called;
+
+The JavaScript object referenced by `interface` must implement the
+following functions :
+
+* `start`: function called when control reaches the exec statement;
+* `susp` (optional): function called when the exec statement is
+  suspended;
+* `kill` (optional): function called when the exec statement is
+  killed;
+* `res` (optional): function called when the exec statement is
+  resumed.
+
+This object can also contains a field `autoreact` which following
+values:
+
+* `hiphop.ANY`: the reactive machine will automatically trigger a
+  reaction if any exec statement which is alive (started, but not
+  suspended nor killed) that uses this interface terminates;
+* `hiphop.ALL`: the reactive machine will automatically trigger a
+  reaction if all exec statement which are alive (started, but not
+  suspended nor killed) that use this interface terminate;
+* `hiphop.OFF`: the reactive machine will never trigger reaction
+  automatically. Note that it is the same to not defined `autoreact`
+  attribute.
+
+The exec statement immediately call `start` function, with arguments
+if any. The `start` function must return immediately. It usually makes
+an asynchronous call, or spawn a worker. When the work intend to be
+done by the called routine is over, `this.return()` must be called,
+where `this` is the receiver inside `start` function. The function
+`return` can takes a value, that will be set the a signal, if `signal`
+field is defined. When `return` is called, exec terminates.
 
 # Signal declarations
 
@@ -369,16 +410,20 @@ re-emitted).
 Input and output signals are defined at scope of the module, so every
 instructions can access to them, and there are visible on the
 environment via the reactive machine's API. However, Hiphop.js allow
-to create local signal, invisible for the environment. They create a
-scope, and only instructions embodied inside can access them.
+to create local signal, invisible for the global environment.
 
-TODO: explains reincarnation, user point of view
+Local signals must be embedded in a local scope, defined by `<Let>
+... </Let>`. Instructions embedded in this node are the only ones that
+can access to signal also defined in this scope. It must be defined as
+the following :
 
-Declaration of local signal can be anywhere in a Hiphop.js module, for
-instance, the following code create a scope for a local signal `S`:
+* first children must be signal declared in the scope ;
+* others children must be Hiphop.js instructions (or scope).
+
+This example creates a scope for a local signal `S`:
 
 ```hopscript
-${ doc.include("../tests/reincar.js", 9, 15) }
+${ doc.include("../tests/reincar.js", 9, 16) }
 ```
 
 ### Valued signals
@@ -392,7 +437,7 @@ To declare a valued signal, use the regular signal declaration (input,
 output or local), and then add one of the following keyword:
 
 * `valued` tells the signal is valued, and has not initial value;
-* `init\_value=X` tells the signal is valued and initialized with `X` value.
+* `value=X` tells the signal is valued and initialized with `X` value.
 
 There is two kind of valued signal, by default, the signal is
 _single_, that means it can be emitted only once for each instant.
@@ -407,7 +452,7 @@ statement. Then the return value of the function becomes the value of
 the signal. A combination function is given with the following
 keyword:
 
-* `combine\_with`: takes a JavaScript function.
+* `combine`: takes a JavaScript function.
 
 ```hopscript
 ${ doc.include("../tests/value1.js", 6, 13) }
@@ -416,10 +461,10 @@ ${ doc.include("../tests/value1.js", 6, 13) }
 It is possible to automatically reinitialize an combined signal at the
 beginning of each reaction:
 
-* `reinit\_func` takes a JavaScript function, that return a value that
+* `reset` takes a JavaScript function, that return a value that
   initializes the signal.
 
-As `combine\_with` or `reinit\_func` implicitly tells that the signal
+As `combine` or `reset` implicitly tells that the signal
 is valued, `valued` keyword is optional.
 
 # Expressions and guards
@@ -458,12 +503,12 @@ and Atom statement, any other use of expression is as guard.
 
 Attributes that compose a counter expression:
 
-* __Either__ `func\_count` (nested only if zero of more than one
+* __Either__ `funcCount` (nested only if zero of more than one
   argument): a JavaScript function;
-* `arg\_count` (only if exactly one argunent): value given to
-  `func\_count` when its called;
-* `arg\_countX` (`X` from 0 to N, increment by 1, when more that one
-  argument): values given to `func\_count` when its called;
+* `argCount` (only if exactly one argunent): value given to
+  `funcCount` when its called;
+* `argCountX` (`X` from 0 to N, increment by 1, when more that one
+  argument): values given to `funcCount` when its called;
 * __or__ `count`: an integer that represents a temporal guard. This is
   the number of times the signal guard or expression must be true.
 
@@ -570,9 +615,8 @@ Instances of reactive machines provide the following API:
   any DOM element. It will build a dependency between the DOM element
   which contains this value and the Hiphop.js signal. Therefore, at
   the end of each reaction that modified the value of the signal, the
-  DOM element will automatically be updated by the new value. It is
-  some kind of dataflow approach. It can be use only on valued
-  signals.
+  DOM element will automatically be updated by the new value. It can
+  be use only on valued signals.
 
 Callbacks given to `addEventListener` must take exactly one
 argument. This argument is an object containing the following
