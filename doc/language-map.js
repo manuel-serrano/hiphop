@@ -72,9 +72,9 @@ function TERM_CNODE(attrs) {
      <strong>&lt;${attrs.name}</strong>${args.map(function(el, idx, arr) {
 	return el
      })}<strong>&gt;</strong>
-     ${(function() {if (attrs.br) return <br/>})()}
+     ${(function() {if ("br" in attrs) return <br/>})()}
      ${children(arguments)}
-     ${(function() {if (attrs.br) return <br/>})()}
+     ${(function() {if ("br" in attrs) return <br/>})()}
      <strong>&lt;/${attrs.name}&gt;</strong>
    </span>;
 }
@@ -82,9 +82,9 @@ function TERM_CNODE(attrs) {
 function TERM_NODE(attrs) {
    return <span>
      <strong>&lt;${attrs.name} </strong>
-     ${(function() {if (attrs.br) return <br/>})()}
+     ${(function() {if ("br" in attrs) return <br/>})()}
      ${children(arguments)}
-     ${(function() {if (attrs.br) return <br/>})()}
+     ${(function() {if ("br" in attrs) return <br/>})()}
      <strong>/&gt;</strong>
    </span>;
 }
@@ -94,49 +94,49 @@ function TERM(attrs) {
      ${(function() {
 	if (!attrs)
 	   return "";
-	if (attrs.JSFunction)
+	if ("JSFunction" in attrs)
 	   return <span><strong>${attrs.name}</strong>=JSFunction</span>;
-	else if (attrs.JSObject)
+	else if ("JSObject" in attrs)
 	   return <span><strong>${attrs.name}</strong>=JSObject</span>;
-	else if (attrs.JSString)
+	else if ("JSString" in attrs)
 	   return <span><strong>${attrs.name}</strong>=JSString</span>;
-	else if (attrs.JSValue)
+	else if ("JSValue" in attrs)
 	   return <span><strong>${attrs.name}</strong>=JSValue</span>;
-	else if (attrs.JSUInt)
+	else if ("JSUInt" in attrs)
 	   return <span><strong>${attrs.name}</strong>=JSUInt</span>;
-	else if (attrs.HHModule)
+	else if ("HHModule" in attrs)
 	   return <span><strong>${attrs.name}</strong>=HHModule</span>;
-	else if (attrs.JSMapSS)
+	else if ("JSMapSS" in attrs)
 	   return <span><strong>${attrs.name}</strong>=JSMap[JSString, JSString]</span>;
 	else
 	   return <span><strong>${attrs.name}</strong></span>;
      })()}
-     ${(function() {if (attrs && attrs.br) return <br/>})()}
+     ${(function() {if (attrs && "br" in attrs) return <br/>})()}
    </span>
 }
 
 function NTERM(attrs) {
    return <em style=${"font-size:130%;"}>
      ${attrs.name}
-     ${(function() {if (attrs && attrs.br) return <br/>})()}
+     ${(function() {if (attrs && "br" in attrs) return <br/>})()}
    </em>
 }
 
 function OPT(attrs) {
-   let repeat_l = attrs && attrs.repeat ? "{ " : "";
-   let repeat_r = attrs && attrs.repeat ? " }" : "";
+   let repeat_l = attrs && "repeat" in attrs ? "{ " : "";
+   let repeat_r = attrs && "repeat" in attrs ? " }" : "";
 
    return <span>
      [ ${repeat_l}
        ${children(arguments)}
        ${repeat_r} ]
-     ${(function() {if (attrs && attrs.br) return <br/>})()}
+     ${(function() {if (attrs && "br" in attrs) return <br/>})()}
    </span>;
 }
 
 function REPEAT(attrs) {
-   let opt_l = attrs && attrs.opt ? "[ " : "";
-   let opt_r = attrs && attrs.opt ? " ]" : "";
+   let opt_l = attrs && "opt" in attrs ? "[ " : "";
+   let opt_r = attrs && "opt" in attrs ? " ]" : "";
 
    return <span>
       ${"{ "}
@@ -144,7 +144,7 @@ function REPEAT(attrs) {
       ${children(arguments)}
       ${opt_r}
       ${" }"}
-      ${(function() {if (attrs && attrs.br) return <br/>})()}
+      ${(function() {if (attrs && "br" in attrs) return <br/>})()}
    </span>;
 }
 
@@ -168,6 +168,7 @@ exports.langage_map =
 	       "<span style=\"font-size:130%;\"><em>non-terminal</em></span>.",
 	       "[ ] contains optional term.",
 	       "{ } contains repeatable term.",
+	       "( ) disambiguate priority.",
 	       "::= represents an expansion term.")}
      </tr>
 
@@ -261,12 +262,13 @@ exports.langage_map =
 	 <term_node name="Atom">
 	   <term name="func" JSFunction br />
 	   <indent>
-	     <opt><term name="arg" JSValue /></opt> | [ <term name="arg0" JSValue br/>
+	     <opt><term name="arg" JSValue />| ( <term name="arg0" JSValue br/>
 			<indent>
 			  <term name="arg1" JSValue br />
 	     ... <br />
-			  <term name="argN" JSValue /> ]
+			  <term name="argN" JSValue /> )
 			</indent>
+	     </opt>
 	 </indent>
 	 </term_node>
        </td>
@@ -283,9 +285,8 @@ exports.langage_map =
 			 <indent>
 			   <term name="arg1" JSValue br/>
 	     ...<br />
-			   <term name="argN" JSValue />
+			   <term name="argN" JSValue /> )
 			 </indent>
-			 )
 	     </opt>
 	   </indent>
 
@@ -293,7 +294,7 @@ exports.langage_map =
        </td>
        ${comment(true,
 		 "Execution of JavaScript function referenced by <strong>interface.start" +
-		 "</strong>, and wait for terminaison of the routine.")}
+		 "</strong>, and wait for terminaison of the routine by the call to this.return() in start function.")}
      </tr>
 
      <tr>
@@ -488,19 +489,28 @@ exports.langage_map =
 
      <tr>
        <td>
-	 <term_node name="LocalSignal">
+	 <term_cnode name="Let">
 	   <indent>
-	     <term br name="name" JSString />
-	     <opt br><term name="valued" /></opt>
-	     <opt br><term name="combine" JSFunction /></opt>
-	     <opt br><term name="value" JSValue /></opt>
-	     <opt br><term name="reset" JSFunction /></opt>
-	   </indent>
-         </term_node>
+	       <repeat br>
+	          <term_node name="Signal">
+	            <indent>
+	              <term br name="name" JSString />
+	              <opt br><term name="valued" /></opt>
+	              <opt br><term name="combine" JSFunction /></opt>
+	              <opt br><term name="value" JSValue /></opt>
+	              <opt br><term name="reset" JSFunction /></opt>
+	            </indent>
+                  </term_node>
+	       </repeat>
+	       <repeat>
+	         <nterm name="stmt"/>
+	       </repeat>
+	    </indent>
+	 </term_cnode>
        </td>
        ${comment(true,
 		 "Local declaration of a signal.",
-		 "Determines its scope.")}
+		 "<strong>Let</strong> determines scope of local signals.")}
      </tr>
 
      <tr>
@@ -608,7 +618,7 @@ exports.langage_map =
        </td>
        ${comment(true,
 		 "The value of the temporal expression is <strong>argCount</strong>" +
-		 "directly returns without function call.")}
+		 " directly returns without function call.")}
      </tr>
      <tr>
        <td>
