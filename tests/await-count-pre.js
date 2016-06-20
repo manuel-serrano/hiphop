@@ -8,7 +8,7 @@ var prg =
       <hh.outputsignal name="O"/>
       <hh.loop>
 	<hh.sequence>
-	  <hh.await signal="I" count=3 testPre />
+	  <hh.await signal="I" count=3 pre />
 	  <hh.emit signal="O" />
 	</hh.sequence>
       </hh.loop>

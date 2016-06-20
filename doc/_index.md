@@ -24,8 +24,8 @@ var prg =
     <hiphop.InputSignal name="IN"/>
     <hiphop.OutputSignal name="OUT"/>
     <hiphop.Loop>
-      <hiphop.Present signal_name="IN">
-        <hiphop.Emit signal_name="OUT"/>
+      <hiphop.Present signal="IN">
+        <hiphop.Emit signal="OUT"/>
       </hiphop.Present>
       <hiphop.Pause/>
     </hiphop.Loop>

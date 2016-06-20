@@ -29,7 +29,7 @@ var prg = <hh.module>
       <hh.emit signal="STATE1" arg=false />
       <hh.emit signal="STATE2" arg=true />
       <hh.emit signal="STATE2" arg=false />
-      <hh.present testPre signal="S">
+      <hh.present pre signal="S">
 	<hh.emit signal="TOOGLE" arg=true />
 	<hh.sequence>
 	  <hh.emit signal="TOOGLE" arg=false />

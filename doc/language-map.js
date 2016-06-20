@@ -93,9 +93,11 @@ function TERM(attrs) {
    return <span>
      ${(function() {
 	if (!attrs)
-	   "";
+	   return "";
 	if (attrs.JSFunction)
 	   return <span><strong>${attrs.name}</strong>=JSFunction</span>;
+	else if (attrs.JSObject)
+	   return <span><strong>${attrs.name}</strong>=JSObject</span>;
 	else if (attrs.JSString)
 	   return <span><strong>${attrs.name}</strong>=JSString</span>;
 	else if (attrs.JSValue)
@@ -155,6 +157,7 @@ exports.langage_map =
      ${comment(true,
 	       "JSFunction is a reference to any JavaScript function.",
 	       "JSValue is a refernce to any JavaScript value (primitive or objects).",
+	       "JSObject is a reference to a JavaScript object.",
 	       "JSUInt is a JavsScript positive integer.",
 	       "JSString is a JavaScript string.",
 	       "HHModule is a JavaScript object containing an Hiphop.js program code.",
@@ -189,12 +192,12 @@ exports.langage_map =
      <tr>
        <td>
 	 <term_node name="InputSignal">
+	   <term name="name" JSString />
 	   <indent>
-	     <term br name="name" JSString />
 	     <opt br><term name="valued" /></opt>
-	     <opt br><term name="combine_with" JSFunction /></opt>
-	     <opt br><term name="init_value" JSValue /></opt>
-	     <opt br><term name="reinit_func" JSFunction /></opt>
+	     <opt br><term name="combine" JSFunction /></opt>
+	     <opt br><term name="value" JSValue /></opt>
+	     <opt br><term name="reset" JSFunction /></opt>
 	   </indent>
          </term_node>
        </td>
@@ -207,12 +210,13 @@ exports.langage_map =
      <tr>
        <td>
 	 <term_node name="OutputSignal">
+	   <term  name="name" JSString />
 	   <indent>
-	     <term br name="name" JSString />
+	     
 	     <opt br><term name="valued" /></opt>
-	     <opt br><term name="combine_with" JSFunction /></opt>
-	     <opt br><term name="init_value" JSValue /></opt>
-	     <opt br><term name="reinit_func" JSFunction /></opt>
+	     <opt br><term name="combine" JSFunction /></opt>
+	     <opt br><term name="value" JSValue /></opt>
+	     <opt br><term name="reset" JSFunction /></opt>
 	   </indent>
          </term_node>
        </td>
@@ -273,25 +277,23 @@ exports.langage_map =
        <td>
 	 <term_node name="Exec">
 	   <indent>
-	     <term name="func_start" JSFunction br />
-	     <term name="func_kill" JSFunction br />
-	     <term name="func_resume" JSFunction br />
-	     <term name="func_suspend" JSFunction br />
-	     <term name="return_signal_name" JSString br />
-	     <opt ><term name="arg" JSValue /></opt> | [ <term name="arg0" JSValue br/>
+	     <term name="interface" JSObject br />
+	     <opt br><term name="signal" JSString /></opt>
+	     <opt ><term name="arg" JSValue /> | ( <term name="arg0" JSValue br/>
 			 <indent>
 			   <term name="arg1" JSValue br/>
 	     ...<br />
-			   <term name="argN" JSValue /> ]
+			   <term name="argN" JSValue />
 			 </indent>
+			 )
+	     </opt>
 	   </indent>
 
 	 </term_node>
        </td>
        ${comment(true,
-		 "Execution of JavaScript function referenced by <strong>func_start" +
-		 "</strong>, that is not instantaneous by order.",
-		 "Noy yet implemented.")}
+		 "Execution of JavaScript function referenced by <strong>interface.start" +
+		 "</strong>, and wait for terminaison of the routine.")}
      </tr>
 
      <tr>
@@ -467,7 +469,7 @@ exports.langage_map =
        <td>
 	 <term_cnode name="Trap">
 	   <cnode_args>
-	     <term name="trap_name" JSString/>
+	     <term name="name" JSString/>
 	   </cnode_args>
 	   <nterm name="stmt"/>
 	 </term_cnode>
@@ -478,7 +480,7 @@ exports.langage_map =
      <tr>
        <td>
 	 <term_node name="Exit">
-	   <term name="trap_name" JSString/>
+	   <term name="trap" JSString/>
 	 </term_cnode>
        </td>
        ${comment(true, "Raises an exception.")}
@@ -490,9 +492,9 @@ exports.langage_map =
 	   <indent>
 	     <term br name="name" JSString />
 	     <opt br><term name="valued" /></opt>
-	     <opt br><term name="combine_with" JSFunction /></opt>
-	     <opt br><term name="init_value" JSValue /></opt>
-	     <opt br><term name="reinit_func" JSFunction /></opt>
+	     <opt br><term name="combine" JSFunction /></opt>
+	     <opt br><term name="value" JSValue /></opt>
+	     <opt br><term name="reset" JSFunction /></opt>
 	   </indent>
          </term_node>
        </td>
@@ -522,7 +524,7 @@ exports.langage_map =
        <td>
 	 <opt><term name="pre"/></opt>
 	 <opt><term name="immediate"/></opt>
-	 <term name="signal_name" JSString />
+	 <term name="signal" JSString />
        </td>
        ${comment(true,
 		 "Signal guard. Return true if the signal is present.",
@@ -534,7 +536,7 @@ exports.langage_map =
      ${header("Signal emission", "sigemit")}
      <tr>
        <td colspan=2>
-	 <term name="signal_name" JSString />
+	 <term name="signal" JSString />
 	 <opt>
 	   <nterm name="expr"/>
 	 </opt>
@@ -593,43 +595,43 @@ exports.langage_map =
      </tr>
      <tr>
        <td>
-	 <term name="func_count" JSFunction />
+	 <term name="funcCount" JSFunction />
        </td>
        ${comment(true,
 		 "The value of the temporal expression is the return " +
-		 "value of <strong>func_count</strong>, which is called without " +
+		 "value of <strong>funcCount</strong>, which is called without " +
 		 "parameters.")}
      </tr>
      <tr>
        <td>
-	 <term name="arg_count" JSValue />
+	 <term name="argCount" JSValue />
        </td>
        ${comment(true,
-		 "The value of the temporal expression is <strong>arg_count</strong>" +
+		 "The value of the temporal expression is <strong>argCount</strong>" +
 		 "directly returns without function call.")}
      </tr>
      <tr>
        <td>
-	 <term name="func_count" JSFunction /> <term name="arg_count" JSValue />
+	 <term name="funcCount" JSFunction /> <term name="argCount" JSValue />
        </td>
        ${comment(true,
 		 "The value of the temporal expression is the return " +
-		 "value of <strong>func_count</strong>, which is called with " +
-		 "<strong>arg_count</strong> as parameter.")}
+		 "value of <strong>funcCount</strong>, which is called with " +
+		 "<strong>argCount</strong> as parameter.")}
      </tr>
      <tr>
        <td>
-	 <term name="func_count" JSFunction />
+	 <term name="funcCount" JSFunction />
 	 <indent>
-	   <term name="arg_count0" JSValue br/>
-	   <term name="arg_count1" JSValue br/>
+	   <term name="argCount0" JSValue br/>
+	   <term name="argCount1" JSValue br/>
 	   ...<br />
-	   <term name="arg_countN" JSValue />
+	   <term name="argCountN" JSValue />
 	 </indent>
        </td>
        ${comment(true,
 		 "The value of the temporal expression is the return value of " +
-		 "<strong>func_count</strong>, which is called with <em>N</em> " +
+		 "<strong>funcCount</strong>, which is called with <em>N</em> " +
 		 "parameters.")}
      </tr>
    </table>

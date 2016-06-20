@@ -6,7 +6,7 @@ results of reaction on standard output. It started this way:
 
 ```hopscript
 const hh = require("hiphop");
-const prg = <hh.ReactiveMachine> ... </hh.ReactiveMachine>;
+const prg = <hh.Module> ... </hh.Module>;
 var machine = new hh.ReactiveMachine(prg);
 
 hh.batch(machine); // starts the batch interpreter
@@ -42,6 +42,5 @@ in red. The web debugger is automatically updated at each reaction.
 
 # Hack Hiphop.js
 
-* PDF spec hiphop.js
-* TODO: impl. doc in PDF
+* TODO: finish spec. PDF
 * TODO: ReactiveMachine.stats() in PDF
