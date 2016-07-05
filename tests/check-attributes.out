@@ -6,7 +6,4 @@
 *** Missing statements in Let.
 *** SYNTAX ERROR
 *** [LOC DISABLED --- run hop -g to get location]
-*** Unexpected attribute: `sig`
-*** SYNTAX ERROR
-*** [LOC DISABLED --- run hop -g to get location]
-*** Expected attribute: `signal`
+*** `signal` must be specified.

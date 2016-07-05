@@ -18,6 +18,7 @@ try {
    console.log(e.message);
 }
 
+/* TODO: error could be trigger here (sig unexpected) */
 try {
    <hh.emit signal="foo" sig="werr"/>
 } catch (e) {
