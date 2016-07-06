@@ -382,18 +382,25 @@ field is defined. When `return` is called, exec terminates.
 
 # Signal declarations
 
-A Hiphop.js program talks with the environment (a Hop.js program) via
-_signals_. _Input signals_ intents to give information from
-environment to Hiphop.js program, whereas _output signals_ intents to
-give information from Hiphop.js program to the environment.
+### Global signals
 
-Declaration of input or output signal must always be on the top of
-Hiphop.js module:
+Global signals indent to send and received values between the
+environment (JavaScript) and the reactive Hiphop.js program. _Input
+signals_ can be used only to send values from the environment to the
+reactive program, _output signals_ can be used only to send values
+from the reactive program to the environment, and _IO signals_ can do
+both. Global signal emission are instantaneously broadcast throughout
+the whole reactive program, and are visible from any instruction of
+the program.
+
+Declaration of global signal must always be on the top of Hiphop.js
+module:
 
 ```hopscript
 <hiphop.module>
   <hiphop.inputsignal name="I"/>
   <hiphop.outputsignal name="O"/>
+  <hiphop.iosignal name="IO"/>
   <!-- any Hiphop.js statement or local signal declaration -->
 </hiphop.module>
 ```
@@ -407,12 +414,8 @@ re-emitted).
 
 ### Local signals
 
-Input and output signals are defined at scope of the module, so every
-instructions can access to them, and there are visible on the
-environment via the reactive machine's API. However, Hiphop.js allow
-to create local signal, invisible for the global environment.
-
-Local signals must be embedded in a local scope, defined by `<Let>
+Hiphop.js allow to create local signal, invisible for the
+environment. There are defined on a local scope, defined by `<Let>
 ... </Let>`. Instructions embedded in this node are the only ones that
 can access to signal also defined in this scope. It must be defined as
 the following :
@@ -593,18 +596,23 @@ Instances of reactive machines provide the following API:
 * `react()`: method that trigger an immediate reaction of the reactive
   machine, it returns an array of emitted output signals (with a
   possible value);
-* `setInput(signalName, \[, value\])`
-* `inputAndReact(signalName \[, value\])`: method that set the input signal
-  named by string `signalName`, and a possible value given by optional
-  parameter `value`. Then, it trigger a reaction (and has the same
-  return that `react()`).
+* `setInput(signalName \[, value\])`
+* `inputAndReact(signal \[, value\])`: method that set the input
+  signal named by string `signal`, and a possible value given by
+  optional parameter `value`. Then, it trigger a reaction (and has the
+  same return that `react()`). The `signal` parameter can also takes
+  an object that contains at least a `signalName` property, and an
+  optional `signalValue` field. In this case, `value` argument is
+  ignored.
 * `addEventListener(signalName, functionalValue)`: method that map an
   output signal named by string `signalName` to a callback given by
   `functionalValue`. Then, at the end of following reactions, the
   callback will be called it the signal has been emitted. Several
   callbacks can be mapped to a same signal.
-* `removeEventListener(signalName, functionalValue)`: remove a
-  previously added event listener via `addEventListener`.
+* `removeEventListener(signalName \[, functionalValue\])`: remove a
+  previously added event listener via `addEventListener`. If
+  `functionalValue` argument is undefined, all event listener attached to
+  the signal `signalName` are removed.
 * `getElementById(parallelIdentifier)`: returns a parallel node
   corresponding to the given identifier, if exists.
 * `save()`: save and returns the state of the reactive machine (value

@@ -226,6 +226,24 @@ exports.langage_map =
 		 "Has a global scope.")}
      </tr>
 
+     <tr>
+       <td>
+	 <term_node name="IOSignal">
+	   <term  name="name" JSString />
+	   <indent>
+	     
+	     <opt br><term name="valued" /></opt>
+	     <opt br><term name="combine" JSFunction /></opt>
+	     <opt br><term name="value" JSValue /></opt>
+	     <opt br><term name="reset" JSFunction /></opt>
+	   </indent>
+         </term_node>
+       </td>
+       ${comment(true,
+		 "Merge of Input and Output global signal.",
+		 "Has a global scope.")}
+     </tr>
+
      ${header("Statements", "stmt")}
 
      <tr>
