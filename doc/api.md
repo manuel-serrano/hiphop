@@ -135,8 +135,8 @@ in other words, without pause), which is forbidden by the language.
 Attributes and children of the node:
 
 * __Either__ `signal`: a string that represents the signal to
-  emit; and an optional a counter expression;
-* __or__, a standard expression;
+  emit, and an optional counter expression;
+* __or__, a standard expression and an optional counter expression;
 * takes at least one child.
 
 The body of the instruction is instantaneously started, and then
@@ -149,8 +149,8 @@ instantaneous loop, so the body can instantaneously terminates.
 Attributes and children of the node:
 
 * __Either__ `signal`: a string that represents the signal to
-  emit; and an optional a counter expression;
-* __or__, a standard expression;
+  emit, and an optional counter expression;
+* __or__, a standard expression and an optional counter expression;
 * takes at least one child.
 
 As LoopEach, this temporal loop start its body each times the guard is
@@ -195,8 +195,8 @@ ${ doc.include("../tests/trap.js", 6, 20) }
 Attributes and children of the node:
 
 * __Either__ `signal`: a string that represents the signal to
-  emit; and an optional counter expression;
-* __or__ a standard expression;
+  emit, and an optional counter expression;
+* __or__ a standard expression and an optional counter expression;
 * takes at least one child.
 
 This statement immediately preempted its body when its guard is true,
@@ -208,8 +208,8 @@ and terminates.
 Attributes and children of the node:
 
 * __Either__ `signal`: a string that represents the signal to
-  emit; and an optional counter expression;
-* __or__ a standard expression;
+  emit, and an optional counter expression;
+* __or__ a standard expression, and an optional counter expression;
 * takes at least one child.
 
 Like Abort, this instruction makes a preemption of its body. However,
