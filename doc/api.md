@@ -142,7 +142,7 @@ This statement instantaneously emit a signal, but never terminates,
 and will always re-emit the signal on following reactions. The rules
 of Emit statement applies here.
 
-It supports the same attributes that Emit statement.
+It supports the same attributes than Emit statement.
 
 ## Looping
 
@@ -284,6 +284,8 @@ Like Abort, this instruction makes a preemption of its body. However,
 when the guard is true, WeakAbort preempts its body only after the
 instant which made the guard true.
 
+It supports the same attributes than Abort statement.
+
 ### <hiphop.suspend> ###
 [:@glyphicon glyphicon-tag tag]
 
@@ -316,6 +318,32 @@ This statement waits for a signal, and instantaneously terminate in
 the instant that the signal is present. Note that if the signal is
 emitted of the very first reaction of the reactive machine, it will be
 ignored, except if `immediate` keyword is set.
+
+The following example will emit `O` when `I` has been emitted 3 times:
+
+```hopscript
+<hh.await signal="I"/>
+<hh.await signal="I"/>
+<hh.await signal="I"/>
+<hh.emit signal="O"/>
+```
+
+However, because of the `immediate` keyword, the following example
+will emit `O` on the same instant where `I` is emitted :
+
+```hopscript
+<hh.await immediate signal="I"/>
+<hh.await immediate signal="I"/>
+<hh.await immediate signal="I"/>
+<hh.emit signal="O"/>
+```
+
+The following example will waits for the presence of signal `I` an
+aleatory number of times:
+
+```hopscript
+<hh.await signal="I" funcCount=${() => Math.trunc(Math.randrom() * 10)}/>
+```
 
 ### <hiphop.parallel> ###
 [:@glyphicon glyphicon-tag tag]
