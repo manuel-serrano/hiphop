@@ -58,6 +58,15 @@ Attributes and children of the node:
 Tests the presence of a signal, and immediately terminates, giving the
 control to the _then_ or _else_ branch, according to the result of the test.
 
+The following example will emit the signal `T` in the instant where
+the signal `S` is present:
+
+```hopscript
+<hh.present signal="S">
+   <hh.emit signal="T"/>
+</hh.present>
+```
+
 ### <hiphop.if> ###
 [:@glyphicon glyphicon-tag tag]
 
@@ -74,7 +83,7 @@ The following example will emit `O1` if the signal `I1` is present,
 and `O2` if the value of the signal `O2` is superior or equals to 2.
 
 ```hopscript
-${ doc.include("../tests/if1.js", 5, 21) }
+${ doc.include("../tests/if1.js", 12, 17) }
 ```
 
 ## Signal emission
@@ -102,6 +111,25 @@ return value is affected to the signal, according the following rules:
 At instant level, a signal has only one value, which is the value when
 all emitters has been executed.
 
+The following example will instantaneously emit the signal `O`:
+
+```hopscript
+<hh.emit signal="O"/>
+```
+
+The following example will instantaneously emit the signal `O` with value `10`:
+
+```hopscript
+<hh.emit signal="O" arg=10/>
+```
+
+The following example will instantaneously emit the signal `O` with
+value `15`:
+
+```hopscript
+<hh.emit signal="O" arg0=4 arg1=11 func=${(x, y) => x + y}/>
+```
+
 ### <hiphop.sustain/> ###
 [:@glyphicon glyphicon-tag tag]
 
@@ -110,9 +138,11 @@ Attributes of the node:
 * `signal`: a string that represents the signal to emit;
 * if the signal is valued, an optional standard expression.
 
-This statement is the same of Emit, but never terminates, and will
-always re-emit the signal on following reactions. The rules of Emit
-statement applies here.
+This statement instantaneously emit a signal, but never terminates,
+and will always re-emit the signal on following reactions. The rules
+of Emit statement applies here.
+
+It supports the same attributes that Emit statement.
 
 ## Looping
 
@@ -128,6 +158,35 @@ can be preempted.
 Because the loop is instantaneously restarted, ones must take care of
 avoid instantaneous loop (a body that will terminate instantaneously;
 in other words, without pause), which is forbidden by the language.
+
+The following example will emit the signal `O` at each instant:
+
+```hopscript
+<hh.loop>
+   <hh.emit signal="O"/>
+   <hh.pause/>
+</hh.loop>
+```
+
+The following example will emit the signal `O` at each instant that
+the signal `I` is present. The loop isn't instantaneous thanks to the
+Await statement, which is not instantaneous, in the following form:
+
+```hopscript
+<hh.loop>
+   <hh.await signal="I"/>
+   <hh.emit signal="O"/>
+</hh.loop>
+```
+
+However, the following example is not legal, because the loop is
+instantaneous (it will re-loop on the same instant):
+
+```hopscript
+<hh.loop>
+   <hh.emit signal="O"/>
+</hh.loop>
+```
 
 ### <hiphop.loopeach> ###
 [:@glyphicon glyphicon-tag tag]
@@ -182,11 +241,11 @@ The exit point of a trap; it must be enclosed in the trap to
 exit. This instruction immediately terminate and jump to the following
 instruction of the exited trap.
 
-In the following example, the output signal `B` will not be
-emitted, whereas `A` and `C` will be emitted:
+In the following example, the signal `B` will not be emitted, whereas
+`A` and `C` will be emitted:
 
 ```hopscript
-${ doc.include("../tests/trap.js", 6, 20) }
+${ doc.include("../tests/trap.js", 11, 18) }
 ```
 
 ### <hiphop.abort> ###
@@ -201,6 +260,15 @@ Attributes and children of the node:
 
 This statement immediately preempted its body when its guard is true,
 and terminates.
+
+The following example will be preempted and instantaneously terminated
+when the signal `S` was present on the previous instant. As the first
+instruction is to emit `S` and pause, the remain instruction (emit
+`O`) will be preempted on the following instant:
+
+```hopscript
+${doc.include("../tests/abortpre.js", 10, 14)}
+```
 
 ### <hiphop.weakabort> ###
 [:@glyphicon glyphicon-tag tag]
@@ -280,22 +348,27 @@ ambiguous:
 
 ```hopscript
 <hiphop.parallel>
-  <!-- instruction 1 -->
-  <!-- instruction 2 -->
-  <!-- instruction 3 -->
+  <instruction1/>
+  <instruction2/>
+  <instruction3/>
+  ...
+  <instructionN/>
 </hiphop.parallel>
 ```
-Here, there will be three branches executed in parallel. But if the
-instruction 2 and 3 must not be in parallel, using sequence is mandatory:
 
+Here, there will be N branches executed in parallel. But if the
+instruction 2 and 3 must not be in parallel, using sequence is
+mandatory:
 
 ```hopscript
 <hiphop.parallel>
-  <!-- instruction 1 -->
+  <instruction1/>
   <hiphop.sequence>
-    <!-- instruction 2 -->
-    <!-- instruction 3 -->
+    <instruction2/>
+    <instruction3/>
   </hiphop.sequence>
+  ...
+  <instructionN/>
 </hiphop.parallel>
 ```
 ### <hiphop.run/> ###
@@ -334,6 +407,13 @@ takes a standard expression as attribute; however, the `func`
 argument of the expression is mandatory, and its potential return
 value is meaningless.
 
+The following example will instantaneously display `a is 14 and b is foo` :
+
+```hopscript
+<hh.atom arg0=14
+         arg1="foo"
+         func=${(a, b) => console.log("a is", a, "and b is", b)}/>
+```
 
 ### <hiphop.exec/> ###
 [:@glyphicon glyphicon-tag tag]
