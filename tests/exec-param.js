@@ -6,11 +6,10 @@ const prg =
       <hh.module>
 	<hh.inputsignal name="in" combine=${(x, y) => x + y}/>
 	<hh.emit signal="in" arg=5/>
-	<hh.exec arg=${hh.value("in")}
-		 interface=${{start: function(arg) {
-		    console.log("receive " + arg);
-		    this.return()
-		 }}}/>
+	<hh.exec start=${function() {
+	   console.log("receive " + this.value.in);
+	   this.return();
+	}}/>
       </hh.module>
 
 const machine = new hh.ReactiveMachine(prg, "");

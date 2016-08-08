@@ -36,6 +36,6 @@ var machine = new hiphop.ReactiveMachine(prg, "Hello, world!");
 machine.addEventListener("OUT", function(evt) {
 	alert(evt.signalName + "emitted!");
 });
-machine.setInput("IN");
+machine.input("IN");
 machine.react();
 ```

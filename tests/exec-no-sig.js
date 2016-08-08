@@ -2,23 +2,19 @@
 
 const hh = require("hiphop");
 
-const exec_interface = {
-   start: function() {
-      console.log("Oi.");
-      setTimeout(function(self) {
-	 console.log("Oi timeout.");
-	 self.return(5);
-      }, 3000, this);
-   }
-}
-
 const prg =
       <hh.module>
 	<hh.outputsignal name="O"/>
 	<hh.outputsignal name="OT"/>
 	<hh.parallel>
 	  <hh.sequence>
-	    <hh.exec interface=${exec_interface}/>
+	    <hh.exec start=${function() {
+	       console.log("Oi.");
+	       setTimeout(function(self) {
+		  console.log("Oi timeout.");
+		  self.return(5);
+	       }, 3000, this);
+	    }}/>
 	    <hh.emit signal="OT"/>
 	  </hh.sequence>
 	  <hh.emit signal="O"/>

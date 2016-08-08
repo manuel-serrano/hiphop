@@ -2,15 +2,6 @@
 
 const hh = require("hiphop");
 
-const execInterface = {
-   start: function() {
-      setTimeout(function(self) {
-	 self.return();
-      }, 500, this)
-   },
-   autoreact: hh.ANY
-}
-
 const prg =
       <hh.module>
 	<hh.inputsignal name="X" value=1/>
@@ -31,7 +22,11 @@ const prg =
 		<hh.exit trap="T"/>
 	      </hh.if>
 
-	      <hh.exec interface=${execInterface}/>
+	      <hh.exec start=${function() {
+		 setTimeout(function(self) {
+		    self.returnAndReact();
+		 }, 500, this)
+	      }}/>
 
 	      <hh.emit signal="Y"/>
 	      <hh.emit signal="__internal"

@@ -2,19 +2,18 @@
 
 var hh = require("hiphop");
 
-var func = function(arg1, arg2) {
-   console.log("atom works!", arg1, arg2);
-}
-
-var prg = <hh.module>
-  <hh.loop>
-    <hh.let>
-      <hh.signal name="L" valued/>
-      <hh.emit signal="L" arg=${"foo bar"}/>
-      <hh.pause/>
-      <hh.atom func=${func} arg0=1 arg1=${hh.value("L")}/>
-    </hh.let>
-  </hh.loop>
-</hh.module>;
+var prg =
+    <hh.module>
+      <hh.loop>
+	<hh.let>
+	  <hh.signal name="L" valued/>
+	  <hh.emit signal="L" arg=${"foo bar"}/>
+	  <hh.pause/>
+	  ${function() {
+	     console.log("atom works! value of L is", this.value.L);
+	  }}
+	</hh.let>
+      </hh.loop>
+    </hh.module>
 
 exports.prg = new hh.ReactiveMachine(prg, "atom");

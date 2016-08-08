@@ -10,9 +10,9 @@ const prg =
 
 	<hh.await signal="X"/>
 	<hh.every func=${() => true}
-		  argcount0=${hh.value("X")}
-		  argcount1=213
-		  funccount=${(x, y) => x + 5}>
+		  count=${function() {
+		     return this.value.X + 5
+		  }}>
 	  <hh.emit signal="Y"/>
 	</hh.every>
 	<hh.emit signal="Z"/>

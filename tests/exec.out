@@ -4,8 +4,8 @@
 [0]    +--- InputSignal T
 [1]    +--- Parallel
 [1]       +--- Sequence
-[1]          +--- Exec return T
-[1]          +--- Emit OT(?T)
+[1]          +--- Exec
+[1]          +--- Emit OT
 [1]       +--- Emit O
 
 Oi.

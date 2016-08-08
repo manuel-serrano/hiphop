@@ -1,24 +1,24 @@
 [0] +--- Module*
 [0]    +--- InputSignal SAME
 [1]    +--- Sequence
-[1]       +--- Atom (?SAME)
-[1]       +--- Emit SAME(2)
+[1]       +--- Atom
+[1]       +--- Emit SAME
 [1]       +--- Let
 [1]          +--- LocalSignal __LOCAL_0__S1
 [1]             +--- LocalSignal __LOCAL_1__SAME
 [1]                +--- LocalSignal __LOCAL_2__SAME
 [1]                   +--- Sequence
-[1]                      +--- Atom (?__LOCAL_2__SAME)
-[1]                      +--- Atom (?__LOCAL_2__SAME)
+[1]                      +--- Atom
+[1]                      +--- Atom
 [1]                      +--- Let
 [1]                         +--- LocalSignal __LOCAL_3__SAME
 [1]                            +--- Sequence
-[1]                               +--- Atom (?__LOCAL_3__SAME)
+[1]                               +--- Atom
 [1]                               +--- Nothing
-[1]                      +--- Atom (?__LOCAL_2__SAME)
+[1]                      +--- Atom
 [1]                      +--- Nothing
 [1]                      +--- Nothing
-[1]       +--- Atom (?SAME)
+[1]       +--- Atom
 
 1: 2
 before2: 10

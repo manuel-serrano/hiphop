@@ -8,19 +8,6 @@ function inputAndReact(val) {
    console.log("IN(" + val + ") -->", m.inputAndReact("IN", val));
 }
 
-const exec_interface = {
-   start: function(timeout, arg) {
-      if (arg == "LONGWAIT")
-	 timeout = timeout * 3;
-
-      console.log("   exec started", timeout, arg);
-      setTimeout(function(self) {
-	 console.log("   exec returns", timeout, arg);
-	 self.return(arg + "--|" + timeout);
-      }, timeout, this);
-   }
-}
-
 const prg =
     <hh.module>
       <hh.inputsignal name="IN" combine=${(a, b) => b}/>
@@ -33,13 +20,31 @@ const prg =
 	<hh.trap name="trap">
 	  <hh.parallel>
 	    <hh.exec signal="OUT1"
-		     interface=${exec_interface}
-		     arg0=100
-		     arg1=${hh.value("IN")}/>
+		     start=${function start_exec() {
+			let timeout = 100;
+
+			if (this.value.IN == "LONGWAIT")
+			   timeout = timeout * 3;
+
+			console.log("   exec started", timeout, this.value.IN);
+			setTimeout(function(self,v) {
+			   console.log("   exec returns", timeout, v);
+			   self.return(v + "--|" + timeout);
+			}, timeout, this, this.value.IN);
+		     }}/>
 	    <hh.exec signal="OUT2"
-		     interface=${exec_interface}
-		     arg0=200
-		     arg1=${hh.value("IN")}/>
+		     start=${function start_exec() {
+			let timeout = 200;
+
+			if (this.value.IN == "LONGWAIT")
+			   timeout = timeout * 3;
+
+			console.log("   exec started", timeout, this.value.IN);
+			setTimeout(function(self, v) {
+			   console.log("   exec returns", timeout, v);
+			   self.return(v + "--|" + timeout);
+			}, timeout, this, this.value.IN);
+		     }}/>
 	    <hh.sequence>
 	      <hh.await signal="IN"/>
 	      <hh.atom func=${function() {console.log("   will trap")}}/>

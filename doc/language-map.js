@@ -94,8 +94,12 @@ function TERM(attrs) {
      ${(function() {
 	if (!attrs)
 	   return "";
-	if ("JSFunction" in attrs)
-	   return <span><strong>${attrs.name}</strong>=JSFunction</span>;
+	if ("runtime-expr" in attrs)
+	   return <span><strong>${attrs.name}</strong>=<nterm name="runtime-expr"/></span>;
+	else if ("static-expr" in attrs)
+	   return <span><strong>${attrs.name}</strong>=<nterm name="static-expr"/></span>;
+	else if ("runtime-exprORstatic-expr" in attrs)
+	   return <span><strong>${attrs.name}</strong>=(<nterm name="runtime-expr"/>|<nterm name="static-expr"/>)</span>;
 	else if ("JSObject" in attrs)
 	   return <span><strong>${attrs.name}</strong>=JSObject</span>;
 	else if ("JSString" in attrs)
@@ -155,10 +159,7 @@ exports.langage_map =
 
      <tr>
      ${comment(true,
-	       "JSFunction is a reference to any JavaScript function.",
-	       "JSValue is a refernce to any JavaScript value (primitive or objects).",
-	       "JSObject is a reference to a JavaScript object.",
-	       "JSUInt is a JavsScript positive integer.",
+	       "JSExpr is a reference to any JavaScript expression.",
 	       "JSString is a JavaScript string.",
 	       "HHModule is a JavaScript object containing an Hiphop.js program code.",
 	       "JSMap[<em>type</em>, <em>type</em>] is a JavaScript map.")}
@@ -196,9 +197,9 @@ exports.langage_map =
 	   <term name="name" JSString />
 	   <indent>
 	     <opt br><term name="valued" /></opt>
-	     <opt br><term name="combine" JSFunction /></opt>
-	     <opt br><term name="value" JSValue /></opt>
-	     <opt br><term name="reset" JSFunction /></opt>
+	     <opt br><term name="combine" runtime-expr /></opt>
+	     <opt br><term name="value" static-expr /></opt>
+	     <opt br><term name="reset" runtime-expr /></opt>
 	   </indent>
          </term_node>
        </td>
@@ -213,11 +214,10 @@ exports.langage_map =
 	 <term_node name="OutputSignal">
 	   <term  name="name" JSString />
 	   <indent>
-	     
 	     <opt br><term name="valued" /></opt>
-	     <opt br><term name="combine" JSFunction /></opt>
-	     <opt br><term name="value" JSValue /></opt>
-	     <opt br><term name="reset" JSFunction /></opt>
+	     <opt br><term name="combine" runtime-expr /></opt>
+	     <opt br><term name="value" static-expr /></opt>
+	     <opt br><term name="reset" runtime-expr /></opt>
 	   </indent>
          </term_node>
        </td>
@@ -231,11 +231,10 @@ exports.langage_map =
 	 <term_node name="IOSignal">
 	   <term  name="name" JSString />
 	   <indent>
-	     
 	     <opt br><term name="valued" /></opt>
-	     <opt br><term name="combine" JSFunction /></opt>
-	     <opt br><term name="value" JSValue /></opt>
-	     <opt br><term name="reset" JSFunction /></opt>
+	     <opt br><term name="combine" runtime-expr /></opt>
+	     <opt br><term name="value" static-expr /></opt>
+	     <opt br><term name="reset" runtime-expr /></opt>
 	   </indent>
          </term_node>
        </td>
@@ -277,18 +276,7 @@ exports.langage_map =
 
      <tr>
        <td>
-	 <term_node name="Atom">
-	   <term name="func" JSFunction br />
-	   <indent>
-	     <opt><term name="arg" JSValue />| ( <term name="arg0" JSValue br/>
-			<indent>
-			  <term name="arg1" JSValue br />
-	     ... <br />
-			  <term name="argN" JSValue /> )
-			</indent>
-	     </opt>
-	 </indent>
-	 </term_node>
+	 <nterm name="runtime-expr"/>
        </td>
        ${comment(true, "Instantaneous execution of given JavaScript function.")}
      </tr>
@@ -297,22 +285,19 @@ exports.langage_map =
        <td>
 	 <term_node name="Exec">
 	   <indent>
-	     <term name="interface" JSObject br />
+	     <term br name="start" runtime-expr/>
 	     <opt br><term name="signal" JSString /></opt>
-	     <opt ><term name="arg" JSValue /> | ( <term name="arg0" JSValue br/>
-			 <indent>
-			   <term name="arg1" JSValue br/>
-	     ...<br />
-			   <term name="argN" JSValue /> )
-			 </indent>
-	     </opt>
+	     <opt br><term name="kill" runtime-expr /></opt>
+	     <opt br><term name="susp" runtime-expr /></opt>
+	     <opt br><term name="res" runtime-expr /></opt>
 	   </indent>
 
 	 </term_node>
        </td>
        ${comment(true,
-		 "Execution of JavaScript function referenced by <strong>interface.start" +
-		 "</strong>, and wait for terminaison of the routine by the call to this.return() in start function.")}
+		 "Execution of JavaScript function referenced by <strong>start" +
+		 "</strong>, and wait for terminaison of the routine by the call to this.return()" +
+		 " or this.returnAndReact() in start function.")}
      </tr>
 
      <tr>
@@ -368,7 +353,7 @@ exports.langage_map =
 	 <term_cnode name="If">
 	   <cnode_args>
 	     <opt><term name="not"/></opt>
-	     <nterm name=expr/>
+	     <nterm name=runtime-expr/>
 	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt" br/>
@@ -386,7 +371,7 @@ exports.langage_map =
 	 <term_node name="Await">
 	   <nterm name="sig"/>
 	   <opt >
-	     <nterm name="countexpr"/>
+	     <nterm name="count-expr"/>
 	   </opt>
 	 </term_node>
        </td>
@@ -400,8 +385,8 @@ exports.langage_map =
 	 <term_cnode name="Abort">
 	   <cnode_args>
 	     ( <nterm name="sig" />
-	       <opt><nterm name="countexpr"/></opt> )
-	     | <nterm name="expr" />
+	      | <nterm name="runtime-expr" /> )
+		<opt><nterm name="count-expr"/></opt>
 	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt"/>
@@ -418,8 +403,8 @@ exports.langage_map =
 	 <term_cnode name="WeakAbort">
 	   <cnode_args>
 	     ( <nterm name="sig" />
-	       <opt><nterm name="countexpr"/></opt> )
-	     | <nterm name="expr" />
+	      | <nterm name="runtime-expr" /> )
+		<opt><nterm name="count-expr"/></opt>
 	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt"/>
@@ -436,8 +421,8 @@ exports.langage_map =
 	 <term_cnode name="LoopEach">
 	   <cnode_args>
 	     ( <nterm name="sig" />
-	       <opt><nterm name="countexpr"/></opt> )
-	     | <nterm name="expr" />
+	      | <nterm name="runtime-expr" /> )
+		<opt><nterm name="count-expr"/></opt>
 	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt"/>
@@ -454,8 +439,8 @@ exports.langage_map =
 	 <term_cnode name="Every">
 	   <cnode_args>
 	     ( <nterm name="sig" />
-	       <opt><nterm name="countexpr"/></opt> )
-	     | <nterm name="expr" />
+	      | <nterm name="runtime-expr" /> )
+		<opt><nterm name="count-expr"/></opt>
 	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt"/>
@@ -472,7 +457,7 @@ exports.langage_map =
        <td>
 	 <term_cnode name="Suspend">
 	   <cnode_args>
-	     <nterm name="sig" /> | <nterm name="expr" />
+	     <nterm name="sig" /> | <nterm name="runtime-expr" />
 	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt"/>
@@ -514,9 +499,9 @@ exports.langage_map =
 	            <indent>
 	              <term br name="name" JSString />
 	              <opt br><term name="valued" /></opt>
-	              <opt br><term name="combine" JSFunction /></opt>
-	              <opt br><term name="value" JSValue /></opt>
-	              <opt br><term name="reset" JSFunction /></opt>
+	              <opt br><term name="combine" runtime-expr /></opt>
+	              <opt br><term name="value" static-expr /></opt>
+	              <opt br><term name="reset" runtime-expr /></opt>
 	            </indent>
                   </term_node>
 	       </repeat>
@@ -547,6 +532,19 @@ exports.langage_map =
 		 "(keys of the map) to signals of caller module (values of the map).")}
      </tr>
 
+     ${header("Signal emission", "sigemit")}
+     <tr>
+       <td>
+	 <term br name="signal" JSString />
+	 <opt><term name="value" runtime-exprORstatic-expr/></opt>
+       </td>
+       ${comment(true,
+		 "Signal guard. Return true if the signal is present.",
+		 "If <strong>pre</strong> keyword is present, return true if " +
+		 "the signal was present on the previous instant.")}
+
+     </tr>
+
      ${header("Signal guard", "sig")}
      <tr>
        <td>
@@ -561,105 +559,31 @@ exports.langage_map =
 
      </tr>
 
-     ${header("Signal emission", "sigemit")}
+      ${header("Counter expression", "count-expr")}
      <tr>
-       <td colspan=2>
-	 <term name="signal" JSString />
-	 <opt>
-	   <nterm name="expr"/>
-	 </opt>
-       </td>
+       <td><term name="count" runtime-exprORstatic-expr/></td>
+       ${comment(true,
+		 "Define a counter.")}
+
      </tr>
 
-     ${header("Expressions", "expr")}
+     ${header("Runtime expression", "runtime-expr")}
      <tr>
-       <td>
-	 <term name="func" JSFunction />
-       </td>
+       <td>\$\{function() {JSExpr}}</td>
        ${comment(true,
-		 "The value of the expression is the return value of " +
-		 "<strong>func</strong> func call, which is called without parameters.")}
-     </tr>
-     <tr>
-       <td>
-	 <term name="arg" JSValue />
-       </td>
-       ${comment(true,
-		 "The value of the expression is <strong>arg</strong> " +
-		 "(directly returns whithout function call).")}
-     </tr>
-     <tr>
-       <td>
-	 <term name="func" JSFunction /> <term name="arg" JSValue />
-       </td>
-       ${comment(true,
-		 "The value of the expression is the return value of " +
-		 "<strong>func</strong>, which is called with " +
-		 "<strong>arg</strong> as parameter.")}
-     </tr>
-     <tr>
-       <td>
-	 <term name="func" JSFunction />
-	 <indent>
-	   <term name="arg0" JSValue br/>
-	   <term name="arg1" JSValue br/>
-	   ...<br />
-	   <term name="argN" JSValue />
-	 </indent>
-       </td>
-       ${comment(true,
-		 "The value of the expression is the return value of " +
-		 "<strong>func</strong>, which is called with <em>N</em> parameters.")}
+		 "JavaScript expression given by the host language " +
+		 "evaluated during Hiphop.js runtime.")}
+
      </tr>
 
-     ${header("Counter expressions", "countexpr")}
+     ${header("Static expression", "static-expr")}
      <tr>
-       <td>
-	 <term name="count" JSUInt />
-       </td>
+       <td>\$\{JSExpr}</td>
        ${comment(true,
-		 "Temporal guard that count the number of times " +
-		 "the signal gard or expression must be true.")}
+		 "JavaScript expression given by the host language " +
+		 "evaluated during Hiphop.js compile time.")}
+
      </tr>
-     <tr>
-       <td>
-	 <term name="funcCount" JSFunction />
-       </td>
-       ${comment(true,
-		 "The value of the temporal expression is the return " +
-		 "value of <strong>funcCount</strong>, which is called without " +
-		 "parameters.")}
-     </tr>
-     <tr>
-       <td>
-	 <term name="argCount" JSValue />
-       </td>
-       ${comment(true,
-		 "The value of the temporal expression is <strong>argCount</strong>" +
-		 " directly returns without function call.")}
-     </tr>
-     <tr>
-       <td>
-	 <term name="funcCount" JSFunction /> <term name="argCount" JSValue />
-       </td>
-       ${comment(true,
-		 "The value of the temporal expression is the return " +
-		 "value of <strong>funcCount</strong>, which is called with " +
-		 "<strong>argCount</strong> as parameter.")}
-     </tr>
-     <tr>
-       <td>
-	 <term name="funcCount" JSFunction />
-	 <indent>
-	   <term name="argCount0" JSValue br/>
-	   <term name="argCount1" JSValue br/>
-	   ...<br />
-	   <term name="argCountN" JSValue />
-	 </indent>
-       </td>
-       ${comment(true,
-		 "The value of the temporal expression is the return value of " +
-		 "<strong>funcCount</strong>, which is called with <em>N</em> " +
-		 "parameters.")}
-     </tr>
+
+
    </table>

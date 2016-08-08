@@ -72,12 +72,12 @@ the signal `S` is present:
 
 Attributes and children of the node:
 
-* a standard expression;
+* `value`: an expression;
 * `not` (optional): logic negation of the result of the test;
 * takes one child (then branch) or two (then and else branch).
 
-Evaluate the given expression, and immediately gives control to the
-_then_ or _else_ branch, according to the result of the expression.
+Instantaneously evaluate the expression, and gives control to the
+_then_ or _else_ branch.
 
 The following example will emit `O1` if the signal `I1` is present,
 and `O2` if the value of the signal `O2` is superior or equals to 2.
@@ -94,7 +94,7 @@ ${ doc.include("../tests/if1.js", 12, 17) }
 Attributes of the node:
 
 * `signal`: a string that represents the signal to emit;
-* if the signal is valued, an optional standard expression.
+* `value`: an optional expression
 
 This statement immediately set the signal present. If an expression is
 given (and the signal is valued), the expression is evaluated an the
@@ -120,14 +120,14 @@ The following example will instantaneously emit the signal `O`:
 The following example will instantaneously emit the signal `O` with value `10`:
 
 ```hopscript
-<hh.emit signal="O" arg=10/>
+<hh.emit signal="O" value=10/>
 ```
 
 The following example will instantaneously emit the signal `O` with
-value `15`:
+value of a signal `L`:
 
 ```hopscript
-<hh.emit signal="O" arg0=4 arg1=11 func=${(x, y) => x + y}/>
+<hh.emit signal="O" value=${function() {return this.value.L}}/>
 ```
 
 ### <hiphop.sustain/> ###
@@ -136,7 +136,7 @@ value `15`:
 Attributes of the node:
 
 * `signal`: a string that represents the signal to emit;
-* if the signal is valued, an optional standard expression.
+* `value`: an optional expression
 
 This statement instantaneously emit a signal, but never terminates,
 and will always re-emit the signal on following reactions. The rules
@@ -193,10 +193,12 @@ instantaneous (it will re-loop on the same instant):
 
 Attributes and children of the node:
 
-* __Either__ `signal`: a string that represents the signal to
-  emit, and an optional counter expression;
-* __or__, a standard expression and an optional counter expression;
-* takes at least one child.
+* `signal`: a string that represents the signal to emit, and an
+  optional counter expression;
+
+* __OR__ a guard.
+
+* Take at least one child.
 
 The body of the instruction is instantaneously started, and then
 restarted each time the guard is true. This statement can't make
@@ -207,10 +209,12 @@ instantaneous loop, so the body can instantaneously terminates.
 
 Attributes and children of the node:
 
-* __Either__ `signal`: a string that represents the signal to
+* `signal`: a string that represents the signal to
   emit, and an optional counter expression;
-* __or__, a standard expression and an optional counter expression;
-* takes at least one child.
+
+* __OR__ a guard.
+
+* Takes at least one child.
 
 As LoopEach, this temporal loop start its body each times the guard is
 true. However, as the contrary of LoopEach, Every initially waits for
@@ -223,8 +227,8 @@ the guard before starting its body.
 
 Attribute and children of the node:
 
-* `name`: a string that represents the trap;
-* takes at least one child.
+* `name`: a string that represents the trap
+* Takes at least one child.
 
 A trap defines a scope that can be exited at a specific point. The
 scope (body) of the trap is immediately started when control reach the
@@ -253,10 +257,12 @@ ${ doc.include("../tests/trap.js", 11, 18) }
 
 Attributes and children of the node:
 
-* __Either__ `signal`: a string that represents the signal to
+* `signal`: a string that represents the signal to
   emit, and an optional counter expression;
-* __or__ a standard expression and an optional counter expression;
-* takes at least one child.
+
+* __OR__ a guard.
+
+* Takes at least one child.
 
 This statement immediately preempted its body when its guard is true,
 and terminates.
@@ -275,10 +281,12 @@ ${doc.include("../tests/abortpre.js", 10, 14)}
 
 Attributes and children of the node:
 
-* __Either__ `signal`: a string that represents the signal to
+* `signal`: a string that represents the signal to
   emit, and an optional counter expression;
-* __or__ a standard expression, and an optional counter expression;
-* takes at least one child.
+
+* __OR__ a guard.
+
+* Takes at least one child.
 
 Like Abort, this instruction makes a preemption of its body. However,
 when the guard is true, WeakAbort preempts its body only after the
@@ -291,14 +299,16 @@ It supports the same attributes than Abort statement.
 
 Attributes and children of the node:
 
-* __Either__ `signal`: a string that represents the signal to
+* `signal`: a string that represents the signal to
   emit;
-* __or__ a standard expression;
-* takes at least one child.
 
-This instruction immediately preempts its body when its guard is true
-in the instant. In this case, the state (registers) of the body are
-unmodified.
+* __OR__ `value`: an expression.
+
+* Takes at least one child.
+
+This instruction immediately preempts its body when `signal` is
+present, or when `value` evaluation is true in the instant. In this
+case, the state (registers) of the body are unmodified.
 
 Unlike the preemption Abort, Suspend doesn't terminates when it
 preempts its body, but makes a pause.
@@ -311,8 +321,8 @@ preempts its body, but makes a pause.
 Attributes of the node:
 
 * `signal`: a string that represents the signal to emit;
-* `immediate` (optional)
-* an optional counter expression.
+* `immediate` (optional);
+* `counter`: an optional expression.
 
 This statement waits for a signal, and instantaneously terminate in
 the instant that the signal is present. Note that if the signal is
@@ -342,7 +352,7 @@ The following example will waits for the presence of signal `I` an
 aleatory number of times:
 
 ```hopscript
-<hh.await signal="I" funcCount=${() => Math.trunc(Math.randrom() * 10)}/>
+<hh.await signal="I" counter=${function() {Math.trunc(Math.randrom() * 10)}}/>
 ```
 
 ### <hiphop.parallel> ###
@@ -419,46 +429,13 @@ In the following example, the module `run2` calls `m1` :
 ${ doc.include("../tests/run.js", 5, 29) }
 ```
 
-### <hiphop.atom/> ###
-[:@glyphicon glyphicon-tag tag]
-
-Attributes of the node:
-
-* `func`: takes a JavaScript function;
-* `arg` (only if exactly one argunent): value given to `func` when its
-  called;
-* `argX` (`X` from 0 to N, increment by 1, when more that one
-  argument): values given to `func` when its called.
-
-Instantaneously executes a JavaScript function, and terminate. It
-takes a standard expression as attribute; however, the `func`
-argument of the expression is mandatory, and its potential return
-value is meaningless.
-
-The following example will instantaneously display `a is 14 and b is foo` :
-
-```hopscript
-<hh.atom arg0=14
-         arg1="foo"
-         func=${(a, b) => console.log("a is", a, "and b is", b)}/>
-```
-
 ### <hiphop.exec/> ###
 [:@glyphicon glyphicon-tag tag]
 
 Attributes of the node:
 
-* `interface`: a JavaScript object;
 * `signal` (optional): bind the (optional) return value of an exec to
   a signal;
-* `arg` (only if exactly one argument): value given to `start` when
-  it's called;
-* `argX` (`X` from 0 to N, increment by 1, when more that one
-  argument): values given to the `start` when it's called;
-
-The JavaScript object referenced by `interface` must implement the
-following functions :
-
 * `start`: function called when control reaches the exec statement;
 * `susp` (optional): function called when the exec statement is
   suspended;
@@ -467,26 +444,21 @@ following functions :
 * `res` (optional): function called when the exec statement is
   resumed.
 
-This object can also contains a field `autoreact` which following
-values:
+The exec statement immediately call `start` function which must return
+immediately. It usually makes an asynchronous call, or spawn a
+worker. One the asynchronous call, or worker, has finish its work, it
+must notify the runtime by calling one of this terminating functions:
 
-* `hiphop.ANY`: the reactive machine will automatically trigger a
-  reaction if any exec statement which is alive (started, but not
-  suspended nor killed) that uses this interface terminates;
-* `hiphop.ALL`: the reactive machine will automatically trigger a
-  reaction if all exec statement which are alive (started, but not
-  suspended nor killed) that use this interface terminate;
-* `hiphop.OFF`: the reactive machine will never trigger reaction
-  automatically. Note that it is the same to not defined `autoreact`
-  attribute.
+* `this.return()`: will tells the runtime the exec is over.
+* `this.returnAndReact()`: will tells the runtime the exec is over and
+  will trigger an immediate reaction.
 
-The exec statement immediately call `start` function, with arguments
-if any. The `start` function must return immediately. It usually makes
-an asynchronous call, or spawn a worker. When the work intend to be
-done by the called routine is over, `this.return()` must be called,
-where `this` is the receiver inside `start` function. The function
-`return` can takes a value, that will be set the a signal, if `signal`
-field is defined. When `return` is called, exec terminates.
+Exec statement is not instantaneous. It returns on the following
+reaction after one terminating function call.
+
+Note that `this.return()` and `this.returnAndReact()` can take an
+optional value, if `signal` is given. In that case `signal` will be
+instantaneously emitted when exec returns, which the given value.
 
 # Signal declarations
 
@@ -578,133 +550,99 @@ beginning of each reaction:
 As `combine` or `reset` implicitly tells that the signal
 is valued, `valued` keyword is optional.
 
-# Expressions and guards
+# Expression
 
-Expressions are embedded inside several Hiphop.js' nodes as part a
-set of attributes.
+JavaScript expressions can be given to Hiphop.js program, via Hop.js
+constructor `\$\{any-JS-expression}`.
 
-## Standard expressions
+## Functional value expression
 
-Attributes that compose a standard expression:
-
-* `func` (nested only if zero of more than one argument): a JavaScript
-  function;
-* `arg` (only if exactly one argunent): value given to `func` when its
-  called;
-* `argX` (`X` from 0 to N, increment by 1, when more that one
-  argument): values given to `func` when its called.
-
-A standard expressions is a way to compute and provide values
-during a reaction. It can be of different nature:
-
-* a JavaScript value;
-* the value or the presence of a Hiphop.js signal (via signal accessors);
-* the result of evaluation of a JavaScript function (with optional
-  arguments, which can be JavaScript value, of signals value and
-  presence).
-
-Standard expressions can be use to provide values to signals (on
-emission statements), and as guard. The guard is true if the value
-returned by the evaluation of the expression is true, according to
-JavaScript conventions (so, it can be any value different that
-`false`, `null`, `0` or `undefined`). Except for emission statements
-and Atom statement, any other use of expression is as guard.
-
-## Counter expressions
-
-Attributes that compose a counter expression:
-
-* __Either__ `funcCount` (nested only if zero of more than one
-  argument): a JavaScript function;
-* `argCount` (only if exactly one argunent): value given to
-  `funcCount` when its called;
-* `argCountX` (`X` from 0 to N, increment by 1, when more that one
-  argument): values given to `funcCount` when its called;
-* __or__ `count`: an integer that represents a temporal guard. This is
-  the number of times the signal guard or expression must be true.
-
-A counter expression is a Hiphop.js expression used as guard that
-is true after a counter reaches 0. This counter embedded inside
-Hiphop.js runtime. It is initialized each time the instruction
-containing the counter is started, and it is decremented in different
-contexts, according to the instruction.
-
-The initialization value can be an integer, or the value return by an
-expression (evaluated when the instruction is started).
-
-## Signal accessors
-
-Signal accessors allows to get the state or the value of a signal
-inside a Hiphop.js expression. Using theses accessors ensure that the
-Hiphop.js runtime will correctly schedule the access to the signal
-(e.g. read the value only when all emission instruction has been
-executed).
-
-**Warning**: a Hiphop.js signal must be used **only** with expression arguments.
-
-### hiphop.present(signalName) ###
-[:@glyphicon glyphicon-tag tag]
-
-This constructor takes the name of the signal as argument, an return a
-boolean to the expression the presence of the signal during the
-current reaction.
-
-### hiphop.prePresent(signalName) ###
-[:@glyphicon glyphicon-tag tag]
-
-This constructor takes the name of the signal as argument, an return a
-boolean to the expression the presence of the signal during the
-previous reaction.
-
-### hiphop.value(signalName) ###
-[:@glyphicon glyphicon-tag tag]
-
-This constructor takes the name of the signal as argument, an return
-the value of the signal during the current reaction. Note that the
-language forbid to use the current value of a signal to emit itself.
-
-### hiphop.preValue(signalName) ###
-[:@glyphicon glyphicon-tag tag]
-
-This constructor takes the name of the signal as argument, an return
-the value of the signal during the previous reaction.
-
-The following example will emit signal `I` with value `3`, `O` with
-value of `I` (which is `3`), `U` with the value of `O` (which is `3`):
+If the expression is a functional value, it will be evaluated by the
+Hiphop.js runtime. The following pattern must be used:
 
 ```hopscript
-${ doc.include("../tests/valuepre1.js", 6, 16) }
+$\{function() \{ ... \}\}
 ```
 
+In this function, `this` is bound to the signal scope. Therefore,
+signals can be read via the following expressions:
 
-# Runtime & Reactive machines
+* `this.value.SignalName` returns the value of `SignalName` during the
+  instant;
 
-### hiphop.ReactiveMachine ###
-[:@glyphicon glyphicon-tag tag]
+* `this.preValue.SignalName` returns the value of `SignalName` during
+  the previous instant;
 
-A reactive machine is an object that wrap an Hiphop.js module, and
-allow to interact with it. In other word, in instantiate a module to a
-runnable program.
+* `this.present.SignalName` returns a boolean telling if `SignalName`
+  is emitted in the instant;
+
+* `this.prePresent.SignalName` returns a boolean telling if
+  `SignalName` was emitted in the previous instant.
+
+The value returned by the expression is given to Hiphop.js program if
+needed. The following example show an expression used to conditional
+branching test:
 
 ```hopscript
-const hh = require("hiphop");
-
-const prg =
-<hh.module>
-  <!-- Hiphop.js program -->
-<hh.module>
-
-var machine = new hh.ReactiveMachine(prg, "prgName");
-
-machine.react(); // trigger a reaction of the program
+${ doc.include("../tests/if1.js", 6, 20) }
 ```
 
-Instances of reactive machines provide the following API:
+The following example show an expression used to emit a value to a
+signal:
+
+```hopscript
+${ doc.include("../tests/emitvaluedlocal1.js", 6, 18) }
+```
+
+### Atomic expression
+
+If the functional value containing the expression is between Hiphop.js
+instruction, it is then considered as an Atom statement. An atom
+statement is executed instantaneously, can make sides effects, and can
+read signal values as well. The return value is ignored.
+
+Here is an example of use of atomic statement:
+
+```hopscript
+${ doc.include("../tests/atom-exprs.js", 6, 17) }
+```
+
+## Non-functional value expression
+
+If the expression is not a functional value, it is evaluated during
+Hiphop.js compilation. Therefore, the value return by the evaluation
+will never change at Hiphop.js runtime.
+
+## Guard
+
+Any instruction that takes a guard accepts the following attributes:
+
+* `value`: an expression
+
+* `count`: an expression
+
+When the instruction is initially started, `count` expression is
+evaluated and its result is internally kept by Hiphop.js runtime. Each
+times the instruction has control, the `value` expression is
+evaluated. If its result is `true`, the internal counter is
+decremented.
+
+If the internal counter reaches `0`, the guard return `true`, and
+`false` otherwise.
+
+**Warning**: the `count` expression must always return a positive
+integer.
+
+# Runtime & Reactive machine
+
+A reactive machine is an instance of a Hiphop.js program. It provides
+a JavaScript API allowing interactions between imperative world and
+reactive world:
 
 * `react()`: method that trigger an immediate reaction of the reactive
   machine, it returns an array of emitted output signals (with a
   possible value);
-* `setInput(signalName \[, value\])`
+* `input(signalName \[, value\])`
 * `inputAndReact(signal \[, value\])`: method that set the input
   signal named by string `signal`, and a possible value given by
   optional parameter `value`. Then, it trigger a reaction (and has the
@@ -744,56 +682,20 @@ properties:
 * `stopPropagation()` a method that, if called in the callback, will
   inhibit the call of others callback mapped on this signal.
 
-
-# Full examples
-
-## Pure signal example
-
-ABRO is a common reactive program in the synchronous languages
-world. The program waits for a signal `A` and a signal `B` (in
-parallel, so `B` can comes before `A`), and the emit a signal `O`. The
-state of `A` or `B` can be reset via the emission of signal `R` at any
-moment.
+The following example show how is build a reactive machine, and how to
+start a reaction.
 
 ```hopscript
-${ doc.include("../tests/abro.js", 0, 18) }
+const hh = require("hiphop");
+
+const prg =
+   <hh.module>
+     <!-- Hiphop.js program -->
+   <hh.module>
+
+var machine = new hh.ReactiveMachine(prg, "prgName");
+
+machine.react(); // trigger a reaction of the program
 ```
 
-Then, you can define a reactive machine to instantiate the module, and
-bind functions to emission of `O`:
-
-```hopscript
-var machine = new hh.ReactiveMachine(prg, "ABRO");
-
-machine.addEventListener("O", function(evt) {
-   console.log(evt.signalName + " emitted!");
-});
-
-console.log("emit B and react");
-machine.inputAndReact("B");
-console.log("emit A and react");
-machine.inputAndReact("A");
-```
-You will see in the console:
-
-```
-emit B and react
-emit A and react
-O emitted!
-```
-
-## Valued signal example, with combined signal
-
-```hopscript
-${ doc.include("../tests/value1.js", 0, 13) }
-```
-
-On this example, the first `emit` instruction will erase the current
-value of signal `O` and set it to `5`, but will add the value of the
-second emission. So `O` value's will be `15` at the end of reaction.
-
-## More complex valued example
-
-```hopscript
-${ doc.include("../tests/value2.js", 0, 20) }
-```
+Markdown finished at Wed Aug 10 18:10:58

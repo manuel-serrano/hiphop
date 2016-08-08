@@ -2,16 +2,6 @@
 
 const hh = require("hiphop");
 
-const exec_interface = {
-   start: function() {
-      console.log("Oi.");
-      setTimeout(function(self) {
-	 console.log("Oi timeout.");
-	 self.return(5);
-      }, 3000, this);
-   }
-}
-
 const prg =
       <hh.module>
 	<hh.outputsignal name="O"/>
@@ -19,7 +9,13 @@ const prg =
 	<hh.inputsignal name="T" valued/>
 	<hh.parallel>
 	  <hh.sequence>
-	    <hh.exec signal="T" interface=${exec_interface}/>
+	    <hh.exec signal="T" start=${function() {
+	       console.log("Oi.");
+	       setTimeout(function(self) {
+		  console.log("Oi timeout.");
+		  self.return(5);
+	       }, 3000, this);
+	    }}/>
 	    <hh.emit signal="OT" arg=${hh.value("T")}/>
 	  </hh.sequence>
 	  <hh.emit signal="O"/>

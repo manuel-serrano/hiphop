@@ -6,22 +6,6 @@ const hh = require("hiphop");
 
 var glob = 5;
 
-const exec_interface = {
-   start: function() {
-      console.log("Oi.");
-      setTimeout(function(self) {
-	 console.log("Oi timeout.");
-	 self.return(glob++);
-      }, 1000, this);
-   },
-   susp: function() {
-      console.log("suspended.");
-   },
-   res: function() {
-      console.log("resumed.");
-   }
-}
-
 const prg =
       <hh.module>
 
@@ -32,7 +16,16 @@ const prg =
 	<hh.inputsignal name="T" valued/>
 	<hh.parallel>
 	  <hh.suspend signal="S">
-	    <hh.exec signal="T" interface=${exec_interface}/>
+	    <hh.exec signal="T"
+		     start=${function() {
+			console.log("Oi.");
+			setTimeout(function(self) {
+			   console.log("Oi timeout.");
+			   self.return(glob++);
+			}, 1000, this);
+		     }}
+		     susp=${function() {console.log("suspended.");}}
+		     res=${function() {console.log("resumed.");}}/>
 	    <hh.emit signal="OT" arg=${hh.value("T")}/>
 	  </hh.suspend>
 	  <hh.emit signal="O"/>
