@@ -9,6 +9,7 @@ var prg =
       <hh.loopeach signal="I">
 	<hh.emit signal="O"/>
       </hh.loopeach>
-    </hh.module>;
+    </hh.module>
+;
 
 exports.prg = new hh.ReactiveMachine(prg, "loopeach");

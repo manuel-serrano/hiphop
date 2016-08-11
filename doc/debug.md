@@ -40,7 +40,7 @@ interpreter is started, a Hop service is exported to the path
 As pretty printer of the batch, selected instructions will be display
 in red. The web debugger is automatically updated at each reaction.
 
-# Hack Hiphop.js
+<!-- # Hack Hiphop.js -->
 
-* TODO: finish spec. PDF
-* TODO: ReactiveMachine.stats() in PDF
+<!-- * TODO: finish spec. PDF -->
+<!-- * TODO: ReactiveMachine.stats() in PDF -->

@@ -204,6 +204,13 @@ The body of the instruction is instantaneously started, and then
 restarted each time the guard is true. This statement can't make
 instantaneous loop, so the body can instantaneously terminates.
 
+In the following example, `O` is emitted at the first instant, and
+each times `I` is present of the following instant:
+
+```hopscript
+${ doc.include("../tests/loopeach.js", 6, 12) }
+```
+
 ### <hiphop.every> ###
 [:@glyphicon glyphicon-tag tag]
 
@@ -219,6 +226,13 @@ Attributes and children of the node:
 As LoopEach, this temporal loop start its body each times the guard is
 true. However, as the contrary of LoopEach, Every initially waits for
 the guard before starting its body.
+
+In the following example, `O` is not be emitted at the first instant,
+but emitted on the following instant, if `I` is present:
+
+```hopscript
+${ doc.include("../tests/every1.js", 6, 12) }
+```
 
 ## Preemption
 
@@ -459,6 +473,13 @@ reaction after one terminating function call.
 Note that `this.return()` and `this.returnAndReact()` can take an
 optional value, if `signal` is given. In that case `signal` will be
 instantaneously emitted when exec returns, which the given value.
+
+The following example emit the signal `O` (with value `5`) 3 seconds
+after the reaction:
+
+```hopscript
+${doc.include("../tests/exec2.js", 6, 13)}
+```
 
 # Signal declarations
 

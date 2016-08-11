@@ -2,6 +2,7 @@ ${ var doc = require( "hopdoc" ) }
 ${ var config = require( hop.config ) }
 ${ var xml = require( config.docDir + "/xml.js" ) }
 ${ var cfg = require( "./doc.json" ) }
+${ var dockerurl = cfg.urlbase + "docker-hop.tgz" }
 
 ## License ##
 
@@ -19,7 +20,7 @@ This is the file you should download if you want to get HipHop.js
        class="success"
        title="Stable"
        icon="glyphicon-download"
-       href=${cfg.urlbase + "/hiphopjs-" + cfg.version + ".tar.gz"}/>
+       href=${cfg.urlbase + "hiphopjs-" + cfg.version + ".tar.gz"}/>
   </div>
 </div>}
 
@@ -36,3 +37,25 @@ Move the Hiphop.js directory inside the node path, for instance, `$HOME/.node\_m
 Hop.js can be forked at
 
 ${<a href=${cfg.github}>${cfg.github}</a>}
+
+## Docker ##
+
+A Dockerfile that builds a functional Hop.js runtime with Hiphop.js
+installed is [availible](${dockerurl}).
+
+Docker installation procedure:
+
+* `wget ${dockerurl}`
+
+* `tar xf docker-hop.tgz`
+
+* `cd dockerfile-hop; docker build -t hop .`
+
+Then, let's consider that `$HOME/myApp` is a directory containing your
+Hop.js application, and the file `main.js` the entry point,
+implementing Hop.js service `myService`.
+
+* `docker run -d -p 8080:8080 -v $HOME/myApp:/app hop /app/main.js`
+
+* Open your browser in the host system, and go to
+  `http://localhost:8080/hop/myService`.
