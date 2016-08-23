@@ -13,7 +13,7 @@ var prg = <hh.module>
 	  <hh.sequence>
 	    <hh.emit signal="O"/>
 	    <hh.pause/>
-	  </hh.requence>
+	  </hh.sequence>
 	</hh.loop>
       </hh.abort>
       <hh.sequence>

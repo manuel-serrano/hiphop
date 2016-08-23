@@ -6,7 +6,7 @@ const fs = require("fs");
 function make_atom(i) {
    return <hh.loopeach signal="GO">
      <hh.atom func=${function() {console.log("branch", i)}}/>
-   </hh.loop>;
+   </hh.loopeach>;
 }
 
 function make_atom2(i) {

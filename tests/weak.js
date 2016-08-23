@@ -14,7 +14,7 @@ var m =
 	  <hh.pause/>
 	  <hh.emit signal="W"/>
 	</hh.loop>
-      </hh.abort>
+      </hh.weakabort>
       <hh.emit signal="F"/>
     </hh.module>
 

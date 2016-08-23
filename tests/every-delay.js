@@ -9,6 +9,6 @@ var prg =
       <hh.every count=2 signal="I">
 	<hh.emit signal="O"/>
       </hh.every>
-    </hh.reactivemachine>;
+    </hh.module>;
 
 exports.prg = new hh.ReactiveMachine(prg, "everydelay");
