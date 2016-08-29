@@ -20,39 +20,33 @@ service translator2() {
 
 	     function EXECCOLOR( attr, body ) {
 		return <hh.sequence>
-		  <hh.emit signal=${attr.color} arg="red"/>
+		  <hh.emit signal=${attr.color} value="red"/>
 		  <hh.exec signal=${attr.out}
-			   interface=${exec_interface}
-			   arg0=${hh.value("langpair")}
-			   arg1=${attr.reverse != undefined}
-			   arg2=${hh.value("in")}/>
-		  <hh.emit signal=${attr.color} arg="blue"/>
+			   start=${function() {
+			      let langpair = this.value.langpair;
+
+			      if (attr.reverse != undefined) {
+				 langpair = reverseLangpair(langpair);
+			      }
+
+			      var xhttp = new XMLHttpRequest();
+			      var svc = "http://mymemory.translated.net/api/get";
+			      var opt = "?langpair=" + langpair + "&q=" + this.value.in;
+
+			      xhttp.onreadystatechange = function() {
+				 if (xhttp.readyState == 4 && xhttp.status == 200) {
+				    let res = JSON.parse(xhttp.responseText);
+				    let trans = res.responseData.translatedText
+
+				    this.returnAndReact(trans);
+				 }
+			      }.bind(this);
+			      xhttp.open("GET", svc + opt, true);
+			      xhttp.send();
+			   }}/>
+		  <hh.emit signal=${attr.color} value="blue"/>
 		</hh.sequence>
 	     }
-
-	     const exec_interface = {
-		start: function(langpair, reverse, totranslate) {
-		   if (reverse) {
-		      langpair = reverseLangpair(langpair);
-		   }
-
-		   var xhttp = new XMLHttpRequest();
-		   var svc = "http://mymemory.translated.net/api/get";
-		   var opt = "?langpair=" + langpair + "&q=" + totranslate;
-
-		   xhttp.onreadystatechange = function() {
-		      if (xhttp.readyState == 4 && xhttp.status == 200) {
-			 let res = JSON.parse(xhttp.responseText);
-			 let trad = res.responseData.translatedText
-
-			 this.return(trad);
-		      }
-		   }.bind(this);
-		   xhttp.open("GET", svc + opt, true);
-		   xhttp.send();
-		},
-		autoreact: hh.ANY
-	     };
 
 	     m =  new hh.ReactiveMachine(
 		<hh.module>
@@ -68,7 +62,7 @@ service translator2() {
 		    <hh.loopeach signal="in">
 		      <execColor out="trad" color="tradColor"/>
 		      <execColor reverse out="tradReverse" color="tradReverseColor"/>
-		    </hh.every>
+		    </hh.loopeach>
 		  </hh.loopeach>
 		</hh.module>
 	     );
