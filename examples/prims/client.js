@@ -138,20 +138,6 @@ Num.prototype.computeMove = function( suspect, G ) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    findPrey ...                                                     */
-/*---------------------------------------------------------------------*/
-function findPrey( attr, num, nums ) {
-   let prey = false;
-
-//   console.log( "attr=", attr );
-   
-   nums.find( function( other ) {
-      return (prey = num.computeMove( other, attr.G ));
-   });
-   return prey;
-}
-   
-/*---------------------------------------------------------------------*/
 /*    number ...                                                       */
 /*---------------------------------------------------------------------*/
 function NUMBER( attr, _ ) {
@@ -163,28 +149,29 @@ function NUMBER( attr, _ ) {
    var trap = <hh.trap name=${dead} id=${numid}>
      <hh.loop>
        <hh.await signal="go"/>
-       <hh.emit signal="number" arg=${num}/>
-       <hh.emit signal="kill"
-		func=${findPrey}
-		arg0=${attr}
-		arg1=${num}
-		arg2=${hh.value( "number" )} />
-       <hh.if func=${function( kills ) { return kills.indexOf( num ) >= 0; } }
-	      arg=${hh.value( "kill" )} >
+       <hh.emit signal="number" value=${num}/>
+       <hh.emit signal="kill" value=${function() {
+	  let prey = false;
+
+	  this.value.number.find( function( other ) {
+	     return (prey = num.computeMove( other, attr.G ));
+	  });
+	  return prey;
+       }}/>
+       <hh.if value=${function( kills ) { return this.value.kill.indexOf( num ) >= 0; } }>
 	 <hh.then>
-	   <hh.atom func=${function() {
+	   ${function() {
 	      num.dead = true;
 	      G.mach.getElementById( "numbers" ).removeChild( trap );
-	   }} />
+	   }}
 	   <hh.exit trap=${dead}/>
 	 </hh.then>
 	 <hh.else>
-	   <hh.if func=${function( kills ) {
-	                   return num.prey && kills.indexOf( num.prey ) >= 0 }}
-		  arg=${hh.value( "kill" )}>
-	     <hh.atom func=${function() { num.init() } } />
+	   <hh.if value=${function( kills ) {
+	      return num.prey && this.value.kill.indexOf( num.prey ) >= 0 }}>
+	     ${function() { num.init() } }
 	   </hh.if>
-	   <hh.atom func=${function() { num.move() } } />
+	   ${function() { num.move() } }
 	 </hh.else>
        </hh.if>
      </hh.loop>
@@ -215,8 +202,7 @@ function prims( G ) {
        <hh.signal name="number" reset=${reinit} combine=${combine} />
        <hh.parallel id="numbers">
 	 <hh.loop>
-	   <hh.atom func=${function() {
-	      G.ctx.clearRect( 0, 0, G.width, G.height )}}/>
+	   ${function() {G.ctx.clearRect( 0, 0, G.width, G.height )}}
            <hh.emit signal="go"/>
            <hh.pause/>
          </hh.loop>
