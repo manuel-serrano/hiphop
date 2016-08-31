@@ -719,4 +719,74 @@ var machine = new hh.ReactiveMachine(prg, "prgName");
 machine.react(); // trigger a reaction of the program
 ```
 
-Markdown finished at Wed Aug 10 18:10:58
+# Extends Hiphop.js
+
+As Hiphop.js instructions are first-class values, it is possible to
+manipulate them in Hop.js. It can be useful to factorize parts of
+reactive program, or extends the language with user instructions as we
+can see in the following example:
+
+```hopscript
+function TIMEOUT(attrs) {
+   return <hh.exec start=${function() {
+      setTimeout(function(self) {
+      	 self.returnAndReact();
+      }, parseInt(attrs.ms), this);
+   }}/>
+}
+
+const prg =
+   <hh.module>
+      <hh.iosignal name="A" valued/>
+      <hh.iosignal name="B"/>
+	  <hh.parallel>
+	     <hh.sequence>
+               <timeout ms=2000/>
+               <emit signal="B"/>
+	     </hh.sequence>
+	     <hh.emit signal="A" value=5000/>
+	  </hh.parallel>
+   <hh.module>
+```
+
+This previous example introduces a new Hiphop.js instruction that
+waits an interval of time, based on JavaScript `setTimeout` function
+and Hiphop.js exec instruction. The interval of time to wait is given
+in milliseconds through `ms` attribute.
+
+However, if the time to wait depends of the value of a signal, this is
+not enough. For instance, ones would do the following:
+
+```hopscript
+<hh.timeout ms=${function() {return this.value.A}}/>
+```
+
+There are two problems here :
+
+* `ms` must be checked inside `TIMEOUT` function to be applied if it
+  is a function.
+
+* Hiphop.js needs to knows that the exec instruction embedded may
+  have dependency to others signals. In that case, Hiphop.js provides
+  an special attribute `dfunc` in which the `ms` attribute must be
+  given. If `ms` is a functional value, the compiler will
+  automatically schedule the exec instruction according the access on
+  signals that are made on it.
+
+The complete and functional code for the timeout instruction is the following:
+
+```hopscript
+function TIMEOUT(attrs) {
+   return <hh.exec dfunc=${attr.ms}
+		   start=${function() {
+		      setTimeout(function(self) {
+      			 self.returnAndReact();
+		      }, parseInt((attr.ms instanceof Function
+				   ? attr.ms()
+				   : attr.ms)), this);
+		   }}/>
+}
+```
+
+On the previous example, the timeout instruction will therefore be
+scheduled __after__ the emission of `A`.
