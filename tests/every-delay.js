@@ -3,11 +3,9 @@
 var hh = require("hiphop");
 
 var prg =
-    <hh.module>
-      <hh.inputsignal name="I"/>
-      <hh.outputsignal name="O"/>
-      <hh.every count=2 signal="I">
-	<hh.emit signal="O"/>
+    <hh.module I=${{accessibility: hh.IN}} O>
+      <hh.every countValue=2 I>
+	<hh.emit O/>
       </hh.every>
     </hh.module>;
 

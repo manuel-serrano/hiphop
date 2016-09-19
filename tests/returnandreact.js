@@ -7,9 +7,8 @@ function foo(cb) {
 }
 
 const m = new hh.ReactiveMachine(
-      <hh.module>
-	<hh.iosignal name="S" valued/>
-	<hh.exec signal="S" start=${function() {
+      <hh.module S>
+	<hh.exec S apply=${function() {
 	   setTimeout(this.returnAndReact, 100, 5);
 	}}/>
       </hh.module>);

@@ -14,31 +14,23 @@ function plus(x, y) {
    return x + y
 }
 
-var prg = <hh.module>
-  <hh.outputsignal name="SEQ" value=1 combine=${plus}/>
-  <hh.outputsignal name="STATE1"  value=false
-		    combine=${bool_or}/>
-  <hh.outputsignal name="STATE2" value=false
-		    combine=${bool_and}/>
-  <hh.outputsignal name="S"/>
-  <hh.outputsignal name="TOOGLE" valued/>
+var prg = <hh.module SEQ=${{initValue: 1, combine: plus}}
+		     STATE1=${{initValue: false, combine: bool_or}}
+		     STATE2=${{initValue: false, combine: bool_and}} S TOOGLE>
   <hh.loop>
     <hh.sequence>
-      <hh.emit signal="SEQ"
-		func=${(x, y) => x + y}
-		arg0=${hh.preValue("SEQ")}
-		arg1=1/>
-      <hh.emit signal="STATE1" arg=true />
-      <hh.emit signal="STATE1" arg=false />
-      <hh.emit signal="STATE2" arg=true />
-      <hh.emit signal="STATE2" arg=false />
-      <hh.present pre signal="S">
-	<hh.emit signal="TOOGLE" arg=true />
+      <hh.emit SEQ apply=${function() {return this.preValue.SEQ + 1}}/>
+      <hh.emit STATE1 value=${true} />
+      <hh.emit STATE1 value=${false} />
+      <hh.emit STATE2 value=${true} />
+      <hh.emit STATE2 value=${false} />
+      <hh.if pre S>
+	<hh.emit TOOGLE value=${true} />
 	<hh.sequence>
-	  <hh.emit signal="TOOGLE" arg=false />
-	  <hh.emit signal="S"/>
+	  <hh.emit TOOGLE value=${false} />
+	  <hh.emit S/>
 	</hh.sequence>
-      </hh.present>
+      </hh.if>
       <hh.pause/>
     </hh.sequence>
   </hh.loop>

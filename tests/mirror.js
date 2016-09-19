@@ -11,29 +11,23 @@ function bar(evt) {
 	       evt.signalValue, "!")
 }
 
-var prg = <hh.module>
-  <hh.inputsignal name="I1" />
-  <hh.outputsignal name="O1"/>
-  <hh.inputsignal name="I2" valued/>
-  <hh.outputsignal name="O2" valued/>
-  <hh.inputsignal name="I3" valued/>
-  <hh.outputsignal name="O3" valued/>
-  <hh.inputsignal name="I4" valued />
-  <hh.outputsignal name="O4" valued/>
+var inSig={accessibility:hh.IN};
+
+var prg = <hh.module I1=${inSig} I2=${inSig} I3=${inSig} I4=${inSig} O1 O2 O3 O4>
   <hh.loop>
     <hh.sequence>
-      <hh.present signal="I1">
-	<hh.emit signal="O1"/>
-      </hh.present>
-      <hh.present signal="I2">
-	<hh.emit signal="O2" arg=${hh.value("I2")}/>
-      </hh.present>
-      <hh.present signal="I3">
-	<hh.emit signal="O3" arg=${hh.value("I3")}/>
-      </hh.present>
-      <hh.present signal="I4">
-	<hh.emit signal="O4" arg=${hh.value("I4")}/>
-      </hh.present>
+      <hh.if I1>
+	<hh.emit O1/>
+      </hh.if>
+      <hh.if I2>
+	<hh.emit O2 apply=${function() {return this.value.I2}}/>
+      </hh.if>
+      <hh.if I3>
+	<hh.emit O3 apply=${function() {return this.value.I3}}/>
+      </hh.if>
+      <hh.if I4>
+	<hh.emit O4 apply=${function() {return this.value.I4}}/>
+      </hh.if>
       <hh.pause/>
     </hh.sequence>
   </hh.loop>

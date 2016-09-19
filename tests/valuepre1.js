@@ -3,14 +3,11 @@
 var hh = require("hiphop");
 
 var prg =
-    <hh.module>
-      <hh.outputsignal name="I" valued/>
-      <hh.outputsignal name="O"  value=5 />
-      <hh.outputsignal name="U" valued/>
+    <hh.module I O=${{initValue: 5}} U>
       <hh.loop>
-	<hh.emit signal="I" arg=3 />
-	<hh.emit signal="O" arg=${hh.value("I")}/>
-	<hh.emit signal="U" arg=${hh.preValue("O")}/>
+	<hh.emit I value=${3} />
+	<hh.emit O apply=${function() {return this.value.I}}/>
+	<hh.emit U apply=${function() {return this.preValue.O}}/>
 	<hh.pause/>
       </hh.loop>
     </hh.module>

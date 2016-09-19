@@ -3,40 +3,32 @@
 const hh = require("hiphop");
 
 const prg =
-      <hh.module>
-	<hh.inputsignal name="X" value=1/>
-	<hh.outputsignal name="Y"/>
-	<hh.outputsignal name="Z"/>
+      <hh.module X=${{initValue: 1}} Y Z>
 
-	<hh.trap name="T">
-	  <hh.let>
-	    <hh.signal name="__internal" value=-1/>
+	<hh.trap T>
+	  <hh.let __internal=${{initValue: -1}}>
 	    <hh.loop>
-	      <hh.if arg=${hh.preValue("__internal")} func=${v => v == -1}>
-		<hh.emit signal="__internal"
-			 arg=${hh.value("X")}
-			 func=${x => x + 5}/>
+	      <hh.if apply=${function() {return this.preValue.__internal == -1}}>
+		<hh.emit __internal apply=${function() {return this.value.X + 5}}/>
 	      </hh.if>
 
-	      <hh.if arg=${hh.value("__internal")} func=${v => v == 0}>
-		<hh.exit trap="T"/>
+	      <hh.if apply=${function() {return this.value.__internal == 0}}>
+		<hh.exit T/>
 	      </hh.if>
 
-	      <hh.exec start=${function() {
+	      <hh.exec apply=${function() {
 		 setTimeout(function(self) {
 		    self.returnAndReact();
 		 }, 500, this)
 	      }}/>
 
-	      <hh.emit signal="Y"/>
-	      <hh.emit signal="__internal"
-		       arg=${hh.preValue("__internal")}
-		       func=${v => v - 1}/>
+	      <hh.emit Y/>
+	      <hh.emit __internal apply=${function() {return this.preValue.__internal - 1}}/>
 	    </hh.loop>
 	  </hh.let>
 	</hh.trap>
 
-	<hh.emit signal="Z"/>
+	<hh.emit Z/>
       </hh.module>;
 
 var m = new hh.ReactiveMachine(prg);

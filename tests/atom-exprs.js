@@ -5,13 +5,12 @@ var hh = require("hiphop");
 var prg =
     <hh.module>
       <hh.loop>
-	<hh.let>
-	  <hh.signal name="L" valued/>
-	  <hh.emit signal="L" arg=${"foo bar"}/>
+	<hh.let L>
+	  <hh.emit L value=${"foo bar"}/>
 	  <hh.pause/>
-	  ${function() {
+	  <hh.atom apply=${function() {
 	     console.log("atom works! value of L is", this.value.L);
-	  }}
+	  }}/>
 	</hh.let>
       </hh.loop>
     </hh.module>

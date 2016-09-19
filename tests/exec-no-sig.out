@@ -1,12 +1,3 @@
-[0] +--- Module*
-[0]    +--- OutputSignal O
-[0]    +--- OutputSignal OT
-[1]    +--- Parallel
-[1]       +--- Sequence
-[1]          +--- Exec
-[1]          +--- Emit OT
-[1]       +--- Emit O
-
 Oi.
 [ 'O' ]
 []

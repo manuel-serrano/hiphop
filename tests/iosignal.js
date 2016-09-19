@@ -3,11 +3,8 @@
 const hh = require("hiphop");
 
 const prg =
-      <hh.module>
-	<hh.inputsignal name="I"/>
-	<hh.iosignal name="X" valued/>
-	<hh.iosignal name="Y"/>
-	<hh.emit signal="Y"/>
+      <hh.module I=${{accessibility: hh.IN}} X Y>
+	<hh.emit Y/>
       </hh.module>;
 
 var m = new hh.ReactiveMachine(prg);

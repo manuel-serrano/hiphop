@@ -44,14 +44,10 @@ function print_time(evt) {
 var hh = require("hiphop");
 
 var prg =
-    <hh.module>
-      <hh.inputsignal name="I"/>
-      <hh.outputsignal name="Time" value=${WatchTime}/>
+    <hh.module I=${{accessibility: hh.IN}} Time=${{initValue: WatchTime}}>
       <hh.loop>
 	<hh.sequence>
-	  <hh.emit signal="Time"
-		    func=${IncrementTimeInPlace}
-		    arg=${hh.preValue("Time")}/>
+	  <hh.emit Time apply=${function() {return IncrementTimeInPlace(this.preValue.Time)}}/>
 	  <hh.pause/>
 	</hh.sequence>
       </hh.loop>

@@ -5,14 +5,11 @@ var hh = require("hiphop");
 function minus(arg1, arg2) { return arg1 - arg2 };
 function plus(arg1, arg2) { return arg1 + arg2 };
 
-var prg = <hh.module>
-  <hh.outputsignal name="I" valued />
-  <hh.outputsignal name="O" value=5  />
-  <hh.outputsignal name="U" valued />
+var prg = <hh.module I O=${{initValue: 5}} U>
   <hh.loop>
-    <hh.emit signal="I" func=${plus} arg0=${3 - 2} arg1=5/>
-    <hh.emit signal="O" func=${plus} arg0=${hh.value("I")} arg1=7/>
-    <hh.emit signal="U" func=${minus} arg0=${hh.preValue("O")} arg1=1/>
+    <hh.emit I apply=${function() {return plus(3 - 2, 5)}}/>
+    <hh.emit O apply=${function() {return plus(this.value.I, 7)}}/>
+    <hh.emit U apply=${function() {return minus(this.preValue.O, 1)}}/>
     <hh.pause/>
   </hh.loop>
 </hh.module>;

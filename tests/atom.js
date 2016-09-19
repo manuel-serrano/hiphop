@@ -10,7 +10,7 @@ var prg = <hh.module>
   <hh.loop>
     <hh.sequence>
       <hh.pause/>
-      <hh.atom func=${func}/>
+      <hh.atom apply=${func}/>
     </hh.sequence>
   </hh.loop>
 </hh.module>;

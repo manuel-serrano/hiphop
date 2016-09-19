@@ -4,19 +4,15 @@ function plus (x, y) { return x+y };
 
 var hh = require("hiphop");
 
+var inSig={accessibility: hh.IN};
+
 var prg =
-    <hh.module>
-      <hh.inputsignal name="I"/>
-      <hh.inputsignal name="R"/>
-      <hh.outputsignal name="O" value=0 />
+    <hh.module I=${inSig} R=${inSig} O=${{initValue: 0}}>
       <hh.loop>
-	<hh.abort signal="R">
+	<hh.abort R>
           <hh.sequence>
-            <hh.await signal="I"/>
-            <hh.emit signal="O"
-                     func=${plus}
-                     arg0=${hh.preValue("O")}
-		     arg1=1/>
+            <hh.await I/>
+            <hh.emit O apply=${function() {return plus(this.preValue.O, 1)}}/>
             <hh.pause/>
           </hh.sequence>
 	</hh.abort>

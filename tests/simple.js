@@ -2,105 +2,90 @@
 
 var hh = require("hiphop");
 
+var inSig={accessibility: hh.IN};
 var prg =
-    <hh.module>
-      <hh.outputsignal name="OK"/>
-      <hh.outputsignal name="O"/>
-      <hh.outputsignal name="A"/>
-      <hh.outputsignal name="B"/>
-      <hh.outputsignal name="C"/>
-      <hh.outputsignal name="BBBB"/>
-      <hh.outputsignal name="NEVER"/>
-      <hh.inputsignal name="STOP"/>
-      <hh.inputsignal name="AIN"/>
-      <hh.abort signal="STOP">
+    <hh.module OK O A B C BBBB NEVER STOP=${inSig} AIN=${inSig}>
+      <hh.abort STOP>
 	<hh.loop>
-	  <hh.trap name="JMP">
-	    <hh.emit signal="O"/>
-	    <hh.trap name="FOO">
-	      <hh.exit trap="JMP"/>
+	  <hh.trap JMP>
+	    <hh.emit O/>
+	    <hh.trap FOO>
+	      <hh.exit JMP/>
 	      <hh.pause/>
 	      <hh.pause/>
 	    </hh.trap>
 	  </hh.trap>
-	  <hh.emit signal="O"/>
-	  <hh.present signal="O">
-	    <hh.emit signal="OK"/>
-	  </hh.present>
+	  <hh.emit O/>
+	  <hh.if O>
+	    <hh.emit OK/>
+	  </hh.if>
 	  <hh.pause/>
-	  <hh.emit signal="O"/>
-	  <hh.present signal="O">
-	    <hh.emit signal="OK"/>
-	  </hh.present>
+	  <hh.emit O/>
+	  <hh.if O>
+	    <hh.emit OK/>
+	  </hh.if>
 	  <hh.pause/>
 	  <hh.parallel>
 	    <hh.sequence>
-	      <hh.emit signal="A"/>
+	      <hh.emit A/>
 	      <hh.pause/>
-	      <hh.emit signal="C"/>
+	      <hh.emit C/>
 	    </hh.sequence>
-	    <hh.emit signal="B"/>
-	    <hh.emit signal="BBBB"/>
+	    <hh.emit B/>
+	    <hh.emit BBBB/>
 	  </hh.parallel>
 	</hh.loop>
       </hh.abort>
-      <hh.emit signal="NEVER"/>
+      <hh.emit NEVER/>
       <hh.pause/>
-      <hh.await signal="STOP"/>
-      <hh.emit signal="B"/>
-      <hh.await signal="AIN"/>
-      <hh.present signal="AIN">
-	<hh.emit signal="C"/>
-      </hh.present>
+      <hh.await STOP/>
+      <hh.emit B/>
+      <hh.await AIN/>
+      <hh.if AIN>
+	<hh.emit C/>
+      </hh.if>
     </hh.module>;
 
 var prg2 =
-    <hh.module>
-      <hh.outputsignal name="O"/>
-      <hh.outputsignal name="V"/>
+    <hh.module O V>
       <hh.loop>
 	<hh.pause/>
 	<hh.pause/>
-	<hh.emit signal="O"/>
+	<hh.emit O/>
 	<hh.pause/>
-	<hh.emit signal="O"/>
-	<hh.present signal="O">
-	  <hh.emit signal="V"/>
-	</hh.present>
+	<hh.emit O/>
+	<hh.if O>
+	  <hh.emit V/>
+	</hh.if>
       </hh.loop>
-      <hh.emit signal="O"/>
+      <hh.emit O/>
     </hh.module>;
 
 var prg3 =
-    <hh.module>
-      <hh.outputsignal name="O"/>
+    <hh.module O>
       <hh.sequence>
 	<hh.nothing/>
 	<hh.pause/>
-	<hh.emit signal="O"/>
+	<hh.emit O/>
 	<hh.nothing/>
       </hh.sequence>
-      <hh.emit signal="O"/>
+      <hh.emit O/>
     </hh.module>;
 
 var prg4 =
-    <hh.module>
-      <hh.outputsignal name="OK"/>
-      <hh.outputsignal name="O"/>
-      <hh.emit signal="O"/>
-      <hh.present signal="O">
-	<hh.emit signal="OK"/>
-      </hh.present>
+    <hh.module OK O>
+      <hh.emit O/>
+      <hh.if O>
+	<hh.emit OK/>
+      </hh.if>
     </hh.module>;
 
 
 var prg5 =
-    <hh.module>
-      <hh.outputsignal name="OK"/>
-      <hh.outputsignal name="O"/>
-      <hh.present signal="O">
-	<hh.emit signal="OK"/>
-      </hh.present>
+    <hh.module OK O>
+      <hh.if O>
+	<hh.emit OK/>
+      </hh.if>
     </hh.module>;
 
 

@@ -3,19 +3,16 @@
 var hh = require("hiphop");
 
 var prg =
- <hh.module>
-  <hh.outputsignal name="A"/>
-  <hh.outputsignal name="B"/>
-  <hh.outputsignal name="C"/>
+ <hh.module A B C>
   <hh.sequence>
-    <hh.emit signal="A"/>
-    <hh.trap name="T">
+    <hh.emit A/>
+    <hh.trap T>
       <hh.sequence>
-	<hh.exit trap="T"/>
-	<hh.emit signal="B"/>
+	<hh.exit T/>
+	<hh.emit B/>
       </hh.sequence>
     </hh.trap>
-    <hh.emit signal="C"/>
+    <hh.emit C/>
   </hh.sequence>
 </hh.module>;
 

@@ -3,13 +3,11 @@
 var hh = require("hiphop");
 
 try {
-   var prg = <hh.module>
-     <hh.outputsignal name="O" valued/>
+   var prg = <hh.module O>
      <hh.loop>
-       <hh.let>
-	 <hh.signal name="L" valued/>
-	 <hh.emit signal="L" arg=${"foo bar"}/>
-	 <hh.emit signal="O" arg=${hh.value("L")}/>
+       <hh.let L>
+	 <hh.emit L value=${"foo bar"}/>
+	 <hh.emit O apply=${function() {return this.value.L}}/>
        </hh.let>
      </hh.loop>
    </hh.module>;

@@ -2,21 +2,17 @@
 
 var hh = require("hiphop");
 
-var prg = <hh.module>
-  <hh.inputsignal name="A"/>
-  <hh.outputsignal name="T"/>
-  <hh.outputsignal name="V"/>
-  <hh.abort signal="A">
-    <hh.let>
-      <hh.signal name="S"/>
+var prg = <hh.module A=${{accessibility: hh.IN}} T V>
+  <hh.abort A>
+    <hh.let S>
       <hh.loop>
 	<hh.sequence>
-	  <hh.emit signal="S"/>
-	  <hh.present signal="S">
-	    <hh.emit signal="T"/>
-	  </hh.present>
+	  <hh.emit S/>
+	  <hh.if S>
+	    <hh.emit T/>
+	  </hh.if>
 	  <hh.pause/>
-	  <hh.emit signal="V"/>
+	  <hh.emit V/>
 	</hh.sequence>
       </hh.loop>
     </hh.let>

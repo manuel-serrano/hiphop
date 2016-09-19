@@ -2,14 +2,14 @@
 
 var hh = require("hiphop");
 
-var prg = <hh.module>
-  <hh.inputsignal name="A"/>
-  <hh.inputsignal name="B"/>
-  <hh.outputsignal name="O"/>
+var sigIn={accessibility: hh.IN};
+var sigOut={accessibility: hh.OUT};
+
+var prg = <hh.module A=${sigIn} B=${sigIn} O=${sigOut}>
   <hh.sequence>
-    <hh.await signal="A"/>
-    <hh.await signal="B"/>
-    <hh.emit signal="O"/>
+    <hh.await A/>
+    <hh.await B/>
+    <hh.emit O/>
   </hh.sequence>
 </hh.module>;
 

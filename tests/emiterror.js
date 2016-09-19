@@ -2,12 +2,11 @@
 
 const hh = require("hiphop");
 
-const prg = <hh.module>
-  <hh.outputsignal name="O" valued/>
+const prg = <hh.module O>
   <hh.loop>
     <hh.sequence>
-      <hh.emit signal="O" arg=5 />
-      <hh.emit signal="O" arg=5 />
+      <hh.emit O value=5 />
+      <hh.emit O value=5 />
       <hh.pause/>
     </hh.sequence>
   </hh.loop>

@@ -1,12 +1,24 @@
 foo> ;
-first { signalName: 'O', stopPropagation: [Function] }
-second { signalName: 'O', stopPropagation: [Function] }
+first { signalName: 'O',
+  signalValue: undefined,
+  stopPropagation: [Function] }
+second { signalName: 'O',
+  signalValue: undefined,
+  stopPropagation: [Function] }
 --- Output: O
 foo> ;
-first { signalName: 'O', stopPropagation: [Function] }
-second { signalName: 'O', stopPropagation: [Function] }
+first { signalName: 'O',
+  signalValue: undefined,
+  stopPropagation: [Function] }
+second { signalName: 'O',
+  signalValue: undefined,
+  stopPropagation: [Function] }
 --- Output: O
 foo> ;
-first { signalName: 'O', stopPropagation: [Function] }
-second { signalName: 'O', stopPropagation: [Function] }
+first { signalName: 'O',
+  signalValue: undefined,
+  stopPropagation: [Function] }
+second { signalName: 'O',
+  signalValue: undefined,
+  stopPropagation: [Function] }
 --- Output: O

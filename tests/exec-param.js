@@ -3,10 +3,9 @@
 const hh = require("hiphop");
 
 const prg =
-      <hh.module>
-	<hh.inputsignal name="in" combine=${(x, y) => x + y}/>
-	<hh.emit signal="in" arg=5/>
-	<hh.exec start=${function() {
+      <hh.module in=${{accessibility: hh.IN, combine: (x, y) => x + y}}>
+	<hh.emit in value=${5}/>
+	<hh.exec apply=${function() {
 	   console.log("receive " + this.value.in);
 	   this.return();
 	}}/>

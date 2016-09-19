@@ -2,15 +2,13 @@
 
 var hh = require("hiphop");
 
-var prg = <hh.module>
-  <hh.outputsignal name="J" valued/>
-  <hh.let>
-    <hh.signal name="I" valued/>
+var prg = <hh.module J>
+  <hh.let I>
     <hh.Parallel>
-      <hh.present signal="I">
-	<hh.emit signal="J" arg=${hh.value("I")} />
-      </hh.present>
-      <hh.emit signal="I" arg=5 />
+      <hh.if I>
+	<hh.emit J apply=${function() {return this.value.I}} />
+      </hh.if>
+      <hh.emit I value=${5} />
     </hh.Parallel>
   </hh.let>
 </hh.module>;

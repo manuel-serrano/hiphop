@@ -2,30 +2,20 @@
 
 var hh = require("hiphop");
 
-var m1 = <hh.module>
-  <hh.inputsignal name=T />
-  <hh.inputsignal name=W />
-  <hh.outputsignal name=V />
-  <hh.outputsignal name=Z />
+var m1 = <hh.module S U W Z>
   <hh.parallel>
-    <hh.present signal="T">
-      <hh.emit signal="V"/>
-    </hh.present>
-    <hh.present signal="W">
-      <hh.emit signal="Z"/>
-    </hh.present>
+    <hh.if S>
+      <hh.emit W/>
+    </hh.if>
+    <hh.if U>
+      <hh.emit Z/>
+    </hh.if>
   </hh.parallel>
 </hh.module>;
 
-var run2 = <hh.module>
-  <hh.inputsignal name=S />
-  <hh.inputsignal name=U />
-  <hh.outputsignal name=A />
-  <hh.outputsignal name=B />
-  <hh.run module=${m1} sigs_assoc=${{"T":"S",
-				     "W":"U",
-				     "V":"A",
-				     "Z":"B"}}/>
+var inSig={accessibility: hh.IN}
+var run2 = <hh.module S=${inSig} U=${inSig} A B>
+  <hh.run module=${m1} W=A Z=B/>
 </hh.module>;
 
 exports.prg = new hh.ReactiveMachine(run2, "run2");

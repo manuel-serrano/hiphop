@@ -44,21 +44,19 @@ function updateFromOutside(watch) {
 
 var hh = require("hiphop");
 
+var inSig = {accessibility: hh.IN};
+
 var prg =
-    <hh.module>
-      <hh.inputsignal name="I"/>
-      <hh.inputsignal name="TIN" valued />
-      <hh.outputsignal name="Time"
-			value=${WatchTime}/>
+    <hh.module I=${inSig} TIN=${inSig} Time=${{initValue: WatchTime}}>
       <hh.loop>
-	<hh.emit signal="Time"
-		  func=${IncrementTimeInPlace}
-		  arg=${hh.preValue("Time")}/>
+	<hh.emit Time apply=${function() {
+	   return IncrementTimeInPlace(this.preValue.Time)
+	}}/>
 	<hh.pause/>
-	<hh.await signal="TIN"/>
-	<hh.emit signal="Time"
-		  func=${updateFromOutside}
-		  arg=${hh.value("TIN")}/>
+	<hh.await TIN/>
+	<hh.emit Time apply=${function() {
+	   return updateFromOutside(this.value.TIN)
+	}}/>
 	<hh.pause/>
       </hh.loop>
     </hh.module>;

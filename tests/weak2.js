@@ -3,22 +3,17 @@
 var hh = require("hiphop");
 
 var m =
-    <hh.module>
-      <hh.inputsignal name="S"/>
-      <hh.outputsignal name="O"/>
-      <hh.outputsignal name="F"/>
-      <hh.outputsignal name="W"/>
-      <hh.outputsignal name="Z"/>
-      <hh.weakabort signal="S">
+    <hh.module S=${{accessibility: hh.IN}} O F W Z>
+      <hh.weakabort S>
 	<hh.loop>
-	  <hh.emit signal="O"/>
+	  <hh.emit O/>
 	  <hh.pause/>
-	  <hh.emit signal="W"/>
+	  <hh.emit W/>
 	  <hh.pause/>
-	  <hh.emit signal="Z"/>
+	  <hh.emit Z/>
 	</hh.loop>
       </hh.weakabort>
-      <hh.emit signal="F"/>
+      <hh.emit F/>
     </hh.module>
 
 exports.prg = new hh.ReactiveMachine(m, "wabort2");

@@ -3,15 +3,12 @@
 const hh = require("hiphop");
 
 const prg =
-      <hh.module>
-	<hh.inputsignal name="I"/>
-	<hh.outputsignal name="J"/>
-	<hh.outputsignal name="K"/>
+      <hh.module I=${{accessibility: hh.IN}} J K>
 	<hh.loop>
-	  <hh.abort signal="I">
-	    <hh.sustain signal="J"/>
+	  <hh.abort I>
+	    <hh.sustain J/>
 	  </hh.abort>
-	  <hh.emit signal="K"/>
+	  <hh.emit K/>
 	</hh.loop>
       </hh.module>;
 

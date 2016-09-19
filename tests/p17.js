@@ -2,17 +2,15 @@
 
 var hh = require("hiphop");
 
-var prg = <hh.module>
-  <hh.outputsignal name="O"/>
+var prg = <hh.module O>
   <hh.loop>
-    <hh.let>
-      <hh.signal name="S1"/>
+    <hh.let S1>
       <hh.sequence>
-	<hh.present signal="S1">
-	  <hh.emit signal="O"/>
-	</hh.present>
+	<hh.if S1>
+	  <hh.emit O/>
+	</hh.if>
 	<hh.pause/>
-	<hh.emit signal="S1"/>
+	<hh.emit S1/>
       </hh.sequence>
     </hh.let>
   </hh.loop>

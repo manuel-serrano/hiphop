@@ -6,13 +6,11 @@ function sum(arg1, arg2) {
    return arg1 + arg2;
 }
 
-var prg = <hh.module>
-  <hh.outputsignal name="O" valued/>
+var prg = <hh.module O>
   <hh.loop>
-    <hh.let>
-      <hh.signal name="S"  value=1 />
-      <hh.emit signal="S" func=${sum} arg0=${hh.preValue("S")} arg1=1/>
-      <hh.emit signal="O" arg=${hh.value("S")}/>
+    <hh.let S=${{initValue: 1}}>
+      <hh.emit S apply=${function() {return this.preValue.S + 1}}/>
+      <hh.emit O apply=${function() {return this.value.S}}/>
     </hh.let>
     <hh.pause/>
   </hh.loop>

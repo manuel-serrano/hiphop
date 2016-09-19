@@ -2,13 +2,14 @@
 
 var hh = require("hiphop");
 
+var inSig = {accessibility: hh.IN};
+var outSig = {accessibility: hh.OUT};
+
 var prg =
-    <hh.module>
-      <hh.inputsignal name="I"/>
-      <hh.outputsignal name="O"/>
+    <hh.module I=${inSig} O=${outSig}>
       <hh.loop>
-	<hh.await signal="I" count=3 />
-	<hh.emit signal="O" />
+	<hh.await I countValue=3 />
+	<hh.emit O />
       </hh.loop>
     </hh.module>;
 

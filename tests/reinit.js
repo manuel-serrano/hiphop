@@ -3,23 +3,17 @@
 const hh = require("hiphop");
 
 const prg =
-      <hh.module>
-	<hh.outputsignal name="AUX"
-			 value=1
-			 reset=${function() {return 1}}
-			 combine=${function(a, b) { return (a * b) + 1}}/>
-	<hh.outputsignal name="O"
-			 reset=${function() {return 2}}
-			 combine=${function(a, b) {return a * b}}/>
-	<hh.emit signal="O" arg=5/>
-	<hh.emit signal="AUX" arg=245/>
+      <hh.module AUX=${{reinitValue: 1,
+			combine: (a, b) => (a * b) + 1}}
+		 O=${{reinitApply: function() {console.log("REINIT"); return 2},
+		      combine: (a, b) => a * b}}>
+	<hh.emit O value=${5}/>
+	<hh.emit AUX value=${245}/>
+	<hh.emit AUX value=${1}/>
 	<hh.pause/>
 	<hh.loop>
-	  <hh.emit signal="O"
-		   func=${function(a, b) { return a + b }}
-		   arg0=1
-		   arg1=${hh.preValue("O")}/>
-	  <hh.emit signal="AUX"/>
+	  <hh.emit O apply=${function() {return this.preValue.O + 1}}/>
+	  <hh.emit AUX/>
 	  <hh.pause/>
 	</hh.loop>
       </hh.module>;

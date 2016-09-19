@@ -3,11 +3,10 @@
 const hh = require("hiphop");
 
 const prg =
-      <hh.module>
-	<hh.outputsignal name="O" combine=${(x, y) => x + y}/>
+      <hh.module O=${{combine: (x, y) => x + y}}>
 	<hh.loop>
 	  <hh.parallel id="par">
-	    <hh.emit signal="O" arg=1/>
+	    <hh.emit O value=${1}/>
 	  </hh.parallel>
 	  <hh.pause/>
 	  <hh.pause/>
@@ -15,7 +14,7 @@ const prg =
       </hh.module>;
 
 function add_emit(machine) {
-   machine.getElementById("par").appendChild(<hh.emit signal="O" arg=1/>);
+   machine.getElementById("par").appendChild(<hh.emit O value=${1}/>);
 }
 
 const machine = new hh.ReactiveMachine(prg, "incr-branch");

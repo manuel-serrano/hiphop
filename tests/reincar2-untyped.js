@@ -7,34 +7,28 @@ function plus(a, b) {
 }
 
 var prg =
-    <hh.module>
-      <hh.outputsignal name="S" valued />
-      <hh.outputsignal name="I"/>
-      <hh.outputsignal name="J" valued />
+    <hh.module S I J>
       <hh.loop>
 	<hh.parallel>
 
-	  <hh.let>
-	    <hh.signal name="M" value=5 />
-	    <hh.emit signal="J" arg=${hh.value("M")}/>
+	  <hh.let M=${{initValue: 5}}>
+	    <hh.emit J apply=${function(){return this.value.M}}/>
 	    <hh.pause/>
-	    <hh.emit signal="M" arg=5 />
+	    <hh.emit M value=${5} />
 	  </hh.let>
 
-	  <hh.let>
-	    <hh.signal name="N"/>
-	    <hh.present signal="N">
-	      <hh.emit signal="I"/>
-	    </hh.present>
+	  <hh.let N>
+	    <hh.if N>
+	      <hh.emit I/>
+	    </hh.if>
 	    <hh.pause/>
-	    <hh.emit signal="N"/>
+	    <hh.emit N/>
 	  </hh.let>
 
-	  <hh.let>
-	    <hh.signal name="L" valued />
-	    <hh.emit signal="L" arg=4 />
+	  <hh.let L>
+	    <hh.emit L value=${4} />
 	    <hh.pause/>
-	    <hh.emit signal="S" func=${plus} arg0=${hh.value("L")} arg1=5/>
+	    <hh.emit S apply=${function() {return plus(this.value.L, 5)}}/>
 	  </hh.let>
 
 	</hh.parallel>

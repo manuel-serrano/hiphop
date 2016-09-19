@@ -3,19 +3,16 @@
 const hh = require("hiphop");
 
 const prg =
-      <hh.module>
-	<hh.inputsignal name="X" valued/>
-	<hh.outputsignal name="Y"/>
-	<hh.outputsignal name="Z"/>
+      <hh.module X=${{accessibility: hh.IN}} Y Z>
 
-	<hh.await signal="X"/>
-	<hh.every func=${() => true}
-		  count=${function() {
+	<hh.await X/>
+	<hh.every apply=${() => true}
+		  countApply=${function() {
 		     return this.value.X + 5
 		  }}>
-	  <hh.emit signal="Y"/>
+	  <hh.emit Y/>
 	</hh.every>
-	<hh.emit signal="Z"/>
+	<hh.emit Z/>
       </hh.module>;
 
 var m = new hh.ReactiveMachine(prg);

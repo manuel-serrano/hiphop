@@ -7,31 +7,25 @@ const hh = require("hiphop");
 var glob = 5;
 
 const prg =
-      <hh.module>
-
-	<hh.inputsignal name="RES"/>
-	<hh.inputsignal name="S"/>
-	<hh.outputsignal name="O"/>
-	<hh.outputsignal name="OT" valued/>
-	<hh.inputsignal name="T" valued/>
+      <hh.module RESS=${{accessibility: hh.IN}} S=${{accessibility: hh.IN}} O OT
+		 T=${{accessibility: hh.IN}}>
 	<hh.parallel>
-	  <hh.suspend signal="S">
-	    <hh.exec signal="T"
-		     start=${function() {
-			console.log("Oi.");
-			setTimeout(function(self) {
-			   console.log("Oi timeout.");
-			   self.return(glob++);
-			}, 1000, this);
-		     }}
-		     susp=${function() {console.log("suspended.");}}
-		     res=${function() {console.log("resumed.");}}/>
-	    <hh.emit signal="OT" arg=${hh.value("T")}/>
+	  <hh.suspend S>
+	    <hh.exec T apply=${function() {
+	       console.log("Oi.");
+	       setTimeout(function(self) {
+		  console.log("Oi timeout.");
+		  self.return(glob++);
+	       }, 1000, this);
+	    }}
+	      susp=${function() {console.log("suspended.");}}
+	      res=${function() {console.log("resumed.");}}/>
+	    <hh.emit OT apply=${function() {return this.value.T}}/>
 	  </hh.suspend>
-	  <hh.emit signal="O"/>
+	  <hh.emit O/>
 	</hh.parallel>
-	<hh.await signal="RES"/>
-	<hh.emit signal="OT" arg=${hh.value("T")}/>
+	<hh.await RESS />
+	<hh.emit OT apply=${function() {return this.value.T}}/>
       </hh.module>
 
 var machine = new hh.ReactiveMachine(prg, "exec");
@@ -47,7 +41,7 @@ console.log(machine.inputAndReact("S"));
 
 setTimeout(function() {
    console.log(machine.react());
-   console.log(machine.inputAndReact("RES"));
+   console.log(machine.inputAndReact("RESS"));
    console.log(machine.inputAndReact("S"));
    console.log(machine.react());
 }, 2000);

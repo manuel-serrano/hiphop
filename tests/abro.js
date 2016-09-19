@@ -2,18 +2,17 @@
 
 var hh = require("hiphop");
 
+var inSig = {accessibility: hh.IN};
+var outSig = {accessibility: hh.OUT};
+
 var prg =
-    <hh.module>
-      <hh.inputsignal name="R"/>
-      <hh.inputsignal name="A"/>
-      <hh.inputsignal name="B"/>
-      <hh.outputsignal name="O"/>
-      <hh.loopeach signal="R">
+    <hh.module A=${inSig} B=${inSig} R=${inSig} O=${outSig}>
+      <hh.loopeach R>
 	<hh.parallel>
-	  <hh.await signal="A" />
-	  <hh.await signal="B" />
+	  <hh.await A/>
+	  <hh.await B/>
 	</hh.parallel>
-	<hh.emit signal="O" />
+	<hh.emit O/>
       </hh.loopeach>
     </hh.module>
 

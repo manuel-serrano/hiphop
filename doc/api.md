@@ -9,14 +9,11 @@ ${ var doc = require("hopdoc") }
 [:@glyphicon glyphicon-tag tag]
 
 Module is the programming unit of a Hiphop.js program. Therefore, any
-Hiphop.js statement must be embedded inside a module. As any first
-class object, a module can be call inside another module, via the
-Run Hiphop.js statement (see `<hiphop.run>`).
+Hiphop.js statement must be embedded inside a module.
 
 ```hopscript
 <hiphop.module>
   <!-- Hiphop.js input/output signal declarations -->
-  <!-- Hiphop.js statements and local signals declarations -->
 <hiphop.module>
 ```
 
@@ -43,29 +40,6 @@ This statement pauses forever the branch where it is defined; it will
 never terminate. However, it can be preempted (see preemption section).
 
 ## Conditional branching
-
-### <hiphop.present> ###
-[:@glyphicon glyphicon-tag tag]
-
-Attributes and children of the node:
-
-* `signal`: a string that represents the signal to test;
-* `pre`: test presence of the signal at the previous instant;
-* `not` (optional): logic negation of the result of the test;
-* one child (then branch) or two (then and else branch).
-
-
-Tests the presence of a signal, and immediately terminates, giving the
-control to the _then_ or _else_ branch, according to the result of the test.
-
-The following example will emit the signal `T` in the instant where
-the signal `S` is present:
-
-```hopscript
-<hh.present signal="S">
-   <hh.emit signal="T"/>
-</hh.present>
-```
 
 ### <hiphop.if> ###
 [:@glyphicon glyphicon-tag tag]
@@ -114,20 +88,20 @@ all emitters has been executed.
 The following example will instantaneously emit the signal `O`:
 
 ```hopscript
-<hh.emit signal="O"/>
+<hh.emit O/>
 ```
 
 The following example will instantaneously emit the signal `O` with value `10`:
 
 ```hopscript
-<hh.emit signal="O" value=10/>
+<hh.emit O value=${10}/>
 ```
 
 The following example will instantaneously emit the signal `O` with
 value of a signal `L`:
 
 ```hopscript
-<hh.emit signal="O" value=${function() {return this.value.L}}/>
+<hh.emit O apply=${function() {return this.value.L}}/>
 ```
 
 ### <hiphop.sustain/> ###
@@ -163,7 +137,7 @@ The following example will emit the signal `O` at each instant:
 
 ```hopscript
 <hh.loop>
-   <hh.emit signal="O"/>
+   <hh.emit O/>
    <hh.pause/>
 </hh.loop>
 ```
@@ -174,8 +148,8 @@ Await statement, which is not instantaneous, in the following form:
 
 ```hopscript
 <hh.loop>
-   <hh.await signal="I"/>
-   <hh.emit signal="O"/>
+   <hh.await I/>
+   <hh.emit O/>
 </hh.loop>
 ```
 
@@ -184,7 +158,7 @@ instantaneous (it will re-loop on the same instant):
 
 ```hopscript
 <hh.loop>
-   <hh.emit signal="O"/>
+   <hh.emit O/>
 </hh.loop>
 ```
 
@@ -346,19 +320,19 @@ ignored, except if `immediate` keyword is set.
 The following example will emit `O` when `I` has been emitted 3 times:
 
 ```hopscript
-<hh.await signal="I"/>
-<hh.await signal="I"/>
-<hh.await signal="I"/>
-<hh.emit signal="O"/>
+<hh.await I/>
+<hh.await I/>
+<hh.await I/>
+<hh.emit O/>
 ```
 
 However, because of the `immediate` keyword, the following example
 will emit `O` on the same instant where `I` is emitted :
 
 ```hopscript
-<hh.await immediate signal="I"/>
-<hh.await immediate signal="I"/>
-<hh.await immediate signal="I"/>
+<hh.await immediate I/>
+<hh.await immediate I/>
+<hh.await immediate I/>
 <hh.emit signal="O"/>
 ```
 
@@ -366,7 +340,7 @@ The following example will waits for the presence of signal `I` an
 aleatory number of times:
 
 ```hopscript
-<hh.await signal="I" counter=${function() {Math.trunc(Math.randrom() * 10)}}/>
+<hh.await I counterApply=${function() {Math.trunc(Math.randrom() * 10)}}/>
 ```
 
 ### <hiphop.parallel> ###
@@ -498,11 +472,9 @@ Declaration of global signal must always be on the top of Hiphop.js
 module:
 
 ```hopscript
-<hiphop.module>
-  <hiphop.inputsignal name="I"/>
-  <hiphop.outputsignal name="O"/>
-  <hiphop.iosignal name="IO"/>
-  <!-- any Hiphop.js statement or local signal declaration -->
+<hiphop.module I=${{accessibility: hiphop.IN}} O=${{accessibility:
+hiphop.OUT}} IO>
+  <!-- Hiphop.js statements -->
 </hiphop.module>
 ```
 
@@ -546,7 +518,7 @@ output or local), and then add one of the following keyword:
 There is two kind of valued signal, by default, the signal is
 _single_, that means it can be emitted only once for each instant.
 
-#### Combined valued signals
+#### Combined signals
 
 _Combined signals_ can be emitted several times during in a
 instant. To this end, the signal declaration must provide a

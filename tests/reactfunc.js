@@ -18,23 +18,19 @@ function bar2(evt) {
    console.log("hi from bar2 signal", evt.signalName, "is set with", evt.signalValue, "!")
 }
 
-var prg = <hh.module>
-  <hh.inputsignal name="I1" />
-  <hh.inputsignal name="I2" valued/>
-  <hh.outputsignal name="O1"/>
-  <hh.outputsignal name="O11"/>
-  <hh.outputsignal name="O2" valued/>
+var inSig={accessibility: hh.IN};
+var prg = <hh.module I1=${inSig} I2=${inSig} O1 O11 O2>
   <hh.loop>
     <hh.sequence>
-      <hh.present signal="I1">
+      <hh.if I1>
 	<hh.sequence>
-	  <hh.emit signal="O1"/>
-	  <hh.emit signal="O11"/>
+	  <hh.emit O1/>
+	  <hh.emit O11/>
 	</hh.sequence>
-      </hh.present>
-      <hh.present signal="I2">
-	<hh.emit signal="O2" arg=${hh.value("I2")}/>
-      </hh.present>
+      </hh.if>
+      <hh.if I2>
+	<hh.emit O2 apply=${function() {return this.value.I2}}/>
+      </hh.if>
       <hh.pause/>
     </hh.sequence>
   </hh.loop>

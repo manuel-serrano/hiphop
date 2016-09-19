@@ -2,15 +2,13 @@
 
 var hh = require("hiphop");
 
-var example = <hh.module>
-  <hh.outputsignal name=I />
-  <hh.outputsignal name=O />
+var example = <hh.module I O>
   <hh.loop>
     <hh.sequence>
-      <hh.present signal="O">
-	<hh.emit signal="I"/>
-      </hh.present>
-      <hh.emit signal="O"/>
+      <hh.if O>
+	<hh.emit I/>
+      </hh.if>
+      <hh.emit O/>
       <hh.pause/>
     </hh.sequence>
   </hh.loop>

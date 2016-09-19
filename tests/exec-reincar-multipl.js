@@ -9,18 +9,15 @@ function inputAndReact(val) {
 }
 
 const prg =
-    <hh.module>
-      <hh.inputsignal name="IN" combine=${(a, b) => b}/>
-      <hh.outputsignal name="OUT1" value="1|"/>
-      <hh.outputsignal name="OUT2" value="2|"/>
-
-      <hh.loop>
-	<hh.await immediate signal="IN"/>
-	<hh.atom func=${function() {console.log("   will trigger exec")}}/>
-	<hh.trap name="trap">
+      <hh.module IN=${{accessibility: hh.IN, combine: (a, b) => b}}
+		 OUT1=${{initValue: "1|"}} OUT2=${{initValue: "2|"}}>
+       <hh.loop>
+	<hh.await immediate IN/>
+	<hh.atom apply=${function() {console.log("   will trigger exec")}}/>
+	<hh.trap trap>
 	  <hh.parallel>
-	    <hh.exec signal="OUT1"
-		     start=${function start_exec() {
+	    <hh.exec OUT1
+		     apply=${function start_exec() {
 			let timeout = 100;
 
 			if (this.value.IN == "LONGWAIT")
@@ -32,8 +29,8 @@ const prg =
 			   self.return(v + "--|" + timeout);
 			}, timeout, this, this.value.IN);
 		     }}/>
-	    <hh.exec signal="OUT2"
-		     start=${function start_exec() {
+	    <hh.exec OUT2
+		     apply=${function start_exec() {
 			let timeout = 200;
 
 			if (this.value.IN == "LONGWAIT")
@@ -46,9 +43,9 @@ const prg =
 			}, timeout, this, this.value.IN);
 		     }}/>
 	    <hh.sequence>
-	      <hh.await signal="IN"/>
-	      <hh.atom func=${function() {console.log("   will trap")}}/>
-	      <hh.exit trap="trap"/>
+	      <hh.await IN/>
+	      <hh.atom apply=${function() {console.log("   will trap")}}/>
+	      <hh.exit trap/>
 	    </hh.sequence>
 	  </hh.parallel>
 	</hh.trap>

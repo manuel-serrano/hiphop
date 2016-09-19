@@ -4,20 +4,18 @@
 const hh = require("hiphop");
 
 const prg =
-      <hh.module>
-	<hh.outputsignal name="O"/>
-	<hh.let>
-	  <hh.signal name="L"/>
+      <hh.module O>
+	<hh.let L>
 	  <hh.parallel>
 
 	    <hh.loop>
-	      <hh.emit signal="L"/>
+	      <hh.emit L/>
 	      <hh.pause/>
 	    </hh.loop>
 
 	    <hh.loop>
-	      <hh.await immediate signal="L"/>
-	      <hh.emit signal="O"/>
+	      <hh.await immediate L/>
+	      <hh.emit O/>
 	    </hh.loop>
 
 	  </hh.parallel>

@@ -2,6 +2,9 @@
 
 var hh = require("hiphop");
 
+var inSig = {accessibility: hh.IN};
+var outSig = {accessibility: hh.OUT};
+
 function foo(evt) {
    console.log("foo called by", evt.signalName, "with value", evt.signalValue);
 }
@@ -15,13 +18,11 @@ function foo3(evt) {
 }
 
 
-var prg = <hh.module>
-  <hh.inputsignal name="I" valued/>
-  <hh.outputsignal name="O" valued/>
+var prg = <hh.module I=${inSig} O=${outSig}>
   <hh.loop>
     <hh.sequence>
-      <hh.await signal="I" />
-      <hh.emit signal="O" arg=${hh.value("I")} />
+      <hh.await I />
+      <hh.emit O apply=${function() {return this.value.I}} />
     </hh.sequence>
   </hh.loop>
 </hh.module>;
