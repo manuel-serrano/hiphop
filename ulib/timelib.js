@@ -45,20 +45,28 @@ const INTERVAL = function(attrs) {
 	 count_apply = attrs[i];
    }
 
-   //
-   // TODO: any HH program should have an implicit signal TICK that is
-   // present at each reaction. It could avoid hacks like this one
-   // (apply=${() => true} / or make a local signal emitted when enter
-   // in loop).
-   //
    if (count_value !== undefined || count_apply !== undefined) {
-      ret = <hh.abort apply=${() => true}
-		      countApply=${count_apply}
-		      countValue=${count_value}>
-	<hh.loop>
-	    ${_body(arguments)}
-	</hh.loop>
-      </hh.abort>;
+      ret = <hh.trap INTERVAL_TRAP>
+	<hh.let INTERVAL_BOOKKEEPING=${{initValue: -1}}>
+	  <hh.loop>
+	    <hh.emit INTERVAL_BOOKKEEPING
+	      value=${count_value}
+	      apply=${count_apply}
+	      ifApply=${function() {
+		 return this.preValue.INTERVAL_BOOKKEEPING < 0}}/>
+
+            <hh.if apply=${function() {
+	       return this.value.INTERVAL_BOOKKEEPING == 0}}>
+		   <hh.exit INTERVAL_TRAP/>
+            </hh.if>
+
+            ${_body(arguments)};
+
+	    <hh.emit INTERVAL_BOOKKEEPING apply=${function() {
+	       return this.preValue.INTERVAL_BOOKKEEPING - 1}}/>
+	  </hh.loop>
+	</hh.let>
+      </hh.trap>;
    } else {
       ret = <hh.loop>
         ${_body(arguments)}
