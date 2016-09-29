@@ -7,10 +7,8 @@ const hh = require("hiphop");
 //
 function expandChildren(children) {
    return <hh.sequence>
-       ${hh.isHiphopInstruction(children[0]) ? children[0] : <hh.nothing foo/>}
-       ${children.length > 1 ?
-	 expandChildren(children.slice(1)) :
-	 <hh.nothing foo/>}
+      ${hh.isHiphopInstruction(children[0]) ? children[0] : <hh.nothing/>}
+      ${children.length > 1 ? expandChildren(children.slice(1)) : <hh.nothing/>}
    </hh.sequence>;
 }
 
