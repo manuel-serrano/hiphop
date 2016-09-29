@@ -27,8 +27,8 @@ RUN git clone https://github.com/manuel-serrano/hop.git \
     && ./configure && make -j$(nproc) && make install
 
 RUN git clone https://github.com/colinvidal/hiphop.git \
-    && mkdir /root/node_modules \
-    && mv hiphop /root/node_modules
+    && mkdir /root/.node_modules \
+    && mv hiphop /root/.node_modules/
 
 COPY hoprc.hop /root/.config/hop/hoprc.hop
 
