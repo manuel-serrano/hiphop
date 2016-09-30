@@ -142,15 +142,14 @@ Num.prototype.computeMove = function( suspect, G ) {
 /*---------------------------------------------------------------------*/
 function NUMBER( attr, _ ) {
    let num = new Num( attr.G );
-   var dead = "dead" + num.value;
    var numid = "num" + num.value;
    G.count++;
 
-   var trap = <hh.trap name=${dead} id=${numid}>
+   var trap = <hh.trap EXIT id=${numid}>
      <hh.loop>
-       <hh.await signal="go"/>
-       <hh.emit signal="number" value=${num}/>
-       <hh.emit signal="kill" value=${function() {
+       <hh.await go/>
+       <hh.emit number value=${num}/>
+       <hh.emit killn apply=${function() {
 	  let prey = false;
 
 	  this.value.number.find( function( other ) {
@@ -158,20 +157,20 @@ function NUMBER( attr, _ ) {
 	  });
 	  return prey;
        }}/>
-       <hh.if value=${function( kills ) { return this.value.kill.indexOf( num ) >= 0; } }>
+       <hh.if apply=${function( kills ) { return this.value.killn.indexOf( num ) >= 0; } }>
 	 <hh.then>
-	   ${function() {
+	   <hh.atom apply=${function() {
 	      num.dead = true;
 	      G.mach.getElementById( "numbers" ).removeChild( trap );
-	   }}
-	   <hh.exit trap=${dead}/>
+	   }}/>
+	   <hh.exit EXIT/>
 	 </hh.then>
 	 <hh.else>
-	   <hh.if value=${function( kills ) {
-	      return num.prey && this.value.kill.indexOf( num.prey ) >= 0 }}>
-	     ${function() { num.init() } }
+	   <hh.if apply=${function( kills ) {
+	      return num.prey && this.value.killn.indexOf( num.prey ) >= 0 }}>
+		  <hh.atom apply=${function() { num.init() } }/>
 	   </hh.if>
-	   ${function() { num.move() } }
+	   <hh.atom apply=${function() { num.move() } }/>
 	 </hh.else>
        </hh.if>
      </hh.loop>
@@ -185,32 +184,31 @@ function NUMBER( attr, _ ) {
 /*    prims ...                                                        */
 /*---------------------------------------------------------------------*/
 function prims( G ) {
-   
+
    function reinit() {
       return [];
    }
-   
-   function combine( acc, n ) {
-      if( n ) acc.push( n );
-      return acc;
+
+   const sigProp = {
+      combine: function(acc, n) {
+	 if (n)
+	    acc.push(n);
+	 return acc;
+      }
    }
-      
-   return <hh.Module>
-     <hh.let>
-       <hh.signal name="go"/>
-       <hh.signal name="kill" reset=${reinit} combine=${combine} />
-       <hh.signal name="number" reset=${reinit} combine=${combine} />
-       <hh.parallel id="numbers">
-	 <hh.loop>
-	   ${function() {G.ctx.clearRect( 0, 0, G.width, G.height )}}
-           <hh.emit signal="go"/>
-           <hh.pause/>
-         </hh.loop>
+   return <hh.Module go killn=${sigProp} number=${sigProp}>
+     <hh.parallel id="numbers">
+       <hh.loop>
+	 <hh.atom apply=${function() {G.ctx.clearRect( 0, 0, G.width, G.height )}}/>
+	 <hh.emit killn apply=${reinit}/>
+	 <hh.emit number apply=${reinit}/>
+         <hh.emit go/>
+         <hh.pause/>
+       </hh.loop>
 
-         <number G=${G}/>
+       <number G=${G}/>
 
-       </hh.parallel>
-     </hh.let>
+     </hh.parallel>
    </hh.Module>;
 }
 
