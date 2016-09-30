@@ -27,16 +27,19 @@ const TIMEOUT = function(attrs) {
 exports.TIMEOUT = TIMEOUT;
 
 const INTERVAL = function(attrs) {
-   function _body(args) {
-      return <hh.sequence>
-	<timeout value=${attrs.value} apply=${attrs.apply}/>
-        ${expandChildren(Array.prototype.slice.call(args, 1, args.length))}
-      </hh.sequence>
-   }
-
    let count_value;
    let count_apply;
    let ret;
+
+   function _mk_timeout(fargs) {
+      return <hh.sequence>
+	<hh.emit TIMEOUT value=${attrs.value} apply=${attrs.apply}/>
+	<hh.exec apply=${function() {
+	   setTimeout(this.returnAndReact, this.value.TIMEOUT);
+	}}/>
+	${expandChildren(Array.prototype.slice.call(fargs, 1, fargs.length))}
+      </hh.sequence>;
+   }
 
    for (let i in attrs) {
       if (i.toLowerCase() == "countvalue")
@@ -47,7 +50,7 @@ const INTERVAL = function(attrs) {
 
    if (count_value !== undefined || count_apply !== undefined) {
       ret = <hh.trap INTERVAL_TRAP>
-	<hh.let INTERVAL_BOOKKEEPING=${{initValue: -1}}>
+	<hh.let INTERVAL_BOOKKEEPING=${{initValue: -1}} TIMEOUT>
 	  <hh.loop>
 	    <hh.emit INTERVAL_BOOKKEEPING
 	      value=${count_value}
@@ -60,7 +63,7 @@ const INTERVAL = function(attrs) {
 		   <hh.exit INTERVAL_TRAP/>
             </hh.if>
 
-            ${_body(arguments)};
+	    ${_mk_timeout(arguments)}
 
 	    <hh.emit INTERVAL_BOOKKEEPING apply=${function() {
 	       return this.preValue.INTERVAL_BOOKKEEPING - 1}}/>
@@ -68,9 +71,11 @@ const INTERVAL = function(attrs) {
 	</hh.let>
       </hh.trap>;
    } else {
-      ret = <hh.loop>
-        ${_body(arguments)}
-      </hh.loop>;
+      ret = <hh.let TIMEOUT>
+	<hh.loop>
+	  ${_mk_timeout(arguments)}
+	</hh.loop>
+      </hh.let>;
    }
 
    return ret;
