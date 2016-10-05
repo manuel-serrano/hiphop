@@ -13,7 +13,7 @@ service translator() {
 	  function translate() {
 	     var xhttp = new XMLHttpRequest();
 	     var svc = "http://mymemory.translated.net/api/get";
-	     var opt = "?langpair=fr|en&q=" + this.value.in;
+	     var opt = "?langpair=fr|en&q=" + this.value.text;
 	     xhttp.onreadystatechange = function() {
 		if (xhttp.readyState == 4 && xhttp.status == 200) {
 		   let res = JSON.parse(xhttp.responseText);
@@ -28,12 +28,9 @@ service translator() {
 	  onload = function() {
 	     hh = require("hiphop");
 	     m = new hh.ReactiveMachine(
-		<hh.module>
-		  <hh.inputsignal name="in" valued/>
-		  <hh.outputsignal name="trad" value=""/>
-
-		  <hh.every immediate signal="in">
-		    <hh.exec signal="trad" start=${translate}/>
+		<hh.module text trad>
+		  <hh.every immediate text>
+		    <hh.exec trad apply=${translate}/>
 		  </hh.every>
 		</hh.module>);
 	     trad = m.reactProxy("trad");
@@ -41,7 +38,7 @@ service translator() {
        }
      </head>
      <body>
-       <input type="text" oninput=~{m.inputAndReact("in", this.value)}/>
+       <input type="text" oninput=~{m.inputAndReact("text", this.value)}/>
        <div><react>~{trad.value}</react></div>
      </body>
    </html>;

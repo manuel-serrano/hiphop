@@ -106,10 +106,14 @@ function TERM(attrs) {
 	   return <span><strong>${attrs.name}</strong>=JSString</span>;
 	else if ("JSValue" in attrs)
 	   return <span><strong>${attrs.name}</strong>=JSValue</span>;
+	else if ("JSFunction" in attrs)
+	   return <span><strong>${attrs.name}</strong>=JSFunction</span>;
 	else if ("JSUInt" in attrs)
 	   return <span><strong>${attrs.name}</strong>=JSUInt</span>;
 	else if ("HHModule" in attrs)
 	   return <span><strong>${attrs.name}</strong>=HHModule</span>;
+	else if ("expr" in attrs)
+	   return <span><strong>${attrs.name}</strong>=expr</span>
 	else if ("JSMapSS" in attrs)
 	   return <span><strong>${attrs.name}</strong>=JSMap[JSString, JSString]</span>;
 	else
@@ -159,10 +163,9 @@ exports.langage_map =
 
      <tr>
      ${comment(true,
-	       "JSExpr is a reference to any JavaScript expression.",
-	       "JSString is a JavaScript string.",
-	       "HHModule is a JavaScript object containing an Hiphop.js program code.",
-	       "JSMap[<em>type</em>, <em>type</em>] is a JavaScript map.")}
+	       "JSValue is a reference to any JavaScript value.",
+	       "JSFunction is a reference to any JavaScript function.",
+	       "HHModule is a JavaScript object containing an Hiphop.js program code.")}
      ${comment(true,
 	       "Hiphop.js symbols are in <strong>bold</strong>.",
 	       "Non terminal symbols have the following typo: " +
@@ -179,68 +182,11 @@ exports.langage_map =
        <td width="46%">
 	 <term_cnode name="Module">
 	   <indent>
-	     <opt repeat br>
-	       <nterm name="module-header"/>
-	     </opt>
 	     <nterm name="stmt"/>
 	   </indent>
 	 </term_cnode>
        </td>
        ${comment(true, "Entry point of a reactive program.")}
-     </tr>
-
-     ${header("Module header", "module-header")}
-
-     <tr>
-       <td>
-	 <term_node name="InputSignal">
-	   <term name="name" JSString />
-	   <indent>
-	     <opt br><term name="valued" /></opt>
-	     <opt br><term name="combine" runtime-expr /></opt>
-	     <opt br><term name="value" static-expr /></opt>
-	     <opt br><term name="reset" runtime-expr /></opt>
-	   </indent>
-         </term_node>
-       </td>
-       ${comment(true,
-		 "Input signal declaration.",
-		 "Can be emitted fron inside the reactive program.",
-		 "Has a global scope.")}
-     </tr>
-
-     <tr>
-       <td>
-	 <term_node name="OutputSignal">
-	   <term  name="name" JSString />
-	   <indent>
-	     <opt br><term name="valued" /></opt>
-	     <opt br><term name="combine" runtime-expr /></opt>
-	     <opt br><term name="value" static-expr /></opt>
-	     <opt br><term name="reset" runtime-expr /></opt>
-	   </indent>
-         </term_node>
-       </td>
-       ${comment(true,
-		 "Output signal declaration.",
-		 "Has a global scope.")}
-     </tr>
-
-     <tr>
-       <td>
-	 <term_node name="IOSignal">
-	   <term  name="name" JSString />
-	   <indent>
-	     <opt br><term name="valued" /></opt>
-	     <opt br><term name="combine" runtime-expr /></opt>
-	     <opt br><term name="value" static-expr /></opt>
-	     <opt br><term name="reset" runtime-expr /></opt>
-	   </indent>
-         </term_node>
-       </td>
-       ${comment(true,
-		 "Merge of Input and Output global signal.",
-		 "Has a global scope.")}
      </tr>
 
      ${header("Statements", "stmt")}
@@ -276,7 +222,9 @@ exports.langage_map =
 
      <tr>
        <td>
-	 <nterm name="runtime-expr"/>
+	 <term_node name="Atom">
+	   <term name="apply" JSFunction/>
+	 </term_node>
        </td>
        ${comment(true, "Instantaneous execution of given JavaScript function.")}
      </tr>
@@ -285,25 +233,25 @@ exports.langage_map =
        <td>
 	 <term_node name="Exec">
 	   <indent>
-	     <term br name="start" runtime-expr/>
-	     <opt br><term name="signal" JSString /></opt>
-	     <opt br><term name="kill" runtime-expr /></opt>
-	     <opt br><term name="susp" runtime-expr /></opt>
-	     <opt br><term name="res" runtime-expr /></opt>
+	     <nterm name="signal" br/>
+	     <term br name="apply" JSFunction/>
+	     <opt br><term name="kill" JSFunction /></opt>
+	     <opt br><term name="susp" JSFunction /></opt>
+	     <opt br><term name="res" JSFunction /></opt>
 	   </indent>
 
 	 </term_node>
        </td>
        ${comment(true,
-		 "Execution of JavaScript function referenced by <strong>start" +
+		 "Execution of JavaScript function referenced by <strong>apply" +
 		 "</strong>, and wait for terminaison of the routine by the call to this.return()" +
-		 " or this.returnAndReact() in start function.")}
+		 " or this.returnAndReact() in apply function.")}
      </tr>
 
      <tr>
        <td>
 	 <term_node name="Emit">
-	   <nterm name="sigemit"/>
+	   <nterm name="signal-emit"/>
 	 </term_node>
        </td>
        ${comment(true, "Terminates instantaneously.")}
@@ -312,7 +260,7 @@ exports.langage_map =
      <tr>
        <td>
 	 <term_node name="Sustain">
-	   <nterm name="sigemit"/>
+	   <nterm name="signal-emit"/>
 	 </term_node>
        </td>
        ${comment(true, "Never terminates.", "Can be aborted.")}
@@ -332,28 +280,10 @@ exports.langage_map =
 
      <tr>
        <td>
-	 <term_cnode name="Present">
-	   <cnode_args>
-	     <opt><term name="not"/></opt>
-	     <nterm name="sig"/>
-	   </cnode_args>
-	   <indent>
-	     <nterm name="stmt" br/>
-	     <opt><nterm name="stmt"/></opt>
-	   </indent>
-	 </term_cnode>
-       </td>
-        ${comment(true,
-		  "Branching according to result of the signal guard.",
-		  "Test and branching are instantaneous.")}
-     </tr>
-
-     <tr>
-       <td>
 	 <term_cnode name="If">
 	   <cnode_args>
 	     <opt><term name="not"/></opt>
-	     <nterm name=runtime-expr/>
+	     <nterm name=expr/>
 	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt" br/>
@@ -485,7 +415,7 @@ exports.langage_map =
        <td>
 	 <term_node name="Exit">
 	   <term name="trap" JSString/>
-	 </term_cnode>
+	 </term_node>
        </td>
        ${comment(true, "Raises an exception.")}
      </tr>
