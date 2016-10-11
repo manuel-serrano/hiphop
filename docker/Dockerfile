@@ -6,6 +6,7 @@ RUN apt-get clean && apt-get update && apt-get install -y \
     git \
     gcc \
     autoconf \
+    libgmp-dev \
     automake \
     curl \
     pkg-config \
