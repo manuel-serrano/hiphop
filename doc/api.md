@@ -43,15 +43,12 @@ but it can be preempted.
 
 Attributes and children of the node:
 
-* An expression or a signal name.
-* `pre` (optional, if signal name is given): test the presence of the
-  signal at the previous instant.
+* A delay expression.
 * `not` (optional): logic negation of the result of the test.
 * One child (then branch) or two (then and else branch).
 
-Instantaneously evaluates the expression or test the signal presence,
-and gives control to the _then_ or _else_ branch according to the
-result of the test.
+Instantaneously evaluates the expression and gives control to the
+_then_ or _else_ branch according to the result of the test.
 
 The following example will emit `O1` if the signal `I1` is present,
 and `O2` if the value of the signal `O2` is superior or equals to 2.
@@ -68,9 +65,10 @@ ${ doc.include("../tests/if1.js", 10, 15) }
 Attributes of the node:
 
 * At least one signal name.
-* An optional expression.
-* An optional condition expression.
-* `ifApply` (optional) or `ifValue` (optional)
+* An optional JavaScript expression.
+* An optional conditional expression: `ifApply` (optional, takes a
+  JavaScript functional value) or `ifValue` (optional, takes any
+  JavaScript value).
 
 Instantaneously sets given signals present in the current instant and
 terminates. In an expression is given, it is evaluated and its return
@@ -120,10 +118,11 @@ ${doc.include("../tests/emit-if1.js", 8, 8)}
 Attributes of the node:
 
 * At least one signal name.
-* An optional expression.
-* An optional condition expression.
-* `ifApply` (optional) or `ifValue` (optional)
-
+* An optional JavaScript expression.
+* An optional conditional expression: `ifApply` (optional, takes a
+  JavaScript functional value) or `ifValue` (optional, takes any
+  JavaScript value).
+  
 Instantaneously emit given signals, but never terminates, and will
 always re-emit the signal on following reactions. The rules of Emit
 statement applies here. If a conditional expression is given (via
@@ -191,17 +190,15 @@ will re-loop at the same instant):
 
 Attributes and children of the node:
 
-* An expression or a signal name.
-* `pre` (optional, if signal name is given): test the presence of the
-  signal at the previous instant.
+* A delay expression.
 * An optional counter expression.
 * Take at least one child.
 
 The body of the LoopEach statement is instantaneously started, and
-then restarted each at each reaction if the expression is true, or if
-the signal is present. This statement can't make instantaneous loop,
-so the body can instantaneously terminates. LoopEach never terminates,
-but can be preempted.
+then restarted each at each instant where the delay expression
+elapses. This statement can't make instantaneous loop, so the body can
+instantaneously terminates. LoopEach never terminates, but can be
+preempted.
 
 In the following example, `O` is emitted the first instant, and at
 each following instants where `I` is present:
@@ -215,15 +212,13 @@ ${ doc.include("../tests/loopeach.js", 7, 9) }
 
 Attributes and children of the node:
 
-* An expression or a signal name.
-* `pre` (optional, if signal name is given): test the presence of the
-  signal at the previous instant.
+* A delay expression.
 * An optional counter expression.
 * Take at least one child.
 
-The body of the Every statement is instantaneously started each time
-the expression is true, or the signal is present. However, on the
-first instant, the body of Every is never started.
+The body of the Every statement is instantaneously started at each
+instant where the delay expression elapses. However, on the first
+instant, the body of Every is never started.
 
 In the following example, `O` is not be emitted at the first
 instant. It is emitted on the following instants if `I` is present:
@@ -269,15 +264,13 @@ ${ doc.include("../tests/trap.js", 8, 15) }
 
 Attributes and children of the node:
 
-* An expression or a signal name.
-* `pre` (optional, if signal name is given): test the presence of the
-  signal at the previous instant.
+* A delay expression.
 * An optional counter expression.
 * Take at least one child.
 
 The Abort statement instantaneously start its body. The body is
 instantaneously preempted and the Abort terminates at the instant
-where the expression is true, or the signal is present.
+where the delay expression elapses.
 
 In the following example, `S` is emitted at the first instant. On the
 following reaction, `O` is not emitted, but `W` is emitted:
@@ -296,16 +289,14 @@ following reaction, `O` is not emitted, but `W` is emitted:
 
 Attributes and children of the node:
 
-* An expression or a signal name.
-* `pre` (optional, if signal name is given): test the presence of the
-  signal at the previous instant.
+* A delay expression.
 * An optional counter expression.
 * Take at least one child.
 
 The WeakAbort statement instantaneously start its body. The body is
-preempted and the Abort terminates at the instant where the expression
-is true, or the signal is present, but left the control to its body
-during this instant.
+preempted and the Abort terminates at the instant where the delay
+expression elapses, but left the control to its body during this
+instant.
 
 In the following example, `S` is emitted at the first instant. On the
 following reaction, both `O` and `W` are emitted:
@@ -324,14 +315,12 @@ following reaction, both `O` and `W` are emitted:
 
 Attributes and children of the node:
 
-* An expression or a signal name.
-* `pre` (optional, if signal name is given): test the presence of the
-  signal at the previous instant.
+* A delay expression.
 * Take at least one child.
 
-Instantaneously suspend its body when the expression is true, or the
-signal is present. The state of the body is saved, and is restore of
-following reaction, when the guard is not true.
+Instantaneously suspend its body when the delay expression
+elapses. The state of the body is saved, and is restore of following
+reaction, when the guard is not true.
 
 In the following example, `O` is emitted at each reaction if `I` is
 not present. However, `J` is never emitted:
@@ -353,16 +342,13 @@ not present. However, `J` is never emitted:
 
 Attributes of the node:
 
-* An expression or a signal name.
-* `pre` (optional, if signal name is given): test the presence of the
-  signal at the previous instant.
+* A delay expression.
 * An optional counter expression.
 
-Terminates if the evaluated expression is true, or if the given signal
-is present.
+Instantaneously terminates when the delay expression elapses.
 
-Note that if the expression is true of the first time the await has
-control, it will be ignored, except if `immediate` keyword is set.
+Note that if the delay expression elapses of the first time the await
+has control, it will be ignored, except if `immediate` keyword is set.
 
 The following example will emit `O` when `I` has been emitted on the
 two previous reactions, and during the current reaction:
@@ -396,9 +382,9 @@ number of times:
 
 Attribute of the node:
 
-* A functional expression.
+* A JavaScript expression.
 
-Instantaneously evaluate the given expression.
+Instantaneously evaluate the given JavaScript expression.
 
 The following example will display _atom works! value of L is foo bar_
 during the second reaction:
@@ -492,7 +478,7 @@ ${ doc.include("../tests/run.js", 5, 20) }
 Attributes of the node:
 
 * An optional signal name.
-* `apply`: function called when control reaches the exec statement.
+* `apply`: a JavaScript expression.
 * `susp` (optional): function called when the exec statement is
   suspended;
 * `kill` (optional): function called when the exec statement is
@@ -582,30 +568,100 @@ of `S` of the previous instance is lost:
 
 ### Signal properties
 
-* `initValue`
-* `initApply`
-* `reinitValue`
-* `reinitApply`
-* `combine`
+Signals can be tuned by several specific properties. The properties
+are given to the signal during its definition, through a JavaScript
+object, as in the following examples:
+
+```hopscript
+<hh.module sig=${{initValue: 5}}> ... </hh.module>
+<hh.let sig=${{initValue: 5}}> ... </hh.let>
+```
+
+#### Accessibility of a signal
+
+By default, global signals can be read and write by the JavaScript
+world. However, it is possible to restrict the access to write-only or
+read-only. Accessibility attribute is ignored for local signals, as
+they are by definition _hidden_ from the JavaScript world.
+
+The accessibility is defined by the following attribute:
+
+* `accessibility`
+
+This attribute can takes one of the following values:
+
+* `hh.IN`: signal is write-only from the JavaScript world.
+* `hh.OUT`: signal is read-only from the JavaScript world.
+* `hh.INOUT`: signal is read-write from the JavaScript world
+  (default).
+
+#### Initialization of signal
+
+Signal can be automatically initialized with a value. If the signal is
+global and has not been emitted via `input` method of the
+ReactiveMachine, it is initialized before the first reaction. If the
+signal is local, it is initialized when the control reach the Let
+statement that defines the signal.
+
+* `initValue`: takes any JavaScript value.
+* `initApply`: takes a JavaScript functional value.
+
+`initApply` works like JavaScript expression when `apply` is
+used. Therefore, value of presence status of signal can be used in the
+given JavaScript function.
+
+#### Re-initialization of signal
+
+Signal can be automatically re-initialized with a value. If the signal
+is global and has not been emitted via `input` method of the
+ReactiveMachine, it is re-initialized before each reaction. If the
+signal is local, it is re-initialized before each reaction where the
+control was left on the previous reaction into Let statement that
+defines the signal.
+
+* `reinitValue`: takes any JavaScript value.
+* `reinitApply`: takes a JavaScript functional value.
+
+`reinitApply` works like JavaScript expression when `apply` is
+used. Therefore, value of presence status of signal can be used in the
+given JavaScript function.
+
+#### Combine signal
+
+In order to be allowed to make multiple valued emission of the same
+signal during the same instant, a combination function can be
+given. It must be commutative, and takes two parameters: the former is
+the value of the signal _before_ the emission, and the last, the
+emitted value:
+
+* `combine`: a JavaScript functional value.
+
+For instance, the following example emits the signal `S` with the
+value `6`:
+
+```hopscript
+<hh.module S=${{combine: (x, y) => x + y}}>
+   <hh.emit S value=${2}/>
+   <hh.emit S value=${1}/>
+   <hh.emit S value=${3}/>
+</hh.module>
+```
 
 # Expression
 
-JavaScript expressions can be given to Hiphop.js program, via Hop.js
-constructor `\$\{any-JS-expression}`. Those expressions can be
-evaluated at the compilation of the Hiphop.js program (static
-expression), or during the runtime (runtime expression).
+## JavaScript Expression
 
-## Static expression
+In Hiphop.js, a JavaScript expression is defined by one of the
+following attribute:
 
-Attribute identifying a static expression:
+* `value`: takes any JavaScript value.
 
-* `value` which receive any JavaScript value.
+* `apply`: takes a JavaScript functional value.
 
-The body of a static expression is evaluated during the compilation of
-the Hiphop.js program, and the resulting value is internally
-stored. Therefore, this value never change during the whole life of
-the program (except if the value is a reference to a JavaScript
-object, and if this object is modified).
+If `value` is used, the given JavaScript value is given to the
+instruction using it. Therefore, this value never change during the
+whole life of the program (except if the value is a reference to a
+JavaScript object, and if this object is modified).
 
 For instance, the following program emits the value `7` to signal `S`
 at each reaction:
@@ -617,20 +673,12 @@ var x = 7;
    <hh.sustain S value=${x++}/>
 </hh.module>
 ```
-
-## Runtime expression
-
-Attribute identifying a runtime expression:
-
-* `apply` which receive a functional value.
-
-The body of a runtime expression must be a functional value. The given
-function will be evaluated during the reaction of the Hiphop.js
-program, according to the semantic of the instruction using it.
-
-As this expression is evaluated during the runtime, it can read signal
-status and values which are in the scope. Those properties can be
-acceded via the `this` object of the given function:
+If `apply` is used, the given JavaScript functional value is evaluated
+at runtime at each instant, if and when the Hiphop.js using it has
+control. The return value is then given to the instruction. As this
+expression is evaluated during the runtime, it can read signal status
+and values which are in the scope. Those properties can be acceded via
+the `this` object of the given function:
 
 * `this.value.SignalName` returns the value of `SignalName` during the
   instant.
@@ -644,8 +692,9 @@ acceded via the `this` object of the given function:
 * `this.prePresent.SignalName` returns a boolean telling if
   `SignalName` was emitted in the previous instant.
 
-The value returned by the expression is given to Hiphop.js program if
-needed.
+The value returned by the expression is given to Hiphop.js
+instruction. It can be used (in Emission statements, for instance) or
+ignored (in Atom statement, for instance).
 
 The following example show an expression used for conditional
 branching test. `O1` is emitted if `I1` is present, and `O2` is
@@ -663,28 +712,47 @@ previous instant incremented by 1, and signal `O` is emitted with the
 ${ doc.include("../tests/emitvaluedlocal1.js", 9, 10) }
 ```
 
-## Counter expression
+## Delay Expression
 
-Attributes identifying a counter expression:
+A delay expression is a JavaScript expression. However, its return
+value is used as the expression of a boolean test. The delay
+expressions elapses if the test is true. The following behavior
+depends of the instruction using this delay.
 
-* `countValue` which receive any JavaScript value.
-* `countApply` which receive a functional value.
+A delay expression can be specialized for signals status, using a
+different syntax of the JavaScript expression. It contains a signal
+name and an optional `pre` attribute. For instance, the following
+instructions use a signal expression.
 
-A counter expression can be evaluated during compilation, like static
-expressions (using `countValue`) or during the execution, like runtime
-expression (using `countApply`).
+```hopscript
+<hh.await SignalFoo/>
+```
 
-Each time an instruction using a counter expression is started (at the
-beginning of the execution of the program, of when inside a Loop
-instruction which re-loop, for instance), the result of the counter
-expression is internally stored. Each time the instruction is resumed,
-the (non counter) expression (or signal presence test) value is
-checked. If true, it decrements the counter internal value. Then, when
-the internal counter value reaches 0, a instruction-specific action
-can be done.  For instance, an Await instruction would terminates.
+The signal expression is the name of the signal `SignalFoo`. It
+returns true if `SignalFoo` is present in the instant, false otherwise.
 
-**Warning**: a counter expression must always return a positive
-integer.
+```hopscript
+<hh.await pre SignalBar/>
+```
+
+The signal expression is `pre SignalBar`. It returns true if
+`SignalBar` was present on the previous instant, false otherwise.
+
+## Counter Expression
+
+Each time an instruction using a counter expression is started, it
+initializes an internal counter with the return value of this counter
+expression. That value must be a positive integer. It is defined with
+one of the following attribute:
+
+* `countValue`: takes any JavaScript value.
+
+* `countApply`: takes a JavaScript functional value, evaluated at
+  runtime.
+
+As for JavaScript expressions, `countApply` can accesses to signal
+presence and values, via the receiver of the given JavaScript
+function.
 
 # Runtime & Reactive machine
 
