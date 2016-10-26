@@ -165,6 +165,7 @@ exports.langage_map =
      ${comment(true,
 	       "JSValue is a reference to any JavaScript value.",
 	       "JSFunction is a reference to any JavaScript function.",
+	       "JSObject is a reference to a JavaScript object.",
 	       "HHModule is a JavaScript object containing an Hiphop.js program code.")}
      ${comment(true,
 	       "Hiphop.js symbols are in <strong>bold</strong>.",
@@ -181,12 +182,17 @@ exports.langage_map =
      <tr>
        <td width="46%">
 	 <term_cnode name="Module">
+	   <cnode_args>
+	     <opt><nterm name="signal-decl"/></opt>
+	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt"/>
 	   </indent>
 	 </term_cnode>
        </td>
-       ${comment(true, "Entry point of a reactive program.")}
+       ${comment(true,
+		 "Entry point of a reactive program.",
+		 "Can defines global signals.")}
      </tr>
 
      ${header("Statements", "stmt")}
@@ -251,19 +257,28 @@ exports.langage_map =
      <tr>
        <td>
 	 <term_node name="Emit">
-	   <nterm name="signal-emit"/>
+	  { <nterm name="signal"/> }
+	    <opt br><nterm name="js-expr"/></opt>
+	    <indent><opt><term name="ifValue" JSValue /> | <term name="ifApply" JSFunction /></opt></indent>
 	 </term_node>
        </td>
-       ${comment(true, "Terminates instantaneously.")}
+       ${comment(true,
+		 "Terminates instantaneously.",
+		 "Can emit several signals.")}
      </tr>
 
      <tr>
        <td>
 	 <term_node name="Sustain">
-	   <nterm name="signal-emit"/>
+	    { <nterm name="signal"/> }
+	    <opt br><nterm name="js-expr"/></opt>
+	    <indent><opt><term name="ifValue" JSValue /> | <term name="ifApply" JSFunction /></opt></indent>
 	 </term_node>
        </td>
-       ${comment(true, "Never terminates.", "Can be aborted.")}
+       ${comment(true,
+		 "Never terminates.",
+		 "Can be aborted.",
+		 "Can emit several signals.")}
      </tr>
 
      <tr>
@@ -273,7 +288,8 @@ exports.langage_map =
 	 </term_cnode>
        </td>
         ${comment(true,
-		  "Infinite loop, immediately restarts its body when terminated.",
+		  "Instantaneously start its body.",
+		  "Instantaneously restarts its body when it has terminated.",
 		  "Never terminates, can be aborted or exited.",
 		  "<em style=\"font-size:130%\">stmt</em> must not be instantaneous.")}
      </tr>
@@ -283,7 +299,7 @@ exports.langage_map =
 	 <term_cnode name="If">
 	   <cnode_args>
 	     <opt><term name="not"/></opt>
-	     <nterm name=expr/>
+	     <nterm name=delay-expr/>
 	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt" br/>
@@ -292,21 +308,21 @@ exports.langage_map =
 	 </term_cnode>
        </td>
         ${comment(true,
-		  "Branching according to the value of test expression.",
-		  "Test and branching are instantaneous.")}
+		  "Instantaneously evaluated the delay expression.",
+		  "Takes the then branch if the delay elapses, the else branch otherwise.")}
      </tr>
 
      <tr>
        <td>
 	 <term_node name="Await">
-	   <nterm name="sig"/>
+	   <nterm name="delay-expr"/>
 	   <opt >
 	     <nterm name="count-expr"/>
 	   </opt>
 	 </term_node>
        </td>
         ${comment(true,
-		  "Terminates when the signal guard is true.",
+		  "Terminates when the delay elapses.",
 		  "Instantaneous is <strong>immediate</strong> keyword is present.")}
      </tr>
 
@@ -314,27 +330,23 @@ exports.langage_map =
        <td>
 	 <term_cnode name="Abort">
 	   <cnode_args>
-	     ( <nterm name="sig" />
-	      | <nterm name="runtime-expr" /> )
-		<opt><nterm name="count-expr"/></opt>
+	     <nterm name="delay-expr" />
+	     <opt><nterm name="count-expr"/></opt>
 	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt"/>
 	   </indent>
 	 </term_cnode>
        </td>
-       ${comment(true,
-		 "Absortion; kills the statement when the signal guard or " +
-		 "the expression is true.")}
+       ${comment(true, "Absortion; kills the statement when the delay elapses.")}
      </tr>
 
      <tr>
        <td>
 	 <term_cnode name="WeakAbort">
 	   <cnode_args>
-	     ( <nterm name="sig" />
-	      | <nterm name="runtime-expr" /> )
-		<opt><nterm name="count-expr"/></opt>
+	      <nterm name="delay-expr" />
+	      <opt><nterm name="count-expr"/></opt>
 	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt"/>
@@ -342,35 +354,31 @@ exports.langage_map =
 	 </term_cnode>
        </td>
        ${comment(true,
-		 "Weak variant of absortion; starts the statement in " +
-		 "the current instant when the guard expression is true, before killing it.")}
+		 "Weak variant of absortion; restarts the statement in " +
+		 "the instant where de delay elapses, and kills it at the end of the instant.")}
      </tr>
 
      <tr>
        <td>
 	 <term_cnode name="LoopEach">
 	   <cnode_args>
-	     ( <nterm name="sig" />
-	      | <nterm name="runtime-expr" /> )
-		<opt><nterm name="count-expr"/></opt>
+	     <nterm name="delay-expr" />
+	     <opt><nterm name="count-expr"/></opt>
 	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt"/>
 	   </indent>
 	 </term_cnode>
        </td>
-       ${comment(true,
-		 "Temporal loop which is body is initialy started.",
-		 "The signal guard can't be <strong>immediate</strong>.")}
+       ${comment(true, "Temporal loop which is initialy started.")}
      </tr>
 
      <tr>
        <td>
 	 <term_cnode name="Every">
 	   <cnode_args>
-	     ( <nterm name="sig" />
-	      | <nterm name="runtime-expr" /> )
-		<opt><nterm name="count-expr"/></opt>
+	     <nterm name="delay-expr" />
+	     <opt><nterm name="count-expr"/></opt>
 	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt"/>
@@ -378,16 +386,14 @@ exports.langage_map =
 	 </term_cnode>
        </td>
        ${comment(true,
-		 "Tempooral loop which initial waiting of true signal " +
-		 "guard or expression.",
-		 "Unlike LoopEach, the signal guard can be <strong>immediate</strong>.")}
+		 "Tempooral loop which initially wait the delay expression elapses.")}
      </tr>
 
      <tr>
        <td>
 	 <term_cnode name="Suspend">
 	   <cnode_args>
-	     <nterm name="sig" /> | <nterm name="runtime-expr" />
+	     <nterm name="delay-expr" />
 	   </cnode_args>
 	   <indent>
 	     <nterm name="stmt"/>
@@ -395,55 +401,40 @@ exports.langage_map =
 	 </term_cnode>
        </td>
        ${comment(true,
-		 "If the signal guard or the expression is true, keeps the " +
-		 "state of the body statement and pauses for the current instant.")}
+		 "Keeps the state of its body and pauses for the current instant.")}
      </tr>
 
      <tr>
        <td>
 	 <term_cnode name="Trap">
 	   <cnode_args>
-	     <term name="name" JSString/>
+	     <nterm name="trap"/>
 	   </cnode_args>
 	   <nterm name="stmt"/>
 	 </term_cnode>
        </td>
-       ${comment(true, "Mechanism to catch exceptions raised by the body statement.")}
+       ${comment(true, "Defines a scope that can be exited by a trap.")}
      </tr>
 
      <tr>
        <td>
 	 <term_node name="Exit">
-	   <term name="trap" JSString/>
+	   <nterm name="trap"/>
 	 </term_node>
        </td>
-       ${comment(true, "Raises an exception.")}
+       ${comment(true, "Exit point of a trap.")}
      </tr>
 
      <tr>
        <td>
 	 <term_cnode name="Let">
-	   <indent>
-	       <repeat br>
-	          <term_node name="Signal">
-	            <indent>
-	              <term br name="name" JSString />
-	              <opt br><term name="valued" /></opt>
-	              <opt br><term name="combine" runtime-expr /></opt>
-	              <opt br><term name="value" static-expr /></opt>
-	              <opt br><term name="reset" runtime-expr /></opt>
-	            </indent>
-                  </term_node>
-	       </repeat>
-	       <repeat>
-	         <nterm name="stmt"/>
-	       </repeat>
-	    </indent>
+	   <cnode_args>
+	     <opt><nterm name="signal-decl"/></opt>
+	   </cnode_args>
+	   <nterm name="stmt"/>
 	 </term_cnode>
        </td>
-       ${comment(true,
-		 "Local declaration of a signal.",
-		 "<strong>Let</strong> determines scope of local signals.")}
+       ${comment(true, "Defines a scope with local signals.")}
      </tr>
 
      <tr>
@@ -451,69 +442,72 @@ exports.langage_map =
 	 <term_node name="Run">
 	   <indent>
 	     <term name="module" HHModule br />
-	     <term name="sigs_assoc" JSMapSS />
+	     <opt>{ <nterm name="signal"/>=<nterm name="signal"/> }</opt>
 	   </indent>
 	 </term_node>
        </td>
        ${comment(true,
-		 "Create an instance of a Hiphop.js module, and embeded " +
-		 "in the location of the Run instruction.",
-		 "The map associate signals of callee module " +
-		 "(keys of the map) to signals of caller module (values of the map).")}
+		 "Inline a module in the current module.",
+		 "By default, signals on the inlined module are binded to signals of " +
+		 "the current module, if they have the same name.",
+		 "Can explicitly bind a signal of the inlined module to a signal of the current module.")}
      </tr>
 
-     ${header("Signal emission", "sigemit")}
+     ${header("Signal Declaration", "signal-decl")}
      <tr>
        <td>
-	 <term br name="signal" JSString />
-	 <opt><term name="value" runtime-exprORstatic-expr/></opt>
+	 { <nterm name="signal"/> <opt>=JSObject</opt> }
        </td>
        ${comment(true,
-		 "Signal guard. Return true if the signal is present.",
-		 "If <strong>pre</strong> keyword is present, return true if " +
-		 "the signal was present on the previous instant.")}
+		 "Defines a signal.",
+		 "The optional given object defines signal properties.")}
 
      </tr>
 
-     ${header("Signal guard", "sig")}
+     ${header("Signal expression", "signal-expr")}
      <tr>
        <td>
 	 <opt><term name="pre"/></opt>
 	 <opt><term name="immediate"/></opt>
-	 <term name="signal" JSString />
+	 <nterm name="signal" />
        </td>
        ${comment(true,
-		 "Signal guard. Return true if the signal is present.",
+		 "Signal expression. Return true if the signal is present.",
 		 "If <strong>pre</strong> keyword is present, return true if " +
 		 "the signal was present on the previous instant.")}
 
      </tr>
 
-      ${header("Counter expression", "count-expr")}
+     ${header("JavaScript expression", "js-expr")}
      <tr>
-       <td><term name="count" runtime-exprORstatic-expr/></td>
+       <td><term name="value" JSValue /> | <term name="apply" JSFunction /></td>
        ${comment(true,
-		 "Define a counter.")}
+		 "Defines a JavaScript expression.",
+		 "Signal value and status can be read into the given JSFunction.")}
 
      </tr>
 
-     ${header("Runtime expression", "runtime-expr")}
+     ${header("Delay expression", "delay-expr")}
      <tr>
-       <td>\$\{function() {JSExpr}}</td>
-       ${comment(true,
-		 "JavaScript expression given by the host language " +
-		 "evaluated during Hiphop.js runtime.")}
-
+       <td><nterm name="signal-expr" /> | <nterm name="js-expr" /></td>
+       ${comment(true, "Defines a delay expression.")}
      </tr>
 
-     ${header("Static expression", "static-expr")}
+     ${header("Counter expression", "count-expr")}
      <tr>
-       <td>\$\{JSExpr}</td>
-       ${comment(true,
-		 "JavaScript expression given by the host language " +
-		 "evaluated during Hiphop.js compile time.")}
-
+       <td><term name="countValue" JSValue /> | <term name="applyValue" JSFunction /></td>
+       ${comment(true, "Define a counter expression.")}
      </tr>
 
+     ${header("Signal name", "signal")}
+     <tr>
+       <td></td>
+       ${comment(true, "Name of a signal.", "Must be a valid JavaScript identifier.")}
+     </tr>
 
+     ${header("Trap name", "trap")}
+     <tr>
+       <td></td>
+       ${comment(true, "Name of a trap.", "Must be a valid JavaScript identifier.")}
+     </tr>
    </table>
