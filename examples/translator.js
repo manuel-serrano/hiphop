@@ -28,10 +28,10 @@ service translator() {
 	   req.send();
 	}
 
-	function execColor(lang, await=false) {
+	function execColor(lang, _await=false) {
 	   return <hh.module lang=${{initValue: lang}} color text trans>
 		<hh.emit color value=${"red"}/>
-		${await ? <hh.await text/> : <hh.nothing/>}
+		${_await ? <hh.await text/> : <hh.nothing/>}
 		<hh.exec trans apply=${translate}/>
 		<hh.emit color value=${"green"}/>
 	     </hh.module>
