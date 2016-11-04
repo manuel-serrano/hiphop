@@ -2,7 +2,7 @@ ${ var doc = require( "hopdoc" ) }
 ${ var config = require( hop.config ) }
 ${ var xml = require( config.docDir + "/xml.js" ) }
 ${ var cfg = require( "./doc.json" ) }
-${ var dockerurl = cfg.urlbase + "docker-hop.tgz" }
+${ var dockerurl = cfg.urlbase + "docker.tgz" }
 
 ## License ##
 
@@ -47,9 +47,9 @@ Docker installation procedure:
 
 * `wget ${dockerurl}`
 
-* `tar xf docker-hop.tgz`
+* `tar xf docker.tgz`
 
-* `cd dockerfile-hop; docker build -t hop .`
+* `cd docker; docker build -t hop .`
 
 Then, let's consider that `$HOME/myApp` is a directory containing your
 Hop.js application, and the file `main.js` the entry point,
