@@ -1,4 +1,25 @@
 presentemit> ;
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+!!! Module___I_pre_reg
+!!! Module___I
+!!! Module___O_pre_reg
+!!! Module___O
+!!! Emit___I_go___0
+!!! Nothing___go___0
+!!! If___and_then___0
+!!! If___and_else___0
+!!! If___testexpr___0
+!!! If___k0___0
+!!! If___testexpr___1
+!!! Emit___O_go___0
+!!! Pause___reg
+!!! Pause___or_to_reg
+!!! Pause___go___0
+!!! Pause___and___0
+!!! Sequence___k1___0
+!!! Loop___k1_buffer___0
+!!! Module___global_k1
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 *** CAUSALITY ERROR
 *** missing 16 nets
 presentemit> ;
