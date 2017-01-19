@@ -41,8 +41,8 @@ console.log(m.inputAndReact("I", 34));
 
 m.addEventListener("O", foo3);
 
-console.log("I");
-console.log(m.inputAndReact("I"));
+console.log("I(34)");
+console.log(m.inputAndReact("I", 34));
 
 m.removeEventListener("O", foo3);
 

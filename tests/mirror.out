@@ -13,6 +13,6 @@ hi from bar signal O4 is set with value 34 !
 mirror> I4(5);
 hi from bar signal O4 is set with value 5 !
 --- Output: O4(5)
-mirror> I4;
+mirror> I4(5);
 hi from bar signal O4 is set with value 5 !
 --- Output: O4(5)

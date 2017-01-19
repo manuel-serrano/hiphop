@@ -4,7 +4,7 @@ I(34)
 foo called by O with value 34
 foo2 called by O with value 34
 [ 'O(34)' ]
-I
+I(34)
 foo called by O with value 34
 foo2 called by O with value 34
 foo3 called by O with value 34
