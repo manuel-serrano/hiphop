@@ -18,7 +18,7 @@ const TIMEOUT = function(attrs) {
       <hh.module timetowait>
 	<hh.emit timetowait value=${attrs.value} apply=${attrs.apply}/>
 	<hh.exec apply=${function() {
-	   setTimeout(this.returnAndReact, this.value.timetowait);
+	   setTimeout(this.returnAndReact, parseInt(this.value.timetowait));
 	}}/>
       </hh.module>
    }/>
