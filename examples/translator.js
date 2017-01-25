@@ -47,21 +47,21 @@ service translator() {
      </head>
      <style> * { font-size: 60px; color: black; }</style>
      <body>
-       <input oninput=~{m.text = this.value}/>
+       <input oninput=~{m.value.text = this.value}/>
        <div>
-         <span style=~{`color: ${m.colorEn}`}>
-           <react>~{m.transEn}</react>
+         <span style=~{`color: ${m.value.colorEn}`}>
+           <react>~{m.value.transEn}</react>
          </span> -
-         <span style=~{`color: ${m.colorNe}`}>
-           <react>~{m.transNe}</react>
+         <span style=~{`color: ${m.value.colorNe}`}>
+           <react>~{m.value.transNe}</react>
          </span>
        </div>
        <div>
-         <span style=~{`color: ${m.colorEs}`}>
-           <react>~{m.transEs}</react>
+         <span style=~{`color: ${m.value.colorEs}`}>
+           <react>~{m.value.transEs}</react>
          </span> -
-         <span style=~{`color: ${m.colorSe}`}>
-           <react>~{m.transSe}</react>
+         <span style=~{`color: ${m.value.colorSe}`}>
+           <react>~{m.value.transSe}</react>
          </span>
        </div>
      </body>

@@ -12,7 +12,7 @@ const m = new hh.ReactiveMachine(
 );
 
 async function foo() {
-   m.I = 45;
+   m.value.I = 45;
    console.log("I emitted...");
    let o  = await m.promise.O;
    console.log("O(" + o + ") emitted...");
