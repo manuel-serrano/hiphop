@@ -1,17 +1,7 @@
 "use hopscript"
 
 const hh = require("hiphop");
-
-//
-// Could be merged in lib/lang.js, since usefull in lot of cases.
-//
-function expandChildren(children) {
-   return <hh.sequence>
-      ${hh.isHiphopInstruction(children[0]) ? children[0] : <hh.nothing/>}
-      ${children.length > 1 ? expandChildren(children.slice(1)) : <hh.nothing/>}
-   </hh.sequence>;
-}
-
+const lang = require("../lib/lang.js");
 
 const TIMEOUT = function(attrs) {
    return <hh.run module=${
@@ -37,7 +27,7 @@ const INTERVAL = function(attrs) {
 	<hh.exec apply=${function() {
 	   setTimeout(this.returnAndReact, this.value.TIMEOUT);
 	}}/>
-	${expandChildren(Array.prototype.slice.call(fargs, 1, fargs.length))}
+	${lang.expandChildren(fargs)}
       </hh.sequence>;
    }
 
