@@ -57,6 +57,31 @@ and `O2` if the value of the signal `O2` is superior or equals to 2.
 ${ doc.include("../tests/if1.js", 10, 15) }
 ```
 
+__Warning__: each child of the If instruction is considered as a
+branch. Hence, the first child is the _then_ branch, and the second
+child is the _else_ branch. On the following example, `<foo/>` will be
+evaluated if `delay-expr` is true, and `<bar/>` will be evaluated if
+`delay-expr` is false:
+
+```hopscript
+<hh.if delay-expr>
+  <foo/>
+  <bar/>
+</hh.if>
+```
+
+If one want to evaluate `<foo/>` and `<bar/>` when `delay-expr` is
+true, an explicit sequence must be used:
+
+```hopscript
+<hh.if delay-expr>
+  <hh.sequence>
+    <foo/>
+    <bar/>
+  </hh.sequence>
+</hh.if>
+```
+
 ## Signal emission
 
 ### <hiphop.emit/> ###
@@ -334,6 +359,17 @@ not present. However, `J` is never emitted:
 </hh.suspend>
 <hh.emit J/>
 ```
+
+One of the following attribute can be used in the Suspend instruction,
+which represent a delay expression:
+
+* until: takes a signal name as value;
+* untilValue: takes any JavaScript value;
+* untilApply: takes a JavaScript expression.
+
+If any one of the previous form is used, the body is suspended, even
+is the suspend delay expression is not true anymore. The body is
+restarted when the until delay expression is true.
 
 ## Others statements
 
