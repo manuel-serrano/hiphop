@@ -1,9 +1,11 @@
 "use hopscript"
 
+//require("hiphop");
+
 const path = require("path");
 const PATH = path.dirname(module.filename);
 
-service wristwatch() {
+service wristwatch(debug=null) {
    return <html>
      <head module=${["hiphop",
 		     "./wristwatch/watch/watch.js",
@@ -27,6 +29,9 @@ service wristwatch() {
 	     watch_mod = require("./wristwatch/watch/watch.js");
 	     watch_prg = watch_mod.WatchModule;
 	     machine = new hh.ReactiveMachine(watch_prg, "Watch");
+	     if (${debug})
+		machine.debuggerOn("debug");
+
 
 	     machine.addEventListener("WATCH_TIME", function(evt) {
 		var time = evt.signalValue;

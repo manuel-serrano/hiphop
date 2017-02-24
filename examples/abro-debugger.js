@@ -3,7 +3,7 @@
 const hh = require("hiphop");
 
 const abro =
-    <hh.module A B R O>
+    <hh.module name="abro" A B R O>
       <hh.loopeach R>
 	<hh.parallel>
 	  <hh.await A/>
@@ -14,7 +14,7 @@ const abro =
     </hh.module>;
 
 const rabro =
-      <hh.module AM BM RM OM>
+      <hh.module name="rabro" AM BM RM OM>
 	<hh.parallel>
 	  <hh.run module=${abro} A=AM B=BM R=RM O=OM/>
 	  <hh.await AM/>

@@ -270,6 +270,6 @@ exports.start = function( g, speed ) {
 
    exports.setSpeed( speed );
    G.mach = new hh.ReactiveMachine( prims( G ), "Prims" );
-   
+   G.mach.debuggerOn("debug");
    exports.resume();
 }

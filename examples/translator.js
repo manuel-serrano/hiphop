@@ -42,6 +42,7 @@ service translator() {
 		  </hh.parallel>
 		</hh.loopeach>
               </hh.module>);
+	   m.debuggerOn("debug");
 	}
      }
      </head>
