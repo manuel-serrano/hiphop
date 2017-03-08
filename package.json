@@ -5,6 +5,6 @@
    "main": "lib/hiphop.js",
    "client": ["lib/hiphop.js", "lib/lang.js", "lib/error.js", "lib/net.js",
 	      "lib/ast.js", "lib/compiler.js", "lib/machine.js",
-	      "lib/debugger.js", "lib/debugger-symbols.js", "lib/signal.js",
+	      "lib/debugger.js", "lib/debugger-common.js", "lib/signal.js",
 	      "lib/inheritance.js", "ulib/timelib.js", "ulib/waitnsignals.js"]
 }
