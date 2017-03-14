@@ -41,10 +41,10 @@ EOF
 
     if [ "$diff_out" != "" ]
     then
-	echo -en "\e[31m\e[1mfailure\e[0m"
+	echo -en "\x1B[31m\x1B[1mfailure\x1B[0m"
 	failure=`expr $failure + 1`
     else
-	echo -en "\e[32m\e[1mok\e[0m"
+	echo -en "\x1B[32m\x1B[1mok\x1B[0m"
 	success=`expr $success + 1`
     fi
 
@@ -58,7 +58,7 @@ init_stats() {
 }
 
 print_stats() {
-    echo -e "\e[1m$space*** $success success   $failure failure ***\e[0m"
+    echo -e "\x1B[1m$space*** $success success   $failure failure ***\x1B[0m"
 }
 
 if [ "$(dirname $0)" != "." ]
@@ -74,8 +74,8 @@ fi
 if [ "$1" != "" ]; then
     file=${1%.*}
     if [ -f $file.out ]; then
-	echo -e "\e[1m$space*** DEBUG TEST FOR $file. ***"
-	echo -e "$space*** TMP FILES WILL NOT BE REMOVED ***\e[0m"
+	echo -e "\x1B[1m$space*** DEBUG TEST FOR $file. ***"
+	echo -e "$space*** TMP FILES WILL NOT BE REMOVED ***\x1B[0m"
 	run_test
 	exit 0
     fi
@@ -83,7 +83,7 @@ fi
 
 init_stats
 clear
-echo -e "\e[1m$space*** HIPHOP.JS TESTS ***\e[0m"
+echo -e "\x1B[1m$space*** HIPHOP.JS TESTS ***\x1B[0m"
 for file in *.out
 do
     file=${file%.*}
