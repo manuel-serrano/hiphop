@@ -42,10 +42,10 @@ EOF
     if [ "$diff_out" != "" ]
     then
 	echo -en "\x1B[31m\x1B[1mfailure\x1B[0m"
-	failure=`expr $failure + 1`
+	failure=$(($failure+1))
     else
 	echo -en "\x1B[32m\x1B[1mok\x1B[0m"
-	success=`expr $success + 1`
+	success=$(($success+1))
     fi
 
     echo ".";
