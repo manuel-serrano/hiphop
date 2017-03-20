@@ -33,14 +33,32 @@ Values can be given to valued signal as the following:
 
 # Symbolic web debugger
 
-A symbolic web debugger is also provided by Hiphop.js. When a batch
-interpreter is started, a Hop service is exported to the path
-`/hop/debug`. This web page will display the AST of the program.
+A symbolic debugger is provided by Hiphop.js. It allows to display the
+running source code of a Hiphop.js program through a web browser. The
+following conventions are used:
 
-As pretty printer of the batch, selected instructions will be display
-in red. The web debugger is automatically updated at each reaction.
+* Signal names are written in _red_ if the signal is emitted, in
+  _blue_ otherwise.
 
-<!-- # Hack Hiphop.js -->
+* Instruction which had been executed are written on a green
+  background.
 
-<!-- * TODO: finish spec. PDF -->
-<!-- * TODO: ReactiveMachine.stats() in PDF -->
+After each reaction, the colors are automatically updated in order to
+reflect the actual state of the program.
+
+## Enabling / disabling the debugger
+
+A reactive machine `m` provides the following API:
+
+* `m.debuggerOn("_debugger\_name_")`: enables the debugger. The entry
+  point is available at the address `http://_host_/hop/_debugger\_name_`.
+* `m.debuggerOff()`: disables the debugger.
+
+If _debugger\_name_ is already used by another debugger, it is
+automatically disabled.
+
+## Using the debugger
+
+* It is possible to inspect the value of global signals by moving the
+  mouse over a signal name. An information bubble containing the
+  signal value will appear.
