@@ -1,0 +1,38 @@
+weakabort terminated 1.
+
+MODULE0
+Module A B { 
+   LoopEach present A { 
+      WeakAbort present B { 
+         Nothing 
+         Parallel { 
+            Sequence { 
+               Pause 
+               Emit B 
+            } 
+         } 
+      } 
+      Atom CALL 
+   } 
+} 
+
+
+weakabort terminated 2.
+
+MODULE0
+Module A B { 
+   LoopEach present A { 
+      WeakAbort present B { 
+         Parallel { 
+            Sequence { 
+               Pause 
+               Emit B 
+            } 
+         } 
+      } 
+      Atom CALL 
+   } 
+} 
+
+
+weakabort terminated 3.
