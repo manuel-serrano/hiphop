@@ -3,7 +3,7 @@
 var hh = require("hiphop");
 
 var prg = <hh.module O1 O2>
-  <hh.let S>
+  <hh.local S>
     <hh.loop>
       <hh.if pre S>
 	<hh.emit O1/>
@@ -12,7 +12,7 @@ var prg = <hh.module O1 O2>
       <hh.pause/>
       <hh.emit S/>
     </hh.loop>
-  </hh.let>
+  </hh.local>
 </hh.module>;
 
 exports.prg = new hh.ReactiveMachine(prg, "prepure2");

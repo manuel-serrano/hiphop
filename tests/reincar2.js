@@ -11,25 +11,25 @@ var prg =
       <hh.loop>
 	<hh.parallel>
 
-	  <hh.let M=${{initValue: 5}}>
+	  <hh.local M=${{initValue: 5}}>
 	    <hh.emit J apply=${function() {return this.value.M}}/>
 	    <hh.pause/>
 	    <hh.emit M  value=${5} />
-	  </hh.let>
+	  </hh.local>
 
-	  <hh.let N>
+	  <hh.local N>
 	    <hh.if N>
 	      <hh.emit I/>
 	    </hh.if>
 	    <hh.pause/>
 	    <hh.emit N/>
-	  </hh.let>
+	  </hh.local>
 
-	  <hh.let L>
+	  <hh.local L>
 	    <hh.emit L value=${4} />
 	    <hh.pause/>
 	    <hh.emit S apply=${function() {return plus(this.value.L, 5)}}/>
-	  </hh.let>
+	  </hh.local>
 
 	</hh.parallel>
       </hh.loop>

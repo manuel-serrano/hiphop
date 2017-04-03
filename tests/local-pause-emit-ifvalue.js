@@ -6,13 +6,13 @@ const hh = require("hiphop");
 const prg =
       <hh.module>
 	<hh.loop>
-	  <hh.let L>
+	  <hh.local L>
 	    <hh.pause/>
 	    <hh.emit L/>
 	    <hh.if apply=${function(){return ! this.value.L}}>
 	      <hh.atom apply=${function(){console.log("L:", this.value.L)}}/>
 	    </hh.if>
-	  </hh.let>
+	  </hh.local>
 	</hh.loop>
       </hh.module>;
 

@@ -40,7 +40,7 @@ const INTERVAL = function(attrs) {
 
    if (count_value !== undefined || count_apply !== undefined) {
       ret = <hh.trap INTERVAL_TRAP>
-	<hh.let INTERVAL_BOOKKEEPING=${{initValue: -1}} TIMEOUT>
+	<hh.local INTERVAL_BOOKKEEPING=${{initValue: -1}} TIMEOUT>
 	  <hh.loop>
 	    <hh.emit INTERVAL_BOOKKEEPING
 	      value=${count_value}
@@ -58,14 +58,14 @@ const INTERVAL = function(attrs) {
 	    <hh.emit INTERVAL_BOOKKEEPING apply=${function() {
 	       return this.preValue.INTERVAL_BOOKKEEPING - 1}}/>
 	  </hh.loop>
-	</hh.let>
+	</hh.local>
       </hh.trap>;
    } else {
-      ret = <hh.let TIMEOUT>
+      ret = <hh.local TIMEOUT>
 	<hh.loop>
 	  ${_mk_timeout(arguments)}
 	</hh.loop>
-      </hh.let>;
+      </hh.local>;
    }
 
    return ret;

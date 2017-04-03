@@ -6,7 +6,7 @@ const prg =
       <hh.module X=${{initValue: 1}} Y Z>
 
 	<hh.trap T>
-	  <hh.let __internal=${{initValue: -1}}>
+	  <hh.local __internal=${{initValue: -1}}>
 	    <hh.loop>
 	      <hh.if apply=${function() {return this.preValue.__internal == -1}}>
 		<hh.emit __internal apply=${function() {return this.value.X + 5}}/>
@@ -25,7 +25,7 @@ const prg =
 	      <hh.emit Y/>
 	      <hh.emit __internal apply=${function() {return this.preValue.__internal - 1}}/>
 	    </hh.loop>
-	  </hh.let>
+	  </hh.local>
 	</hh.trap>
 
 	<hh.emit Z/>

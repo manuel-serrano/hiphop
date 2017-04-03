@@ -569,19 +569,19 @@ compiled.
 ### Local signals
 
 Local signals are invisible from the host language. A local signal is
-defined in a Let instruction. The following example defines two local
+defined in a Local instruction. The following example defines two local
 signals, `local1` and `local2`:
 
 ```hopscript
-<hh.let local1 local2>
+<hh.local local1 local2>
   <!-- Hiphop.js instructions -->
-<hh.let>
+<hh.local>
 ```
 
-The body of the Let instruction is a scope. Only the instructions
+The body of the Local instruction is a scope. Only the instructions
 embedded on it can access to signal `local1` and `local2`.
 
-Local signal are instantiated when the control reach the Let
+Local signal are instantiated when the control reach the Local
 instruction. Therefore, if local signal are defined inside a Loop
 instruction, new instances of signals will be made each time the Loop
 re-loop. Any value or status of local signal of the previous iteration
@@ -593,13 +593,13 @@ local signal `S` is instantiated when re-looping. Therefore, the state
 of `S` of the previous instance is lost:
 
 ```hopscript
-<hh.let S>
+<hh.local S>
    <hh.if S>
       <hh.atom apply=${function() {console.log("S present")}}/>
    </hh.if>
    <hh.pause/>
    <hh.emit S/>
-</hh.let>
+</hh.local>
 ```
 
 ### Signal properties
@@ -610,7 +610,7 @@ object, as in the following examples:
 
 ```hopscript
 <hh.module sig=${{initValue: 5}}> ... </hh.module>
-<hh.let sig=${{initValue: 5}}> ... </hh.let>
+<hh.local sig=${{initValue: 5}}> ... </hh.local>
 ```
 
 #### Accessibility of a signal
@@ -636,7 +636,7 @@ This attribute can takes one of the following values:
 Signal can be automatically initialized with a value. If the signal is
 global and has not been emitted via `input` method of the
 ReactiveMachine, it is initialized before the first reaction. If the
-signal is local, it is initialized when the control reach the Let
+signal is local, it is initialized when the control reach the Local
 statement that defines the signal.
 
 * `initValue`: takes any JavaScript value.
@@ -652,7 +652,7 @@ Signal can be automatically re-initialized with a value. If the signal
 is global and has not been emitted via `input` method of the
 ReactiveMachine, it is re-initialized before each reaction. If the
 signal is local, it is re-initialized before each reaction where the
-control was left on the previous reaction into Let statement that
+control was left on the previous reaction into Local statement that
 defines the signal.
 
 * `reinitValue`: takes any JavaScript value.

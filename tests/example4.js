@@ -3,7 +3,7 @@
 var hh = require("hiphop");
 
 var prg = <hh.module A=${{accessibility: hh.IN}} T V>
-  <hh.let S>
+  <hh.local S>
     <hh.loop>
       <hh.abort A>
 	<hh.sequence>
@@ -16,7 +16,7 @@ var prg = <hh.module A=${{accessibility: hh.IN}} T V>
 	</hh.sequence>
       </hh.abort>
     </hh.loop>
-  </hh.let>
+  </hh.local>
 </hh.module>
 
 exports.prg = new hh.ReactiveMachine(prg, "example4");

@@ -427,7 +427,7 @@ exports.langage_map =
 
      <tr>
        <td>
-	 <term_cnode name="Let">
+	 <term_cnode name="Local">
 	   <cnode_args>
 	     <opt><nterm name="signal-decl"/></opt>
 	   </cnode_args>

@@ -6,7 +6,7 @@ const prg2 = function() {
    return <hh.module artist playlist>
      <hh.trap found>
        <hh.loop>
-	 <hh.let candidateArtist candidatePlaylist>
+	 <hh.local candidateArtist candidatePlaylist>
 	   <hh.exec candidateArtist apply=${function() {
 	      setTimeout(() => this.notifyAndReact("leartiste"), 50);
 	   }}/>
@@ -22,7 +22,7 @@ const prg2 = function() {
 	       <hh.exit found/>
 	     </hh.sequence>
 	   </hh.if>
-	 </hh.let>
+	 </hh.local>
        </hh.loop>
      </hh.trap>
    </hh.module>;

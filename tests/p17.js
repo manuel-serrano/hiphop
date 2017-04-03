@@ -4,7 +4,7 @@ var hh = require("hiphop");
 
 var prg = <hh.module O>
   <hh.loop>
-    <hh.let S1>
+    <hh.local S1>
       <hh.sequence>
 	<hh.if S1>
 	  <hh.emit O/>
@@ -12,7 +12,7 @@ var prg = <hh.module O>
 	<hh.pause/>
 	<hh.emit S1/>
       </hh.sequence>
-    </hh.let>
+    </hh.local>
   </hh.loop>
 </hh.module>;
 

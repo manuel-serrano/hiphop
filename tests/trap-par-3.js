@@ -3,7 +3,7 @@
 var hh = require("hiphop")
 
 var prg = <hh.module S1_and_S2 S1_and_not_S2 not_S1_and_S2 not_S1_and_not_S2>
-  <hh.let S1 S2>
+  <hh.local S1 S2>
   <hh.loop>
     <hh.trap T1>
       <hh.parallel>
@@ -37,7 +37,7 @@ var prg = <hh.module S1_and_S2 S1_and_not_S2 not_S1_and_S2 not_S1_and_not_S2>
       </hh.parallel>
     </hh.trap>
   </hh.loop>
-  </hh.let>
+  </hh.local>
 </hh.module>;
 
 exports.prg = new hh.ReactiveMachine(prg, "trappar3");

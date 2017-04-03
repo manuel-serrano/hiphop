@@ -5,14 +5,14 @@ var hh = require("hiphop");
 var prg = <hh.module T>
   <hh.sequence>
     <hh.pause/>
-    <hh.let S>
+    <hh.local S>
       <hh.sequence>
 	<hh.emit S/>
 	<hh.if S>
 	  <hh.emit T/>
 	</hh.if>
       </hh.sequence>
-    </hh.let>
+    </hh.local>
   </hh.sequence>
 </hh.module>
 

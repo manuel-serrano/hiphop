@@ -9,7 +9,7 @@ function sum(arg1, arg2) {
 var prg = <hh.module S1_and_S2 S1_and_not_S2 not_S1_and_S2 not_S1_and_not_S2>
   <hh.loop>
     <hh.trap T1>
-      <hh.let S1=${{initValue: 10}}>
+      <hh.local S1=${{initValue: 10}}>
 	<hh.parallel>
 	  <hh.sequence>
 	    <hh.pause/>
@@ -18,7 +18,7 @@ var prg = <hh.module S1_and_S2 S1_and_not_S2 not_S1_and_S2 not_S1_and_not_S2>
 	  </hh.sequence>
 	  <hh.loop>
 	    <hh.trap T2>
-	      <hh.let S2=${{initValue: 20}}>
+	      <hh.local S2=${{initValue: 20}}>
 		<hh.parallel>
 		  <hh.sequence>
 		    <hh.pause/>
@@ -45,11 +45,11 @@ var prg = <hh.module S1_and_S2 S1_and_not_S2 not_S1_and_S2 not_S1_and_not_S2>
 		    </hh.sequence>
 		  </hh.loop>
 		</hh.parallel>
-	      </hh.let>
+	      </hh.local>
 	    </hh.trap>
 	  </hh.loop>
 	</hh.parallel>
-      </hh.let>
+      </hh.local>
     </hh.trap>
   </hh.loop>
 </hh.module>;

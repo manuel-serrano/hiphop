@@ -5,12 +5,12 @@ var hh = require("hiphop");
 var m1 = <hh.module T W V Z>
      <hh.parallel>
        <hh.if T>
-	 <hh.let L>
+	 <hh.local L>
 	   <hh.sequence>
 	     <hh.emit L/>
 	     <hh.emit V/>
 	   </hh.sequence>
-	 </hh.let>
+	 </hh.local>
        </hh.if>
        <hh.if W>
 	 <hh.emit Z/>
@@ -21,9 +21,9 @@ var m1 = <hh.module T W V Z>
 var inSig={accessibility: hh.IN};
 var m2 = <hh.module S=${inSig} U=${inSig} A B>
   <hh.sequence>
-    <hh.let L>
+    <hh.local L>
       <hh.emit L/>
-    </hh.let>
+    </hh.local>
     <hh.run module=${m1} T=S W=U V=A Z=B/>
     <hh.run module=${m1} T=S W=U V=A Z=B/>
   </hh.sequence>

@@ -3,14 +3,14 @@
 var hh = require("hiphop");
 
 var prg = <hh.module J>
-  <hh.let I>
+  <hh.local I>
     <hh.Parallel>
       <hh.emit I value=${5} />
       <hh.if I>
 	<hh.emit J apply=${function() {return this.value.I}} />
       </hh.if>
     </hh.Parallel>
-  </hh.let>
+  </hh.local>
 </hh.module>;
 
 exports.prg = new hh.ReactiveMachine(prg, "parvalued2");
