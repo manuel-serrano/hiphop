@@ -21,22 +21,23 @@ function add_emit(machine) {
 }
 
 const machine = new hh.ReactiveMachine(prg, "incr-branch");
+machine.debug_emitted_func = console.log
 
-console.log(machine.react());
-console.log(machine.react());
-console.log(machine.react());
-console.log(machine.react());
+machine.react();
+machine.react();
+machine.react();
+machine.react();
 let br1 = add_emit(machine);
-console.log(machine.react());
-console.log(machine.react());
-console.log(machine.react());
+machine.react();
+machine.react();
+machine.react();
 add_emit(machine);
 add_emit(machine);
 add_emit(machine);
-console.log(machine.react());
-console.log(machine.react());
+machine.react();
+machine.react();
 
 machine.getElementById("par").removeChild(br1);
 
-console.log(machine.react());
-console.log(machine.react());
+machine.react();
+machine.react();

@@ -30,8 +30,9 @@ const prg =
 
 let machine = new hh.ReactiveMachine(prg, "error2");
 
-console.log(machine.react())
-console.log(machine.react())
-console.log(machine.react())
-console.log(machine.react())
-console.log(machine.react())
+machine.debug_emitted_func = console.log;
+machine.react()
+machine.react()
+machine.react()
+machine.react()
+machine.react()

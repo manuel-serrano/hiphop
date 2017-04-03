@@ -19,7 +19,8 @@ var prg =
     </hh.module>
 
 let m = new hh.ReactiveMachine(prg);
+m.debug_emitted_func = console.log
 
-console.log(m.react());
+m.react()
 s1=false; // didnt change anyting
-console.log(m.react());
+m.react()

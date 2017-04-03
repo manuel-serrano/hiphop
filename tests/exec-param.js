@@ -12,7 +12,8 @@ const prg =
       </hh.module>
 
 const machine = new hh.ReactiveMachine(prg, "");
+machine.debug_emitted_func = console.log
 
-console.log(machine.inputAndReact("in", 5));
-console.log(machine.inputAndReact("in", 5));
-console.log(machine.inputAndReact("in", 5));
+machine.inputAndReact("in", 5)
+machine.inputAndReact("in", 5)
+machine.inputAndReact("in", 5)

@@ -39,34 +39,35 @@ const prg =
       </hh.module>;
 
 var machine = new hh.ReactiveMachine(prg, "");
+machine.debug_emitted_func = console.log;
 
 //console.log(machine.ast.pretty_print());
 
-console.log(machine.react());
-console.log(machine.react());
+machine.react()
+machine.react()
 
 console.log("add 1");
 machine.getElementById("par").appendChild(make_atom2(1));
-console.log(machine.react());
-console.log(machine.react());
+machine.react()
+machine.react()
 
 //machine.trace_on = 2;
 
 console.log("add 2");
 machine.getElementById("par").appendChild(make_atom(2));
 //console.error(machine.ast.pretty_print());
-console.log(machine.react());
+machine.react()
 //console.error(machine.ast.pretty_print());
 
 machine.trace_on = 0;
 
-console.log(machine.react());
-console.log(machine.react());
+machine.react()
+machine.react()
 
 console.log("add 3");
 machine.getElementById("par").appendChild(make_atom3(3));
-console.log(machine.react());
-console.log(machine.react());
-console.log(machine.react());
+machine.react()
+machine.react()
+machine.react()
 
 //console.log(machine.ast.pretty_print());

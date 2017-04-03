@@ -17,7 +17,8 @@ Module S U W Z {
 } 
 
 
-m.inputAndReact(S) => [ 'S', 'A' ]
+m.inputAndReact(S)
+[ 'S', 'A' ]
 ==================== ADD RUN PARALLEL ==================
 
 MODULE0
@@ -48,4 +49,5 @@ Module S U W Z {
 } 
 
 
-m.inputAndReact(U) => [ 'U', 'A' ]
+m.inputAndReact(U)
+[ 'U', 'A' ]

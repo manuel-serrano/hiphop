@@ -24,8 +24,9 @@ const prg =
       </hh.module>;
 
 const machine = new hh.ReactiveMachine(prg, "sync2");
+machine.debug_emitted_func = console.log;
 
-console.log(machine.react());
-console.log(machine.react());
-console.log(machine.react());
-console.log(machine.react());
+machine.react()
+machine.react()
+machine.react()
+machine.react()

@@ -20,11 +20,12 @@ const prg =
       </hh.module>
 
 const m = new hh.ReactiveMachine(prg);
+m.debug_emitted_func = console.log
 
-console.log(m.react());
-console.log(m.react());
-console.log(m.inputAndReact("C"));
-console.log(m.react());
-console.log(m.inputAndReact("C"));
-console.log(m.inputAndReact("C"));
+m.react()
+m.react()
+m.inputAndReact("C")
+m.react()
+m.inputAndReact("C")
+m.inputAndReact("C")
 

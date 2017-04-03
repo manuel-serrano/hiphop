@@ -29,19 +29,20 @@ const prg =
       </hh.module>
 
 var machine = new hh.ReactiveMachine(prg, "exec");
+machine.debug_emitted_func = console.log;
 
-console.log(machine.react());
-console.log(machine.inputAndReact("S"));
-console.log(machine.inputAndReact("S"));
-console.log(machine.inputAndReact("S"));
-console.log(machine.inputAndReact("S"));
-console.log(machine.react());
-console.log(machine.react());
-console.log(machine.inputAndReact("S"));
+machine.react()
+machine.inputAndReact("S")
+machine.inputAndReact("S")
+machine.inputAndReact("S")
+machine.inputAndReact("S")
+machine.react()
+machine.react()
+machine.inputAndReact("S")
 
 setTimeout(function() {
-   console.log(machine.react());
-   console.log(machine.inputAndReact("RESS"));
-   console.log(machine.inputAndReact("S"));
-   console.log(machine.react());
+   machine.react()
+   machine.inputAndReact("RESS")
+   machine.inputAndReact("S")
+   machine.react()
 }, 2000);

@@ -13,5 +13,6 @@ const m = new hh.ReactiveMachine(
 	}}/>
       </hh.module>);
 
-console.log(m.react());
+m.debug_emitted_func = console.log
+m.react()
 

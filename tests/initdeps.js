@@ -19,6 +19,7 @@ const prg =
       </hh.module>
 
 const m = new hh.ReactiveMachine(prg);
+m.debug_emitted_func = console.log
 
-console.log(m.react());
-console.log(m.react());
+m.react()
+m.react()

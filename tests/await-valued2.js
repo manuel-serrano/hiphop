@@ -28,23 +28,24 @@ var prg = <hh.module I=${inSig} O=${outSig}>
 </hh.module>;
 
 var m = new hh.ReactiveMachine(prg, "awaitvalued2");
+m.debug_emitted_func = console.log;
 
 m.addEventListener("O", foo);
 
 console.log(";")
-console.log(m.react());
+m.react();
 
 m.addEventListener("O", foo2);
 
 console.log("I(34)")
-console.log(m.inputAndReact("I", 34));
+m.inputAndReact("I", 34);
 
 m.addEventListener("O", foo3);
 
 console.log("I(34)");
-console.log(m.inputAndReact("I", 34));
+m.inputAndReact("I", 34);
 
 m.removeEventListener("O", foo3);
 
 console.log("I(15)");
-console.log(m.inputAndReact("I", 15));
+m.inputAndReact("I", 15);

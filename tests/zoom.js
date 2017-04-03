@@ -19,12 +19,13 @@ const prg =
       </hh.module>
 
 const m = new hh.ReactiveMachine(prg);
+m.debug_emitted_func = console.log
 
-console.log(m.react());
-console.log(m.inputAndReact("ZOOM_IN"));
-console.log(m.inputAndReact("ZOOM_IN"));
-console.log(m.inputAndReact("ZOOM_LOCK_TOOGLE"));
-console.log(m.inputAndReact("ZOOM_IN"));
-console.log(m.inputAndReact("ZOOM_IN"));
-console.log(m.inputAndReact("ZOOM_LOCK_TOOGLE"));
-console.log(m.inputAndReact("ZOOM_IN"));
+m.react()
+m.inputAndReact("ZOOM_IN")
+m.inputAndReact("ZOOM_IN")
+m.inputAndReact("ZOOM_LOCK_TOOGLE")
+m.inputAndReact("ZOOM_IN")
+m.inputAndReact("ZOOM_IN")
+m.inputAndReact("ZOOM_LOCK_TOOGLE")
+m.inputAndReact("ZOOM_IN")

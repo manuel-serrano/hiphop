@@ -24,18 +24,19 @@ const prg =
       </hh.module>
 
 var machine = new hh.ReactiveMachine(prg, "exec");
+machine.debug_emitted_func = console.log
 
-console.log(machine.react());
+machine.react()
 
 setTimeout(function() {
-   console.log(machine.inputAndReact("R"));
+   machine.inputAndReact("R")
 }, 500);
 
 setTimeout(function() {
-   console.log(machine.react());
+   machine.react()
 }, 1100);
 
 setTimeout(function() {
-   console.log(machine.react());
+   machine.react()
 }, 2000);
 

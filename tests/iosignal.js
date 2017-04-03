@@ -8,8 +8,9 @@ const prg =
       </hh.module>;
 
 var m = new hh.ReactiveMachine(prg);
+m.debug_emitted_func = console.log
 
-console.log(m.inputAndReact("I"));
-console.log(m.inputAndReact("X", 15));
-console.log(m.react());
-console.log(m.inputAndReact("Y"));
+m.inputAndReact("I")
+m.inputAndReact("X", 15)
+m.react()
+m.inputAndReact("Y")

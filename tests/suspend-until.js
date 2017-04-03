@@ -15,19 +15,20 @@ const prg =
       </hh.module>;
 
 const m = new hh.ReactiveMachine(prg);
+m.debug_emitted_func = console.log
 
-console.log(m.react());
-console.log(m.react());
+m.react()
+m.react()
 console.log("--");
-console.log(m.inputAndReact("I"));
-console.log(m.react());
-console.log(m.react());
-console.log(m.react());
+m.inputAndReact("I")
+m.react()
+m.react()
+m.react()
 console.log("--");
-console.log(m.inputAndReact("O"));
-console.log(m.react());
-console.log(m.react());
-console.log(m.react());
+m.inputAndReact("O")
+m.react()
+m.react()
+m.react()
 console.log("--");
-console.log(m.inputAndReact("I"));
-console.log(m.react());
+m.inputAndReact("I")
+m.react()

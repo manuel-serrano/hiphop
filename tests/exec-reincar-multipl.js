@@ -2,10 +2,16 @@
 
 const hh = require("hiphop");
 
+
 function inputAndReact(val) {
+   function disp(emitted) {
+      console.log("IN(" + val + ") -->", emitted);
+   }
    /* on trace, "IN(..) --> ..." is printed after traces embeded in
       the reactive program */
-   console.log("IN(" + val + ") -->", m.inputAndReact("IN", val));
+   m.debug_emitted_func = disp;
+   m.inputAndReact("IN", val);
+   m.debug_emitted_func = console.log
 }
 
 const prg =
@@ -54,24 +60,25 @@ const prg =
     </hh.module>
 
 var m = new hh.ReactiveMachine(prg);
+m.debug_emitted_func = console.log;
 
 /* TEST 1 */
 setTimeout(function() {
    console.log("--- TEST 1 ---");
-   console.log(m.react());
+   m.react()
    inputAndReact("|");
-   console.log(m.react());
-   setTimeout(function() {console.log(m.react())}, 150);
-   setTimeout(function() {console.log(m.react())}, 300);
+   m.react()
+   setTimeout(function() {m.react()}, 150);
+   setTimeout(function() {m.react()}, 300);
 }, 0)
 
 /* TEST 2 */
 setTimeout(function() {
    console.log("--- TEST 2 ---");
    inputAndReact("|");
-   console.log(m.react());
-   setTimeout(function() {console.log(m.react())}, 300);
-   setTimeout(function() {console.log(m.react())}, 350);
+   m.react()
+   setTimeout(function() {m.react()}, 300);
+   setTimeout(function() {m.react()}, 350);
 }, 500)
 
 /* TEST 3 */
@@ -80,8 +87,8 @@ setTimeout(function() {
    inputAndReact("|1|");
    /* Only output signal with value |2|--... should be emitted */
    setTimeout(function() {inputAndReact("|2|")}, 50);
-   setTimeout(function() {console.log(m.react())}, 120);
-   setTimeout(function() {console.log(m.react())}, 350);
+   setTimeout(function() {m.react()}, 120);
+   setTimeout(function() {m.react()}, 350);
 }, 1000)
 
 /* TEST 4 */
@@ -92,5 +99,5 @@ setTimeout(function() {
       but it is ignored (or the test failed) */
    inputAndReact("LONGWAIT");
    setTimeout(function() {inputAndReact("|2|")}, 50);
-   setTimeout(function() {console.log(m.react())}, 2000);
+   setTimeout(function() {m.react()}, 2000);
 }, 1500)
