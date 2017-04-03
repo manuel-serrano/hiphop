@@ -7,7 +7,7 @@ const prg =
 	<hh.emit in value=${5}/>
 	<hh.exec apply=${function() {
 	   console.log("receive " + this.value.in);
-	   this.return();
+	   this.notify();
 	}}/>
       </hh.module>
 

@@ -8,7 +8,7 @@ const TIMEOUT = function(attrs) {
       <hh.module timetowait>
 	<hh.emit timetowait value=${attrs.value} apply=${attrs.apply}/>
 	<hh.exec apply=${function() {
-	   setTimeout(this.returnAndReact, parseInt(this.value.timetowait));
+	   setTimeout(this.notifyAndReact, parseInt(this.value.timetowait));
 	}}/>
       </hh.module>
    }/>
@@ -25,7 +25,7 @@ const INTERVAL = function(attrs) {
       return <hh.sequence>
 	<hh.emit TIMEOUT value=${attrs.value} apply=${attrs.apply}/>
 	<hh.exec apply=${function() {
-	   setTimeout(this.returnAndReact, this.value.TIMEOUT);
+	   setTimeout(this.notifyAndReact, this.value.TIMEOUT);
 	}}/>
 	${lang.expandChildren(fargs)}
       </hh.sequence>;

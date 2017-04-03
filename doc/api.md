@@ -528,14 +528,14 @@ call, or spawn a worker. One the asynchronous call, or worker, has
 finish its work, it must notify the runtime by calling one of this
 terminating functions:
 
-* `this.return()`: will tells the runtime the exec is over.
-* `this.returnAndReact()`: will tells the runtime the exec is over and
-  will trigger an immediate reaction.
+* `this.notify()`: tells the reactive machine the exec is over.
+* `this.notifyAndReact()`: tells the reactive machine the exec is
+  over and trigger an immediate reaction.
 
 Exec statement is not instantaneous. It returns on the following
 reaction after one terminating function call.
 
-Note that `this.return()` and `this.returnAndReact()` can take an
+Note that `this.notify()` and `this.notifyAndReact()` can take an
 optional value, if `signal` is given. In that case `signal` will be
 instantaneously emitted when exec returns, which the given value.
 

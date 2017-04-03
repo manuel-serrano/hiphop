@@ -14,7 +14,7 @@ service translator() {
 	   var svc = "http://mymemory.translated.net/api/get?langpair=" + this.value.lang + "&q=" + this.value.text;
 	   req.onreadystatechange = () => {
 	      if (req.readyState == 4 && req.status == 200)
-		 this.returnAndReact(JSON.parse(req.responseText).responseData.translatedText);
+		 this.notifyAndReact(JSON.parse(req.responseText).responseData.translatedText);
 	   };
 	   req.open("GET", svc, true);
 	   req.send();

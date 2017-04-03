@@ -8,10 +8,10 @@ const prg =
 	  <hh.sequence>
 	    <hh.exec apply=${function() {
 	       console.log("Oi.");
-	       setTimeout(function(self) {
+	       setTimeout(() => {
 		  console.log("Oi timeout.");
-		  self.return(5);
-	       }, 3000, this);
+		  this.notify(5);
+	       }, 3000);
 	    }}/>
 	    <hh.emit OT/>
 	  </hh.sequence>

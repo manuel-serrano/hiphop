@@ -250,8 +250,8 @@ exports.langage_map =
        </td>
        ${comment(true,
 		 "Execution of JavaScript function referenced by <strong>apply" +
-		 "</strong>, and wait for terminaison of the routine by the call to this.return()" +
-		 " or this.returnAndReact() in apply function.")}
+		 "</strong>, and wait for terminaison of the routine by the call to this.notify()" +
+		 " or this.notifyAndReact() in apply function.")}
      </tr>
 
      <tr>

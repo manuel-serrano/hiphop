@@ -10,7 +10,7 @@ const prg =
 	       console.log("Oi.");
 	       setTimeout(function(self) {
 		  console.log("Oi timeout.");
-		  self.return(5);
+		  self.notify(5);
 	       }, 3000, this);
 	    }}/>
 	    <hh.emit OT apply=${function() {return this.value.T}}/>

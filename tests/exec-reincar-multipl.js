@@ -26,7 +26,7 @@ const prg =
 			console.log("   exec started", timeout, this.value.IN);
 			setTimeout(function(self,v) {
 			   console.log("   exec returns", timeout, v);
-			   self.return(v + "--|" + timeout);
+			   self.notify(v + "--|" + timeout);
 			}, timeout, this, this.value.IN);
 		     }}/>
 	    <hh.exec OUT2
@@ -39,7 +39,7 @@ const prg =
 			console.log("   exec started", timeout, this.value.IN);
 			setTimeout(function(self, v) {
 			   console.log("   exec returns", timeout, v);
-			   self.return(v + "--|" + timeout);
+			   self.notify(v + "--|" + timeout);
 			}, timeout, this, this.value.IN);
 		     }}/>
 	    <hh.sequence>

@@ -18,7 +18,7 @@ service translator() {
 		if (xhttp.readyState == 4 && xhttp.status == 200) {
 		   let res = JSON.parse(xhttp.responseText);
 
-		   this.returnAndReact(res.responseData.translatedText);
+		   this.notifyAndReact(res.responseData.translatedText);
 		}
 	     }.bind(this);
 	     xhttp.open("GET", svc + opt, true);
