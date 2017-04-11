@@ -9,8 +9,10 @@ presentemit> ;
 !!! If___and_then___0
 !!! If___and_else___0
 !!! If___testexpr___0
-!!! If___k0___0
 !!! If___testexpr___1
+!!! If___k0_buffer___0
+!!! If___k0_buffer___0
+!!! If___k
 !!! Emit___O_go___0
 !!! Pause___reg
 !!! Pause___or_to_reg
@@ -21,7 +23,7 @@ presentemit> ;
 !!! Module___global_k1
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 *** CAUSALITY ERROR
-*** missing 16 nets
+*** missing 18 nets
 presentemit> ;
 presentemit> ;
 presentemit> ;
