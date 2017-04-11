@@ -29,14 +29,10 @@ const PARALLELMAP = (attrs) => {
 	 apply = attrs[attr];
       } else if (attr.toLowerCase() == "value") {
 	 value = attrs[attr];
-      } else {
-	 //
-	 // TODO: make better signal name detection
-	 //
-	 sigName = attr;
       }
    }
 
+   sigName = lang.get_signal_name_list(attrs, lang.format_loc(attrs))[0];
    if (!sigName) {
       throw new error.SyntaxError("Signal name is missing.", loc);
    }

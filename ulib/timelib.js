@@ -4,12 +4,24 @@ const hh = require("hiphop");
 const lang = require("../lib/lang.js");
 
 const TIMEOUT = function(attrs) {
+   let sig = lang.get_signal_name_list(attrs, lang.format_loc(attrs))[0];
+   let exec;
+
+   if (sig) {
+      exec = <hh.exec ${sig} apply=${function() {
+	 setTimeout(this.notifyAndReact, parseInt(this.value.timetowait));
+      }}/>
+   } else {
+      exec = <hh.exec apply=${function() {
+	 setTimeout(this.notifyAndReact, parseInt(this.value.timetowait));
+      }}/>
+   }
+      
+   
    return <hh.run module=${
       <hh.module timetowait>
 	<hh.emit timetowait value=${attrs.value} apply=${attrs.apply}/>
-	<hh.exec apply=${function() {
-	   setTimeout(this.notifyAndReact, parseInt(this.value.timetowait));
-	}}/>
+	${exec}
       </hh.module>
    }/>
 }
