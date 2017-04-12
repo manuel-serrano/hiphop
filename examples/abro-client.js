@@ -1,8 +1,5 @@
 "use hopscript"
 
-//
-// Mandatory, to enable WebSocketServer of the debugger.
-//
 require("hiphop");
 
 service abro() {
@@ -31,11 +28,12 @@ service abro() {
        }
      </head>
      <body>
-       <button onclick=~{m.value.A = 0}>A</button>
-       <button onclick=~{m.value.B = 0}>B</button>
-       <button onclick=~{m.value.R = 0}>R</button>
-       <button onclick=~{m.react();}>∅</button>
+       <button onclick=~{m.inputAndReact("A")}>A</button>
+       <button onclick=~{m.inputAndReact("B")}>B</button>
+       <button onclick=~{m.inputAndReact("R")}>R</button>
+       <button onclick=~{m.react()}>∅</button>
        <div>O emitted <react>~{m.value.O}</react> times.</div>
+       <div><button onclick=~{m.reset()}>Reset machine</button></div>
      </body>
    </html>
 }
