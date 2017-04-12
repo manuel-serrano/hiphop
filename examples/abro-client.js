@@ -32,8 +32,23 @@ service abro() {
        <button onclick=~{m.inputAndReact("B")}>B</button>
        <button onclick=~{m.inputAndReact("R")}>R</button>
        <button onclick=~{m.react()}>∅</button>
-       <div>O emitted <react>~{m.value.O}</react> times.</div>
-       <div><button onclick=~{m.reset()}>Reset machine</button></div>
+       <div>
+	 <react>~{
+	    let valueO = m.value.O;
+	    if (valueO == 1) {
+	       return "O emitted only once.";
+	    } else if (valueO > 1) {
+	       return `O emitted ${valueO} times.`; 
+	    } else {
+	       return " ";
+	    }
+	 }</react>
+       </div>
+       <div>
+	 <button onclick=~{m.reset();m._debuggerUpdate()}>
+           Reset machine
+	 </button>
+       </div>
      </body>
    </html>
 }

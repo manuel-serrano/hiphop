@@ -2,7 +2,7 @@
 MODULE0
 Module S U A B { 
    Parallel { 
-      Run MODULE-1 A=W B=Z 
+      Run MODULE-1 W=A Z=B 
       Halt 
    } 
 } 
@@ -24,9 +24,9 @@ m.inputAndReact(S)
 MODULE0
 Module S U A B { 
    Parallel { 
-      Run MODULE-1 A=W B=Z 
+      Run MODULE-1 W=A Z=B 
       Halt 
-      Run MODULE-2 A=Z 
+      Run MODULE-2 Z=A 
    } 
 } 
 
