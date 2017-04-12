@@ -6,17 +6,51 @@ const lang = require("../lib/lang.js");
 const TIMEOUT = function(attrs) {
    let sig = lang.get_signal_name_list(attrs, lang.format_loc(attrs))[0];
    let exec;
+   let timeoutIdMap = {};
 
    if (sig) {
-      exec = <hh.exec ${sig} apply=${function() {
-	 setTimeout(this.notifyAndReact, parseInt(this.value.timetowait));
-      }}/>
+      exec = <hh.exec ${sig}
+             apply=${function() {
+	        timeoutIdMap[this.id] = setTimeout(this.notifyAndReact,
+	     					   parseInt(this.value.timetowait))}}
+	     res=${function() {
+		timeoutIdMap[this.id] = setTimeout(this.notifyAndReact,
+	     					   parseInt(this.value.timetowait))}}
+             susp=${function() {
+		let id = timeoutIdMap[this.id];
+		if (id) {
+		   clearTimeout(id);
+		}
+	     }}
+             kill=${function() {
+		let id = timeoutIdMap[this.id];
+		if (id) {
+		   clearTimeout(id);
+		}
+	     }}
+	 />
    } else {
-      exec = <hh.exec apply=${function() {
-	 setTimeout(this.notifyAndReact, parseInt(this.value.timetowait));
-      }}/>
+      exec = <hh.exec
+             apply=${function() {
+		timeoutIdMap[this.id] = setTimeout(this.notifyAndReact,
+	     					   parseInt(this.value.timetowait))}}
+	     res=${function() {
+		timeoutIdMap[this.id] = setTimeout(this.notifyAndReact,
+	     					   parseInt(this.value.timetowait))}}
+             susp=${function() {
+		let id = timeoutIdMap[this.id];
+		if (id) {
+		   clearTimeout(id);
+		}
+	     }}
+             kill=${function() {
+	        let id = timeoutIdMap[this.id];
+		if (id) {
+		   clearTimeout(id);
+		}
+	     }}
+	 />
    }
-      
    
    return <hh.run module=${
       <hh.module timetowait>
