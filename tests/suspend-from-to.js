@@ -5,7 +5,7 @@ const hh = require("hiphop");
 const prg =
       <hh.module I O>
 	<hh.pause/>
-	<hh.suspend I until=O>
+	<hh.suspend from=I to=O>
 	  <hh.loop>
 	    <hh.atom apply=${function() {
 	       console.log("ploup!"); }}/>
