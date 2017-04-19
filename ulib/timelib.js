@@ -53,7 +53,7 @@ const TIMEOUT = function(attrs) {
    }
    
    return <hh.run module=${
-      <hh.module timetowait>
+      <hh.module name="TIMEOUT" timetowait>
 	<hh.emit timetowait value=${attrs.value} apply=${attrs.apply}/>
 	${exec}
       </hh.module>
