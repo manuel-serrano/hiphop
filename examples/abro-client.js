@@ -45,6 +45,18 @@ service abro() {
 	 }</react>
        </div>
        <div>
+	 <react>~{m.present.A ? "A emitted!" : " "}</react>
+       </div>
+       <div>
+	 <react>~{m.present.B ? "B emitted!" : " "}</react>
+       </div>
+       <div>
+	 <react>~{m.present.R ? "R emitted!" : " "}</react>
+       </div>
+       <div>
+	 <react>~{m.present.O ? "O emitted!" : " "}</react>
+       </div>
+       <div>
 	 <button onclick=~{m.reset();m._debuggerUpdate()}>
            Reset machine
 	 </button>
