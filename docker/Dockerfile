@@ -19,12 +19,12 @@ RUN apt-get clean && apt-get update && apt-get install -y \
 
 WORKDIR /tmp
 
-RUN wget ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo4.3a-last.tar.gz \
+RUN wget http://www-sop.inria.fr/members/Colin.Vidal/bigloo4.3b-last.tar.gz \
     && tar -xzf bigloo*.tar.gz && cd bigloo* \
     && ./configure && make -j$(nproc) && make install
 
-RUN git clone https://github.com/manuel-serrano/hop.git \
-    && cd hop && git checkout 3.0.x \
+RUN wget http://www-sop.inria.fr/members/Colin.Vidal/hop-3.1.0-pre1.tar.gz \
+    && tar -xzf hop* && cd hop* \
     && ./configure && make -j$(nproc) && make install
 
 RUN git clone https://github.com/colinvidal/hiphop.git \
