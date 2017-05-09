@@ -67,16 +67,6 @@ const INTERVAL = function(attrs) {
    let count_apply;
    let ret;
 
-   function _mk_timeout(fargs) {
-      return <hh.sequence>
-	<hh.emit TIMEOUT value=${attrs.value} apply=${attrs.apply}/>
-	<hh.exec apply=${function() {
-	   setTimeout(this.notifyAndReact, this.value.TIMEOUT);
-	}}/>
-	${lang.expandChildren(fargs)}
-      </hh.sequence>;
-   }
-
    for (let i in attrs) {
       if (i.toLowerCase() == "countvalue")
 	 count_value = attrs[i];
@@ -86,7 +76,7 @@ const INTERVAL = function(attrs) {
 
    if (count_value !== undefined || count_apply !== undefined) {
       ret = <hh.trap INTERVAL_TRAP>
-	<hh.local INTERVAL_BOOKKEEPING=${{initValue: -1}} TIMEOUT>
+	<hh.local INTERVAL_BOOKKEEPING=${{initValue: -1}}>
 	  <hh.loop>
 	    <hh.emit INTERVAL_BOOKKEEPING
 	      value=${count_value}
@@ -99,7 +89,8 @@ const INTERVAL = function(attrs) {
 		   <hh.exit INTERVAL_TRAP/>
             </hh.if>
 
-	    ${_mk_timeout(arguments)}
+	    <timeout value=${attrs.value} apply=${attrs.apply}/>
+	    ${lang.expandChildren(arguments)}
 
 	    <hh.emit INTERVAL_BOOKKEEPING apply=${function() {
 	       return this.preValue.INTERVAL_BOOKKEEPING - 1}}/>
@@ -107,11 +98,10 @@ const INTERVAL = function(attrs) {
 	</hh.local>
       </hh.trap>;
    } else {
-      ret = <hh.local TIMEOUT>
-	<hh.loop>
-	  ${_mk_timeout(arguments)}
-	</hh.loop>
-      </hh.local>;
+      ret = <hh.loop>
+	  <timeout value=${attrs.value} apply=${attrs.apply}/>
+	  ${lang.expandChildren(arguments)}
+	</hh.loop>;
    }
 
    return ret;
