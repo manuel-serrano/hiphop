@@ -18,12 +18,13 @@ presentemit> ;
 !!! Pause___or_to_reg
 !!! Pause___go___0
 !!! Pause___and___0
-!!! Sequence___k1___0
+!!! Sequence___k1_buffer___0
+!!! Sequence___buf_kil___0
 !!! Loop___k1_buffer___0
 !!! Module___global_k1
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 *** CAUSALITY ERROR
-*** missing 18 nets
+*** missing 19 nets
 presentemit> ;
 presentemit> ;
 presentemit> ;
