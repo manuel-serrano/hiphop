@@ -108,3 +108,14 @@ const INTERVAL = function(attrs) {
 }
 
 exports.INTERVAL = INTERVAL;
+
+const AWAITTICK = function() {
+   return <hh.parallel>
+     <hh.pause/>
+     <hh.atom apply=${function() {
+	this.machine.react();
+     }}/>
+   </hh.parallel>
+};
+
+exports.AWAITTICK = AWAITTICK;
