@@ -10,7 +10,6 @@ service hiphopfm() {
        <meta name="viewport" content="width=device-width">
        ~{
 	  var machine;
-	  var audioController = new Audio();
 	  var controlsView;
 	  var genresView;
 	  var detailView;
@@ -76,7 +75,8 @@ service hiphopfm() {
 	     const hhAudioModule = function() {
 		let audioMap = [];
 		let curId;
-		return <hh.module SRC PLAYPAUSE SEEKTO
+		return <hh.module name="hiphop-audio"
+		                  SRC PLAYPAUSE SEEKTO
                                   PAUSED TRACKENDED POSITION DURATION>
 		  <hh.trap ENDED>
 		    <hh.parallel>
@@ -109,7 +109,7 @@ service hiphopfm() {
                             <hh.exit ENDED/>
 			  </hh.sequence>
 			  <hh.sequence>
-			    <tl.awaitTick/>
+			    <tl.pauseAndReact/>
 			    <hh.exec DURATION apply=${function() {
 			       audioMap[curId].addEventListener("durationchange", () => {
 				  this.notifyAndReact(audioMap[curId].duration);

@@ -109,7 +109,7 @@ const INTERVAL = function(attrs) {
 
 exports.INTERVAL = INTERVAL;
 
-const AWAITTICK = function() {
+const PAUSEANDREACT = function() {
    return <hh.parallel>
      <hh.pause/>
      <hh.atom apply=${function() {
@@ -118,4 +118,4 @@ const AWAITTICK = function() {
    </hh.parallel>
 };
 
-exports.AWAITTICK = AWAITTICK;
+exports.PAUSEANDREACT = PAUSEANDREACT;
