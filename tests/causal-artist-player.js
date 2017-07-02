@@ -8,7 +8,7 @@ const prg2 = function() {
        <hh.loop>
 	 <hh.local candidateArtist candidatePlaylist>
 	   <hh.exec candidateArtist apply=${function() {
-	      setTimeout(() => this.notifyAndReact("leartiste"), 50);
+	      setTimeout(() => this.notifyAndReact("leartiste"), 90);
 	   }}/>
 	   <hh.exec candidatePlaylist apply=${function() {
 	      setTimeout(() => this.notifyAndReact("laplaylist"), 50);
