@@ -1,0 +1,238 @@
+"use hopscript"
+
+function makeToken(type, pos=null, value=null) {
+   return {
+      type: type,
+      pos: pos,
+      value: value ? value : type
+   };
+}
+
+function Lexer(buffer) {
+   this.buffer = buffer;
+   this.len = buffer.length;
+   this.pos = 0;
+   this.current = null;
+}
+
+exports.Lexer = Lexer;
+
+Lexer.prototype.__isEOF = function() {
+   return this.pos >= this.len;
+}
+
+Lexer.prototype.__isEOL = function() {
+   let c = this.buffer[this.pos];
+
+   return c == "\n" || c == "\r";
+}
+
+Lexer.prototype.__isBlank = function() {
+   return this.buffer[this.pos].match(/ |\t/g) != null;
+}
+
+Lexer.prototype.__isOperator = function() {
+   return ["+", "-", "*", "/", ".", "\\", ":", "%", "|", "!", "?", "#", "&",
+	   ";", ",", "(",  ")", "<", ">", "{", "}", "[", "]", "=", "`"]
+      .indexOf(this.buffer[this.pos]) > -1;
+}
+
+Lexer.prototype.__isAlpha = function() {
+   let c = this.buffer[this.pos];
+
+   return ((c >= "a" && c <= "z")
+	   || (c >= "A" && c <= "Z")
+	   || c == "_"
+	   || c == "$");
+}
+
+Lexer.prototype.__isDigit = function() {
+   let c = this.buffer[this.pos];
+
+   return c >= "0" && c <= "9";
+}
+
+Lexer.prototype.__isAlphaNum = function() {
+   let c = this.buffer[this.pos];
+
+   return this.__isAlpha() || this.__isDigit();
+}
+
+Lexer.prototype.__skipBlank = function() {
+   while (this.pos < this.len) {
+      if (this.__isEOL()) {
+	 break;
+      }
+      if (!this.__isBlank()) {
+	 break;
+      }
+      this.pos++;
+   }
+
+   return this.__isEOF();
+}
+
+Lexer.prototype.__skipComment = function() {
+   let c1 = this.buffer[this.pos];
+   let c2 = this.buffer[this.pos + 1];
+
+   if (c1 != "/" || (c2 != "/" && c2 != "*")) {
+      return this.__isEOF();
+   }
+   this.pos += 2;
+
+   for (;;) {
+      if (this.__isEOL()) {
+	 this.pos++;
+	 this.__skipBlank();
+	 return this.__skipComment();
+      } else {
+	 c1 = this.buffer[this.pos];
+	 c2 = this.buffer[this.pos + 1];
+
+	 if (c1 == "*" && c2 == "/") {
+	    this.pos += 2;
+	    break;
+	 }
+      }
+      this.pos++;
+   }
+
+   return this.__isEOF();
+}
+
+Lexer.prototype.__newLine = function() {
+   if (this.__isEOL()) {
+      this.current = makeToken("NEWLINE", this.pos++);
+      return true;
+   }
+   return false;
+}
+
+Lexer.prototype.__operator = function() {
+   if (!this.__isOperator()) {
+      return false;
+   }
+
+   let pos = this.pos;
+   let value = this.buffer[pos];
+   let value_ = this.buffer.substring(pos, pos + 2);
+   let value__ = this.buffer.substring(pos, pos + 3);
+   let value___ = this.buffer.substring(pos, pos + 4);
+
+   if (value_ == "*=" || value_ == "/=" || value_ == "%="
+       || value_ == "+=" || value_ == "-=" || value_ == "&="
+       || value_ == "^=" || value_ == "|=" || value_ == "&&"
+       || value_ == "||" || value_ == "==" || value_ == "++"
+       || value_ == "--" || value_ == "!=" || value_ == "<="
+       || value_ == ">=") {
+      value = value_;
+      this.pos += 2;
+   } else if (value__ == "<<=" || value__ == ">>=" || value__ == ">>>") {
+      value = value__;
+      this.pos += 3;
+   } else if (value___ == ">>>=") {
+      value = value___;
+      this.pos += 4;
+   } else {
+      this.pos++;
+   }
+
+   this.current = makeToken(value, pos);
+   return true;
+}
+
+Lexer.prototype.__identifier = function() {
+   if (!this.__isAlpha()) {
+      return false;
+   }
+
+   let posStart = this.pos;
+   let type = "IDENTIFIER";
+   let identifier = "";
+
+   do {
+      identifier += this.buffer[this.pos];
+      this.pos++;
+   } while (this.__isAlphaNum() && !this.__isEOF());
+
+   if (["async", "await", "break", "case", "catch", "const", "continue",
+	"debugger", "default", "delete", "do", "else", "false", "finally",
+	"for", "function", "if", "in", "instanceof", "let", "new", "null",
+	"return", "switch", "this", "throw", "true", "try", "typeof", "var",
+	"const", "let", "void", "while", "with", "yield", "class", "enum",
+	"export", "extends", "import", "super","implements", "interface", "of",
+	"package", "private", "protected", "public", "static"]
+       .indexOf(identifier) > -1) {
+      type = "RESERVED";
+   }
+
+   this.current = makeToken(type , posStart, identifier);
+   return true;
+}
+
+Lexer.prototype.__literal = function() {
+   let c = this.buffer[this.pos]
+   let literal = "";
+   let posStart = this.pos;
+
+   if (c == "'" || c == '"' || c == "`") {
+      let delim = c;
+
+      c = this.buffer[++this.pos];
+      for (;;) {
+	 if (c == "\\") {
+	    literal += c;
+	    literal += this.buffer[this.pos + 1];
+	    this.pos += 2;
+	    c = this.buffer[this.pos];
+	 } else if (this.__isEOL() || this.__isEOF()) {
+	    throw new Error("invalid litteral `"
+			    + this.buffer.substring(posStart, this.pos)
+			    + "` at " + posStart + "," + this.pos);
+	 } else if (c == delim) {
+	    this.current = makeToken("LITERAL", posStart, literal);
+	    this.current.string = true;
+	    this.pos++;
+	    return true;
+	 } else {
+	    literal += c;
+	    c = this.buffer[++this.pos];
+	 }
+      }
+   } else if (this.__isDigit()) {
+      for (;;) {
+	 if (this.__isDigit() || c == ".") {
+	    literal += c;
+	    c = this.buffer[++this.pos];
+	 } else if (this.__isEOL() || this.__isEOF() || this.__isBlank()
+		    || this.__isOperator()) {
+	    this.current = makeToken("LITERAL", posStart, literal);
+	    return true;
+	 } else {
+	    throw new Error("invalid literal number `" + literal + c + "`"
+			    + " at " + posStart + "," + this.pos);
+	 }
+      }
+   } else {
+      return false;
+   }
+}
+
+Lexer.prototype.token = function() {
+   this.current = null;
+
+   if (this.__skipBlank()) {
+      return makeToken("EOF");
+   } else if (this.__skipComment()) {
+      return makeToken("EOF");
+   } else if (this.__newLine()
+	      || this.__literal()
+	      || this.__operator()
+	      || this.__identifier()) {
+      return this.current;
+   } else {
+      throw new Error("unexpected character `" + this.buffer[this.pos]
+		      + "` at " + this.pos);
+   }
+}
