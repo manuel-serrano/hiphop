@@ -5,6 +5,11 @@ const ast = require("./ast");
 //
 // http://www.ecma-international.org/ecma-262/5.1/#sec-A.5
 //
+// Some internal functions are called with `.call`. Arrow functions
+// could be used to avoid that (since they statically bind this), but
+// the parser does not yet support them. Hence, we could not bootstrap
+// it if we use them.
+//
 
 function NYI() {
    throw new Error("Not Yet Implemented.");
@@ -89,9 +94,475 @@ Parser.prototype.consumeReserved = function(value=null) {
    return this.consume("RESERVED", value);
 }
 
+Parser.prototype.consumeHHReserved = function(value=null) {
+   return this.consume("HHRESERVED", value);
+}
+
 Parser.prototype.consumeOptionalEmpty = function() {
    if (this.peek().type == ";") {
       this.consume();
+   }
+}
+
+//
+// Hiphop.js extension
+//
+
+function unexpectedHHToken(token=null, expected=null) {
+   let got = token.value ? token.value : token.type;
+
+   if (expected) {
+      throw new Error(`HIPHOP at ${token.pos} expected ${expected} got ${got}`);
+   } else {
+      throw new Error(`HIPHOP at ${token.pos} unexpected ${got}`);
+   }
+}
+
+Parser.prototype.__hhBlock = function(brackets=true) {
+   let stmts = [];
+   let varDecls = null;
+
+   if (brackets) {
+      this.consume("{");
+   }
+
+   if (this.peek().value == "LET") {
+      let peeked = this.peek();
+
+      peeked.type = "RESERVED";
+      peeked.value = "let"
+      varDecls = this.__variableStatement("let");
+   }
+
+   while (this.peek().type != "}") {
+      stmts.push(this.__hhStatement());
+      this.consume(";");
+   }
+
+   if (brackets) {
+      this.consume("}");
+   }
+   return ast.HHBlock(varDecls, ast.HHSequence(stmts));
+}
+
+Parser.prototype.__hhModule = function() {
+   function getSigDecls(sigDecls) {
+      for (;;) {
+	 let symb = this.peek().value;
+	 if (symb == "IN" || symb == "OUT" || symb == "INOUT") {
+	    let coma = false;
+
+	    this.consumeHHReserved(symb);
+	    while (this.peek().type != ";") {
+	       let initExpr = null;
+	       let combineExpr = null;
+	       let id;
+
+	       if (coma) {
+		  this.consume(",");
+		  coma = false;
+	       }
+
+	       id = this.__identifier();
+	       if (this.peek().type == "(") {
+		  this.consume("(");
+		  initExpr = this.__expression();
+		  this.consume(")");
+	       }
+
+	       if (this.peek().type == "COMBINE") {
+		  this.consumeHHReserved("COMBINE");
+		  this.consume("(");
+		  if (this.peek().value == "function") {
+		     this.combineExpr = this.__functionExpression();
+		  } else {
+		     this.combineExpr = this.__identifier();
+		  }
+		  this.consume(")");
+	       }
+
+	       sigDecls.push(ast.Signal(id, symb, initExpr, combineExpr));
+	       coma = true;
+	    }
+	    this.consume(";");
+	 } else {
+	    break;
+	 }
+      }
+   }
+
+   let id = null;
+   let sigDecls = [];
+   let stmts;
+
+   this.consumeHHReserved("MODULE");
+   if (this.peek().type == "IDENTIFIER") {
+      id = this.__identifier();
+   }
+   this.consume("{");
+   getSigDecls.call(this, sigDecls);
+   stmts = this.__hhBlock(false);
+   this.consume("}");
+   return ast.HHModule(id, sigDecls, stmts);
+}
+
+Parser.prototype.__hhHalt = function() {
+   this.consumeHHReserved("HALT");
+   return ast.HHHalt();
+}
+
+Parser.prototype.__hhPause = function() {
+   this.consumeHHReserved("PAUSE");
+   return ast.HHPause();
+}
+
+Parser.prototype.__hhNothing = function() {
+   this.consumeHHReserved("NOTHING");
+   return ast.HHNothing();
+}
+
+Parser.prototype.__hhIf = function() {
+   let test;
+   let thenBody;
+   let elseBody = null;
+
+   this.consumeHHReserved("IF");
+   this.consume("(");
+   test = this.__expression();
+   this.consume(")");
+   thenBody = this.__hhBlock();
+
+   if (this.peek().value == "ELSE") {
+      this.consumeHHReserved("ELSE");
+      elseBody = this.__hhBlock();
+   }
+
+   return ast.HHIf(test, thenBody, elseBody);
+}
+
+Parser.prototype.__hhFork = function() {
+   let branches = [];
+
+   this.consumeHHReserved("FORK");
+   branches.push(this.__hhBlock());
+   while (this.peekHasValue("PAR")) {
+      this.consume();
+      branches.push(this.__hhBlock());
+   }
+   return ast.HHFork(branches);
+}
+
+Parser.prototype.__hhAbort = function() {
+   this.consumeHHReserved("ABORT");
+   return this.HHAbort(this.__hhTemporalExpression(), this.__hhBlock());
+}
+
+Parser.prototype.__hhWeakAbort = function() {
+   this.consumeHHReserved("WEAKABORT");
+   return this.HHWeakAbort(this.__hhTemporalExpression(), this.hhBlock());
+}
+
+Parser.prototype.__hhLoop = function() {
+   this.consumeHHReserved("LOOP");
+   return ast.HHLoop(this.__hhBlock());
+}
+
+Parser.prototype.__hhEvery = function() {
+   let texpr;
+   let body;
+
+   this.consumeHHReserved("EVERY");
+   texpr = this.__hhTemporalExpression();
+   body = this.__hhBlock();
+   return ast.HHEvery(texpr, body);
+}
+
+Parser.prototype.__hhLoopeach = function() {
+   let texpr;
+   let body;
+
+   this.consumeHHReserved("LOOPEACH");
+   texpr = this.__hhTemporalExpression();
+   body = this.__hhBlock();
+   return ast.HHLoopeach(texpr, body);
+}
+
+Parser.prototype.__hhAwait = function() {
+   this.consumeHHReserved("AWAIT");
+   return ast.HHAwait(this.__hhTemporalExpression());
+}
+
+Parser.prototype.__emitArguments = function() {
+   function emitArg() {
+      let id = this.__identifier();
+      let expr = null;
+
+      if (this.peek().type == "(") {
+	 this.consume();
+	 expr = this.__expression();
+	 this.consume(")");
+      }
+      return ast.HHEmitExpr(id, expr);
+   }
+
+   let args = [];
+
+   for (;;) {
+      args.push(emitArg.call(this));
+      if (this.peekHasType(";")) {
+	 break;
+      }
+      this.consume(",");
+   }
+   return args;
+}
+
+Parser.prototype.__hhEmit = function() {
+   this.consumeHHReserved("EMIT");
+   return ast.HHEmit(this.__emitArguments());
+}
+
+Parser.prototype.__hhSustain = function() {
+   this.consumeHHReserved("SUSTAIN");
+   return ast.HHSustain(this.__emitArguments());
+}
+
+Parser.prototype.__hhTrap = function() {
+   this.consumeHHReserved("TRAP");
+   return ast.HHTrap(this.__identifier(), this.__hhBlock());
+}
+
+Parser.prototype.__hhExit = function() {
+   this.consumeHHReserved("EXIT");
+   return ast.HHExit(this.__identifier());
+}
+
+Parser.prototype.__hhExecParameters = function() {
+   let params = {
+      ONKILL: null,
+      ONFIRSTSUSP: null,
+      ONSUSP: null,
+      ONFIRSTRES: null,
+      ONRES: null
+   };
+
+   for (;;) {
+      let param = this.peek().value;
+
+      if (param == "ONKILL" || param == "ONFIRSTSUSP" || param == "ONSUSP"
+	  || param == "ONFIRSTRES" || param == "ONRES") {
+	 if (params[param]) {
+	    throw new Error(`HIPHOP: at ${this.peek().pos} ` +
+			    `parameter ${param} already used`);
+	 }
+	 this.consumeHHReserved(param);
+	 params[param] = this.__expression();
+      } else {
+	 break;
+      }
+   }
+   return ast.HHExecParams(params);
+}
+
+Parser.prototype.__hhExec = function() {
+   this.consumeHHReserved("EXEC");
+   return ast.HHExec(this.__expression(), this.__hhExecParameters());
+}
+
+Parser.prototype.__hhExecAssign = function() {
+   this.consumeHHReserved("EXECASSIGN");
+   return ast.HHExecAssign(this.__identifier(),
+			   this.__expression(),
+			   this.__hhExecParameters());
+}
+
+Parser.prototype.__hhExecEmit = function() {
+   this.consumeHHReserved("EXECEMIT");
+   return ast.HHExecEmit(this.__identifier(),
+			 this.__expression(),
+			 this.__hhExecParameters());
+}
+
+Parser.prototype.__hhRun = function() {
+   let expr;
+   let assocs;
+
+   this.consumeHHReserved("RUN");
+   this.consume("(");
+   expr = this.__expression();
+   while (this.peek().type != ")") {
+      let calleeSignalId;
+      let callerSignalId;
+
+      this.consume(",");
+      calleeSignalId = this.consume("IDENTIFIER");
+      this.consume("=");
+      callerSignalId = this.consume("IDENTIFIER");
+      assocs.push({calleeSignalId: calleeSignalId,
+		   callerSignalId: callerSignalId});
+   }
+   this.consume(")");
+   return ast.HHRun(expr, assocs);
+}
+
+Parser.prototype.__hhSuspend = function() {
+   //
+   // TODO: add EMITWHENSUSPENDED <signal> argument
+   //
+   this.consumeHHReserved("SUSPEND");
+
+   if (this.peek().value == "FROM") {
+      let from;
+      let to;
+      let immediate = false;
+
+      this.consumeHHReserved("FROM");
+      if (this.peek().value == "IMMEDIATE") {
+	 this.consumeHHReserved("IMMEDIATE");
+	 this.immediate = true;
+      }
+      this.consume("(");
+      from = this.__expression();
+      this.consume(")");
+      this.consumeHHReserved("TO");
+      this.consume("(");
+      to = this.__expression();
+      this.consume(")");
+      return ast.HHSuspendFromTo(from, to, immediate, this.__hhBlock());
+   } else if (this.peek().value == "TOGGLE") {
+      let expr;
+
+      this.consumeHHReserved("TOGGLE");
+      this.consume("(");
+      expr = this.__expression();
+      this.consume(")");
+      return ast.HHSuspendToggle(expr, this.__hhBlock());
+   } else {
+      return ast.HHSuspend(this.__hhTemporalExpression(), this.__hhBlock());
+   }
+}
+
+Parser.prototype.__hhTemporalExpression = function() {
+   let immediate = false;
+   let expr;
+   if (this.peek().value == "IMMEDIATE") {
+      this.consumeHHReserved("IMMEDIATE");
+      immediate = true;
+   }
+   this.consume("(");
+   expr = this.__expression();
+   this.consume(")");
+   return ast.HHTemporalExpression(immediate, expr);
+}
+
+Parser.prototype.__hhAccessor = function() {
+   let peeked = this.peek();
+   let symb = peeked.value;
+
+   function computeSymb(symb, reduc, needId=true) {
+      let id = null;
+
+      this.consumeHHReserved(symb);
+      if (needId) {
+	 this.consume("(");
+	 id = this.__identifier();
+	 this.consume(")");
+      }
+      return ast.HHAccessor(`this.${reduc}`, id);
+   }
+
+   switch (symb) {
+   case "VAL":
+      return computeSymb.call(this, symb, "value");
+   case "PREVAL":
+      return computeSymb.call(this, symb, "preValue");
+   case "PRE":
+      return computeSymb.call(this, symb, "pre");
+   case "NOW":
+      return computeSymb.call(this, symb, "present");
+   case "COMPLETE":
+   case "DONE":
+      return computeSymb.call(this, symb, "terminateExec", false);
+   case "COMPLETEANDREACT":
+   case "DONEREACT":
+      return computeSymb.call(this, symb, "terminateExecAndReact", false);
+   default:
+      unexpectedHHToken(peeked, "ACCESSOR");
+   }
+}
+
+Parser.prototype.__hhAtom = function() {
+   this.consumeHHReserved("ATOM");
+   if (this.peek().value != "{") {
+      unexpectedHHToken(this.peek(), "{");
+   }
+   return ast.HHAtom(this.__statement());
+}
+
+Parser.prototype.__hhDollar = function() {
+   let expr;
+
+   this.consume("IDENTIFIER", "$");
+   this.consume("{");
+   expr = this.__expression();
+   this.consume("}");
+   return ast.HHDollar(expr);
+}
+
+Parser.prototype.__hhStatement = function() {
+   let peeked = this.peek();
+
+   switch (peeked.value) {
+   case "MODULE":
+      return this.__hhModule();
+   case "HALT":
+      return this.__hhHalt();
+   case "PAUSE":
+      return this.__hhPause();
+   case "NOTHING":
+      return this.__hhNothing();
+   case "IF":
+      return this.__hhIf();
+   case "FORK":
+      return this.__hhFork();
+   case "ABORT":
+      return this.__hhAbort();
+   case "WEAKABORT":
+      return this.__hhWeakAbort();
+   case "EVERY":
+      return this.__hhEvery();
+   case "LOOP":
+      return this.__hhLoop();
+   case "LOOPEACH":
+      return this.__hhLoopeach();
+   case "AWAIT":
+      return this.__hhAwait();
+   case "EMIT":
+      return this.__hhEmit();
+   case "SUSTAIN":
+      return this.__hhSustain();
+   case "TRAP":
+      return this.__hhTrap();
+   case "EXIT":
+      return this.__hhExit();
+   case "EXEC":
+      return this.__hhExec();
+   case "EXECASSIGN":
+      return this.__hhExecAssign();
+   case "EXECEMIT":
+      return this.__hhExecEmit();
+   case "SUSPEND":
+      return this.__hhSuspend();
+   case "RUN":
+      return this.__hhRun();
+   case "ATOM":
+      return this.__hhAtom();
+   case "{":
+      return this.__hhBlock();
+   case "$":
+      return this.__hhDollar();
+   default:
+      unexpectedHHToken(peeked);
    }
 }
 
@@ -137,7 +608,14 @@ Parser.prototype.__primaryExpression = function() {
       this.consume(")");
       return expr;
    default:
-      unexpectedToken(this.peek());
+      if (peeked.value == "VAL" || peeked.value == "PREVAL"
+	  || peeked.value == "PRE" || peeked.value == "NOW"
+	  || peeked.value == "COMPLETE" || peeked.value == "COMPLETEANDREACT"
+	  || peeked.value == "DONE" || peeked.value == "DONEREACT") {
+	 return this.__hhAccessor();
+      } else {
+	 return this.__hhStatement();
+      }
    }
 }
 
@@ -935,6 +1413,18 @@ Parser.prototype.__sourceElement = function() {
 //    console.log(foo);
 // }
 //
+// SUSPEND IMMEDIATE FROM(expr) TO(expr) EMITWHENSUSPENDED S {
+// }
+//
+// SUSPEND(expr) {
+// }
+//
+// SUSPEND IMMEDIATE(expr) {
+// }
+//
+// SUSPEND(expr) EMITWHENSUSPENDED S {
+// }
+//
 // (function() {
 //    let foo;
 //    return <hh.loopeach I>
@@ -946,4 +1436,9 @@ Parser.prototype.__sourceElement = function() {
 //      <hh.atom apply=${function() { console.log(foo) }}/>
 //    </hh.loopeach>
 // })()
+//
+//
+// COUNT EXPRESSIONS:
+//
+// AWAIT COUNT(expr, expr)
 //

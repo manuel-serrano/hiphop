@@ -165,6 +165,16 @@ Lexer.prototype.__identifier = function() {
 	"package", "private", "protected", "public", "static"]
        .indexOf(identifier) > -1) {
       type = "RESERVED";
+   } else if (["MODULE", "IN", "OUT", "INOUT", "VAL", "PREVAL", "PRE", "NOW",
+	       "COMBINE", "COMPLETE", "COMPLETEANDREACT", "HALT", "PAUSE",
+	       "NOTHING", "PAR", "FORK", "ABORT", "WEAKABORT", "EVERY", "ATOM",
+	       "IMMEDIATE", "LOOP", "LOOPEACH", "AWAIT", "EMIT", "TRAP",
+	       "EXIT", "EXEC", "EXECEMIT", "EXECASSIGN", "SUSPEND", "SUSTAIN",
+	       "RUN", "EMITWHENSUSPENDED", "FROM", "TO", "PRIVATE", "COUNT",
+	       "ONKILL", "ONSUSP", "ONRES", "ONFIRSTSUSP", "ONFIRSTRES", "LET",
+	       "IF", "ELSE", "TOGGLE", "DONE", "DONEREACT"]
+	      .indexOf(identifier) > -1) {
+      type = "HHRESERVED";
    }
 
    this.current = makeToken(type , posStart, identifier);

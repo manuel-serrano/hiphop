@@ -4,7 +4,7 @@ const hh = require("hiphop");
 
 const mach = new hh.ReactiveMachine(
    <hh.module toogle>
-     <hh.suspend toogleSignal=toogle>
+     <hh.suspend toggleSignal=toogle>
        <hh.loop>
 	 <hh.atom apply=${function() {
 	    console.log("plop");

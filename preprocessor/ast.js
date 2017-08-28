@@ -1,5 +1,11 @@
 "use strict"
 
+const hh = require("hiphop");
+
+//
+// JavaScript nodes
+//
+
 exports.Literal = (value, string=false) => () => string ? `"${value}"` : value;
 
 exports.This = () => () => "this";
@@ -208,3 +214,162 @@ exports.Parameter = (id, initExpr) => () => {
 }
 
 exports.Program = sourceEls => () => list(sourceEls, " ");
+
+//
+// Hiphop.js nodes
+//
+
+exports.HHModule = (id, sigDeclList, stmts) => () => {
+   let decls = list(sigDeclList, " ");
+   let name = id ? `__hh_reserved_debug_name__="${id()}"` : "";
+
+   return `<hh.module ${name} ${decls}>${stmts()}</hh.module>`;
+}
+
+exports.Signal = (id, accessibility, initExpr, combineExpr) => () => {
+   let accessibilityBuf = `accessibility: ${hh[accessibility]}`;
+   let initExprBuf = initExpr ? `, initApply: function(){${initExpr()}}` : "";
+   let combineExprBuf = combineExpr ? `, combine: ${combineExpr()}` : "";
+
+   return `${id()}=${"${"}{${accessibilityBuf} ${initExprBuf} ${combineExprBuf}}}`;
+}
+
+exports.HHSequence = stmts => () => {
+   return `<hh.sequence>${list(stmts, "")}</hh.sequence>`;
+}
+
+exports.HHHalt = () => () => `<hh.halt/>`;
+
+exports.HHPause = () => () => `<hh.pause/>`;
+
+exports.HHNothing = () => () => `<hh.nothing/>`;
+
+exports.HHIf = (test, t, e) => () => {
+   return `<hh.if ${hhExpr("apply", test)}>${t()}${e ? e() : ""}</hh.if>`;
+}
+
+exports.HHFork = branches => () => {
+   return `<hh.parallel>${list(branches, "")}</hh.parallel>`;
+}
+
+exports.HHAbort = (texpr, body) => () => {
+   return `<hh.abort ${texpr()}>${body()}</hh.abort>`;
+}
+
+exports.HHWeakAbort = (texpr, body) => () => {
+   return `<hh.weakAbort ${texpr()}>${body()}</hh.weakAbort>`;
+}
+
+exports.HHLoop = body => () => `<hh.loop>${body()}</hh.loop>`;
+
+exports.HHEvery = (texpr, body) => () => {
+   return`<hh.every ${texpr()}>${body()}</hh.every>`;
+}
+
+exports.HHLoopeach = (texpr, body) => () => {
+   return `<hh.loopeach ${texpr()}>${body()}</hh.loopeach>`;
+}
+
+exports.HHAwait = texpr => () => `<hh.await ${texpr()}/>`;
+
+exports.HHEmitExpr = (id, expr) => () => id() + (expr ? hhExpr(" apply", expr) : "");
+
+function emit(args, constr) {
+   if (args.length == 1) {
+      return constr(args[0]);
+   } else {
+      let buf = "<hh.parallel>";
+
+      for (let i in args) {
+	 buf += constr(args[i]);
+      }
+      return `${buf}</hh.parallel>`;
+   }
+}
+
+exports.HHEmit = args => () => emit(args, expr => `<hh.emit ${expr()}/>`);
+
+exports.HHSustain = args => () => emit(args, expr =>`<hh.sustain ${expr()}/>`);
+
+exports.HHTrap = (id, body) => () => `<hh.trap ${id()}>${body()}</hh.trap>`;
+
+exports.HHExit = id => () => `<hh.exit ${id()}/>`;
+
+exports.HHRun = (expr, assocs) => () => {
+   let moduleBuf = `module=${"$"}{${expr()}}`;
+   let assocBuf = "";
+
+   for (let i in assocs) {
+      let assoc = assocs[i];
+
+      assocBuf += ` ${assoc.calleeSignalId()}=${assoc.callerSignalId()}`;
+   }
+
+   return `<hh.run ${moduleBuf} ${assocBuf}/>`;
+}
+
+exports.HHSuspend = (texpr, body) => () => {
+   return `<hh.suspend ${texpr()}>${body()}</hh.suspend>`;
+}
+
+exports.HHSuspendToggle = (expr, body) => () => {
+   return `<hh.suspend ${hhExpr("toggleApply", expr)}>${body()}</hh.suspend>`;
+}
+
+exports.HHSuspendFromTo = (from, to, immediate, body) => () => {
+   let immBuf = immediate ? "immediate" : "";
+   let fromBuf = hhExpr("fromApply", from);
+   let toBuf = hhExpr("toApply", to);
+
+   return `<hh.suspend ${immBuf} ${fromBuf} ${toBuf}>${body()}</hh.suspend>`;
+}
+
+exports.HHExecParams = params => () => {
+   let paramsBuf = "";
+
+   Object.keys(params).forEach(key => {
+      let param = params[key];
+
+      if (param) {
+	 paramsBuf += `${hhJSStmt(key.toLowerCase().substr(2), param)} `;
+      }
+   });
+   return paramsBuf;
+};
+
+exports.HHExec = (startExpr, params) => () => {
+   return `<hh.exec ${hhJSStmt("apply", startExpr)} ${params()}/>`;
+}
+
+exports.HHExecEmit = (id, startExpr, params) => () => {
+   return `<hh.exec ${id()} ${hhJSStmt("apply", startExpr)} ${params()}`;
+}
+
+exports.HHDollar = expr => () => `${"$"}{${expr()}}`;
+
+exports.HHBlock = (varDecls, seq) => () => {
+   if (!varDecls) {
+      return seq();
+   }
+   return `${"$"}{(function() {${varDecls()} return ${seq()}})()}`;
+}
+
+exports.HHAtom = jsStmts => () => `<hh.atom ${hhJSStmt("apply", jsStmts)}/>`;
+
+function hhExpr(attr, expr) {
+   return `${attr}=${"$"}{function(){return ${expr()}}}`;
+}
+
+function hhJSStmt(attr, stmts) {
+   return `${attr}=${"$"}{function(){${stmts()}}}`;
+}
+
+exports.HHTemporalExpression = (immediate, expr) => () => {
+   return `${immediate ? "immediate" : ""} ${hhExpr("apply", expr)}`;
+}
+
+exports.HHAccessor = (symb, id) => () => {
+   let idBuf = id ? "." + id() : "";
+
+   return symb + idBuf;
+}
