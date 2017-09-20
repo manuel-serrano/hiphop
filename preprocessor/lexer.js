@@ -172,7 +172,7 @@ Lexer.prototype.__identifier = function() {
 	       "EXIT", "EXEC", "EXECEMIT", "EXECASSIGN", "SUSPEND", "SUSTAIN",
 	       "RUN", "EMITWHENSUSPENDED", "FROM", "TO", "PRIVATE", "COUNT",
 	       "ONKILL", "ONSUSP", "ONRES", "ONFIRSTSUSP", "ONFIRSTRES", "LET",
-	       "IF", "ELSE", "TOGGLE", "DONE", "DONEREACT"]
+	       "IF", "ELSE", "TOGGLE", "DONE", "DONEREACT", "SEQUENCE"]
 	      .indexOf(identifier) > -1) {
       type = "HHRESERVED";
    }

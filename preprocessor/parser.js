@@ -499,6 +499,14 @@ Parser.prototype.__hhAtom = function() {
    return ast.HHAtom(this.__statement());
 }
 
+Parser.prototype.__hhSequence = function() {
+   this.consumeHHReserved("SEQUENCE");
+   if (this.peek().value != "{") {
+      unexpectedHHToken(this.peek(), "{");
+   }
+   return this.__hhBlock();
+}
+
 Parser.prototype.__hhDollar = function() {
    let expr;
 
@@ -555,6 +563,8 @@ Parser.prototype.__hhStatement = function() {
       return this.__hhSuspend();
    case "RUN":
       return this.__hhRun();
+   case "SEQUENCE":
+      return this.__hhSequence();
    case "ATOM":
       return this.__hhAtom();
    case "{":
