@@ -3,6 +3,17 @@
 const hh = require("hiphop");
 
 //
+// TODO
+//
+// Analysis to check that a VAR read from several parallel branches OR
+// read and write in only one parallel branche. Otherwise, trigger an
+// error.
+//
+// Generate JS constructor of HH AST nodes. It should remove all
+// dependencies to Hop.js.
+//
+
+//
 // JavaScript nodes
 //
 
