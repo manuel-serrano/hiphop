@@ -359,10 +359,10 @@ exports.HHExecEmit = (id, startExpr, params) => () => {
 exports.HHDollar = expr => () => `${"$"}{${expr()}}`;
 
 exports.HHBlock = (varDecls, seq) => () => {
-   if (!varDecls) {
+   if (varDecls.length == 0) {
       return seq();
    }
-   return `${"$"}{(function() {${varDecls()} return ${seq()}})()}`;
+   return `${"$"}{(function() {${list(varDecls, "")} return ${seq()}})()}`;
 }
 
 exports.HHAtom = jsStmts => () => `<hh.atom ${hhJSStmt("apply", jsStmts)}/>`;

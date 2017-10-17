@@ -120,18 +120,18 @@ function unexpectedHHToken(token=null, expected=null) {
 
 Parser.prototype.__hhBlock = function(brackets=true) {
    let stmts = [];
-   let varDecls = null;
+   let varDecls = [];
 
    if (brackets) {
       this.consume("{");
    }
 
-   if (this.peek().value == "LET") {
+   while (this.peek().value == "LET") {
       let peeked = this.peek();
 
       peeked.type = "RESERVED";
       peeked.value = "let"
-      varDecls = this.__variableStatement("let");
+      varDecls.push(this.__variableStatement("let"));
    }
 
    while (this.peek().type != "}") {
