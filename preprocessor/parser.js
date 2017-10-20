@@ -234,7 +234,11 @@ Parser.prototype.__hhIf = function() {
 
    if (this.peek().value == "ELSE") {
       this.consumeHHReserved("ELSE");
-      elseBody = this.__hhBlock();
+      if (this.peek().value == "IF") {
+	 elseBody = this.__hhIf();
+      } else {
+	 elseBody = this.__hhBlock();
+      }
    }
 
    return ast.HHIf(test, thenBody, elseBody);
