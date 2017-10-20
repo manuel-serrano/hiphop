@@ -28,7 +28,7 @@ Lexer.prototype.__isEOL = function() {
 }
 
 Lexer.prototype.__isBlank = function() {
-   return this.buffer[this.pos].match(/ |\t/g) != null;
+   return /\s/.test(this.buffer[this.pos]);
 }
 
 Lexer.prototype.__isOperator = function() {
@@ -82,6 +82,7 @@ Lexer.prototype.__skipComment = function() {
 	 this.pos++;
       }
       this.pos++;
+      this.__skipBlank();
       return this.__skipComment();
    } else if (this.buffer[this.pos] == "/"
 	      && this.buffer[this.pos + 1] == "*") {
