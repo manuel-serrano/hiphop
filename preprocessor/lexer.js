@@ -73,32 +73,31 @@ Lexer.prototype.__skipBlank = function() {
 }
 
 Lexer.prototype.__skipComment = function() {
-   let c1 = this.buffer[this.pos];
-   let c2 = this.buffer[this.pos + 1];
-
-   if (c1 != "/" || (c2 != "/" && c2 != "*")) {
-      return this.__isEOF();
-   }
-   this.pos += 2;
-
-   for (;;) {
-      if (this.__isEOL()) {
+   if (this.__isEOF()) {
+      return true;
+   } else if (this.buffer[this.pos] == "/"
+	       && this.buffer[this.pos + 1] == "/") {
+      this.pos += 2;
+      while (!this.__isEOF() && !this.__isEOL()) {
 	 this.pos++;
-	 this.__skipBlank();
-	 return this.__skipComment();
-      } else {
-	 c1 = this.buffer[this.pos];
-	 c2 = this.buffer[this.pos + 1];
-
-	 if (c1 == "*" && c2 == "/") {
+      }
+      this.pos++;
+      return this.__skipComment();
+   } else if (this.buffer[this.pos] == "/"
+	      && this.buffer[this.pos + 1] == "*") {
+      this.pos += 2;
+      while (!this.__isEOF()) {
+	 this.pos++;
+	 if (this.buffer[this.pos] == "*"
+	     && this.buffer[this.pos + 1] == "/") {
 	    this.pos += 2;
 	    break;
 	 }
       }
-      this.pos++;
+      return this.__skipComment();
+   } else {
+      return false;
    }
-
-   return this.__isEOF();
 }
 
 Lexer.prototype.__newLine = function() {
