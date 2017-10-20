@@ -771,14 +771,14 @@ Parser.prototype.__accessOrCall = function(expr, callAllowed) {
       this.consume();
       let field = this.__expression();
       this.consume();
-      return this.__accessOrCall(ast.AccessBracket(expr, field));
+      return this.__accessOrCall(ast.AccessBracket(expr, field), callAllowed);
    } else if (peeked.type == ".") {
       this.consume();
       let field = this.__identifier();
-      return this.__accessOrCall(ast.AccessDot(expr, field));
+      return this.__accessOrCall(ast.AccessDot(expr, field), callAllowed);
    } else if (peeked.type == "(" && callAllowed) {
       let args = this.__arguments();
-      return this.__accessOrCall(ast.Call(expr, args));
+      return this.__accessOrCall(ast.Call(expr, args), callAllowed);
    } else {
       return expr;
    }
@@ -941,7 +941,6 @@ Parser.prototype.__expression = function(withInKwd=true) {
       this.consume();
       exprs.push(this.__assignmentExpression(withInKwd));
    }
-
    return exprs.length == 1 ? exprs[0] : ast.Sequence(exprs);
 }
 
