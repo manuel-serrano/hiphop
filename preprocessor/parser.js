@@ -615,7 +615,7 @@ Parser.prototype.__primaryExpression = function() {
       // kind, except for strings.
       //
       this.consume();
-      return ast.Literal(peeked.value, peeked.string);
+      return ast.Literal(peeked.value, peeked.string, peeked.template);
    case "[":
       return this.__arrayLiteral();
    case "{":

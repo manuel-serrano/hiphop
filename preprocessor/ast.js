@@ -17,7 +17,12 @@ const hh = require("hiphop");
 // JavaScript nodes
 //
 
-exports.Literal = (value, string=false) => () => string ? `"${value}"` : value;
+exports.Literal = (value, string=false, template=false) => () => {
+   if (string) {
+      return template ? "`" + value + "`" : `"${value}"`;
+   }
+   return value;
+}
 
 exports.This = () => () => "this";
 

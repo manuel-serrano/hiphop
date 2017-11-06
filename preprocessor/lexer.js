@@ -203,6 +203,7 @@ Lexer.prototype.__literal = function() {
 	 } else if (c == delim) {
 	    this.current = makeToken("LITERAL", posStart, literal);
 	    this.current.string = true;
+	    this.current.template = delim == "`" ? true : false;
 	    this.pos++;
 	    return true;
 	 } else {
