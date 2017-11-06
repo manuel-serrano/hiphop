@@ -24,6 +24,25 @@ exports.Literal = (value, string=false, template=false) => () => {
    return value;
 }
 
+exports.XML = (openOrLeaf, xmlBody=null, close=null) => () => {
+   if (xmlBody) {
+      return `${openOrLeaf}${xmlBody()}${close}`;
+   }
+   return openOrLeaf;
+}
+
+exports.XMLBody = els => () => {
+   let buf = "";
+
+   for (let i in els) {
+      let el = els[i];
+      buf += el instanceof Function ? el() : el;
+   }
+   return buf;
+}
+
+exports.Tilde = stmt => () => `~{${stmt()}}`;
+
 exports.This = () => () => "this";
 
 exports.Unresolved = value => () => value;
@@ -212,12 +231,14 @@ exports.Finally = block => () => `finally ${block()}`;
 
 exports.Debugger = () => () => `debugger;`;
 
-exports.FunctionDeclaration = (id, params, body) => () => {
-   return `function ${id()}(${list(params)}) { ${body()} }`;
+exports.FunctionDeclaration = (id, params, body, srv) => () => {
+   return (srv ? "service" : "function")
+      + ` ${id()}(${list(params)}) { ${body()} }`;
 }
 
-exports.FunctionExpression = (id, params, body) => () => {
-   return `function ${id ? id() : ""}(${list(params)}) { ${body()} }`;
+exports.FunctionExpression = (id, params, body, srv) => () => {
+   return (srv ? "service" : "function")
+      + ` ${id ? id() : ""}(${list(params)}) { ${body()} }`;
 }
 
 exports.Parameter = (id, initExpr) => () => {
@@ -244,8 +265,8 @@ exports.HHModule = (id, sigDeclList, stmts) => () => {
 
 exports.Signal = (id, accessibility, initExpr, combineExpr) => () => {
    let accessibilityBuf = `accessibility: ${hh[accessibility]}`;
-   let initExprBuf = initExpr ? `, initApply: function(){${initExpr()}}` : "";
-   let combineExprBuf = combineExpr ? `, combine: ${combineExpr()}` : "";
+   let initExprBuf = initExpr ? `, initApply: function(){return ${initExpr()}}` : "";
+   let combineExprBuf = combineExpr ? `, combine: function(){return ${combineExpr()}}` : "";
 
    return `${id()}=${"${"}{${accessibilityBuf} ${initExprBuf} ${combineExprBuf}}}`;
 }
@@ -318,7 +339,7 @@ exports.HHRun = (expr, assocs) => () => {
    for (let i in assocs) {
       let assoc = assocs[i];
 
-      assocBuf += ` ${assoc.calleeSignalId()}=${assoc.callerSignalId()}`;
+      assocBuf += ` ${assoc.calleeSignalId}=${assoc.callerSignalId}`;
    }
 
    return `<hh.run ${moduleBuf} ${assocBuf}/>`;
@@ -358,7 +379,7 @@ exports.HHExec = (startExpr, params) => () => {
 }
 
 exports.HHExecEmit = (id, startExpr, params) => () => {
-   return `<hh.exec ${id()} ${hhJSStmt("apply", startExpr)} ${params()}`;
+   return `<hh.exec ${id()} ${hhJSStmt("apply", startExpr)} ${params()}/>`;
 }
 
 exports.HHDollar = expr => () => `${"$"}{${expr()}}`;

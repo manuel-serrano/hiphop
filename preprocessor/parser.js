@@ -173,7 +173,8 @@ Parser.prototype.__hhModule = function() {
 	       if (this.peek().type == "COMBINE") {
 		  this.consumeHHReserved("COMBINE");
 		  this.consume("(");
-		  if (this.peek().value == "function") {
+		  if (this.peek().value == "function"
+		      || this.peek().value == "service") {
 		     this.combineExpr = this.__functionExpression();
 		  } else {
 		     this.combineExpr = this.__identifier();
@@ -393,19 +394,19 @@ Parser.prototype.__hhExecEmit = function() {
 
 Parser.prototype.__hhRun = function() {
    let expr;
-   let assocs;
+   let assocs = [];
 
    this.consumeHHReserved("RUN");
    this.consume("(");
-   expr = this.__expression();
+   expr = this.__assignmentExpression();
    while (this.peek().type != ")") {
       let calleeSignalId;
       let callerSignalId;
 
       this.consume(",");
-      calleeSignalId = this.consume("IDENTIFIER");
+      calleeSignalId = this.consume("IDENTIFIER").value;
       this.consume("=");
-      callerSignalId = this.consume("IDENTIFIER");
+      callerSignalId = this.consume("IDENTIFIER").value
       assocs.push({calleeSignalId: calleeSignalId,
 		   callerSignalId: callerSignalId});
    }
@@ -602,6 +603,7 @@ Parser.prototype.__primaryExpression = function() {
 	 this.consume();
 	 return ast.This();
       case "function":
+      case "service":
 	 return this.__functionExpression();
       default:
 	 this.consume();
@@ -625,6 +627,8 @@ Parser.prototype.__primaryExpression = function() {
       let expr = this.__expression();
       this.consume(")");
       return expr;
+   case "XML":
+      return this.__xml();
    default:
       if (peeked.value == "VAL" || peeked.value == "PREVAL"
 	  || peeked.value == "PRE" || peeked.value == "NOW"
@@ -634,6 +638,48 @@ Parser.prototype.__primaryExpression = function() {
       } else {
 	 return this.__hhStatement();
       }
+   }
+}
+
+Parser.prototype.__xmlBody = function() {
+   let els = [];
+
+   for (;;) {
+      let peeked = this.peek();
+
+      if (peeked.type == "EOF") {
+	 unexpectedToken(peeked);
+      } else if (peeked.type == "~") {
+	 this.consume();
+	 els.push(ast.Tilde(this.__block()));
+      } else if (peeked.type == "XML") {
+	 if (peeked.closing) {
+	    break;
+	 }
+	 els.push(this.__xml());
+      } else {
+	 els.push(peeked.value);
+	 this.consume();
+      }
+   }
+   return ast.XMLBody(els);
+}
+
+Parser.prototype.__xml = function() {
+   let openOrLeaf = this.consume("XML");
+
+   if (openOrLeaf.openning) {
+      let body = this.__xmlBody();
+      let close = this.consume("XML");
+
+      if (!close.closing) {
+	 unexpectedHHToken(close, "</closing-xml-tag>");
+      }
+      return ast.XML(openOrLeaf.value, body, close.value);
+   } else if (openOrLeaf.leaf) {
+      return ast.XML(openOrLeaf.value);
+   } else {
+      unexpectedToken(openOrLeaf, "<openning-xml-tag>");
    }
 }
 
@@ -1055,7 +1101,9 @@ Parser.prototype.__expressionStatement = function() {
    let peeked = this.peek();
    let expression;
 
-   if (peeked.type == "{" || peeked.type == "function") {
+   if (peeked.type == "{"
+       || peeked.type == "function"
+       || peeked.type == "service") {
       unexpectedToken(peeked, "expression");
    }
    expression = this.__expression(false);
@@ -1339,8 +1387,8 @@ Parser.prototype.__functionDeclaration = function(expr=false) {
    let id = null;
    let params;
    let body;
+   let isService = this.consumeReserved().value == "service";
 
-   this.consumeReserved("function");
    if (!expr || (expr && this.peekIsIdentifier())) {
       id = this.__identifier();
    }
@@ -1354,8 +1402,8 @@ Parser.prototype.__functionDeclaration = function(expr=false) {
    this.consume("}");
 
    return (expr
-	   ? ast.FunctionExpression(id, params, body)
-	   : ast.FunctionDeclaration(id, params, body));
+	   ? ast.FunctionExpression(id, params, body, isService)
+	   : ast.FunctionDeclaration(id, params, body, isService));
 }
 
 Parser.prototype.__functionExpression = function() {
@@ -1411,6 +1459,7 @@ Parser.prototype.__sourceElement = function() {
    case "EOF":
       unexpectedToken(peeked);
    case "function":
+   case "service":
       return this.__functionDeclaration();
    default:
       return this.__statement();

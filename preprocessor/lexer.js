@@ -162,7 +162,7 @@ Lexer.prototype.__identifier = function() {
 	"return", "switch", "this", "throw", "true", "try", "typeof", "var",
 	"const", "let", "void", "while", "with", "yield", "class", "enum",
 	"export", "extends", "import", "super","implements", "interface", "of",
-	"package", "private", "protected", "public", "static"]
+	"package", "private", "protected", "public", "static", "service"]
        .indexOf(identifier) > -1) {
       type = "RESERVED";
    } else if (["MODULE", "IN", "OUT", "INOUT", "VAL", "PREVAL", "PRE", "NOW",
@@ -179,6 +179,44 @@ Lexer.prototype.__identifier = function() {
 
    this.current = makeToken(type , posStart, identifier);
    return true;
+}
+
+Lexer.prototype.__tilde = function() {
+   if (this.buffer[this.pos] == "~") {
+      this.current = makeToken("~", this.pos++);
+      return true;
+   }
+   return false;
+}
+
+Lexer.prototype.__xml = function() {
+   if (this.buffer[this.pos] == "<") {
+      let posStart = this.pos;
+      let tag = "";
+
+      for (;;) {
+	 if (this.__isEOF()) {
+	    throw new Error("invalid XML tag `" + tag + "` at " + this.pos);
+	 }
+	 tag += this.buffer[this.pos++];
+	 if (this.buffer[this.pos - 1] == ">") {
+	    break;
+	 }
+      }
+
+      let token = makeToken("XML", posStart, tag);
+      this.current = token;
+
+      token.leaf = this.buffer[this.pos - 2] == "/";
+      token.closing = this.buffer[posStart + 1] == "/";
+      token.openning = !token.closing && !token.leaf;
+
+      if (token.closing && token.leaf) {
+	 throw new Error("invalid XML node `" + token.value +"` at " + posStart);
+      }
+      return true;
+   }
+   return false;
 }
 
 Lexer.prototype.__literal = function() {
@@ -213,7 +251,11 @@ Lexer.prototype.__literal = function() {
       }
    } else if (this.__isDigit()) {
       for (;;) {
-	 if (this.__isDigit() || c == ".") {
+	 if (this.__isDigit() || c == "."
+	     //
+	     // Support for Hop.js HTML/CSS extensions
+	     //
+	     || (literal != "" && this.__isAlphaNum())) {
 	    literal += c;
 	    c = this.buffer[++this.pos];
 	 } else if (this.__isEOL() || this.__isEOF() || this.__isBlank()
@@ -238,6 +280,8 @@ Lexer.prototype.token = function() {
    } else if (this.__skipComment()) {
       return makeToken("EOF");
    } else if (this.__newLine()
+	      || this.__tilde()
+	      || this.__xml()
 	      || this.__literal()
 	      || this.__operator()
 	      || this.__identifier()) {
