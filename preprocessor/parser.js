@@ -136,7 +136,7 @@ Parser.prototype.__hhBlock = function(brackets=true) {
 
    while (this.peek().type != "}") {
       stmts.push(this.__hhStatement());
-      this.consume(";");
+      this.consumeOptionalEmpty();
    }
 
    if (brackets) {
@@ -184,7 +184,7 @@ Parser.prototype.__hhModule = function() {
 	       sigDecls.push(ast.Signal(id, symb, initExpr, combineExpr));
 	       coma = true;
 	    }
-	    this.consume(";");
+	    this.consumeOptionalEmpty();
 	 } else {
 	    break;
 	 }
@@ -312,8 +312,12 @@ Parser.prototype.__emitArguments = function() {
    let args = [];
 
    for (;;) {
+      let peeked;
+
       args.push(emitArg.call(this));
-      if (this.peekHasType(";")) {
+      peeked = this.peek();
+      if (peeked.value == ";" || peeked.newLine) {
+	 this.consumeOptionalEmpty();
 	 break;
       }
       this.consume(",");
