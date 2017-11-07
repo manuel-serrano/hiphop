@@ -145,55 +145,50 @@ Parser.prototype.__hhBlock = function(brackets=true) {
    return ast.HHBlock(varDecls, ast.HHSequence(stmts));
 }
 
-Parser.prototype.__hhModule = function() {
-   function getSigDecls(sigDecls) {
-      for (;;) {
-	 let symb = this.peek().value;
-	 if (symb == "IN" || symb == "OUT" || symb == "INOUT") {
-	    let coma = false;
+function signalDeclarationList(declList, accessibility=null) {
+   let coma = false;
 
-	    this.consumeHHReserved(symb);
-	    while (this.peek().type != ";") {
-	       let initExpr = null;
-	       let combineExpr = null;
-	       let id;
-
-	       if (coma) {
-		  this.consume(",");
-		  coma = false;
-	       }
-
-	       id = this.__identifier();
-	       if (this.peek().type == "(") {
-		  this.consume("(");
-		  initExpr = this.__expression();
-		  this.consume(")");
-	       }
-
-	       if (this.peek().type == "COMBINE") {
-		  this.consumeHHReserved("COMBINE");
-		  this.consume("(");
-		  if (this.peek().value == "function"
-		      || this.peek().value == "service") {
-		     this.combineExpr = this.__functionExpression();
-		  } else {
-		     this.combineExpr = this.__identifier();
-		  }
-		  this.consume(")");
-	       }
-
-	       sigDecls.push(ast.Signal(id, symb, initExpr, combineExpr));
-	       coma = true;
-	    }
-	    this.consumeOptionalEmpty();
-	 } else {
-	    break;
-	 }
-      }
+   if (accessibility) {
+      this.consumeHHReserved(accessibility);
    }
+   while (this.peek().type != ";"
+	  && this.peek().type != "RESERVED"
+	  && this.peek().type != "HHRESERVED") {
+      let initExpr = null;
+      let combineExpr = null;
+      let id;
 
+      if (coma) {
+	 this.consume(",");
+	 coma = false;
+      }
+
+      id = this.__identifier();
+      if (this.peek().type == "(") {
+	 this.consume("(");
+	 initExpr = this.__expression();
+	 this.consume(")");
+      }
+
+      if (this.peek().type == "COMBINE") {
+	 this.consumeHHReserved("COMBINE");
+	 this.consume("(");
+	 if (this.peek().value == "function") {
+	    this.combineExpr = this.__functionExpression();
+	 } else {
+	    this.combineExpr = this.__identifier();
+	 }
+	 this.consume(")");
+      }
+
+      declList.push(ast.Signal(id, accessibility, initExpr, combineExpr));
+      coma = true;
+   }
+}
+
+Parser.prototype.__hhModule = function() {
    let id = null;
-   let sigDecls = [];
+   let declList = [];
    let stmts;
 
    this.consumeHHReserved("MODULE");
@@ -201,10 +196,28 @@ Parser.prototype.__hhModule = function() {
       id = this.__identifier();
    }
    this.consume("{");
-   getSigDecls.call(this, sigDecls);
+   for (;;) {
+      let accessibility = this.peek().value;
+      if (accessibility == "IN"
+	  || accessibility == "OUT"
+	  || accessibility == "INOUT") {
+	 signalDeclarationList.call(this, declList, accessibility);
+	 this.consumeOptionalEmpty();
+      } else {
+	 break;
+      }
+   }
    stmts = this.__hhBlock(false);
    this.consume("}");
-   return ast.HHModule(id, sigDecls, stmts);
+   return ast.HHModule(id, declList, stmts);
+}
+
+Parser.prototype.__hhLocal = function() {
+   let declList = [];
+
+   this.consumeHHReserved("LOCAL");
+   signalDeclarationList.call(this, declList);
+   return ast.HHLocal(sigDecls, this.__hhBlock());
 }
 
 Parser.prototype.__hhHalt = function() {
@@ -415,9 +428,14 @@ Parser.prototype.__hhRun = function() {
 }
 
 Parser.prototype.__hhSuspend = function() {
-   //
-   // TODO: add EMITWHENSUSPENDED <signal> argument
-   //
+   function emitWhenSuspended() {
+      if (this.peek().value == "EMITWHENSUSPENDED") {
+	 this.consume();
+	 return this.consume("IDENTIFIER").value;
+      }
+      return null;
+   }
+
    this.consumeHHReserved("SUSPEND");
 
    if (this.peek().value == "FROM") {
@@ -437,7 +455,8 @@ Parser.prototype.__hhSuspend = function() {
       this.consume("(");
       to = this.__expression();
       this.consume(")");
-      return ast.HHSuspendFromTo(from, to, immediate, this.__hhBlock());
+      let ews = emitWhenSuspended.call(this);
+      return ast.HHSuspendFromTo(from, to, immediate, this.__hhBlock(), ews);
    } else if (this.peek().value == "TOGGLE") {
       let expr;
 
@@ -445,9 +464,11 @@ Parser.prototype.__hhSuspend = function() {
       this.consume("(");
       expr = this.__expression();
       this.consume(")");
-      return ast.HHSuspendToggle(expr, this.__hhBlock());
+      let ews = emitWhenSuspended.call(this);
+      return ast.HHSuspendToggle(expr, this.__hhBlock(), ews);
    } else {
-      return ast.HHSuspend(this.__hhTemporalExpression(), this.__hhBlock());
+      let ews = emitWhenSuspended.call(this);
+      return ast.HHSuspend(this.__hhTemporalExpression(), this.__hhBlock(), ews);
    }
 }
 
@@ -576,6 +597,8 @@ Parser.prototype.__hhStatement = function() {
       return this.__hhSequence();
    case "ATOM":
       return this.__hhAtom();
+   case "LOCAL":
+      return this.__hhLocal();
    case "{":
       return this.__hhBlock();
    case "$":

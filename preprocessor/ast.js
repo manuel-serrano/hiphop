@@ -259,15 +259,18 @@ exports.Program = sourceEls => () => list(sourceEls, " ");
 exports.HHModule = (id, sigDeclList, stmts) => () => {
    let decls = list(sigDeclList, " ");
    let name = id ? `__hh_reserved_debug_name__="${id()}"` : "";
-
    return `<hh.module ${name} ${decls}>${stmts()}</hh.module>`;
+}
+
+exports.Local = (sigDeclList, block) => () => {
+   let decls = list(sigDeclList, " ");
+   return `<hh.local ${decls}>${block()}</hh.local>`;
 }
 
 exports.Signal = (id, accessibility, initExpr, combineExpr) => () => {
    let accessibilityBuf = `accessibility: ${hh[accessibility]}`;
    let initExprBuf = initExpr ? `, initApply: function(){return ${initExpr()}}` : "";
    let combineExprBuf = combineExpr ? `, combine: function(){return ${combineExpr()}}` : "";
-
    return `${id()}=${"${"}{${accessibilityBuf} ${initExprBuf} ${combineExprBuf}}}`;
 }
 
@@ -345,20 +348,23 @@ exports.HHRun = (expr, assocs) => () => {
    return `<hh.run ${moduleBuf} ${assocBuf}/>`;
 }
 
-exports.HHSuspend = (texpr, body) => () => {
-   return `<hh.suspend ${texpr()}>${body()}</hh.suspend>`;
+exports.HHSuspend = (texpr, body, emitWhenSuspended) => () => {
+   let ews = emitWhenSuspended ? `emitWhenSuspended=${emitWhenSuspended}` : "";
+   return `<hh.suspend ${texpr()} ${ews}>${body()}</hh.suspend>`;
 }
 
-exports.HHSuspendToggle = (expr, body) => () => {
-   return `<hh.suspend ${hhExpr("toggleApply", expr)}>${body()}</hh.suspend>`;
+exports.HHSuspendToggle = (expr, body, emitWhenSuspended) => () => {
+   let ews = emitWhenSuspended ? `emitWhenSuspended=${emitWhenSuspended}` : "";
+   return `<hh.suspend ${hhExpr("toggleApply", expr)} ${ews}>${body()}</hh.suspend>`;
 }
 
-exports.HHSuspendFromTo = (from, to, immediate, body) => () => {
+exports.HHSuspendFromTo = (from, to, immediate, body, emitWhenSuspended) => () => {
    let immBuf = immediate ? "immediate" : "";
    let fromBuf = hhExpr("fromApply", from);
    let toBuf = hhExpr("toApply", to);
+   let ews = emitWhenSuspended ? `emitWhenSuspended=${emitWhenSuspended}` : "";
 
-   return `<hh.suspend ${immBuf} ${fromBuf} ${toBuf}>${body()}</hh.suspend>`;
+   return `<hh.suspend ${immBuf} ${fromBuf} ${toBuf} ${ews}>${body()}</hh.suspend>`;
 }
 
 exports.HHExecParams = params => () => {
