@@ -151,9 +151,11 @@ function signalDeclarationList(declList, accessibility=null) {
    if (accessibility) {
       this.consumeHHReserved(accessibility);
    }
-   while (this.peek().type != ";"
-	  && this.peek().type != "RESERVED"
-	  && this.peek().type != "HHRESERVED") {
+   while ((accessibility
+	   &&this.peek().type != ";"
+	   && this.peek().type != "RESERVED"
+	   && this.peek().type != "HHRESERVED")
+	  || (!accessibility && this.peek().type != "{")) {
       let initExpr = null;
       let combineExpr = null;
       let id;
@@ -217,7 +219,7 @@ Parser.prototype.__hhLocal = function() {
 
    this.consumeHHReserved("LOCAL");
    signalDeclarationList.call(this, declList);
-   return ast.HHLocal(sigDecls, this.__hhBlock());
+   return ast.HHLocal(declList, this.__hhBlock());
 }
 
 Parser.prototype.__hhHalt = function() {
@@ -671,7 +673,7 @@ Parser.prototype.__xmlBody = function() {
       let peeked = this.peek();
 
       if (peeked.type == "EOF") {
-	 unexpectedToken(peeked);
+	 unexpectedToken(peeked, "</closing-xml-tag> (maybe)");
       } else if (peeked.type == "~") {
 	 this.consume();
 	 els.push(ast.Tilde(this.__block()));
@@ -681,7 +683,7 @@ Parser.prototype.__xmlBody = function() {
 	 }
 	 els.push(this.__xml());
       } else {
-	 els.push(peeked.value);
+	 els.push(peeked);
 	 this.consume();
       }
    }

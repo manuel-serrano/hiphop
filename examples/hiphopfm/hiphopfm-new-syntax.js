@@ -7,7 +7,7 @@ const dir = path.dirname(module.filename);
 service hiphopfm() {
    return <html>
      <head module="hiphop" css=${dir + "/styles.css"}>
-       <meta name="viewport" content="width=device-width">
+       <meta name="viewport" content="width=device-width"/>
        ~{
 	  var machine;
 	  var controlsView;
@@ -37,7 +37,7 @@ service hiphopfm() {
 	  }
 
 	  function startGenre(genre) {
-	     machine.inputAndReact("GENRE", genre);
+	     machine.inputAndReact("genre", genre);
 	     toogleGenreDetailView();
 	  }
 
@@ -179,7 +179,7 @@ service hiphopfm() {
 	     detailView.style.display = "none";
 
 	     fma("genres", function(genres) {
-	     	genres.forEach(genre => {
+	     	genres.forEach(function(genre) {
 	     	   let button = <button id="genreButton" onclick=~{startGenre(genre)}>
 	     	     ${genre.genre_title}
 		   </button>
@@ -192,20 +192,20 @@ service hiphopfm() {
      <body>
        <div id="controlsView">
 	 <input id="durationControl" type="range" step="1"
-		min="0" max=~{machine.value.DURATION}
-		value=~{machine.value.POSITION}
-		onchange=~{machine.inputAndReact("SEEKTO", this.value)}/>
+		min="0" max=~{machine.value.duration}
+		value=~{machine.value.position}
+		onchange=~{machine.inputAndReact("seekTo", this.value)}/>
 	 <button id="genreSelectionButton"
                  onclick=~{toogleGenreDetailView()}>
 	     &nbsp;
 	 </button>
 	 <button id="playPauseButton"
-		 onclick=~{machine.inputAndReact("PLAYPAUSE")}
-		 class=~{machine.present.PAUSED ? "paused" : "playing"}>
+		 onclick=~{machine.inputAndReact("playPause")}
+		 class=~{machine.present.paused ? "paused" : "playing"}>
 	     &nbsp;
 	 </button>
 	 <button id="nextButton"
-                 onclick=~{machine.inputAndReact("NEXT")}>
+                 onclick=~{machine.inputAndReact("next")}>
 	     Next track
 	 </button>
        </div>
@@ -215,16 +215,16 @@ service hiphopfm() {
 	 <div id="currentPlayingView">
 	   <div>
 	     <react>~{
-		let track = machine.value.TRACK;
+		let track = machine.value.track;
 		if (track) {
 		   return <div>
 		     <h2>${track.artist_name} - ${track.track_title}</h2>
-		     ${(() => {
+		     ${(function() {
 			function s2m(secs) {
 			   return Math.floor(secs / 60) + ":" + Math.floor(secs % 60);
 			}
-			let pos = machine.value.POSITION;
-			let dur = machine.value.DURATION;
+			let pos = machine.value.position;
+			let dur = machine.value.duration;
 			if (!isNaN(pos) && !isNaN(dur)) {
 			   return <h5>${s2m(pos)}/${s2m(dur)}</h5>
 			} else {
@@ -240,7 +240,7 @@ service hiphopfm() {
 	   <div>
 	     <react>
 	       ~{
-		  let track = machine.value.TRACK
+		  let track = machine.value.track
 		  if (track && track.track_image_file) {
 		     return <img src=${track.track_image_file}/>
 		  } else {
@@ -252,10 +252,10 @@ service hiphopfm() {
 	 </div>
 	 <div id="bioView">
 	   <react>~{
-	      if (machine.value.BIO != " ") {
-		 let bio = machine.value.BIO;
+	      if (machine.value.bio != " ") {
+		 let bio = machine.value.bio;
 		 let div = document.createElement("div");
-		 div.innerHTML = machine.value.BIO;
+		 div.innerHTML = machine.value.bio;
 		 return <div>
 		   <h3>Biography</h3>
 		   ${div}
@@ -267,12 +267,12 @@ service hiphopfm() {
 	 </div>
 	 <div id="discoView">
 	   <react>~{
-	      if (machine.value.DISCO instanceof Array
-		  && machine.value.DISCO.length > 0) {
+	      if (machine.value.disco instanceof Array
+		  && machine.value.disco.length > 0) {
 	       	 return <div>
 		   <h3>Discography</h3>
 		   <ul>
-	       	    ${machine.value.DISCO.map(album => <li>${album.album_title}</li>)}
+	       	    ${machine.value.disco.map(function(album) { return <li>${album.album_title}</li>})}
 	       	   </ul>
 		 </div>;
 	      } else {

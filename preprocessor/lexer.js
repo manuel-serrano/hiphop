@@ -4,7 +4,7 @@ function makeToken(type, pos=null, value=null) {
    return {
       type: type,
       pos: pos,
-      value: value ? value : type
+      value: value != null ? value : type
    };
 }
 
@@ -241,6 +241,7 @@ Lexer.prototype.__literal = function() {
 	 } else if (c == delim) {
 	    this.current = makeToken("LITERAL", posStart, literal);
 	    this.current.string = true;
+	    this.current.stringDelim = delim;
 	    this.current.template = delim == "`" ? true : false;
 	    this.pos++;
 	    return true;
@@ -285,6 +286,7 @@ Lexer.prototype.token = function() {
 	      || this.__literal()
 	      || this.__operator()
 	      || this.__identifier()) {
+      this.current.blankNext = this.__isBlank() || this.__isEOL();
       return this.current;
    } else {
       throw new Error("unexpected character `" + this.buffer[this.pos]

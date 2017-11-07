@@ -36,7 +36,19 @@ exports.XMLBody = els => () => {
 
    for (let i in els) {
       let el = els[i];
-      buf += el instanceof Function ? el() : el;
+      if (el instanceof Function) {
+	 buf += el();
+      } else {
+	 if (el.stringDelim) {
+	    buf += `${el.stringDelim}${el.value}${el.stringDelim}`;
+	 } else {
+	    buf += el.value;
+	 }
+
+	 if (el.blankNext) {
+	    buf += " ";
+	 }
+      }
    }
    return buf;
 }
@@ -262,7 +274,7 @@ exports.HHModule = (id, sigDeclList, stmts) => () => {
    return `<hh.module ${name} ${decls}>${stmts()}</hh.module>`;
 }
 
-exports.Local = (sigDeclList, block) => () => {
+exports.HHLocal = (sigDeclList, block) => () => {
    let decls = list(sigDeclList, " ");
    return `<hh.local ${decls}>${block()}</hh.local>`;
 }
