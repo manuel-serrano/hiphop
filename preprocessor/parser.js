@@ -518,6 +518,8 @@ Parser.prototype.__hhAccessor = function() {
    case "COMPLETEANDREACT":
    case "DONEREACT":
       return computeSymb.call(this, symb, "terminateExecAndReact", false);
+   case "EXECID":
+      return computeSymb.call(this, symb, "id", false);
    default:
       unexpectedHHToken(peeked, "ACCESSOR");
    }
@@ -658,7 +660,8 @@ Parser.prototype.__primaryExpression = function() {
       if (peeked.value == "VAL" || peeked.value == "PREVAL"
 	  || peeked.value == "PRE" || peeked.value == "NOW"
 	  || peeked.value == "COMPLETE" || peeked.value == "COMPLETEANDREACT"
-	  || peeked.value == "DONE" || peeked.value == "DONEREACT") {
+	  || peeked.value == "DONE" || peeked.value == "DONEREACT"
+	  || peeked.value == "EXECID") {
 	 return this.__hhAccessor();
       } else {
 	 return this.__hhStatement();

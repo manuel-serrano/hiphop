@@ -80,12 +80,12 @@ service hiphopfm() {
 	     const hh = require("hiphop");
 
 	     function hhSleepModule(ms) {
-		let id;
+		let ids = [];
 		return MODULE {
-		   EXEC id = setTimeout(DONEREACT, ms)
-		      ONSUSP clearTimeout(id)
-		      ONRES id = setTimeout(DONEREACT, ms)
-		      ONKILL clearTimeout(id);
+		   EXEC ids[EXECID] = setTimeout(DONEREACT, ms)
+		      ONSUSP clearTimeout(ids[EXECID])
+		      ONRES ids[EXECID] = setTimeout(DONEREACT, ms)
+		      ONKILL clearTimeout(ids[EXECID]);
 		}
 	     }
 
