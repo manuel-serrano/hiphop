@@ -287,7 +287,7 @@ exports.Signal = (id, accessibility, initExpr, combineExpr) => () => {
 }
 
 exports.HHSequence = stmts => () => {
-   return `<hh.sequence>${list(stmts, "")}</hh.sequence>`;
+   return `<hh.sequence nodebug>${list(stmts, "")}</hh.sequence>`;
 }
 
 exports.HHHalt = () => () => `<hh.halt/>`;
