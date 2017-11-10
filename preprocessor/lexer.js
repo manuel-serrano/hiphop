@@ -37,8 +37,8 @@ Lexer.prototype.__isOperator = function() {
       .indexOf(this.buffer[this.pos]) > -1;
 }
 
-Lexer.prototype.__isAlpha = function() {
-   let c = this.buffer[this.pos];
+Lexer.prototype.__isAlpha = function(idx=this.pos) {
+   let c = this.buffer[idx];
 
    return ((c >= "a" && c <= "z")
 	   || (c >= "A" && c <= "Z")
@@ -191,7 +191,11 @@ Lexer.prototype.__tilde = function() {
 }
 
 Lexer.prototype.__xml = function() {
-   if (this.buffer[this.pos] == "<") {
+   //
+   // BUG: expression `a <b` will detect an invalide XML node `<b`
+   //
+   if (this.buffer[this.pos] == "<"
+       && (this.__isAlpha(this.pos + 1) || this.buffer[this.pos + 1] == "/")) {
       let posStart = this.pos;
       let tag = "";
 
