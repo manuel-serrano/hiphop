@@ -274,12 +274,12 @@ Parser.prototype.__hhFork = function() {
 
 Parser.prototype.__hhAbort = function() {
    this.consumeHHReserved("ABORT");
-   return this.HHAbort(this.__hhTemporalExpression(), this.__hhBlock());
+   return ast.HHAbort(this.__hhTemporalExpression(), this.__hhBlock());
 }
 
 Parser.prototype.__hhWeakAbort = function() {
    this.consumeHHReserved("WEAKABORT");
-   return this.HHWeakAbort(this.__hhTemporalExpression(), this.hhBlock());
+   return ast.HHWeakAbort(this.__hhTemporalExpression(), this.hhBlock());
 }
 
 Parser.prototype.__hhLoop = function() {
