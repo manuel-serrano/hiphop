@@ -120,7 +120,14 @@ Lexer.prototype.__operator = function() {
    let value__ = this.buffer.substring(pos, pos + 3);
    let value___ = this.buffer.substring(pos, pos + 4);
 
-   if (value_ == "*=" || value_ == "/=" || value_ == "%="
+   if (value___ == ">>>=") {
+      value = value___;
+      this.pos += 4;
+   } else if (value__ == "<<=" || value__ == ">>=" || value__ == ">>>"
+	      || value__ == "===" || value__ == "!==") {
+      value = value__;
+      this.pos += 3;
+   } else if (value_ == "*=" || value_ == "/=" || value_ == "%="
        || value_ == "+=" || value_ == "-=" || value_ == "&="
        || value_ == "^=" || value_ == "|=" || value_ == "&&"
        || value_ == "||" || value_ == "==" || value_ == "++"
@@ -128,12 +135,6 @@ Lexer.prototype.__operator = function() {
        || value_ == ">=") {
       value = value_;
       this.pos += 2;
-   } else if (value__ == "<<=" || value__ == ">>=" || value__ == ">>>") {
-      value = value__;
-      this.pos += 3;
-   } else if (value___ == ">>>=") {
-      value = value___;
-      this.pos += 4;
    } else {
       this.pos++;
    }
