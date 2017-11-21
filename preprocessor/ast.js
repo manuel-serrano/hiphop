@@ -253,8 +253,8 @@ exports.FunctionDeclaration = (id, params, body, srv) => () => {
 }
 
 exports.FunctionExpression = (id, params, body, srv) => () => {
-   return (srv ? "service" : "function")
-      + ` ${id ? id() : ""}(${list(params)}) { ${body()} }`;
+   return (srv ? "(service" : "(function")
+      + ` ${id ? id() : ""}(${list(params)}) { ${body()} })`;
 }
 
 exports.Parameter = (id, initExpr) => () => {
