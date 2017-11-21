@@ -243,6 +243,10 @@ exports.Finally = block => () => `finally ${block()}`;
 
 exports.Debugger = () => () => `debugger;`;
 
+exports.Service = id => () => {
+   return `service ${id()}();`;
+}
+
 exports.FunctionDeclaration = (id, params, body, srv) => () => {
    return (srv ? "service" : "function")
       + ` ${id()}(${list(params)}) { ${body()} }`;

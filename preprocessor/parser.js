@@ -1434,6 +1434,15 @@ Parser.prototype.__functionDeclaration = function(expr=false) {
 	   : ast.FunctionDeclaration(id, params, body, isService));
 }
 
+Parser.prototype.__serviceDeclaration = function() {
+   this.consume();
+   let id = this.__identifier();
+   this.consume("(");
+   this.consume(")");
+   this.consumeOptionalEmpty();
+   return ast.Service(id);
+}
+
 Parser.prototype.__functionExpression = function() {
    return this.__functionDeclaration(true);
 }
@@ -1487,8 +1496,9 @@ Parser.prototype.__sourceElement = function() {
    case "EOF":
       unexpectedToken(peeked);
    case "function":
-   case "service":
       return this.__functionDeclaration();
+   case "service":
+      return this.__serviceDeclaration();
    default:
       return this.__statement();
    }
