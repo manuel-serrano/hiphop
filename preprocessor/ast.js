@@ -304,8 +304,9 @@ exports.HHIf = (test, t, e) => () => {
    return `<hh.if ${hhExpr("apply", test)}>${t()}${e ? e() : ""}</hh.if>`;
 }
 
-exports.HHFork = branches => () => {
-   return `<hh.parallel>${list(branches, "")}</hh.parallel>`;
+exports.HHFork = (branches, forkId) => () => {
+   let id = forkId ? `id=${forkId()}` : "";
+   return `<hh.parallel ${id}>${list(branches, "")}</hh.parallel>`;
 }
 
 exports.HHAbort = (texpr, body) => () => {

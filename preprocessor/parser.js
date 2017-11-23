@@ -262,14 +262,18 @@ Parser.prototype.__hhIf = function() {
 
 Parser.prototype.__hhFork = function() {
    let branches = [];
+   let forkId = undefined;
 
    this.consumeHHReserved("FORK");
+   if (this.peek().type == "IDENTIFIER") {
+      forkId = this.__identifier();
+   }
    branches.push(this.__hhBlock());
    while (this.peekHasValue("PAR")) {
       this.consume();
       branches.push(this.__hhBlock());
    }
-   return ast.HHFork(branches);
+   return ast.HHFork(branches, forkId);
 }
 
 Parser.prototype.__hhAbort = function() {
