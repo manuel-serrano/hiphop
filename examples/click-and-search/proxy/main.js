@@ -8,10 +8,9 @@ function requestHandler(request, response) {
 	 response.end(res);
       });
    }).catch(function() {
-      response.end('No page found');
+      response.end('Page not found');
    });
 }
-
 
 const server = http.createServer(requestHandler);
 

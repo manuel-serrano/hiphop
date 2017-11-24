@@ -4,7 +4,7 @@ const debug = require("hiphop");
 
 service clickAndSearch() {
    return <html>
-     <head module=${"hiphop"}>
+     <head module=${"hiphop"}  css=${clickAndSearch.resource("./style.css")}>
      ~{
 	var hh;
 	var m;
@@ -49,11 +49,8 @@ service clickAndSearch() {
 
 	   m.addEventListener("green", function(evt) {
 	      var el = document.getElementById(evt.signalValue);
-	      var wiki = document.getElementById("wiki");
-	      var trans = document.getElementById("trans");
 	      el.style.color = "green";
-	      wiki.style.color = "green";
-	      trans.style.color = "green";
+	      var popup = document.getElementById("popup").style.display = "block";
 	   });
 
 	   m.addEventListener("black", function(evt) {
@@ -62,15 +59,13 @@ service clickAndSearch() {
 	      }
 	      var el = document.getElementById(evt.signalValue);
 	      el.style.color = "black";
+
+	      var popup = document.getElementById("popup").style.display = "none";
 	   });
 
 	   m.addEventListener("red", function(evt) {
 	      var el = document.getElementById(evt.signalValue);
-	      var wiki = document.getElementById("wiki");
-	      var trans = document.getElementById("trans");
 	      el.style.color = "red";
-	      wiki.style.color = "red";
-	      trans.style.color = "red";
 	   });
 
 	   m.addEventListener("wiki", function(evt) {
@@ -111,9 +106,11 @@ service clickAndSearch() {
      }
      </head>
      <body>
+       <div id="popup">
+	 <div id="trans"><react>~{m.value.trans}</react></div>
+	 <div id="wiki"></div>
+       </div>
        <pre id="txt"></pre>
-       <div>wiki<div id="wiki"></div></div>
-       <div>trans<div id="trans"><react>~{m.value.trans}</react></div></div>
      </body>
    </html>
 }
