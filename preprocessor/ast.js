@@ -243,18 +243,22 @@ exports.Finally = block => () => `finally ${block()}`;
 
 exports.Debugger = () => () => `debugger;`;
 
-exports.Service = id => () => {
-   return `service ${id()}();`;
+exports.ServiceDeclaration = (id, params, body) => () => {
+   var b = body ? `{ ${body()} }` : "";
+   return `service ${id()}(${list(params)}) ${b}`;
 }
 
-exports.FunctionDeclaration = (id, params, body, srv) => () => {
-   return (srv ? "service" : "function")
-      + ` ${id()}(${list(params)}) { ${body()} }`;
+exports.ServiceExpression = (id, params, body) => () => {
+   var b = body ? `{ ${body()} }` : "";
+   return `(service ${id ? id() : ""}(${list(params)}) ${b})`;
 }
 
-exports.FunctionExpression = (id, params, body, srv) => () => {
-   return (srv ? "(service" : "(function")
-      + ` ${id ? id() : ""}(${list(params)}) { ${body()} })`;
+exports.FunctionDeclaration = (id, params, body) => () => {
+   return `function ${id()}(${list(params)}) { ${body()} }`;
+}
+
+exports.FunctionExpression = (id, params, body) => () => {
+   return `(function ${id ? id() : ""}(${list(params)}) { ${body()} })`;
 }
 
 exports.Parameter = (id, initExpr) => () => {
@@ -405,7 +409,7 @@ exports.HHExecEmit = (id, startExpr, params) => () => {
    return `<hh.exec ${id()} ${hhJSStmt("apply", startExpr)} ${params()}/>`;
 }
 
-exports.HHDollar = expr => () => `${"$"}{${expr()}}`;
+exports.Dollar = expr => () => `${"$"}{${expr()}}`;
 
 exports.HHBlock = (varDecls, seq) => () => {
    if (varDecls.length == 0) {

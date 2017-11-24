@@ -545,14 +545,14 @@ Parser.prototype.__hhSequence = function() {
    return this.__hhBlock();
 }
 
-Parser.prototype.__hhDollar = function() {
+Parser.prototype.__dollar = function() {
    let expr;
 
    this.consume("IDENTIFIER", "$");
    this.consume("{");
    expr = this.__expression();
    this.consume("}");
-   return ast.HHDollar(expr);
+   return ast.Dollar(expr);
 }
 
 Parser.prototype.__hhStatement = function() {
@@ -610,7 +610,7 @@ Parser.prototype.__hhStatement = function() {
    case "{":
       return this.__hhBlock();
    case "$":
-      return this.__hhDollar();
+      return this.__dollar();
    default:
       unexpectedHHToken(peeked);
    }
@@ -634,14 +634,19 @@ Parser.prototype.__primaryExpression = function() {
 	 this.consume();
 	 return ast.This();
       case "function":
-      case "service":
 	 return this.__functionExpression();
+      case "service":
+	 return this.__serviceExpression();
       default:
 	 this.consume();
 	 return ast.Unresolved(peeked.value);
       }
    case "IDENTIFIER":
-      return this.__identifier();
+      if (peeked.value == "$" && this.peek(1).value == "{") {
+	 return this.__dollar();
+      } else {
+	 return this.__identifier();
+      }
    case "LITERAL":
       //
       // For the purpose of this parser, we don't care of literal
@@ -1067,6 +1072,8 @@ Parser.prototype.__statement = function() {
       return this.__tryStatement();
    case "debugger":
       return this.__debuggerStatement();
+   case "function":
+      return this.__functionDeclaration();
    default:
       if (this.peek(1).type == ":") {
 	 return this.__labelledStatement();
@@ -1419,8 +1426,8 @@ Parser.prototype.__functionDeclaration = function(expr=false) {
    let id = null;
    let params;
    let body;
-   let isService = this.consumeReserved().value == "service";
 
+   this.consumeReserved();
    if (!expr || (expr && this.peekIsIdentifier())) {
       id = this.__identifier();
    }
@@ -1432,23 +1439,44 @@ Parser.prototype.__functionDeclaration = function(expr=false) {
    this.consume("{");
    body = this.__functionBody();
    this.consume("}");
-
    return (expr
-	   ? ast.FunctionExpression(id, params, body, isService)
-	   : ast.FunctionDeclaration(id, params, body, isService));
-}
-
-Parser.prototype.__serviceDeclaration = function() {
-   this.consume();
-   let id = this.__identifier();
-   this.consume("(");
-   this.consume(")");
-   this.consumeOptionalEmpty();
-   return ast.Service(id);
+	   ? ast.FunctionExpression(id, params, body)
+	   : ast.FunctionDeclaration(id, params, body));
 }
 
 Parser.prototype.__functionExpression = function() {
    return this.__functionDeclaration(true);
+}
+
+Parser.prototype.__serviceDeclaration = function(expr=false) {
+   let id = null;
+   let params;
+   let body = null;
+
+   this.consumeReserved();
+   if (!expr || (expr && this.peekIsIdentifier())) {
+      id = this.__identifier();
+   }
+
+   this.consume("(");
+   params = this.__formalParameterList();
+   this.consume(")");
+
+   if (this.peek().type == "{") {
+      this.consume("{");
+      body = this.__functionBody();
+      this.consume("}");
+   } else {
+      this.consumeOptionalEmpty();
+   }
+
+   return (expr
+	   ? ast.ServiceExpression(id, params, body)
+	   : ast.ServiceDeclaration(id, params, body));
+}
+
+Parser.prototype.__serviceExpression = function() {
+   return this.__serviceDeclaration(true);
 }
 
 Parser.prototype.__formalParameterList = function() {
