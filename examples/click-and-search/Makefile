@@ -23,7 +23,7 @@ compile:
 	INPUT=./main.js OUTPUT=./main.out.js $(PP)
 
 start:
-	hop ./main.out.js &
+	hop -g ./main.out.js &
 	node proxy/main.js &
 
 kill:
