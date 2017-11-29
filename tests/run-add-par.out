@@ -1,8 +1,9 @@
 
 MODULE0
 Module S U A B { 
-   Parallel { 
+   Fork { 
       Run MODULE1 W=A Z=B 
+   } Par { 
       Halt 
    } 
 } 
@@ -10,9 +11,10 @@ Module S U A B {
 
 MODULE1
 Module S U W Z { 
-   Parallel { 
-      Emit W If CALL USING present S 
-      Emit Z If CALL USING present U 
+   Fork { 
+      Emit W If USING present S 
+   } Par { 
+      Emit Z If USING present U 
    } 
 } 
 
@@ -23,9 +25,11 @@ m.inputAndReact(S)
 
 MODULE0
 Module S U A B { 
-   Parallel { 
+   Fork { 
       Run MODULE1 W=A Z=B 
+   } Par { 
       Halt 
+   } Par { 
       Run MODULE2 Z=A 
    } 
 } 
@@ -33,18 +37,20 @@ Module S U A B {
 
 MODULE1
 Module S U W Z { 
-   Parallel { 
-      Emit W If CALL USING present S 
-      Emit Z If CALL USING present U 
+   Fork { 
+      Emit W If USING present S 
+   } Par { 
+      Emit Z If USING present U 
    } 
 } 
 
 
 MODULE2
 Module S U W Z { 
-   Parallel { 
-      Emit W If CALL USING present S 
-      Emit Z If CALL USING present U 
+   Fork { 
+      Emit W If USING present S 
+   } Par { 
+      Emit Z If USING present U 
    } 
 } 
 
