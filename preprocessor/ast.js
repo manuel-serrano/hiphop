@@ -420,6 +420,10 @@ exports.HHBlock = (varDecls, seq) => () => {
 
 exports.HHAtom = jsStmts => () => `<hh.atom ${hhJSStmt("apply", jsStmts)}/>`;
 
+exports.HHWhile = (expr, body) => () => {
+   return `<hh.trap While><hh.loop><hh.if ${expr()}><hh.nothing/><hh.exit While/></hh.if>${body()}</hh.loop></hh.trap>`;
+}
+
 function hhExpr(attr, expr) {
    return `${attr}=${"$"}{function(){return ${expr()}}}`;
 }

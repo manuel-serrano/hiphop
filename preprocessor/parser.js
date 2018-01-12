@@ -537,6 +537,13 @@ Parser.prototype.__hhAtom = function() {
    return ast.HHAtom(this.__statement());
 }
 
+Parser.prototype.__hhWhile = function() {
+   this.consumeHHReserved("WHILE");
+   const texpr = this.__hhTemporalExpression();
+   const body = this.__hhBlock();
+   return ast.HHWhile(texpr, body);
+}
+
 Parser.prototype.__hhSequence = function() {
    this.consumeHHReserved("SEQUENCE");
    if (this.peek().value != "{") {
@@ -607,6 +614,10 @@ Parser.prototype.__hhStatement = function() {
       return this.__hhAtom();
    case "LOCAL":
       return this.__hhLocal();
+   case "WHILE":
+      return this.__hhWhile();
+   case "PROMOSE":
+      return this.__hhPromise();
    case "{":
       return this.__hhBlock();
    case "$":
