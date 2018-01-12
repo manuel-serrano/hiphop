@@ -283,7 +283,7 @@ Parser.prototype.__hhAbort = function() {
 
 Parser.prototype.__hhWeakAbort = function() {
    this.consumeHHReserved("WEAKABORT");
-   return ast.HHWeakAbort(this.__hhTemporalExpression(), this.hhBlock());
+   return ast.HHWeakAbort(this.__hhTemporalExpression(), this.__hhBlock());
 }
 
 Parser.prototype.__hhLoop = function() {
