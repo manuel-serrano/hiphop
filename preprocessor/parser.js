@@ -411,6 +411,15 @@ Parser.prototype.__hhExecEmit = function() {
 			 this.__hhExecParameters());
 }
 
+Parser.prototype.__hhPromise = function() {
+   this.consumeHHReserved("PROMISE");
+   const thenId = this.__identifier();
+   this.consume(",");
+   return ast.HHPromise(thenId,
+			this.__identifier(),
+			this.__expression());
+}
+
 Parser.prototype.__hhRun = function() {
    let expr;
    let assocs = [];
@@ -616,7 +625,7 @@ Parser.prototype.__hhStatement = function() {
       return this.__hhLocal();
    case "WHILE":
       return this.__hhWhile();
-   case "PROMOSE":
+   case "PROMISE":
       return this.__hhPromise();
    case "{":
       return this.__hhBlock();

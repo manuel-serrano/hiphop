@@ -409,6 +409,30 @@ exports.HHExecEmit = (id, startExpr, params) => () => {
    return `<hh.exec ${id()} ${hhJSStmt("apply", startExpr)} ${params()}/>`;
 }
 
+exports.HHPromise = (thenId, catchId, expr) => () => {
+   return `<hh.local promiseReturn>
+     <hh.exec promiseReturn apply=${"$"}{function() {
+        let self = this;
+	${expr()}.then(function(v) {
+	      self.terminateExecAndReact({resolve: true,
+					  value: v});
+	   })
+	   .catch(function(v) {
+	      self.terminateExecAndReact({resolve: false,
+					  value: v});
+	   });
+     }}/>
+     <hh.if apply=${"$"}{function() {return this.value.promiseReturn.resolve}}>
+       <hh.emit ${thenId()} apply=${"$"}{function() {
+	  return this.value.promiseReturn.value;
+       }}/>
+       <hh.emit ${catchId()} apply=${"$"}{function() {
+	  return this.value.promiseReturn.value;
+       }}/>
+     </hh.if>
+   </hh.local>`;
+}
+
 exports.Dollar = expr => () => `${"$"}{${expr()}}`;
 
 exports.HHBlock = (varDecls, seq) => () => {
