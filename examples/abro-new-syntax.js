@@ -25,6 +25,7 @@ service abro() {
 		   }
 		}
 	     );
+	     m.debuggerOn("debug");
 	  }
        }
      </head>

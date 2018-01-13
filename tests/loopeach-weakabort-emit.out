@@ -5,14 +5,14 @@ Module A B {
    LoopEach present A { 
       WeakAbort present B { 
          Nothing 
-         Parallel { 
+         Fork { 
             Sequence { 
                Pause 
                Emit B 
             } 
          } 
       } 
-      Atom CALL 
+      Atom 
    } 
 } 
 
@@ -23,14 +23,14 @@ MODULE0
 Module A B { 
    LoopEach present A { 
       WeakAbort present B { 
-         Parallel { 
+         Fork { 
             Sequence { 
                Pause 
                Emit B 
             } 
          } 
       } 
-      Atom CALL 
+      Atom 
    } 
 } 
 
