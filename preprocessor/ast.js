@@ -445,7 +445,30 @@ exports.HHBlock = (varDecls, seq) => () => {
 exports.HHAtom = jsStmts => () => `<hh.atom ${hhJSStmt("apply", jsStmts)}/>`;
 
 exports.HHWhile = (expr, body) => () => {
-   return `<hh.trap While><hh.loop><hh.if ${expr()}><hh.nothing/><hh.exit While/></hh.if>${body()}</hh.loop></hh.trap>`;
+   return `<hh.trap While>
+     <hh.loop>
+       <hh.if ${expr()}>
+         <hh.nothing/>
+	 <hh.exit While/>
+       </hh.if>
+       ${body()}
+     </hh.loop>
+   </hh.trap>`;
+}
+
+exports.HHFor = (declList, whileExpr, eachStmt, body) => () => {
+   return `<hh.trap For>
+     <hh.local ${list(declList, " ")}>
+       <hh.loop>
+         <hh.if ${whileExpr()}>
+           <hh.nothing/>
+	   <hh.exit For/>
+         </hh.if>
+         ${body()}
+         ${eachStmt()}
+       </hh.loop>
+     </hh.local>
+   </hh.trap>`;
 }
 
 function hhExpr(attr, expr) {

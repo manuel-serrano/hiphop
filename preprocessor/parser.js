@@ -151,11 +151,14 @@ function signalDeclarationList(declList, accessibility=null) {
    if (accessibility) {
       this.consumeHHReserved(accessibility);
    }
+
    while ((accessibility
-	   &&this.peek().type != ";"
+	   && this.peek().type != ";"
 	   && this.peek().type != "RESERVED"
 	   && this.peek().type != "HHRESERVED")
-	  || (!accessibility && this.peek().type != "{")) {
+	  || (!accessibility
+	      && this.peek().type != "{"
+	      && this.peek().type != ";")) {
       let initExpr = null;
       let combineExpr = null;
       let id;
@@ -336,7 +339,9 @@ Parser.prototype.__emitArguments = function() {
 
       args.push(emitArg.call(this));
       peeked = this.peek();
-      if (peeked.value == ";" || peeked.newLine) {
+      if (peeked.value == ";"
+	  || peeked.newLine
+	  || peeked.type == ")") /* FOR case */ {
 	 this.consumeOptionalEmpty();
 	 break;
       }
@@ -487,16 +492,21 @@ Parser.prototype.__hhSuspend = function() {
    }
 }
 
-Parser.prototype.__hhTemporalExpression = function() {
+Parser.prototype.__hhTemporalExpression = function(inFor=false) {
    let immediate = false;
    let expr;
    if (this.peek().value == "IMMEDIATE") {
       this.consumeHHReserved("IMMEDIATE");
       immediate = true;
    }
-   this.consume("(");
+
+   if (!immediate && !inFor) {
+      this.consume("(");
+   }
    expr = this.__expression();
-   this.consume(")");
+   if (!immediate && !inFor) {
+      this.consume(")");
+   }
    return ast.HHTemporalExpression(immediate, expr);
 }
 
@@ -551,6 +561,22 @@ Parser.prototype.__hhWhile = function() {
    const texpr = this.__hhTemporalExpression();
    const body = this.__hhBlock();
    return ast.HHWhile(texpr, body);
+}
+
+//
+// TODO: for operands should be optional
+//
+Parser.prototype.__hhFor = function() {
+   let declList = [];
+   this.consumeHHReserved("FOR");
+   this.consume("(");
+   signalDeclarationList.call(this, declList);
+   this.consume(";");
+   const whileExpr = this.__hhTemporalExpression(true);
+   this.consume(";");
+   const eachStmt = this.__hhStatement();
+   this.consume(")");
+   return ast.HHFor(declList, whileExpr, eachStmt, this.__hhBlock());
 }
 
 Parser.prototype.__hhSequence = function() {
@@ -625,6 +651,8 @@ Parser.prototype.__hhStatement = function() {
       return this.__hhLocal();
    case "WHILE":
       return this.__hhWhile();
+   case "FOR":
+      return this.__hhFor();
    case "PROMISE":
       return this.__hhPromise();
    case "{":
