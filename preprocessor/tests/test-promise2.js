@@ -1,15 +1,12 @@
 const hh = require("hiphop");
 
-function callPromise(willReject) {
+function callPromise(self) {
    return new Promise(function(resolve, reject) {
-      console.log(`callPromise(${willReject})`);
+      console.log(`callPromise()`);
       setTimeout(function() {
-	 if (willReject) {
-	    reject("reject promise");
-	 } else {
-	    resolve("resolve promise");
-	 }
-      }, 5000);
+	 console.log("has been killed?", self.killed);
+	 reject("reject promise");
+      }, 1000);
    });
 }
 
@@ -17,7 +14,7 @@ const m = new hh.ReactiveMachine(MODULE {
    IN abrt;
    OUT res1, rej1;
    ABORT(NOW(abrt)) {
-      PROMISE res1, rej1 callPromise(true) ONKILL console.log("killed!");
+      PROMISE res1, rej1 callPromise(THIS) ONKILL console.log("killed!", THIS.killed);
    }
 });
 

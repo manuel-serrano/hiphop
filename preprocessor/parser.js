@@ -544,6 +544,9 @@ Parser.prototype.__hhAccessor = function() {
       return computeSymb.call(this, symb, "terminateExecAndReact", false);
    case "EXECID":
       return computeSymb.call(this, symb, "id", false);
+   case "THIS":
+      this.consume();
+      return ast.HHAccessor("this", null);
    default:
       unexpectedHHToken(peeked, "ACCESSOR");
    }
@@ -719,7 +722,7 @@ Parser.prototype.__primaryExpression = function() {
 	  || peeked.value == "PRE" || peeked.value == "NOW"
 	  || peeked.value == "COMPLETE" || peeked.value == "COMPLETEANDREACT"
 	  || peeked.value == "DONE" || peeked.value == "DONEREACT"
-	  || peeked.value == "EXECID") {
+	  || peeked.value == "EXECID" || peeked.value == "THIS") {
 	 return this.__hhAccessor();
       } else {
 	 return this.__hhStatement();
