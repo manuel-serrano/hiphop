@@ -409,7 +409,7 @@ exports.HHExecEmit = (id, startExpr, params) => () => {
    return `<hh.exec ${id()} ${hhJSStmt("apply", startExpr)} ${params()}/>`;
 }
 
-exports.HHPromise = (thenId, catchId, expr) => () => {
+exports.HHPromise = (thenId, catchId, expr, params) => () => {
    return `<hh.local promiseReturn>
      <hh.exec promiseReturn apply=${"$"}{function() {
         let self = this;
@@ -421,7 +421,7 @@ exports.HHPromise = (thenId, catchId, expr) => () => {
 	      self.terminateExecAndReact({resolve: false,
 					  value: v});
 	   });
-     }}/>
+     }} ${params()}/>
      <hh.if apply=${"$"}{function() {return this.value.promiseReturn.resolve}}>
        <hh.emit ${thenId()} apply=${"$"}{function() {
 	  return this.value.promiseReturn.value;

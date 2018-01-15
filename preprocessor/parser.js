@@ -422,7 +422,8 @@ Parser.prototype.__hhPromise = function() {
    this.consume(",");
    return ast.HHPromise(thenId,
 			this.__identifier(),
-			this.__expression());
+			this.__expression(),
+			this.__hhExecParameters());
 }
 
 Parser.prototype.__hhRun = function() {
