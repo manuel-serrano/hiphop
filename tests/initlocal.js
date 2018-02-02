@@ -15,7 +15,6 @@ const m = new hh.ReactiveMachine(
      </hh.loop>
    </hh.module>
 );
-//m.trace_on=2;
 m.addEventListener("s", function (evt) { console.log(evt); });
 m.react();
 m.react();

@@ -51,7 +51,6 @@ machine.getElementById("par").appendChild(make_atom2(1));
 machine.react()
 machine.react()
 
-//machine.trace_on = 2;
 
 console.log("add 2");
 machine.getElementById("par").appendChild(make_atom(2));
@@ -59,7 +58,6 @@ machine.getElementById("par").appendChild(make_atom(2));
 machine.react()
 //console.error(machine.ast.pretty_print());
 
-machine.trace_on = 0;
 
 machine.react()
 machine.react()
