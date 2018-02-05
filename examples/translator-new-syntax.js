@@ -47,8 +47,7 @@ service translator() {
 		    RUN(execColor("es|fr"), color=colorSe, text=transEs, trans=transSe);
 		 }
 	      }
-	   });
-	   m.debuggerOn("debug");
+	   }, {debuggerName: "debug"});
 	}
      }
      </head>
