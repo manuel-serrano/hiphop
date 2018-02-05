@@ -14,15 +14,3 @@ wabort2> S;
 --- Output: O F Z
 wabort2> ;
 --- Output:
-wabort2> !reset;
---- Automaton wabort2 reset
-wabort2> ;
---- Output: O
-wabort2> ;
---- Output: W
-wabort2> ;
---- Output: O Z
-wabort2> S;
---- Output: F W
-wabort2> ;
---- Output:

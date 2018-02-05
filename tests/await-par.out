@@ -14,13 +14,3 @@ awaitpar> B;
 --- Output:
 awaitpar> A;
 --- Output:
-awaitpar> !reset;
---- Automaton awaitpar reset
-awaitpar> ;
---- Output:
-awaitpar> A;
---- Output:
-awaitpar> B;
---- Output: O
-awaitpar> ;
---- Output:

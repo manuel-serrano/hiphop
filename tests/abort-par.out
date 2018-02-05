@@ -8,7 +8,3 @@ abortpar> ;
 --- Output:
 abortpar> ;
 --- Output:
-abortpar> !reset;
---- Automaton abortpar reset
-abortpar> ;
---- Output: O

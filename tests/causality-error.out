@@ -3,15 +3,11 @@ presentemit> ;
 !!! Module___I_pre_reg undefined
     Module___I undefined
 !!! Module___I undefined
-    Emit___I_go___0 undefined
+    If___and_then___0 undefined
 !!! Module___O_pre_reg undefined
     Module___O undefined
 !!! Module___O undefined
-    Emit___O_go___0 undefined
-!!! Emit___I_go___0 undefined
-    If___and_then___0 undefined
-!!! Nothing___go___0 undefined
-    If___and_else___0 undefined
+    If___k undefined
 !!! If___and_then___0 undefined
     If___testexpr___0 undefined
 !!! If___and_else___0 undefined
@@ -20,34 +16,20 @@ presentemit> ;
     Module___O undefined
 !!! If___testexpr___1 undefined
     Module___O undefined
-!!! If___k0_buffer___0 undefined
-    Emit___I_go___0 undefined
-!!! If___k0_buffer___0 undefined
-    Nothing___go___0 undefined
 !!! If___k undefined
-    If___k0_buffer___0 undefined
-    If___k0_buffer___0 undefined
-!!! Emit___O_go___0 undefined
-    If___k undefined
+    If___and_then___0 undefined
+    If___and_else___0 undefined
 !!! Pause___reg undefined
     Pause___or_to_reg undefined
 !!! Pause___or_to_reg undefined
     Pause___and___0 undefined
-!!! Pause___go___0 undefined
-    Emit___O_go___0 undefined
 !!! Pause___and___0 undefined
-    Pause___go___0 undefined
-!!! Sequence___k1_buffer___0 undefined
-    Pause___go___0 undefined
-!!! Sequence___buf_k1_buffer_output___0 undefined
-    Sequence___k1_buffer___0 undefined
-!!! Loop___k1_buffer___0 undefined
-    Sequence___buf_k1_buffer_output___0 undefined
+    If___k undefined
 !!! Module___global_k1 undefined
-    Loop___k1_buffer___0 undefined
+    If___k undefined
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 *** CAUSALITY ERROR
-*** missing 19 nets
+*** missing 10 nets
 presentemit> ;
 presentemit> ;
 presentemit> ;

@@ -2,9 +2,3 @@ parallel> ;
 --- Output:
 parallel> ;
 --- Output:
-parallel> !reset;
---- Automaton parallel reset
-parallel> ;
---- Output:
-parallel> ;
---- Output:
