@@ -69,7 +69,7 @@ const machine = new hh.ReactiveMachine(
        </hh.local>
      </hh.loopeach>
    </hh.module>
-);
+   , {tracePropagation:false});
 
 machine.addEventListener("AIRLINESWITHDIRECT", evt => console.log(evt.signalName,
 								  evt.signalValue));
