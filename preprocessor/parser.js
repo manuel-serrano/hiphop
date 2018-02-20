@@ -546,7 +546,7 @@ Parser.prototype.__hhAccessor = function() {
       return computeSymb.call(this, symb, "id", false);
    case "THIS":
       this.consume();
-      return ast.HHAccessor("this", null);
+      return ast.HHAccessor("this.payload", null);
    default:
       unexpectedHHToken(peeked, "ACCESSOR");
    }
