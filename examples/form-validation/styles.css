@@ -1,0 +1,18 @@
+input {
+    width: 200px;
+    outline: none !important;
+    border:5px solid black;
+    box-shadow: 0 0 10px #719ECE;
+}
+
+.right {
+    border-color: green;
+}
+
+.checking {
+    border-color: orange;
+}
+
+.wrong {
+    border-color: red;
+}

@@ -143,7 +143,7 @@ service hiphopfm() {
 		}
 	     }
 
-	     machine = new hh.ReactiveMachine(MODULE {
+	     const prg = MODULE {
 		IN genre, next, playPause, seekTo;
 		OUT paused, trackEnded, position, duration, track, bio, disco;
 		EVERY IMMEDIATE(NOW(genre)) {
@@ -169,8 +169,13 @@ service hiphopfm() {
 		      }
 		   }
 		}
-	     });
+	     }
+
+	     machine = new hh.ReactiveMachine(prg, {sweep: false});
 	     machine.debuggerOn("debug");
+
+	     console.log((new hh.ReactiveMachine(prg)).stats());
+	     console.log(machine.stats());
 
 	     controlsView = document.getElementById("controlsView");
 	     genresView = document.getElementById("genresView");
