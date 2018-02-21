@@ -1,6 +1,6 @@
 "use hopscript"
 
-const ast = require("./ast");
+const gen = require("./gen");
 
 //
 // http://www.ecma-international.org/ecma-262/5.1/#sec-A.5
@@ -142,7 +142,7 @@ Parser.prototype.__hhBlock = function(brackets=true) {
    if (brackets) {
       this.consume("}");
    }
-   return ast.HHBlock(varDecls, ast.HHSequence(stmts));
+   return gen.HHBlock(varDecls, gen.HHSequence(stmts));
 }
 
 function signalDeclarationList(declList, accessibility=null) {
@@ -186,7 +186,7 @@ function signalDeclarationList(declList, accessibility=null) {
 	 this.consume(")");
       }
 
-      declList.push(ast.Signal(id, accessibility, initExpr, combineExpr));
+      declList.push(gen.Signal(id, accessibility, initExpr, combineExpr));
       coma = true;
    }
 }
@@ -214,7 +214,7 @@ Parser.prototype.__hhModule = function() {
    }
    stmts = this.__hhBlock(false);
    this.consume("}");
-   return ast.HHModule(id, declList, stmts);
+   return gen.HHModule(id, declList, stmts);
 }
 
 Parser.prototype.__hhLocal = function() {
@@ -222,22 +222,22 @@ Parser.prototype.__hhLocal = function() {
 
    this.consumeHHReserved("LOCAL");
    signalDeclarationList.call(this, declList);
-   return ast.HHLocal(declList, this.__hhBlock());
+   return gen.HHLocal(declList, this.__hhBlock());
 }
 
 Parser.prototype.__hhHalt = function() {
    this.consumeHHReserved("HALT");
-   return ast.HHHalt();
+   return gen.HHHalt();
 }
 
 Parser.prototype.__hhPause = function() {
    this.consumeHHReserved("PAUSE");
-   return ast.HHPause();
+   return gen.HHPause();
 }
 
 Parser.prototype.__hhNothing = function() {
    this.consumeHHReserved("NOTHING");
-   return ast.HHNothing();
+   return gen.HHNothing();
 }
 
 Parser.prototype.__hhIf = function() {
@@ -260,7 +260,7 @@ Parser.prototype.__hhIf = function() {
       }
    }
 
-   return ast.HHIf(test, thenBody, elseBody);
+   return gen.HHIf(test, thenBody, elseBody);
 }
 
 Parser.prototype.__hhFork = function() {
@@ -276,22 +276,22 @@ Parser.prototype.__hhFork = function() {
       this.consume();
       branches.push(this.__hhBlock());
    }
-   return ast.HHFork(branches, forkId);
+   return gen.HHFork(branches, forkId);
 }
 
 Parser.prototype.__hhAbort = function() {
    this.consumeHHReserved("ABORT");
-   return ast.HHAbort(this.__hhTemporalExpression(), this.__hhBlock());
+   return gen.HHAbort(this.__hhTemporalExpression(), this.__hhBlock());
 }
 
 Parser.prototype.__hhWeakAbort = function() {
    this.consumeHHReserved("WEAKABORT");
-   return ast.HHWeakAbort(this.__hhTemporalExpression(), this.__hhBlock());
+   return gen.HHWeakAbort(this.__hhTemporalExpression(), this.__hhBlock());
 }
 
 Parser.prototype.__hhLoop = function() {
    this.consumeHHReserved("LOOP");
-   return ast.HHLoop(this.__hhBlock());
+   return gen.HHLoop(this.__hhBlock());
 }
 
 Parser.prototype.__hhEvery = function() {
@@ -301,7 +301,7 @@ Parser.prototype.__hhEvery = function() {
    this.consumeHHReserved("EVERY");
    texpr = this.__hhTemporalExpression();
    body = this.__hhBlock();
-   return ast.HHEvery(texpr, body);
+   return gen.HHEvery(texpr, body);
 }
 
 Parser.prototype.__hhLoopeach = function() {
@@ -311,12 +311,12 @@ Parser.prototype.__hhLoopeach = function() {
    this.consumeHHReserved("LOOPEACH");
    texpr = this.__hhTemporalExpression();
    body = this.__hhBlock();
-   return ast.HHLoopeach(texpr, body);
+   return gen.HHLoopeach(texpr, body);
 }
 
 Parser.prototype.__hhAwait = function() {
    this.consumeHHReserved("AWAIT");
-   return ast.HHAwait(this.__hhTemporalExpression());
+   return gen.HHAwait(this.__hhTemporalExpression());
 }
 
 Parser.prototype.__emitArguments = function() {
@@ -329,7 +329,7 @@ Parser.prototype.__emitArguments = function() {
 	 expr = this.__expression();
 	 this.consume(")");
       }
-      return ast.HHEmitExpr(id, expr);
+      return gen.HHEmitExpr(id, expr);
    }
 
    let args = [];
@@ -352,22 +352,22 @@ Parser.prototype.__emitArguments = function() {
 
 Parser.prototype.__hhEmit = function() {
    this.consumeHHReserved("EMIT");
-   return ast.HHEmit(this.__emitArguments());
+   return gen.HHEmit(this.__emitArguments());
 }
 
 Parser.prototype.__hhSustain = function() {
    this.consumeHHReserved("SUSTAIN");
-   return ast.HHSustain(this.__emitArguments());
+   return gen.HHSustain(this.__emitArguments());
 }
 
 Parser.prototype.__hhTrap = function() {
    this.consumeHHReserved("TRAP");
-   return ast.HHTrap(this.__identifier(), this.__hhBlock());
+   return gen.HHTrap(this.__identifier(), this.__hhBlock());
 }
 
 Parser.prototype.__hhExit = function() {
    this.consumeHHReserved("EXIT");
-   return ast.HHExit(this.__identifier());
+   return gen.HHExit(this.__identifier());
 }
 
 Parser.prototype.__hhExecParameters = function() {
@@ -394,24 +394,24 @@ Parser.prototype.__hhExecParameters = function() {
 	 break;
       }
    }
-   return ast.HHExecParams(params);
+   return gen.HHExecParams(params);
 }
 
 Parser.prototype.__hhExec = function() {
    this.consumeHHReserved("EXEC");
-   return ast.HHExec(this.__expression(), this.__hhExecParameters());
+   return gen.HHExec(this.__expression(), this.__hhExecParameters());
 }
 
 Parser.prototype.__hhExecAssign = function() {
    this.consumeHHReserved("EXECASSIGN");
-   return ast.HHExecAssign(this.__identifier(),
+   return gen.HHExecAssign(this.__identifier(),
 			   this.__expression(),
 			   this.__hhExecParameters());
 }
 
 Parser.prototype.__hhExecEmit = function() {
    this.consumeHHReserved("EXECEMIT");
-   return ast.HHExecEmit(this.__identifier(),
+   return gen.HHExecEmit(this.__identifier(),
 			 this.__expression(),
 			 this.__hhExecParameters());
 }
@@ -420,7 +420,7 @@ Parser.prototype.__hhPromise = function() {
    this.consumeHHReserved("PROMISE");
    const thenId = this.__identifier();
    this.consume(",");
-   return ast.HHPromise(thenId,
+   return gen.HHPromise(thenId,
 			this.__identifier(),
 			this.__expression(),
 			this.__hhExecParameters());
@@ -445,7 +445,7 @@ Parser.prototype.__hhRun = function() {
 		   callerSignalId: callerSignalId});
    }
    this.consume(")");
-   return ast.HHRun(expr, assocs);
+   return gen.HHRun(expr, assocs);
 }
 
 Parser.prototype.__hhSuspend = function() {
@@ -477,7 +477,7 @@ Parser.prototype.__hhSuspend = function() {
       to = this.__expression();
       this.consume(")");
       let ews = emitWhenSuspended.call(this);
-      return ast.HHSuspendFromTo(from, to, immediate, this.__hhBlock(), ews);
+      return gen.HHSuspendFromTo(from, to, immediate, this.__hhBlock(), ews);
    } else if (this.peek().value == "TOGGLE") {
       let expr;
 
@@ -486,10 +486,10 @@ Parser.prototype.__hhSuspend = function() {
       expr = this.__expression();
       this.consume(")");
       let ews = emitWhenSuspended.call(this);
-      return ast.HHSuspendToggle(expr, this.__hhBlock(), ews);
+      return gen.HHSuspendToggle(expr, this.__hhBlock(), ews);
    } else {
       let ews = emitWhenSuspended.call(this);
-      return ast.HHSuspend(this.__hhTemporalExpression(), this.__hhBlock(), ews);
+      return gen.HHSuspend(this.__hhTemporalExpression(), this.__hhBlock(), ews);
    }
 }
 
@@ -508,7 +508,7 @@ Parser.prototype.__hhTemporalExpression = function(inFor=false) {
    if (!immediate && !inFor) {
       this.consume(")");
    }
-   return ast.HHTemporalExpression(immediate, expr);
+   return gen.HHTemporalExpression(immediate, expr);
 }
 
 Parser.prototype.__hhAccessor = function() {
@@ -524,7 +524,7 @@ Parser.prototype.__hhAccessor = function() {
 	 id = this.__identifier();
 	 this.consume(")");
       }
-      return ast.HHAccessor(`this.${reduc}`, id);
+      return gen.HHAccessor(`this.${reduc}`, id);
    }
 
    switch (symb) {
@@ -546,7 +546,7 @@ Parser.prototype.__hhAccessor = function() {
       return computeSymb.call(this, symb, "id", false);
    case "THIS":
       this.consume();
-      return ast.HHAccessor("this.payload", null);
+      return gen.HHAccessor("this.payload", null);
    default:
       unexpectedHHToken(peeked, "ACCESSOR");
    }
@@ -557,14 +557,14 @@ Parser.prototype.__hhAtom = function() {
    if (this.peek().value != "{") {
       unexpectedHHToken(this.peek(), "{");
    }
-   return ast.HHAtom(this.__statement());
+   return gen.HHAtom(this.__statement());
 }
 
 Parser.prototype.__hhWhile = function() {
    this.consumeHHReserved("WHILE");
    const texpr = this.__hhTemporalExpression();
    const body = this.__hhBlock();
-   return ast.HHWhile(texpr, body);
+   return gen.HHWhile(texpr, body);
 }
 
 //
@@ -580,7 +580,7 @@ Parser.prototype.__hhFor = function() {
    this.consume(";");
    const eachStmt = this.__hhStatement();
    this.consume(")");
-   return ast.HHFor(declList, whileExpr, eachStmt, this.__hhBlock());
+   return gen.HHFor(declList, whileExpr, eachStmt, this.__hhBlock());
 }
 
 Parser.prototype.__hhSequence = function() {
@@ -598,7 +598,7 @@ Parser.prototype.__dollar = function() {
    this.consume("{");
    expr = this.__expression();
    this.consume("}");
-   return ast.Dollar(expr);
+   return gen.Dollar(expr);
 }
 
 Parser.prototype.__hhStatement = function() {
@@ -684,14 +684,14 @@ Parser.prototype.__primaryExpression = function() {
       switch (peeked.value) {
       case "this":
 	 this.consume();
-	 return ast.This();
+	 return gen.This();
       case "function":
 	 return this.__functionExpression();
       case "service":
 	 return this.__serviceExpression();
       default:
 	 this.consume();
-	 return ast.Unresolved(peeked.value);
+	 return gen.Unresolved(peeked.value);
       }
    case "IDENTIFIER":
       if (peeked.value == "$" && this.peek(1).value == "{") {
@@ -705,7 +705,7 @@ Parser.prototype.__primaryExpression = function() {
       // kind, except for strings.
       //
       this.consume();
-      return ast.Literal(peeked.value, peeked.string, peeked.template);
+      return gen.Literal(peeked.value, peeked.string, peeked.template);
    case "[":
       return this.__arrayLiteral();
    case "{":
@@ -740,7 +740,7 @@ Parser.prototype.__xmlBody = function() {
 	 unexpectedToken(peeked, "</closing-xml-tag> (maybe)");
       } else if (peeked.type == "~") {
 	 this.consume();
-	 els.push(ast.Tilde(this.__block()));
+	 els.push(gen.Tilde(this.__block()));
       } else if (peeked.type == "XML") {
 	 if (peeked.closing) {
 	    break;
@@ -751,7 +751,7 @@ Parser.prototype.__xmlBody = function() {
 	 this.consume();
       }
    }
-   return ast.XMLBody(els);
+   return gen.XMLBody(els);
 }
 
 Parser.prototype.__xml = function() {
@@ -764,9 +764,9 @@ Parser.prototype.__xml = function() {
       if (!close.closing) {
 	 unexpectedHHToken(close, "</closing-xml-tag>");
       }
-      return ast.XML(openOrLeaf.value, body, close.value);
+      return gen.XML(openOrLeaf.value, body, close.value);
    } else if (openOrLeaf.leaf) {
-      return ast.XML(openOrLeaf.value);
+      return gen.XML(openOrLeaf.value);
    } else {
       unexpectedToken(openOrLeaf, "<openning-xml-tag>");
    }
@@ -778,7 +778,7 @@ Parser.prototype.__identifier = function() {
    // identifier kind (Nan, boolean, etc.)
    //
    let token = this.consume("IDENTIFIER");
-   return ast.Identifier(token.value);
+   return gen.Identifier(token.value);
 }
 
 Parser.prototype.__arrayLiteral = function() {
@@ -795,7 +795,7 @@ Parser.prototype.__arrayLiteral = function() {
 
       if (peeked.type == ",") {
 	 this.consume();
-	 slots.push(ast.EmptySlot());
+	 slots.push(gen.EmptySlot());
       } else {
 	 slots.push(this.__assignmentExpression());
 	 if (this.peek().type != "]") {
@@ -805,7 +805,7 @@ Parser.prototype.__arrayLiteral = function() {
    }
 
    this.consume("]");
-   return ast.ArrayLiteral(slots);
+   return gen.ArrayLiteral(slots);
 }
 
 Parser.prototype.__objectLiteral = function() {
@@ -836,7 +836,7 @@ Parser.prototype.__objectLiteral = function() {
    }
 
    this.consume("}");
-   return ast.ObjectLiteral(props);
+   return gen.ObjectLiteral(props);
 }
 
 Parser.prototype.__propertyAssignment = function() {
@@ -853,7 +853,7 @@ Parser.prototype.__propertyAssignment = function() {
       this.consume("{");
       body = this.__functionBody();
       this.consume("}");
-      return ast.PropertyAssignmentGet(name, body);
+      return gen.PropertyAssignmentGet(name, body);
 
    } else if (peeked.value == "set") {
       let name;
@@ -868,13 +868,13 @@ Parser.prototype.__propertyAssignment = function() {
       this.consume("{");
       body = this.__functionBody();
       this.consume("}");
-      return ast.PropertyAssignmentSet(name, arg, body);
+      return gen.PropertyAssignmentSet(name, arg, body);
 
    } else {
       let name = this.__propertyName();
 
       this.consume(":");
-      return ast.PropertyAssignment(name, this.__assignmentExpression());
+      return gen.PropertyAssignment(name, this.__assignmentExpression());
    }
 }
 
@@ -885,7 +885,7 @@ Parser.prototype.__propertyName = function() {
        || peeked.type == "IDENTIFIER"
        || peeked.type == "LITERAL") {
       this.consume();
-      return ast.Literal(peeked.value);
+      return gen.Literal(peeked.value);
    }
    unexpectedToken("at " + peeked.pos + " wrong property name `" +
 		   peeked.value + "`");
@@ -900,7 +900,7 @@ Parser.prototype.__newExpression = function() {
       if (this.peek().type == "(") {
 	 args = this.__arguments();
       }
-      return ast.New(classOrExpr, args);
+      return gen.New(classOrExpr, args);
    } else {
       return this.__accessOrCall(this.__primaryExpression(), false);
    }
@@ -914,14 +914,14 @@ Parser.prototype.__accessOrCall = function(expr, callAllowed) {
       this.consume();
       let field = this.__expression();
       this.consume();
-      return this.__accessOrCall(ast.AccessBracket(expr, field), callAllowed);
+      return this.__accessOrCall(gen.AccessBracket(expr, field), callAllowed);
    } else if (peeked.type == ".") {
       this.consume();
       let field = this.__identifier();
-      return this.__accessOrCall(ast.AccessDot(expr, field), callAllowed);
+      return this.__accessOrCall(gen.AccessDot(expr, field), callAllowed);
    } else if (peeked.type == "(" && callAllowed) {
       let args = this.__arguments();
-      return this.__accessOrCall(ast.Call(expr, args), callAllowed);
+      return this.__accessOrCall(gen.Call(expr, args), callAllowed);
    } else {
       return expr;
    }
@@ -952,7 +952,7 @@ Parser.prototype.__postfixExpression = function() {
 
    if ((peeked.type == "++" || peeked.type == "--") && !peeked.newLine) {
       this.consume();
-      return ast.Postfix(lhs, peeked.type);
+      return gen.Postfix(lhs, peeked.type);
    } else {
       return lhs;
    }
@@ -966,10 +966,10 @@ Parser.prototype.__unaryExpression = function() {
 				      || peeked.value == "typeof"))
        || ["+", "-", "~", "!"].indexOf(peeked.type) > -1) {
       this.consume();
-      return ast.Unary(peeked.value, this.__unaryExpression());
+      return gen.Unary(peeked.value, this.__unaryExpression());
    } else if (peeked.type == "++" || peeked.type == "--") {
       this.consume();
-      return ast.Prefix(peeked.type, this.__unaryExpression());
+      return gen.Prefix(peeked.type, this.__unaryExpression());
    }
    return this.__postfixExpression();
 }
@@ -1030,7 +1030,7 @@ Parser.prototype.__binaryExpression = function(withInKwd=true) {
 	       return expr;
 	    } else if (newLevel == level) {
 	       let op = this.consume().value;
-	       expr = ast.Binary(expr, op, binary.call(this, level + 1));
+	       expr = gen.Binary(expr, op, binary.call(this, level + 1));
 	    } else {
 	       return expr;
 	    }
@@ -1050,7 +1050,7 @@ Parser.prototype.__conditionalExpression = function(withInKwd=true) {
       let then_ = this.__assignmentExpression(withInKwd);
       this.consume(":");
       let else_ = this.__assignmentExpression(withInKwd);
-      return ast.Conditional(expr, then_, else_);
+      return gen.Conditional(expr, then_, else_);
    } else {
       return expr;
    }
@@ -1066,7 +1066,7 @@ Parser.prototype.__assignmentExpression = function(withInKwd=true) {
    if (isAssignOp(this.peek().type)) {
       let op = this.consume();
       let rhs = this.__assignmentExpression(withInKwd);
-      return ast.Assign(lhs, op.value, rhs);
+      return gen.Assign(lhs, op.value, rhs);
    } else {
       return lhs;
    }
@@ -1084,7 +1084,7 @@ Parser.prototype.__expression = function(withInKwd=true) {
       this.consume();
       exprs.push(this.__assignmentExpression(withInKwd));
    }
-   return exprs.length == 1 ? exprs[0] : ast.Sequence(exprs);
+   return exprs.length == 1 ? exprs[0] : gen.Sequence(exprs);
 }
 
 //
@@ -1143,14 +1143,14 @@ Parser.prototype.__block = function() {
       stmts.push(this.__statement());
    }
    this.consume();
-   return ast.Block(stmts);
+   return gen.Block(stmts);
 }
 
 Parser.prototype.__variableStatement = function(vtype) {
    let varStmt;
 
    this.consumeReserved(vtype);
-   varStmt = ast.VariableStmt(vtype, this.__variableDeclarationList());
+   varStmt = gen.VariableStmt(vtype, this.__variableDeclarationList());
    this.consumeOptionalEmpty();
    return varStmt;
 }
@@ -1181,11 +1181,11 @@ Parser.prototype.__variableDeclaration = function(withInKwd=true) {
       this.consume();
       init = this.__assignmentExpression(withInKwd);
    }
-   return ast.VariableDeclaration(id, init);
+   return gen.VariableDeclaration(id, init);
 }
 
 Parser.prototype.__emptyStatement = function() {
-   return ast.EmptyStatement();
+   return gen.EmptyStatement();
 }
 
 Parser.prototype.__expressionStatement = function() {
@@ -1199,7 +1199,7 @@ Parser.prototype.__expressionStatement = function() {
    }
    expression = this.__expression(false);
    this.consumeOptionalEmpty();
-   return ast.ExpressionStatement(expression);
+   return gen.ExpressionStatement(expression);
 }
 
 Parser.prototype.__ifStatement = function() {
@@ -1216,7 +1216,7 @@ Parser.prototype.__ifStatement = function() {
       this.consume();
       else_ = this.__statement();
    }
-   return ast.If(test, then_, else_);
+   return gen.If(test, then_, else_);
 }
 
 Parser.prototype.__iterationStatement = function() {
@@ -1232,13 +1232,13 @@ Parser.prototype.__iterationStatement = function() {
       test = this.__expression();
       this.consume(")");
       this.consumeOptionalEmpty();
-      return ast.Do(test, stmt);
+      return gen.Do(test, stmt);
    case "while":
       this.consume();
       this.consume("(");
       test = this.__expression();
       this.consume(")");
-      return ast.While(test, this.__statement());
+      return gen.While(test, this.__statement());
    case "for":
       let forInExpr = null;
       let vtype = null;
@@ -1293,8 +1293,8 @@ Parser.prototype.__iterationStatement = function() {
       stmt = this.__statement();
 
       return (forInExpr
-	      ? ast.ForIn(vtype, initVarDecl, forInExpr, stmt)
-	      : ast.For(vtype, initVarDecl, init, test, after, stmt));
+	      ? gen.ForIn(vtype, initVarDecl, forInExpr, stmt)
+	      : gen.For(vtype, initVarDecl, init, test, after, stmt));
    }
 }
 
@@ -1308,7 +1308,7 @@ Parser.prototype.__continueStatement = function() {
    }
    this.consumeOptionalEmpty();
 
-   return ast.Continue(identifier);
+   return gen.Continue(identifier);
 }
 
 Parser.prototype.__breakStatement = function() {
@@ -1321,7 +1321,7 @@ Parser.prototype.__breakStatement = function() {
    }
    this.consumeOptionalEmpty();
 
-   return ast.Break(identifier);
+   return gen.Break(identifier);
 }
 
 Parser.prototype.__returnStatement = function() {
@@ -1334,7 +1334,7 @@ Parser.prototype.__returnStatement = function() {
    }
    this.consumeOptionalEmpty();
 
-   return ast.Return(expr);
+   return gen.Return(expr);
 }
 
 //
@@ -1350,7 +1350,7 @@ Parser.prototype.__withStatement = function() {
    expr = this.__expression();
    this.consume(")");
    stmt = this.__statement();
-   return ast.With(expr, stmt);
+   return gen.With(expr, stmt);
 }
 
 Parser.prototype.__switchStatement = function() {
@@ -1362,7 +1362,7 @@ Parser.prototype.__switchStatement = function() {
    expr = this.__expression();
    this.consume(")");
    caseBlock = this.__caseBlock();
-   return ast.Switch(expr, caseBlock);
+   return gen.Switch(expr, caseBlock);
 }
 
 Parser.prototype.__caseBlock = function() {
@@ -1389,7 +1389,7 @@ Parser.prototype.__caseBlock = function() {
    }
 
    this.consume("}");
-   return ast.CaseBlock(clauses);
+   return gen.CaseBlock(clauses);
 }
 
 Parser.prototype.__caseClause = function() {
@@ -1407,7 +1407,7 @@ Parser.prototype.__caseClause = function() {
       }
       stmts.push(this.__statement());
    }
-   return ast.CaseClause(expr, stmts);
+   return gen.CaseClause(expr, stmts);
 }
 
 Parser.prototype.__defaultClause = function() {
@@ -1424,14 +1424,14 @@ Parser.prototype.__defaultClause = function() {
       }
       stmts.push(this.__statement());
    }
-   return ast.DefaultClause(stmts);
+   return gen.DefaultClause(stmts);
 }
 
 Parser.prototype.__labelledStatement = function() {
    let identifier = this.__identifier();
 
    this.consume(";");
-   return ast.LabelledStmt(identifier, this.__statement());
+   return gen.LabelledStmt(identifier, this.__statement());
 }
 
 Parser.prototype.__throwStatement = function() {
@@ -1440,12 +1440,12 @@ Parser.prototype.__throwStatement = function() {
    this.consumeReserved("throw");
    expr = this.__expression();
    this.consumeOptionalEmpty();
-   return ast.Throw(expr);
+   return gen.Throw(expr);
 }
 
 Parser.prototype.__tryStatement = function() {
    this.consumeReserved("try");
-   return ast.Try(this.__block(), this.__catch(), this.__finally());
+   return gen.Try(this.__block(), this.__catch(), this.__finally());
 }
 
 Parser.prototype.__catch = function() {
@@ -1455,18 +1455,18 @@ Parser.prototype.__catch = function() {
    this.consume("(");
    identifier = this.__identifier();
    this.consume(")");
-   return ast.Catch(identifier, this.__block());
+   return gen.Catch(identifier, this.__block());
 }
 
 Parser.prototype.__finally = function() {
    this.consumeReserved("finally");
-   return ast.Finally(this.__block());
+   return gen.Finally(this.__block());
 }
 
 Parser.prototype.__debugger = function() {
    this.consumeReserved("debugger");
    this.consumeOptionalEmpty();
-   return ast.Debugger();
+   return gen.Debugger();
 }
 
 //
@@ -1492,8 +1492,8 @@ Parser.prototype.__functionDeclaration = function(expr=false) {
    body = this.__functionBody();
    this.consume("}");
    return (expr
-	   ? ast.FunctionExpression(id, params, body)
-	   : ast.FunctionDeclaration(id, params, body));
+	   ? gen.FunctionExpression(id, params, body)
+	   : gen.FunctionDeclaration(id, params, body));
 }
 
 Parser.prototype.__functionExpression = function() {
@@ -1523,8 +1523,8 @@ Parser.prototype.__serviceDeclaration = function(expr=false) {
    }
 
    return (expr
-	   ? ast.ServiceExpression(id, params, body)
-	   : ast.ServiceDeclaration(id, params, body));
+	   ? gen.ServiceExpression(id, params, body)
+	   : gen.ServiceDeclaration(id, params, body));
 }
 
 Parser.prototype.__serviceExpression = function() {
@@ -1543,7 +1543,7 @@ Parser.prototype.__formalParameterList = function() {
 	 this.consume();
 	 initExpr = this.__assignmentExpression();
       }
-      params.push(ast.Parameter(id, initExpr));
+      params.push(gen.Parameter(id, initExpr));
       if (!this.peekHasType(")")) {
 	 this.consume(",");
       }
@@ -1570,7 +1570,7 @@ Parser.prototype.__sourceElements = function(fn=false) {
       }
       els.push(this.__sourceElement());
    }
-   return ast.Program(els);
+   return gen.Program(els);
 }
 
 Parser.prototype.__sourceElement = function() {
