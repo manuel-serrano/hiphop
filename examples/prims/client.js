@@ -232,6 +232,8 @@ exports.addNumber = function( num ) {
 exports.resume = function() {
    G.timer = setInterval( function() {
       G.mach.react();
+         
+   console.log(G.mach.stats());
    }, G.speed  );
 }
    
@@ -269,7 +271,6 @@ exports.start = function( g, speed ) {
    G.count = 2;
 
    exports.setSpeed( speed );
-   G.mach = new hh.ReactiveMachine( prims( G ), "Prims" );
-   G.mach.debuggerOn("debug");
+   G.mach = new hh.ReactiveMachine( prims( G ), {sweep:true} );
    exports.resume();
 }
