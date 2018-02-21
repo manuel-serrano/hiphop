@@ -9,24 +9,26 @@ service translator() {
 	var hh;
 	var m;
 
-	function translate(lang, text, doneReact) {
+	function translate(langPair, text) {
 	   var req = new XMLHttpRequest();
-	   var svc = "http://mymemory.translated.net/api/get?langpair=" + lang + "&q=" + text;
-	   req.onreadystatechange = function() {
-	      if (req.readyState == 4 && req.status == 200)
-		 doneReact(JSON.parse(req.responseText).responseData.translatedText);
-	   };
-	   req.open("GET", svc, true);
-	   req.send();
+	   var svc = "http://mymemory.translated.net/api/get?langpair=" + langPair + "&q=" + text;
+	   return new Promise(function(resolve, reject) {
+	      req.onreadystatechange = function() {
+		 if (req.readyState == 4 && req.status == 200)
+		    resolve(JSON.parse(req.responseText).responseData.translatedText);
+	      };
+	      req.open("GET", svc, true);
+	      req.send();
+	   });
 	}
 
-	function execColor(l) {
+	function execColor(langPair) {
 	   return MODULE {
-	      IN lang(l), text;
-	      OUT color, trans;
+	      IN text;
+	      OUT color, trans, error;
 	      EMIT color("red");
 	      AWAIT IMMEDIATE(NOW(text));
-	      EXECEMIT trans translate(VAL(lang), VAL(text), DONEREACT);
+	      PROMISE trans, error translate(langPair, VAL(text));
 	      EMIT color("green");
 	   }
 	}
