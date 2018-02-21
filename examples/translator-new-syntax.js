@@ -23,9 +23,7 @@ service translator() {
 	}
 
 	function execColor(langPair) {
-	   return MODULE {
-	      IN text;
-	      OUT color, trans, error;
+	   return MODULE (IN text, OUT color, OUT trans, OUT error) {
 	      EMIT color("red");
 	      AWAIT IMMEDIATE(NOW(text));
 	      PROMISE trans, error translate(langPair, VAL(text));
@@ -35,9 +33,11 @@ service translator() {
 
         window.onload = function() {
 	   hh = require("hiphop");
-	   m = new hh.ReactiveMachine(MODULE {
-	      IN text;
-	      OUT transEn, colorEn, transNe, colorNe, transEs, colorEs, transSe, colorSe;
+	   m = new hh.ReactiveMachine(MODULE (IN text,
+					      OUT transEn, OUT colorEn,
+					      OUT transNe, OUT colorNe,
+					      OUT transEs, OUT colorEs,
+					      OUT transSe, OUT colorSe){
 	      LOOPEACH(NOW(text)) {
 		 FORK {
 		    RUN(execColor("fr|en"), color=colorEn, trans=transEn);

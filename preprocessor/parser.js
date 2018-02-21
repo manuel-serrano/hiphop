@@ -145,7 +145,37 @@ Parser.prototype.__hhBlock = function(brackets=true) {
    return gen.HHBlock(varDecls, gen.HHSequence(stmts));
 }
 
-function signalDeclarationList(declList, accessibility=null) {
+function signalDeclaration(accessibility) {
+   let initExpr = null;
+   let combineExpr = null;
+   let id = this.__identifier();
+
+   if (this.peek().type == "(") {
+      this.consume("(");
+      initExpr = this.__expression();
+      this.consume(")");
+   }
+
+   if (this.peek().type == "COMBINE") {
+      this.consumeHHReserved("COMBINE");
+      this.consume("(");
+      if (this.peek().value == "function") {
+	 this.combineExpr = this.__functionExpression();
+      } else {
+	 this.combineExpr = this.__identifier();
+      }
+      this.consume(")");
+   }
+
+   //
+   // TODO: accessibility may be undefined. It results that gen.js try
+   // to access require("hiphop")[undefined]. Not a big dead, but do
+   // something better...
+   //
+   return gen.Signal(id, accessibility, initExpr, combineExpr)
+}
+
+function signalDeclarationList(declList, accessibility=undefined) {
    let coma = false;
 
    if (accessibility) {
@@ -159,34 +189,13 @@ function signalDeclarationList(declList, accessibility=null) {
 	  || (!accessibility
 	      && this.peek().type != "{"
 	      && this.peek().type != ";")) {
-      let initExpr = null;
-      let combineExpr = null;
-      let id;
 
       if (coma) {
 	 this.consume(",");
 	 coma = false;
       }
 
-      id = this.__identifier();
-      if (this.peek().type == "(") {
-	 this.consume("(");
-	 initExpr = this.__expression();
-	 this.consume(")");
-      }
-
-      if (this.peek().type == "COMBINE") {
-	 this.consumeHHReserved("COMBINE");
-	 this.consume("(");
-	 if (this.peek().value == "function") {
-	    this.combineExpr = this.__functionExpression();
-	 } else {
-	    this.combineExpr = this.__identifier();
-	 }
-	 this.consume(")");
-      }
-
-      declList.push(gen.Signal(id, accessibility, initExpr, combineExpr));
+      declList.push(signalDeclaration.call(this, accessibility));
       coma = true;
    }
 }
@@ -200,8 +209,38 @@ Parser.prototype.__hhModule = function() {
    if (this.peek().type == "IDENTIFIER") {
       id = this.__identifier();
    }
+
+   //
+   // New interface declaration, where signal are declared as
+   // module arguments
+   //
+   if (this.peek().type == "(") {
+      let coma = false;
+      this.consume();
+      while(this.peek().type != ")") {
+	 if (coma) {
+	    this.consume(",");
+	    coma = false;
+	 }
+	 let accessibility = this.peek().value;
+	 if (accessibility == "IN"
+	     || accessibility == "OUT"
+	     || accessibility == "INOUT") {
+	    declList.push(signalDeclaration.call(this, this.consume().value));
+	    coma = true;
+	 } else {
+	    break;
+	 }
+      }
+      this.consume(")");
+   }
+
    this.consume("{");
    for (;;) {
+      //
+      // Old interface declaration, where signal are declared in the
+      // module body
+      //
       let accessibility = this.peek().value;
       if (accessibility == "IN"
 	  || accessibility == "OUT"
