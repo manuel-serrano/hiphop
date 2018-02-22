@@ -156,13 +156,13 @@ function signalDeclaration(accessibility) {
       this.consume(")");
    }
 
-   if (this.peek().type == "COMBINE") {
+   if (this.peek().value == "COMBINE") {
       this.consumeHHReserved("COMBINE");
       this.consume("(");
       if (this.peek().value == "function") {
-	 this.combineExpr = this.__functionExpression();
+	 combineExpr = {func: this.__functionExpression()}
       } else {
-	 this.combineExpr = this.__identifier();
+	 combineExpr = {identifier: this.__identifier()}
       }
       this.consume(")");
    }

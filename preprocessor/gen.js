@@ -290,7 +290,17 @@ exports.HHLocal = (sigDeclList, block) => () => {
 exports.Signal = (id, accessibility, initExpr, combineExpr) => () => {
    let accessibilityBuf = `accessibility: ${hh[accessibility]}`;
    let initExprBuf = initExpr ? `, initApply: function(){return ${initExpr()}}` : "";
-   let combineExprBuf = combineExpr ? `, combine: function(){return ${combineExpr()}}` : "";
+   let combineExprBuf = "";
+
+   if (combineExpr) {
+      if (combineExpr.func) {
+	 combineExprBuf = `, combine: function(){return ${combineExpr.func()}}`;
+      }
+
+      if (combineExpr.identifier) {
+	 combineExprBuf = `, combine: ${combineExpr.identifier()}`
+      }
+   }
    return `${id()}=${"${"}{${accessibilityBuf} ${initExprBuf} ${combineExprBuf}}}`;
 }
 
