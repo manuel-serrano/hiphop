@@ -156,9 +156,9 @@ function number(G) {
 
    let trap = TRAP Exit {
       LOOP {
-	 AWAIT(NOW(go));
-	 EMIT number(num);
-	 EMIT killn(prey(VAL(number)));
+	 AWAIT(NOW(killn) && NOW(numbers));
+	 EMIT numbers(num);
+	 EMIT killn(prey(VAL(numbers)));
 	 IF (VAL(killn).indexOf(num) >= 0) {
 	    ATOM {
 	       num.dead = true;
@@ -199,15 +199,14 @@ function prims( G ) {
 
    return MODULE (INOUT go,
 		  INOUT killn COMBINE (reduce),
-		  INOUT number COMBINE (reduce)) {
+		  INOUT numbers COMBINE (reduce)) {
       FORK numbers {
 	 LOOP {
 	    ATOM {
 	       G.ctx.clearRect( 0, 0, G.width, G.height )
 	    }
 	    EMIT killn([]);
-	    EMIT number([]);
-	    EMIT go;
+	    EMIT numbers([]);
 	    PAUSE;
 	 }
       } PAR {
