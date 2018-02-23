@@ -244,7 +244,7 @@ exports.Finally = block => () => `finally ${block()}`;
 exports.Debugger = () => () => `debugger;`;
 
 exports.ServiceDeclaration = (id, params, body) => () => {
-   var b = body ? `{ ${body()} }` : "";
+   var b = body ? `{ ${body()} }` : ";";
    return `service ${id()}(${list(params)}) ${b}`;
 }
 
