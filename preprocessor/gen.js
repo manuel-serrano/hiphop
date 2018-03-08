@@ -1,7 +1,5 @@
 "use strict"
 
-const hh = require("hiphop");
-
 //
 // TODO
 //
@@ -17,58 +15,56 @@ const hh = require("hiphop");
 // JavaScript nodes
 //
 
-exports.Literal = (value, string=false, template=false) => () => {
+exports.Literal = (value, string=false, template=false) => {
    if (string) {
       return template ? "`" + value + "`" : `"${value}"`;
    }
    return value;
 }
 
-exports.XML = (openOrLeaf, xmlBody=null, close=null) => () => {
+exports.XML = (openOrLeaf, xmlBody=undefined, close=undefined) => {
    if (xmlBody) {
-      return `${openOrLeaf}${xmlBody()}${close}`;
+      return `${openOrLeaf}${xmlBody}${close}`;
    }
    return openOrLeaf;
 }
 
-exports.XMLBody = els => () => {
+exports.XMLBody = els => {
    let buf = "";
 
    for (let i in els) {
       let el = els[i];
-      if (el instanceof Function) {
-	 buf += el();
+      if (el.stringDelim) {
+	 buf += `${el.stringDelim}${el.value}${el.stringDelim}`;
+      } else if (el.value) {
+	 buf += el.value;
       } else {
-	 if (el.stringDelim) {
-	    buf += `${el.stringDelim}${el.value}${el.stringDelim}`;
-	 } else {
-	    buf += el.value;
-	 }
+	 buf += el;
+      }
 
-	 if (el.blankNext) {
-	    buf += " ";
-	 }
+      if (el.blankNext) {
+	 buf += " ";
       }
    }
    return buf;
 }
 
-exports.Tilde = stmt => () => `~{${stmt()}}`;
+exports.Tilde = stmt => `~{${stmt}}`;
 
-exports.This = () => () => "this";
+exports.This = () => "this";
 
-exports.Unresolved = value => () => value;
+exports.Unresolved = value => value;
 
-exports.Identifier = value => () => value;
+exports.Identifier = value => value;
 
-exports.EmptySlot = () => () => "";
+exports.EmptySlot = () => "";
 
-exports.ArrayLiteral = slots => () => {
+exports.ArrayLiteral = slots => {
    let buf = "[";
    let len = slots.length;
 
    for (let i = 0; i < len; i++) {
-      buf += slots[i]();
+      buf += slots[i];
       if (i + 1 < len) {
 	 buf += ",";
       }
@@ -77,12 +73,12 @@ exports.ArrayLiteral = slots => () => {
    return buf;
 };
 
-exports.ObjectLiteral = props => () => {
+exports.ObjectLiteral = props => {
    let buf = "{";
    let len = props.length;
 
    for (let i = 0; i < len; i++) {
-      buf += props[i]();
+      buf += props[i];
       if (i + 1 < len) {
 	 buf += ",";
       }
@@ -91,26 +87,26 @@ exports.ObjectLiteral = props => () => {
    return buf;
 };
 
-exports.PropertyAssignmentGet = (name, funcBody) => () => {
-   return `get ${name()}() {${funcBody()}}`;
-}
+exports.PropertyAssignmentGet = (name, funcBody) => (
+   `get ${name}() {${funcBody}}`
+);
 
-exports.PropertyAssignmentSet = (name, arg, funcBody) => () => {
-   return `set ${name()}(${arg()}) {${funcBody()}}`;
-}
+exports.PropertyAssignmentSet = (name, arg, funcBody) => (
+   `set ${name}(${arg}) {${funcBody}}`
+);
 
-exports.PropertyAssignment = (name, expr) => () => `${name()}: ${expr()}`;
+exports.PropertyAssignment = (name, expr) => `${name}: ${expr}`;
 
-exports.AccessBracket = (expr, field) => () => `${expr()}[${field()}]`;
+exports.AccessBracket = (expr, field) => `${expr}[${field}]`;
 
-exports.AccessDot = (expr, field) => () => `${expr()}.${field()}`;
+exports.AccessDot = (expr, field) => `${expr}.${field}`;
 
 function list(els, sep=",") {
    let buf = "";
    let len = els.length;
 
    for (let i = 0; i < len; i++) {
-      buf += els[i]();
+      buf += els[i];
       if (i + 1 < len) {
 	 buf += sep;
       }
@@ -118,54 +114,50 @@ function list(els, sep=",") {
    return buf;
 }
 
-exports.New = (clsOrExpr, args) => () => `new ${clsOrExpr()}(${list(args)})`;
+exports.New = (clsOrExpr, args) => `new ${clsOrExpr}(${list(args)})`;
 
-exports.Call = (expr, args) => () => `${expr()}(${list(args)})`;
+exports.Call = (expr, args) => `${expr}(${list(args)})`;
 
-exports.Binary = (lhs, op, rhs) => () => `(${lhs()} ${op} ${rhs()})`;
+exports.Binary = (lhs, op, rhs) => `(${lhs} ${op} ${rhs})`;
 
-exports.Prefix = (op, rhs) => () => `(${op}(${rhs()}))`;
+exports.Prefix = (op, rhs) => `(${op}(${rhs}))`;
 
-exports.Postfix = (lhs, op) => () => `((${lhs()})${op})`;
+exports.Postfix = (lhs, op) => `((${lhs})${op})`;
 
-exports.Unary = (op, expr) => () => `(${op} ${expr()})`;
+exports.Unary = (op, expr) => `(${op} ${expr})`;
 
-exports.Conditional = (test, t, e) => () => `(${test()} ? ${t()} : ${e()})`;
+exports.Conditional = (test, t, e) => `(${test} ? ${t} : ${e})`;
 
-exports.Assign = (lhs, op, rhs) => () => `(${lhs()} ${op} ${rhs()})`;
+exports.Assign = (lhs, op, rhs) => `(${lhs} ${op} ${rhs})`;
 
-exports.Sequence = exprs => () => list(exprs);
+exports.Sequence = exprs => list(exprs);
 
-exports.Block = stmts => () => `{ ${list(stmts, ";")} }`;
+exports.Block = stmts => `{ ${list(stmts, ";")} }`;
 
-exports.VariableStmt = (vtype, varDecls) => () => `${vtype} ${list(varDecls)};`;
+exports.VariableStmt = (vtype, varDecls) => `${vtype} ${list(varDecls)};`;
 
-exports.VariableDeclaration = (nameId, init) => () => {
-   if (init) {
-      return `${nameId()} = ${init()}`;
-   } else {
-      return `${nameId()}`;
-   }
-}
+exports.VariableDeclaration = (nameId, init) => (
+   `${nameId}${init ? ` = ${init}` : ''}`
+);
 
-exports.EmptyStatement = () => () => `;`;
+exports.EmptyStatement = () => ";";
 
-exports.ExpressionStatement = expr => () => `${expr()};`;
+exports.ExpressionStatement = expr => `${expr};`;
 
-exports.If = (test, _then, _else) => () => {
-   let buf = `if (${test()}) ${_then()}`;
+exports.If = (test, _then, _else) => {
+   let buf = `if (${test}) ${_then}`;
 
    if (_else) {
-      buf += `else ${_else()}`;
+      buf += `else ${_else}`;
    }
    return buf;
 }
 
-exports.Do = (test, stmt) => () => `do ${stmt()} while (${test()})`;
+exports.Do = (test, stmt) => `do ${stmt} while (${test})`;
 
-exports.While = (test, stmt) => () => `while (${test()}) ${stmt()}`;
+exports.While = (test, stmt) => `while (${test}) ${stmt}`;
 
-exports.For = (vtype, initVarDecl, init, test, after, stmt) => () => {
+exports.For = (vtype, initVarDecl, init, test, after, stmt) => {
    let buf = `for (`;
 
    if (vtype) {
@@ -175,175 +167,173 @@ exports.For = (vtype, initVarDecl, init, test, after, stmt) => () => {
    if (initVarDecl) {
       buf += list(initVarDecl);
    } else if (init) {
-      buf += init();
+      buf += init;
    }
    buf += "; ";
 
    if (test) {
-      buf += test();
+      buf += test;
    }
    buf += "; ";
 
    if (after) {
-      buf += after();
+      buf += after;
    }
-   buf += `) ${stmt()}`;
+   buf += `) ${stmt}`;
    return buf;
 };
 
-exports.ForIn = (vtype, varDecl, expr, stmt) => () => {
+exports.ForIn = (vtype, varDecl, expr, stmt) => {
    let buf = `for (`;
 
    if (vtype) {
       buf += `${vtype} `;
    }
 
-   buf += `${list(varDecl)} in ${expr()}) ${stmt()}`;
+   buf += `${list(varDecl)} in ${expr}) ${stmt}`;
    return buf;
 };
 
-exports.Continue = id => () => `continue ${id ? id() : ""};`;
+exports.Continue = id => `continue ${id};`;
 
-exports.Break = id => () => `break ${id ? id() : ""};`;
+exports.Break = id => `break ${id};`;
 
-exports.Return = expr => () => `return ${expr ? expr() : ""};`;
+exports.Return = expr => `return ${expr};`;
 
-exports.With = (expr, stmt) => () => `with (${expr()}) ${stmt()}`;
+exports.With = (expr, stmt) => `with (${expr}) ${stmt}`;
 
-exports.Switch = (expr, caseBlk) => () => `switch (${expr()}) ${caseBlk()}`;
+exports.Switch = (expr, caseBlk) => `switch (${expr}) ${caseBlk}`;
 
-exports.CaseBlock = caseClauses => () => `{ ${list(caseClauses, " ")} }`;
+exports.CaseBlock = caseClauses => `{ ${list(caseClauses, " ")} }`;
 
-exports.CaseClause = (expr, stmts) => () => {
-   return `case ${expr()}: ${list(stmts, ";")}`;
-};
+exports.CaseClause = (expr, stmts) => `case ${expr}: ${list(stmts, ";")}`;
 
-exports.DefaultClause = stmts => () => `default: ${list(stmts, ";")}`;
+exports.DefaultClause = stmts => `default: ${list(stmts, ";")}`;
 
-exports.LabelledStmt = (label, stmt) => () => `${label()}: ${stmt()}`;
+exports.LabelledStmt = (label, stmt) => `${label}: ${stmt}`;
 
-exports.Throw = expr => () => `throw ${expr()};`;
+exports.Throw = expr => `throw ${expr};`;
 
-exports.Try = (block, catch_, finally_) => () => {
-   let buf = `try ${block()}`;
+exports.Try = (block, catch_, finally_) => {
+   let buf = `try ${block}`;
 
    if (catch_) {
-      buf += ` ${catch_()}`;
+      buf += ` ${catch_}`;
    }
 
    if (finally_) {
-      buf += ` ${finally_()}`;
+      buf += ` ${finally_}`;
    }
    return buf;
 }
 
-exports.Catch = (id, block) => () => `catch (${id()}) ${block()}`;
+exports.Catch = (id, block) => `catch (${id}) ${block}`;
 
-exports.Finally = block => () => `finally ${block()}`;
+exports.Finally = block => `finally ${block}`;
 
-exports.Debugger = () => () => `debugger;`;
+exports.Debugger = () => `debugger;`;
 
-exports.ServiceDeclaration = (id, params, body) => () => {
-   var b = body ? `{ ${body()} }` : ";";
-   return `service ${id()}(${list(params)}) ${b}`;
+exports.ServiceDeclaration = (id, params, body) => {
+   var b = body ? `{ ${body} }` : ";";
+   return `service ${id}(${list(params)}) ${b}`;
 }
 
-exports.ServiceExpression = (id, params, body) => () => {
-   var b = body ? `{ ${body()} }` : "";
-   return `(service ${id ? id() : ""}(${list(params)}) ${b})`;
+exports.ServiceExpression = (id, params, body) => {
+   var b = body ? `{ ${body} }` : "";
+   return `(service ${id}(${list(params)}) ${b})`;
 }
 
-exports.FunctionDeclaration = (id, params, body) => () => {
-   return `function ${id()}(${list(params)}) { ${body()} }`;
+exports.FunctionDeclaration = (id, params, body) => {
+   return `function ${id}(${list(params)}) { ${body} }`;
 }
 
-exports.FunctionExpression = (id, params, body) => () => {
-   return `(function ${id ? id() : ""}(${list(params)}) { ${body()} })`;
+exports.FunctionExpression = (id, params, body) => {
+   return `(function ${id}(${list(params)}) { ${body} })`;
 }
 
-exports.Parameter = (id, initExpr) => () => {
-   let buf = id();
+exports.Parameter = (id, initExpr) => {
+   let buf = id;
 
    if (initExpr) {
-      buf += `=${initExpr()}`;
+      buf += `=${initExpr}`;
    }
    return buf;
 }
 
-exports.Program = sourceEls => () => list(sourceEls, " ");
+exports.Program = sourceEls => list(sourceEls, " ");
 
 //
 // Hiphop.js nodes
 //
 
-exports.HHModule = (id, sigDeclList, stmts) => () => {
+exports.HHModule = (id, sigDeclList, stmts) => {
    let decls = list(sigDeclList, " ");
-   let name = id ? `__hh_reserved_debug_name__="${id()}"` : "";
-   return `<hh.module ${name} ${decls}>${stmts()}</hh.module>`;
+   let name = id ? `__hh_reserved_debug_name__="${id}"` : "";
+   return `<hh.module ${name} ${decls}>${stmts}</hh.module>`;
 }
 
-exports.HHLocal = (sigDeclList, block) => () => {
+exports.HHLocal = (sigDeclList, block) => {
    let decls = list(sigDeclList, " ");
-   return `<hh.local ${decls}>${block()}</hh.local>`;
+   return `<hh.local ${decls}>${block}</hh.local>`;
 }
 
-exports.Signal = (id, accessibility, initExpr, combineExpr) => () => {
-   let accessibilityBuf = `accessibility: ${hh[accessibility]}`;
-   let initExprBuf = initExpr ? `, initApply: function(){return ${initExpr()}}` : "";
+const accmap = {
+   'IN': 1,
+   'OUT': 2,
+   'INOUT': 3
+}
+
+exports.Signal = (id, accessibility, initExpr, combineExpr) => {
+   let accessibilityBuf = `accessibility: ${accmap[accessibility]}`;
+   let initExprBuf = initExpr ? `, initApply: function(){return ${initExpr}}` : "";
    let combineExprBuf = "";
 
    if (combineExpr) {
       if (combineExpr.func) {
-	 combineExprBuf = `, combine: function(){return ${combineExpr.func()}}`;
+	 combineExprBuf = `, combine: function(){return ${combineExpr.func}}`;
       }
 
       if (combineExpr.identifier) {
-	 combineExprBuf = `, combine: ${combineExpr.identifier()}`
+	 combineExprBuf = `, combine: ${combineExpr.identifier}`
       }
    }
-   return `${id()}=${"${"}{${accessibilityBuf} ${initExprBuf} ${combineExprBuf}}}`;
+   return `${id}=${"${"}{${accessibilityBuf} ${initExprBuf} ${combineExprBuf}}}`;
 }
 
-exports.HHSequence = stmts => () => {
-   return `<hh.sequence >${list(stmts, "")}</hh.sequence>`;
-}
+exports.HHSequence = stmts => `<hh.sequence >${list(stmts, "")}</hh.sequence>`;
 
-exports.HHHalt = () => () => `<hh.halt/>`;
+exports.HHHalt = () => `<hh.halt/>`;
 
-exports.HHPause = () => () => `<hh.pause/>`;
+exports.HHPause = () => `<hh.pause/>`;
 
-exports.HHNothing = () => () => `<hh.nothing/>`;
+exports.HHNothing = () => `<hh.nothing/>`;
 
-exports.HHIf = (test, t, e) => () => {
-   return `<hh.if ${hhExpr("apply", test)}>${t()}${e ? e() : ""}</hh.if>`;
-}
+exports.HHIf = (test, t, e) => (
+   `<hh.if ${hhExpr("apply", test)}>${t}${e}</hh.if>`
+);
 
-exports.HHFork = (branches, forkId) => () => {
-   let id = forkId ? `id=${forkId()}` : "";
+exports.HHFork = (branches, forkId) => {
+   let id = forkId ? `id=${forkId}` : "";
    return `<hh.parallel ${id}>${list(branches, "")}</hh.parallel>`;
 }
 
-exports.HHAbort = (texpr, body) => () => {
-   return `<hh.abort ${texpr()}>${body()}</hh.abort>`;
-}
+exports.HHAbort = (texpr, body) => `<hh.abort ${texpr}>${body}</hh.abort>`;
 
-exports.HHWeakAbort = (texpr, body) => () => {
-   return `<hh.weakAbort ${texpr()}>${body()}</hh.weakAbort>`;
-}
+exports.HHWeakAbort = (texpr, body) => (
+   `<hh.weakAbort ${texpr}>${body}</hh.weakAbort>`
+);
 
-exports.HHLoop = body => () => `<hh.loop>${body()}</hh.loop>`;
+exports.HHLoop = body => `<hh.loop>${body}</hh.loop>`;
 
-exports.HHEvery = (texpr, body) => () => {
-   return`<hh.every ${texpr()}>${body()}</hh.every>`;
-}
+exports.HHEvery = (texpr, body) => `<hh.every ${texpr}>${body}</hh.every>`;
 
-exports.HHLoopeach = (texpr, body) => () => {
-   return `<hh.loopeach ${texpr()}>${body()}</hh.loopeach>`;
-}
+exports.HHLoopeach = (texpr, body) => (
+   `<hh.loopeach ${texpr}>${body}</hh.loopeach>`
+);
 
-exports.HHAwait = texpr => () => `<hh.await ${texpr()}/>`;
+exports.HHAwait = texpr => `<hh.await ${texpr}/>`;
 
-exports.HHEmitExpr = (id, expr) => () => id() + (expr ? hhExpr(" apply", expr) : "");
+exports.HHEmitExpr = (id, expr) => id + (expr ? hhExpr(" apply", expr) : "");
 
 function emit(args, constr) {
    if (args.length == 1) {
@@ -358,16 +348,16 @@ function emit(args, constr) {
    }
 }
 
-exports.HHEmit = args => () => emit(args, expr => `<hh.emit ${expr()}/>`);
+exports.HHEmit = args => emit(args, expr => `<hh.emit ${expr}/>`);
 
-exports.HHSustain = args => () => emit(args, expr =>`<hh.sustain ${expr()}/>`);
+exports.HHSustain = args => emit(args, expr =>`<hh.sustain ${expr}/>`);
 
-exports.HHTrap = (id, body) => () => `<hh.trap ${id()}>${body()}</hh.trap>`;
+exports.HHTrap = (id, body) => `<hh.trap ${id}>${body}</hh.trap>`;
 
-exports.HHExit = id => () => `<hh.exit ${id()}/>`;
+exports.HHExit = id => `<hh.exit ${id}/>`;
 
-exports.HHRun = (expr, assocs) => () => {
-   let moduleBuf = `module=${"$"}{${expr()}}`;
+exports.HHRun = (expr, assocs) => {
+   let moduleBuf = `module=${"$"}{${expr}}`;
    let assocBuf = "";
 
    for (let i in assocs) {
@@ -379,26 +369,26 @@ exports.HHRun = (expr, assocs) => () => {
    return `<hh.run ${moduleBuf} ${assocBuf}/>`;
 }
 
-exports.HHSuspend = (texpr, body, emitWhenSuspended) => () => {
+exports.HHSuspend = (texpr, body, emitWhenSuspended) => {
    let ews = emitWhenSuspended ? `emitWhenSuspended=${emitWhenSuspended}` : "";
-   return `<hh.suspend ${texpr()} ${ews}>${body()}</hh.suspend>`;
+   return `<hh.suspend ${texpr} ${ews}>${body}</hh.suspend>`;
 }
 
-exports.HHSuspendToggle = (expr, body, emitWhenSuspended) => () => {
+exports.HHSuspendToggle = (expr, body, emitWhenSuspended) => {
    let ews = emitWhenSuspended ? `emitWhenSuspended=${emitWhenSuspended}` : "";
-   return `<hh.suspend ${hhExpr("toggleApply", expr)} ${ews}>${body()}</hh.suspend>`;
+   return `<hh.suspend ${hhExpr("toggleApply", expr)} ${ews}>${body}</hh.suspend>`;
 }
 
-exports.HHSuspendFromTo = (from, to, immediate, body, emitWhenSuspended) => () => {
+exports.HHSuspendFromTo = (from, to, immediate, body, emitWhenSuspended) => {
    let immBuf = immediate ? "immediate" : "";
    let fromBuf = hhExpr("fromApply", from);
    let toBuf = hhExpr("toApply", to);
    let ews = emitWhenSuspended ? `emitWhenSuspended=${emitWhenSuspended}` : "";
 
-   return `<hh.suspend ${immBuf} ${fromBuf} ${toBuf} ${ews}>${body()}</hh.suspend>`;
+   return `<hh.suspend ${immBuf} ${fromBuf} ${toBuf} ${ews}>${body}</hh.suspend>`;
 }
 
-exports.HHExecParams = params => () => {
+exports.HHExecParams = params => {
    let paramsBuf = "";
 
    Object.keys(params).forEach(key => {
@@ -411,90 +401,74 @@ exports.HHExecParams = params => () => {
    return paramsBuf;
 };
 
-exports.HHExec = (startExpr, params) => () => {
-   return `<hh.exec ${hhJSStmt("apply", startExpr)} ${params()}/>`;
+exports.HHExec = (startExpr, params) => {
+   return `<hh.exec ${hhJSStmt("apply", startExpr)} ${params}/>`;
 }
 
-exports.HHExecEmit = (id, startExpr, params) => () => {
-   return `<hh.exec ${id()} ${hhJSStmt("apply", startExpr)} ${params()}/>`;
+exports.HHExecEmit = (id, startExpr, params) => {
+   return `<hh.exec ${id} ${hhJSStmt("apply", startExpr)} ${params}/>`;
 }
 
-exports.HHPromise = (thenId, catchId, expr, params) => () => {
-   return `<hh.local promiseReturn>
-     <hh.exec promiseReturn apply=${"$"}{function() {
-        let self = this;
-	${expr()}.then(function(v) {
-	      self.terminateExecAndReact({resolve: true,
-					  value: v});
-	   })
-	   .catch(function(v) {
-	      self.terminateExecAndReact({resolve: false,
-					  value: v});
-	   });
-     }} ${params()}/>
-     <hh.if apply=${"$"}{function() {return this.value.promiseReturn.resolve}}>
-       <hh.emit ${thenId()} apply=${"$"}{function() {
-	  return this.value.promiseReturn.value;
-       }}/>
-       <hh.emit ${catchId()} apply=${"$"}{function() {
-	  return this.value.promiseReturn.value;
-       }}/>
-     </hh.if>
-   </hh.local>`;
+exports.HHPromise = (thenId, catchId, expr, params) => {
+   return '<hh.local promiseReturn>'
+      + `<hh.exec promiseReturn apply=${"$"}{function() {`
+      + `let self = this;`
+      + `${expr}.then(function(v) {`
+      + `self.terminateExecAndReact({resolve: true, value: v});`
+      + `}).catch(function(v) {self.terminateExecAndReact(`
+      + `{resolve: false, value: v}); }); }} ${params}/>`
+      + `<hh.if apply=${"$"}{`
+      + `function() {return this.value.promiseReturn.resolve}}>`
+      + `<hh.emit ${thenId} apply=${"$"}{`
+      + `function() { return this.value.promiseReturn.value;}}/>`
+      + `<hh.emit ${catchId} apply=${"$"}{function() {`
+      + `return this.value.promiseReturn.value; }}/> </hh.if></hh.local>`;
 }
 
-exports.Dollar = expr => () => `${"$"}{${expr()}}`;
+exports.Dollar = expr => `${"$"}{${expr}}`;
 
-exports.HHBlock = (varDecls, seq) => () => {
+exports.HHBlock = (varDecls, seq) => {
    if (varDecls.length == 0) {
-      return seq();
+      return seq;
    }
-   return `${"$"}{(function() {${list(varDecls, "")} return ${seq()}})()}`;
+   return `${"$"}{(function() {${list(varDecls, "")} return ${seq}})()}`;
 }
 
-exports.HHAtom = jsStmts => () => `<hh.atom ${hhJSStmt("apply", jsStmts)}/>`;
+exports.HHAtom = jsStmts => `<hh.atom ${hhJSStmt("apply", jsStmts)}/>`;
 
-exports.HHWhile = (expr, body) => () => {
-   return `<hh.trap While>
-     <hh.loop>
-       <hh.if ${expr()}>
-         <hh.nothing/>
-	 <hh.exit While/>
-       </hh.if>
-       ${body()}
-     </hh.loop>
-   </hh.trap>`;
+exports.HHWhile = (expr, body) => {
+   return `<hh.trap While>`
+      + `<hh.loop>`
+      + `<hh.if ${expr}>`
+      + `<hh.nothing/>`
+      + `<hh.exit While/>`
+      + `</hh.if>`
+      + `${body}`
+      + `</hh.loop>`
+      + `</hh.trap>`;
 }
 
-exports.HHFor = (declList, whileExpr, eachStmt, body) => () => {
-   return `<hh.trap For>
-     <hh.local ${list(declList, " ")}>
-       <hh.loop>
-         <hh.if ${whileExpr()}>
-           <hh.nothing/>
-	   <hh.exit For/>
-         </hh.if>
-         ${body()}
-         ${eachStmt()}
-       </hh.loop>
-     </hh.local>
-   </hh.trap>`;
+exports.HHFor = (declList, whileExpr, eachStmt, body) => {
+   return `<hh.trap For>`
+      + `<hh.local ${list(declList, " ")}>`
+      + `<hh.loop>`
+      + `<hh.if ${whileExpr}>`
+      + `<hh.nothing/>`
+      + `<hh.exit For/>`
+      + `</hh.if>`
+      + `${body}`
+      + `${eachStmt}`
+      + `</hh.loop>`
+      + `</hh.local>`
+      + `</hh.trap>`;
 }
 
-function hhExpr(attr, expr) {
-   return `${attr}=${"$"}{function(){return ${expr()}}}`;
-}
+const hhExpr = (attr, expr) => `${attr}=${"$"}{function(){return ${expr}}}`;
 
-function hhJSStmt(attr, stmts) {
-   return `${attr}=${"$"}{function(){${stmts()}}}`;
-}
+const hhJSStmt = (attr, stmts) => `${attr}=${"$"}{function(){${stmts()}}}`;
 
-exports.HHTemporalExpression = (immediate, expr) => () => {
-   return `${immediate ? "immediate" : ""} ${hhExpr("apply", expr)}`;
-}
+exports.HHTemporalExpression = (immediate, expr) => (
+   `${immediate ? "immediate" : ""} ${hhExpr("apply", expr)}`
+);
 
-exports.HHAccessor = (symb, id) => () => {
-   let idBuf = id ? "." + id() : "";
-
-   return symb + idBuf;
-}
+exports.HHAccessor = (symb, id) => `${symb}${id ? `.${id}` : ''}`;

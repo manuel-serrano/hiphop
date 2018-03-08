@@ -1,9 +1,10 @@
 "use hopscript"
 
-function makeToken(type, pos=null, value=null) {
+function makeToken(type, line, column, value=null) {
    return {
       type: type,
-      pos: pos,
+      line: line,
+      column: column,
       value: value != null ? value : type
    };
 }
@@ -12,6 +13,8 @@ function Lexer(buffer) {
    this.buffer = buffer;
    this.len = buffer.length;
    this.pos = 0;
+   this.line = 1;
+   this.column = 0;
    this.current = null;
 }
 
@@ -67,6 +70,7 @@ Lexer.prototype.__skipBlank = function() {
 	 break;
       }
       this.pos++;
+      this.column++;
    }
 
    return this.__isEOF();
@@ -78,20 +82,26 @@ Lexer.prototype.__skipComment = function() {
    } else if (this.buffer[this.pos] == "/"
 	       && this.buffer[this.pos + 1] == "/") {
       this.pos += 2;
+      this.column += 2;
       while (!this.__isEOF() && !this.__isEOL()) {
 	 this.pos++;
+	 this.column++;
       }
       this.pos++;
+      this.column++;
       this.__skipBlank();
       return this.__skipComment();
    } else if (this.buffer[this.pos] == "/"
 	      && this.buffer[this.pos + 1] == "*") {
       this.pos += 2;
+      this.column += 2;
       while (!this.__isEOF()) {
 	 this.pos++;
+	 this.column++;
 	 if (this.buffer[this.pos] == "*"
 	     && this.buffer[this.pos + 1] == "/") {
 	    this.pos += 2;
+	    this.column += 2;
 	    break;
 	 }
       }
@@ -103,7 +113,10 @@ Lexer.prototype.__skipComment = function() {
 
 Lexer.prototype.__newLine = function() {
    if (this.__isEOL()) {
-      this.current = makeToken("NEWLINE", this.pos++);
+      this.pos++;
+      this.current = makeToken("NEWLINE", this.line, this.column);
+      this.line++;
+      this.column = 0;
       return true;
    }
    return false;
@@ -115,6 +128,7 @@ Lexer.prototype.__operator = function() {
    }
 
    let pos = this.pos;
+   let column = this.column;
    let value = this.buffer[pos];
    let value_ = this.buffer.substring(pos, pos + 2);
    let value__ = this.buffer.substring(pos, pos + 3);
@@ -123,10 +137,12 @@ Lexer.prototype.__operator = function() {
    if (value___ == ">>>=") {
       value = value___;
       this.pos += 4;
+      this.column += 4;
    } else if (value__ == "<<=" || value__ == ">>=" || value__ == ">>>"
 	      || value__ == "===" || value__ == "!==") {
       value = value__;
       this.pos += 3;
+      this.column += 3;
    } else if (value_ == "*=" || value_ == "/=" || value_ == "%="
        || value_ == "+=" || value_ == "-=" || value_ == "&="
        || value_ == "^=" || value_ == "|=" || value_ == "&&"
@@ -135,11 +151,13 @@ Lexer.prototype.__operator = function() {
        || value_ == ">=") {
       value = value_;
       this.pos += 2;
+      this.column += 2;
    } else {
       this.pos++;
+      this.column++;
    }
 
-   this.current = makeToken(value, pos);
+   this.current = makeToken(value, this.line, column);
    return true;
 }
 
@@ -148,13 +166,14 @@ Lexer.prototype.__identifier = function() {
       return false;
    }
 
-   let posStart = this.pos;
+   let column = this.column;
    let type = "IDENTIFIER";
    let identifier = "";
 
    do {
       identifier += this.buffer[this.pos];
       this.pos++;
+      this.column++;
    } while (this.__isAlphaNum() && !this.__isEOF());
 
    if (["async", "await", "break", "case", "catch", "const", "continue",
@@ -179,13 +198,15 @@ Lexer.prototype.__identifier = function() {
       type = "HHRESERVED";
    }
 
-   this.current = makeToken(type , posStart, identifier);
+   this.current = makeToken(type , this.line, column, identifier);
    return true;
 }
 
 Lexer.prototype.__tilde = function() {
    if (this.buffer[this.pos] == "~") {
-      this.current = makeToken("~", this.pos++);
+      this.current = makeToken("~", this.line, this.column);
+      this.pos++;
+      this.column++;
       return true;
    }
    return false;
@@ -198,19 +219,22 @@ Lexer.prototype.__xml = function() {
    if (this.buffer[this.pos] == "<"
        && (this.__isAlpha(this.pos + 1) || this.buffer[this.pos + 1] == "/")) {
       let posStart = this.pos;
+      let column = this.column;
       let tag = "";
 
       for (;;) {
 	 if (this.__isEOF()) {
-	    throw new Error("invalid XML tag `" + tag + "` at " + this.pos);
+	    throw new Error(`${this.line}:${column} invalid XML tag ${tag}`);
 	 }
-	 tag += this.buffer[this.pos++];
+	 tag += this.buffer[this.pos];
+	 this.pos++;
+	 this.column++;
 	 if (this.buffer[this.pos - 1] == ">") {
 	    break;
 	 }
       }
 
-      let token = makeToken("XML", posStart, tag);
+      let token = makeToken("XML", this.line, column, tag);
       this.current = token;
 
       token.leaf = this.buffer[this.pos - 2] == "/";
@@ -218,7 +242,7 @@ Lexer.prototype.__xml = function() {
       token.openning = !token.closing && !token.leaf;
 
       if (token.closing && token.leaf) {
-	 throw new Error("invalid XML node `" + token.value +"` at " + posStart);
+	 throw new Error(`${this.line}:${column} invalid XML node ${token.value}`);
       }
       return true;
    }
@@ -228,32 +252,36 @@ Lexer.prototype.__xml = function() {
 Lexer.prototype.__literal = function() {
    let c = this.buffer[this.pos]
    let literal = "";
-   let posStart = this.pos;
+   let column = this.pos;
 
    if (c == "'" || c == '"' || c == "`") {
       let delim = c;
 
-      c = this.buffer[++this.pos];
+      this.pos++;
+      this.column++;
+      c = this.buffer[this.pos];
       for (;;) {
 	 if (c == "\\") {
 	    literal += c;
 	    literal += this.buffer[this.pos + 1];
 	    this.pos += 2;
+	    this.column += 2;
 	    c = this.buffer[this.pos];
 	 } else if (this.__isEOL() || this.__isEOF()) {
-	    throw new Error("invalid litteral `"
-			    + this.buffer.substring(posStart, this.pos)
-			    + "` at " + posStart + "," + this.pos);
+	    throw new Error(`${this.line}:${column} invalid litteral ${this.buffer.substring(column, this.pos)}`);
 	 } else if (c == delim) {
-	    this.current = makeToken("LITERAL", posStart, literal);
+	    this.current = makeToken("LITERAL", this.line, column, literal);
 	    this.current.string = true;
 	    this.current.stringDelim = delim;
 	    this.current.template = delim == "`" ? true : false;
 	    this.pos++;
+	    this.column++;
 	    return true;
 	 } else {
 	    literal += c;
-	    c = this.buffer[++this.pos];
+	    this.pos++;
+	    this.column++;
+	    c = this.buffer[this.pos];
 	 }
       }
    } else if (this.__isDigit()) {
@@ -264,14 +292,15 @@ Lexer.prototype.__literal = function() {
 	     //
 	     || (literal != "" && this.__isAlphaNum())) {
 	    literal += c;
-	    c = this.buffer[++this.pos];
+	    this.pos++;
+	    this.column++;
+	    c = this.buffer[this.pos];
 	 } else if (this.__isEOL() || this.__isEOF() || this.__isBlank()
 		    || this.__isOperator()) {
-	    this.current = makeToken("LITERAL", posStart, literal);
+	    this.current = makeToken("LITERAL", this.line, column, literal);
 	    return true;
 	 } else {
-	    throw new Error("invalid literal number `" + literal + c + "`"
-			    + " at " + posStart + "," + this.pos);
+	    throw new Error(`${this.line}:${column} invalid literal number ${c}`);
 	 }
       }
    } else {
@@ -283,9 +312,9 @@ Lexer.prototype.token = function() {
    this.current = null;
 
    if (this.__skipBlank()) {
-      return makeToken("EOF");
+      return makeToken("EOF", this.line, this.column);
    } else if (this.__skipComment()) {
-      return makeToken("EOF");
+      return makeToken("EOF", this.line, this.column);
    } else if (this.__newLine()
 	      || this.__tilde()
 	      || this.__xml()
@@ -293,9 +322,9 @@ Lexer.prototype.token = function() {
 	      || this.__operator()
 	      || this.__identifier()) {
       this.current.blankNext = this.__isBlank() || this.__isEOL();
+
       return this.current;
    } else {
-      throw new Error("unexpected character `" + this.buffer[this.pos]
-		      + "` at " + this.pos);
+      throw new Error(`${this.line}:${this.column} unexpected character ${this.buffer[this.pos]}`);
    }
 }
