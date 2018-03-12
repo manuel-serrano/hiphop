@@ -28,14 +28,17 @@ function unexpectedToken(token=null, expected=null) {
 function Parser(lexer, iFile, sourceMap) {
    this.lexer = lexer;
    this.peekedTokens = [];
+   this.genLine = 1;
    this.genColumn = 0;
+
    this.map = (token, genCode) => {
       sourceMap.addMapping({
-	 generated: { line: 1, column: this.genColumn},
+	 generated: { line: this.genLine, column: this.genColumn},
 	 source: iFile,
 	 original: { line: token.line, column: token.column }
       })
       this.genColumn += genCode.length;
+      this.genLine += genCode.split(/\r\n|\r|\n/).length;
       return genCode;
    }
 }

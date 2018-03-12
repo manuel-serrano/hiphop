@@ -23,7 +23,7 @@ exports.Literal = (value, string=false, template=false) => {
 }
 
 exports.XML = (openOrLeaf, xmlBody=undefined, close=undefined) => {
-   if (xmlBody) {
+   if (xmlBody !== undefined) {
       return `${openOrLeaf}${xmlBody}${close}`;
    }
    return openOrLeaf;
