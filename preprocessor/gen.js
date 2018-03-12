@@ -465,7 +465,7 @@ exports.HHFor = (declList, whileExpr, eachStmt, body) => {
 
 const hhExpr = (attr, expr) => `${attr}=${"$"}{function(){return ${expr}}}`;
 
-const hhJSStmt = (attr, stmts) => `${attr}=${"$"}{function(){${stmts()}}}`;
+const hhJSStmt = (attr, stmts) => `${attr}=${"$"}{function(){${stmts}}}`;
 
 exports.HHTemporalExpression = (immediate, expr) => (
    `${immediate ? "immediate" : ""} ${hhExpr("apply", expr)}`
