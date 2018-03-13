@@ -1261,7 +1261,7 @@ Parser.prototype.__variableDeclarationList = function(withInKwd=true) {
 Parser.prototype.__variableDeclaration = function(withInKwd=true) {
    const token = this.peek();
    let id = this.__identifier();
-   let init = null;
+   let init = "";
 
    if (this.peekHasType("=")) {
       this.consume();
@@ -1276,7 +1276,7 @@ Parser.prototype.__emptyStatement = function() {
 
 Parser.prototype.__expressionStatement = function() {
    let peeked = this.peek();
-   let expression;
+   let expression = "";
 
    if (peeked.type == "{"
        || peeked.type == "function"
@@ -1289,9 +1289,9 @@ Parser.prototype.__expressionStatement = function() {
 }
 
 Parser.prototype.__ifStatement = function() {
-   let test;
-   let then_;
-   let else_ = null;
+   let test = "";
+   let then_ = "";
+   let else_ = "";
    const token = this.consumeReserved("if");
 
    this.consume("(");
@@ -1327,13 +1327,13 @@ Parser.prototype.__iterationStatement = function() {
       this.consume(")");
       return this.map(token, gen.While(test, this.__statement()));
    case "for":
-      let forInExpr = null;
-      let vtype = null;
-      let initVarDecl = null;
-      let init = null;
-      let test = null;
-      let after = null;
-      let stmt;
+      let forInExpr = "";
+      let vtype = "";
+      let initVarDecl = "";
+      let init = "";
+      let test = "";
+      let after = "";
+      let stmt = "";
 
       this.consume();
       this.consume("(");
@@ -1387,7 +1387,7 @@ Parser.prototype.__iterationStatement = function() {
 }
 
 Parser.prototype.__continueStatement = function() {
-   let identifier = null;
+   let identifier = "";
    const token = this.consumeReserved("continue");
    let pos = token.pos;
    let peeked = this.peek();
@@ -1401,7 +1401,7 @@ Parser.prototype.__continueStatement = function() {
 }
 
 Parser.prototype.__breakStatement = function() {
-   let identifier = null;
+   let identifier = "";
    const token = this.consumeReserved("break");
    let pos = token.pos;
    let peeked = this.peek();
@@ -1415,7 +1415,7 @@ Parser.prototype.__breakStatement = function() {
 }
 
 Parser.prototype.__returnStatement = function() {
-   let expr = null;
+   let expr = "";
    const token = this.consumeReserved("return");
    let pos = token.pos;
    let peeked = this.peek();
@@ -1433,8 +1433,8 @@ Parser.prototype.__returnStatement = function() {
 // http://www.ecma-international.org/ecma-262/5.1/#sec-12.10
 //
 Parser.prototype.__withStatement = function() {
-   let expr = null;
-   let stmt = null;
+   let expr = "";
+   let stmt = "";
    const token = this.consumeReserved("with");
    let pos = token.pos;
 
@@ -1530,7 +1530,7 @@ Parser.prototype.__labelledStatement = function() {
 }
 
 Parser.prototype.__throwStatement = function() {
-   let expr;
+   let expr = "";
    const token = this.consumeReserved("throw");
 
    expr = this.__expression();
@@ -1544,7 +1544,7 @@ Parser.prototype.__tryStatement = function() {
 }
 
 Parser.prototype.__catch = function() {
-   let identifier;
+   let identifier = "";
    const token = this.consumeReserved("catch");
 
    this.consume("(");
@@ -1571,8 +1571,8 @@ Parser.prototype.__debugger = function() {
 
 Parser.prototype.__functionDeclaration = function(expr=false) {
    let id = "";
-   let params;
-   let body;
+   let params = "";
+   let body = "";
 
    const token = this.consumeReserved();
    if (!expr || (expr && this.peekIsIdentifier())) {
@@ -1596,9 +1596,9 @@ Parser.prototype.__functionExpression = function() {
 }
 
 Parser.prototype.__serviceDeclaration = function(expr=false) {
-   let id = null;
-   let params;
-   let body = null;
+   let id = "";
+   let params = "";
+   let body = "";
 
    const token = this.consumeReserved();
    if (!expr || (expr && this.peekIsIdentifier())) {
