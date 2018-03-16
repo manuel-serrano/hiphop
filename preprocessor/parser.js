@@ -26,6 +26,7 @@ function unexpectedToken(token=null, expected=null) {
 }
 
 function Parser(lexer, iFile, sourceMap) {
+   this.hasHHcode = false;
    this.lexer = lexer;
    this.peekedTokens = [];
    this.genLine = 1;
@@ -791,8 +792,10 @@ Parser.prototype.__primaryExpression = function() {
 	  || peeked.value == "COMPLETE" || peeked.value == "COMPLETEANDREACT"
 	  || peeked.value == "DONE" || peeked.value == "DONEREACT"
 	  || peeked.value == "EXECID" || peeked.value == "THIS") {
+	 this.hasHHcode = true;
 	 return this.__hhAccessor();
       } else {
+	 this.hasHHcode = true;
 	 return this.__hhStatement();
       }
    }
