@@ -15,22 +15,13 @@ function NYI() {
    throw new Error("Not Yet Implemented.");
 }
 
-function unexpectedToken(token=null, expected=null) {
-   let got = token.value ? token.value : token.type;
-
-   if (expected) {
-      throw new Error(`at ${token.line}:${token.column} expected ${expected} got ${got}`);
-   } else {
-      throw new Error(`at ${token.line}:${token.column} unexpected ${got}`);
-   }
-}
-
 function Parser(lexer, iFile, sourceMap) {
    this.hasHHcode = false;
    this.lexer = lexer;
    this.peekedTokens = [];
    this.genLine = 1;
    this.genColumn = 0;
+   this.iFile = iFile;
 
    this.map = (token, genCode) => {
       sourceMap.addMapping({
@@ -45,6 +36,16 @@ function Parser(lexer, iFile, sourceMap) {
 }
 
 exports.Parser = Parser;
+
+Parser.prototype.unexpectedToken = function(token=null, expected=null) {
+   let got = token.value ? token.value : token.type;
+
+   if (expected) {
+      throw new Error(`${this.iFile} at ${token.line}:${token.column} expected ${expected} got ${got}`);
+   } else {
+      throw new Error(`${this.iFile} at ${token.line}:${token.column} unexpected ${got}`);
+   }
+}
 
 Parser.prototype.gen = function() {
    return this.__sourceElements();
@@ -99,7 +100,7 @@ Parser.prototype.consume = function(type=null, value=null) {
    const token = this.peek();
 
    if (type && type != token.type) {
-      unexpectedToken(token, value ? value : type);
+      this.unexpectedToken(token, value ? value : type);
    }
    return this.peekedTokens.pop();
 }
@@ -121,16 +122,6 @@ Parser.prototype.consumeOptionalEmpty = function() {
 //
 // Hiphop.js extension
 //
-
-function unexpectedHHToken(token=null, expected=null) {
-   let got = token.value ? token.value : token.type;
-
-   if (expected) {
-      throw new Error(`${token.line}:${token.column} expected ${expected} got ${got}`);
-   } else {
-      throw new Error(`${token.line}:${token.column} unexpected ${got}`);
-   }
-}
 
 Parser.prototype.__hhBlock = function(brackets=true) {
    let stmts = [];
@@ -614,14 +605,14 @@ Parser.prototype.__hhAccessor = function() {
       this.consume();
       return this.map(peeked, gen.HHAccessor("this.payload", null));
    default:
-      unexpectedHHToken(peeked, "ACCESSOR");
+      this.unexpectedToken(peeked, "ACCESSOR");
    }
 }
 
 Parser.prototype.__hhAtom = function() {
    const token = this.consumeHHReserved("ATOM");
    if (this.peek().value != "{") {
-      unexpectedHHToken(this.peek(), "{");
+      this.unexpectedToken(this.peek(), "{");
    }
    return this.map(token, gen.HHAtom(this.__statement()));
 }
@@ -653,7 +644,7 @@ Parser.prototype.__hhFor = function() {
 Parser.prototype.__hhSequence = function() {
    this.consumeHHReserved("SEQUENCE");
    if (this.peek().value != "{") {
-      unexpectedHHToken(this.peek(), "{");
+      this.unexpectedToken(this.peek(), "{");
    }
    return this.__hhBlock();
 }
@@ -731,7 +722,7 @@ Parser.prototype.__hhStatement = function() {
    case "$":
       return this.__dollar();
    default:
-      unexpectedHHToken(peeked);
+      this.unexpectedToken(peeked);
    }
 }
 
@@ -809,7 +800,7 @@ Parser.prototype.__xmlBody = function() {
       let peeked = this.peek();
 
       if (peeked.type == "EOF") {
-	 unexpectedToken(peeked, "</closing-xml-tag> (maybe)");
+	 this.unexpectedToken(peeked, "</closing-xml-tag> (maybe)");
       } else if (peeked.type == "~") {
 	 this.consume();
 	 els.push(this.map(peeked, gen.Tilde(this.__block())));
@@ -834,13 +825,13 @@ Parser.prototype.__xml = function() {
       let close = this.consume("XML");
 
       if (!close.closing) {
-	 unexpectedHHToken(close, "</closing-xml-tag>");
+	 this.unexpectedToken(close, "</closing-xml-tag>");
       }
       return this.map(openOrLeaf, gen.XML(openOrLeaf.value, body, close.value));
    } else if (openOrLeaf.leaf) {
       return this.map(openOrLeaf, gen.XML(openOrLeaf.value));
    } else {
-      unexpectedToken(openOrLeaf, "<openning-xml-tag>");
+      this.unexpectedToken(openOrLeaf, "<openning-xml-tag>");
    }
 }
 
@@ -898,10 +889,10 @@ Parser.prototype.__objectLiteral = function() {
 	    this.consume();
 	    expectComa = false;
 	 } else {
-	    unexpectedToken(peeked);
+	    this.unexpectedToken(peeked);
 	 }
       } else if (expectComa) {
-	 unexpectedToken(peeked, ",");
+	 this.unexpectedToken(peeked, ",");
       } else {
 	 props.push(this.__propertyAssignment());
 	 expectComa = true;
@@ -962,7 +953,7 @@ Parser.prototype.__propertyName = function() {
       this.consume();
       return this.map(peeked, gen.Literal(peeked.value));
    }
-   unexpectedToken("at " + peeked.pos + " wrong property name `" +
+   this.unexpectedToken("at " + peeked.pos + " wrong property name `" +
 		   peeked.value + "`");
 }
 
@@ -1284,7 +1275,7 @@ Parser.prototype.__expressionStatement = function() {
    if (peeked.type == "{"
        || peeked.type == "function"
        || peeked.type == "service") {
-      unexpectedToken(peeked, "expression");
+      this.unexpectedToken(peeked, "expression");
    }
    expression = this.__expression(false);
    this.consumeOptionalEmpty();
@@ -1481,7 +1472,7 @@ Parser.prototype.__caseBlock = function() {
 	 defaultUsed = true;
 	 clauses.push(this.__defaultClause());
       } else {
-	 unexpectedToken(peeked);
+	 this.unexpectedToken(peeked);
       }
    }
 
@@ -1678,7 +1669,7 @@ Parser.prototype.__sourceElement = function() {
 
    switch (peeked.value) {
    case "EOF":
-      unexpectedToken(peeked);
+      this.unexpectedToken(peeked);
    case "function":
       return this.__functionDeclaration();
    case "service":
