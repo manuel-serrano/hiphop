@@ -48,7 +48,10 @@ Parser.prototype.unexpectedToken = function(token=null, expected=null) {
 }
 
 Parser.prototype.gen = function() {
-   return this.__sourceElements();
+   console.error(`>>> HIPHOP.JS preprocessing ${this.iFile}`);
+   const se = this.__sourceElements();
+   console.error(`<<< HIPHOP.JS preprocessing ${this.iFile}`);
+   return se;
 }
 
 Parser.prototype.peek = function(lookahead=0) {
