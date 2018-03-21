@@ -1,6 +1,6 @@
-#!/usr/bin/node
-//#!/usr/local/bin/hop --no-server
+#!/usr/local/bin/hop --no-server
 "use hopscript"
+//#!/usr/bin/node
 
 const SourceMapGenerator = require("source-map").SourceMapGenerator;
 const path = require("path");
