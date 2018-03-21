@@ -29,7 +29,9 @@ const outputBuffer = (new parser.Parser(
    new lexer.Lexer(inputBuffer),
    inputFile,
    sourceMap
-).gen()) + (`\n\n//# sourceMappingURL=http://${host}:${port}/${outputFileMap}`);
+).gen()) + (`
+
+//# sourceMappingURL=http://${host}:${port}/${outputFileMap}`);
 
 fs.writeFileSync(outputFile, outputBuffer);
 fs.writeFileSync(outputFileMap, sourceMap.toString());

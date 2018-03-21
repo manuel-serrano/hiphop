@@ -1,5 +1,17 @@
 "use hopscript"
 
+const hhKeywords = [
+   "MODULE", "IN", "OUT", "INOUT", "VAL", "PREVAL", "PRE", "NOW",
+   "COMBINE", "COMPLETE", "COMPLETEANDREACT", "HALT", "PAUSE",
+   "NOTHING", "PAR", "FORK", "ABORT", "WEAKABORT", "EVERY", "ATOM",
+   "IMMEDIATE", "LOOP", "LOOPEACH", "AWAIT", "EMIT", "TRAP",
+   "EXIT", "EXEC", "EXECEMIT", "EXECASSIGN", "SUSPEND", "SUSTAIN",
+   "RUN", "EMITWHENSUSPENDED", "FROM", "TO", "PRIVATE", "COUNT",
+   "ONKILL", "ONSUSP", "ONRES", "ONFIRSTSUSP", "ONFIRSTRES", "LET",
+   "IF", "ELSE", "TOGGLE", "DONE", "DONEREACT", "SEQUENCE", "LOCAL",
+   "EXECID", "WHILE", "PROMISE", "FOR", "THIS"
+];
+
 function makeToken(type, line, column, value=null) {
    return {
       type: type,
@@ -185,16 +197,7 @@ Lexer.prototype.__identifier = function() {
 	"package", "private", "protected", "public", "static", "service"]
        .indexOf(identifier) > -1) {
       type = "RESERVED";
-   } else if (["MODULE", "IN", "OUT", "INOUT", "VAL", "PREVAL", "PRE", "NOW",
-	       "COMBINE", "COMPLETE", "COMPLETEANDREACT", "HALT", "PAUSE",
-	       "NOTHING", "PAR", "FORK", "ABORT", "WEAKABORT", "EVERY", "ATOM",
-	       "IMMEDIATE", "LOOP", "LOOPEACH", "AWAIT", "EMIT", "TRAP",
-	       "EXIT", "EXEC", "EXECEMIT", "EXECASSIGN", "SUSPEND", "SUSTAIN",
-	       "RUN", "EMITWHENSUSPENDED", "FROM", "TO", "PRIVATE", "COUNT",
-	       "ONKILL", "ONSUSP", "ONRES", "ONFIRSTSUSP", "ONFIRSTRES", "LET",
-	       "IF", "ELSE", "TOGGLE", "DONE", "DONEREACT", "SEQUENCE", "LOCAL",
-	       "EXECID", "WHILE", "PROMISE", "FOR", "THIS"]
-	      .indexOf(identifier) > -1) {
+   } else if (hhKeywords.indexOf(identifier) > -1) {
       type = "HHRESERVED";
    }
 
