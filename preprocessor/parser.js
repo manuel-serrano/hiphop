@@ -1268,7 +1268,7 @@ Parser.prototype.__variableDeclaration = function(withInKwd=true) {
 }
 
 Parser.prototype.__emptyStatement = function() {
-   return this.map(this.peek(), gen.EmptyStatement());
+   return this.map(this.consume(), gen.EmptyStatement());
 }
 
 Parser.prototype.__expressionStatement = function() {
