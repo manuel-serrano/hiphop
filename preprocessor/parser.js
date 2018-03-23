@@ -1542,7 +1542,7 @@ Parser.prototype.__tryStatement = function() {
 
 Parser.prototype.__catch = function() {
    let identifier = "";
-   const token = this.consumeReserved("catch");
+   const token = this.consume("catch");
 
    this.consume("(");
    identifier = this.__identifier();

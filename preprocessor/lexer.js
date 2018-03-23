@@ -188,7 +188,7 @@ Lexer.prototype.__identifier = function() {
       this.column++;
    } while (this.__isAlphaNum() && !this.__isEOF());
 
-   if (["async", "await", "break", "case", "catch", "const", "continue",
+   if (["async", "await", "break", "case", "const", "continue",
 	"debugger", "default", "delete", "do", "else", "false", "finally",
 	"for", "function", "if", "in", "instanceof", "let", "new", "null",
 	"return", "switch", "this", "throw", "true", "try", "typeof", "var",
