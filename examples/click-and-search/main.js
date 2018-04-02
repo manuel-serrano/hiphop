@@ -6,32 +6,34 @@ service clickAndSearch() {
    return <html>
      <head css=${clickAndSearch.resource("./style.css")}>
        <script src="hiphop" lang="hopscript"></script>
-       <script src="./main-hh.js" lang="hiphop"></script >
-       <script defer>
+       <script src="./main-hh.js" lang="hiphop"></script>
      ~{
+	window.onload = () => {
 	var hh = require("hiphop", "hopscript");
-	var m = require("./main-hh.js", "hiphop")(searchWiki, translate)
+	var m = require("./main-hh.js", "hiphop")(searchWiki, translate);
 
 	function searchWiki(wordId) {
 	   var word = document.getElementById(wordId).innerHTML;
-	   return new Promise((res, rej) => (
-	      ${wiki}(word).post(r => res(r))
-	   ));
+	   return new Promise(res => (${wiki}(word)).post(r => res(r)));
 	}
 
 	function translate(wordId) {
 	   var word = document.getElementById(wordId).innerHTML;
 	   var req = new XMLHttpRequest();
 	   var svc = "http://mymemory.translated.net/api/get?langpair=en|fr&q=" + word;
-	   return new Promise((res, rej) => {
+	   return new Promise(res => {
 	      req.onreadystatechange = () => {
-		 if (req.readyState == 4 && req.status == 200)
-		    res(JSON.parse(req.responseText).responseData.translatedText);
+	   	 if (req.readyState == 4 && req.status == 200)
+	   	    res(JSON.parse(req.responseText).responseData.translatedText);
 	      };
 	      req.open("GET", svc, true);
 	      req.send();
 	   });
 	}
+
+	m.addEventListener("trans", function(evt) {
+	   document.getElementById('trans').innerHTML = evt.signalValue;
+	});
 
 	m.addEventListener("green", function(evt) {
 	   var el = document.getElementById(evt.signalValue);
@@ -59,8 +61,6 @@ service clickAndSearch() {
 	   wiki.innerHTML = "<div>" + evt.signalValue + "</div>";
 	});
 
-	m.debuggerOn("debug");
-
 	var pre = document.getElementById("txt");
 	var file = ${getFile.resource("strcmp-manpage")}
 	${getFile}(file).post(function(txt) {
@@ -87,12 +87,12 @@ service clickAndSearch() {
 	      return;
 	   m.inputAndReact("word", node.id);
 	};
+	}
      }
-	 </script>
        </head>
        <body>
 	 <div id="popup">
-	   <div id="trans"><react>~{m.value.trans}</react></div>
+	   <div id="trans"></div>
 	   <div id="wiki"></div>
 	 </div>
 	 <pre id="txt"></pre>

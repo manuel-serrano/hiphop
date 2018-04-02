@@ -1,16 +1,19 @@
 const hh = require("hiphop");
-module.exports = (searchWiki, translate) => new hh.ReactiveMachine(
-   MODULE (IN word, OUT green, red, black, wiki, trans, err) {
-      EVERY IMMEDIATE(NOW(word)) {
-	 EMIT black(PREVAL(word));
-	 EMIT red(VAL(word));
-	 FORK {
-	    PROMISE wiki, err searchWiki(VAL(word));
-	 } PAR {
-	    PROMISE trans, err translate(VAL(word));
+
+module.exports = function(searchWiki, translate) {
+   return new hh.ReactiveMachine(
+      MODULE (IN word, OUT green, OUT red, OUT black, OUT wiki, OUT trans, OUT err) {
+	 EVERY IMMEDIATE(NOW(word)) {
+	    EMIT black(PREVAL(word));
+	    EMIT red(VAL(word));
+	    FORK {
+	       PROMISE wiki, err searchWiki(VAL(word));
+	    } PAR {
+	       PROMISE trans, err translate(VAL(word));
+	    }
+	    EMIT green(VAL(word));
 	 }
-	 EMIT green(VAL(word));
-      }
-   },
-   { sweep: false }
-);
+      },
+      { debuggerName: 'debug', sweep: false }
+   );
+}

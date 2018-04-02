@@ -1,9 +1,8 @@
 start:
-	hop -g ./main.out.js &
+	hop  ./main.js &
 	node proxy/main.js &
 
 stop:
-	killall hop
-	killall node
+	killall hop ; killall node
 
 
