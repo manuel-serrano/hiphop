@@ -113,9 +113,7 @@ service wiki(word) {
    //    const frame = svc().post(result => {console.log(result); res(result)});
    // });
    const srv = hop.webService("http://localhost:8181/" + word);
-   return new Promise(function(resolve, reject) {
-      srv().post(function(res) {
-   	 resolve(res);
-      });
-   })
+   srv().post(function(res) {
+      resolve(res);
+   });
 }
