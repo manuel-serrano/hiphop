@@ -4,115 +4,100 @@ const debug = require("hiphop");
 
 service clickAndSearch() {
    return <html>
-     <head module=${"hiphop"}  css=${clickAndSearch.resource("./style.css")}>
+     <head css=${clickAndSearch.resource("./style.css")}>
+       <script src="hiphop" lang="hopscript"></script>
+       <script src="./main-hh.js" lang="hiphop"></script >
+       <script defer>
      ~{
-	var hh;
-	var m;
+	var hh = require("hiphop", "hopscript");
+	var m = require("./main-hh.js", "hiphop")(searchWiki, translate)
 
-	function searchWiki(wordId, doneReact) {
+	function searchWiki(wordId) {
 	   var word = document.getElementById(wordId).innerHTML;
-	   ${wiki}(word).post(function(r) {
-	      doneReact(r);
-	   });
+	   return new Promise((res, rej) => (
+	      ${wiki}(word).post(r => res(r))
+	   ));
 	}
 
-	function translate(wordId, doneReact) {
+	function translate(wordId) {
 	   var word = document.getElementById(wordId).innerHTML;
 	   var req = new XMLHttpRequest();
 	   var svc = "http://mymemory.translated.net/api/get?langpair=en|fr&q=" + word;
-	   req.onreadystatechange = function() {
-	      if (req.readyState == 4 && req.status == 200)
-		 doneReact(JSON.parse(req.responseText).responseData.translatedText);
-	   };
-	   req.open("GET", svc, true);
-	   req.send();
+	   return new Promise((res, rej) => {
+	      req.onreadystatechange = () => {
+		 if (req.readyState == 4 && req.status == 200)
+		    res(JSON.parse(req.responseText).responseData.translatedText);
+	      };
+	      req.open("GET", svc, true);
+	      req.send();
+	   });
 	}
 
-	window.onload = function() {
-	   hh = require("hiphop");
-	   m = new hh.ReactiveMachine(
-	      MODULE {
-	   	 IN word;
-	   	 OUT green, red, black, wiki, trans;
-	   	 EVERY IMMEDIATE(NOW(word)) {
-	   	    EMIT black(PREVAL(word));
-	   	    EMIT red(VAL(word));
-		    FORK {
-	   	       EXECEMIT wiki searchWiki(VAL(word), DONEREACT);
-		    } PAR {
-		       EXECEMIT trans translate(VAL(word), DONEREACT);
-		    }
-	   	    EMIT green(VAL(word));
-	   	 }
+	m.addEventListener("green", function(evt) {
+	   var el = document.getElementById(evt.signalValue);
+	   el.style.color = "green";
+	   var popup = document.getElementById("popup").style.display = "block";
+	});
+
+	m.addEventListener("black", function(evt) {
+	   if (!evt.signalValue) {
+	      return;
+	   }
+	   var el = document.getElementById(evt.signalValue);
+	   el.style.color = "black";
+
+	   var popup = document.getElementById("popup").style.display = "none";
+	});
+
+	m.addEventListener("red", function(evt) {
+	   var el = document.getElementById(evt.signalValue);
+	   el.style.color = "red";
+	});
+
+	m.addEventListener("wiki", function(evt) {
+	   var trans = document.getElementById("trans");
+	   wiki.innerHTML = "<div>" + evt.signalValue + "</div>";
+	});
+
+	m.debuggerOn("debug");
+
+	var pre = document.getElementById("txt");
+	var file = ${getFile.resource("strcmp-manpage")}
+	${getFile}(file).post(function(txt) {
+	   let output = "";
+	   let i = 0;
+
+	   for (;i < txt.length;) {
+	      while (txt[i] == " ") {
+		 output += txt[i++];
 	      }
-	   );
-
-	   m.addEventListener("green", function(evt) {
-	      var el = document.getElementById(evt.signalValue);
-	      el.style.color = "green";
-	      var popup = document.getElementById("popup").style.display = "block";
-	   });
-
-	   m.addEventListener("black", function(evt) {
-	      if (!evt.signalValue) {
-		 return;
-	      }
-	      var el = document.getElementById(evt.signalValue);
-	      el.style.color = "black";
-
-	      var popup = document.getElementById("popup").style.display = "none";
-	   });
-
-	   m.addEventListener("red", function(evt) {
-	      var el = document.getElementById(evt.signalValue);
-	      el.style.color = "red";
-	   });
-
-	   m.addEventListener("wiki", function(evt) {
-	      var trans = document.getElementById("trans");
-	      wiki.innerHTML = "<div>" + evt.signalValue + "</div>";
-	   });
-
-	   m.debuggerOn("debug");
-
-	   var pre = document.getElementById("txt");
-	   var file = ${getFile.resource("strcmp-manpage")}
-	   ${getFile}(file).post(function(txt) {
-	      let output = "";
-	      let i = 0;
-
-	      for (;i < txt.length;) {
-		 while (txt[i] == " ") {
-		    output += txt[i++];
-		 }
-		 output += "<span id='txt" + i +"'>";
+	      output += "<span id='txt" + i +"'>";
 		 while (txt[i] != " " && txt[i] != undefined) {
 		    output += txt[i++];
 		 }
-		 output += "</span>";
-	      }
-	      pre.innerHTML = output;
-	   });
+	      output += "</span>";
+	   }
+	   pre.innerHTML = output;
+	});
 
-	   pre.onclick = function() {
-	      s = window.getSelection();
-	      var node = s.anchorNode.parentNode;
-	      if (node.id == "txt")
-		 return;
-	      m.inputAndReact("word", node.id);
-	   };
-	}
-
+	pre.onclick = function() {
+	   s = window.getSelection();
+	   var node = s.anchorNode.parentNode;
+	   if (node.id == "txt")
+	      return;
+	   m.inputAndReact("word", node.id);
+	};
      }
-     </head>
-     <body>
-       <div id="popup">
-	 <div id="trans"><react>~{m.value.trans}</react></div>
-	 <div id="wiki"></div>
-       </div>
-       <pre id="txt"></pre>
-     </body>
-   </html>
+	 </script>
+       </head>
+       <body>
+	 <div id="popup">
+	   <div id="trans"><react>~{m.value.trans}</react></div>
+	   <div id="wiki"></div>
+	 </div>
+	 <pre id="txt"></pre>
+       </body>
+     </html>
 }
 
 service getFile(path) {
@@ -121,7 +106,6 @@ service getFile(path) {
 				 charset: hop.locale });
 }
 
-
 service wiki(word) {
    const srv = hop.webService("http://localhost:8181/" + word);
    return new Promise(function(resolve, reject) {
@@ -129,11 +113,4 @@ service wiki(word) {
 	 resolve(res);
       });
    })
-   // return new Promise(function(resolve, reject) {
-   //    wikipedia().page('Led Zeppelin').then(function(page) {
-   // 	 page.html().then(function(res) {
-   // 	    console.log(res)
-   // 	 });
-   //    });
-   // });
 }
