@@ -38,4 +38,4 @@ module.exports = new hh.ReactiveMachine(MODULE (IN text,
 	 RUN(execColor("es|fr"), color=colorSe, text=transEs, trans=transSe);
       }
    }
-}, {debuggerName: "debug"});
+}, {debuggerName: "debug", sweep: false});
