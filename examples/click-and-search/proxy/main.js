@@ -2,7 +2,7 @@ const wiki = require("wikijs").default;
 const http = require("http");
 
 function requestHandler(request, response) {
-//   console.log(request.url.slice(1)));
+   console.log(request.url, request.url.slice(1));
    wiki().page(request.url.slice(1)).then(function(page) {
       page.html().then(function(res) {
 	 response.end(res);

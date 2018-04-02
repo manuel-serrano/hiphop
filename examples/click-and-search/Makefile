@@ -1,5 +1,5 @@
 start:
-	hop  ./main.js &
+	hop ./main.js &
 	node proxy/main.js &
 
 stop:
