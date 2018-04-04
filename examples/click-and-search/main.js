@@ -112,11 +112,19 @@ service wiki(word) {
    //    const svc = hop.webService(util.format("http://localhost:8181/" + word));
    //    const frame = svc().post(result => {console.log(result); res(result)});
    // });
-   const srv = hop.webService("http://localhost:8181/" + word);
+   // const srv = hop.webService("http://localhost:8181/" + word);
+   // return new Promise(resolve => {
+   //    srv().post(function(res) {
+   // 	 console.log(res)
+   // 	 resolve(res);
+   //    });
+   // });
+
+   const svc = hop.webService(`https://en.wikipedia.org/w/api.php?action=parse&format=json&page=${word}`);
    return new Promise(resolve => {
-      srv().post(function(res) {
-	 console.log(res)
-	 resolve(res);
+      svc().post(function(res) {
+	 const page = res.parse.text['*'];
+   	 resolve(page || 'Page not found');
       });
    });
 }
