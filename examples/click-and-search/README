@@ -1,0 +1,8 @@
+Run
+	hop ./main.js
+
+App
+	http://localhost:8080/hop/clickAndSearch
+
+Debugger
+	http://localhost:8080/hop/debug

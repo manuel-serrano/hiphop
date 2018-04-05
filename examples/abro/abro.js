@@ -12,9 +12,7 @@ service abro() {
 	  window.onload = function() {
 	     hh = require("hiphop");
 	     m = new hh.ReactiveMachine(
-		MODULE {
-		   INOUT a, b, r;
-		   OUT o(0);
+		MODULE (INOUT a, INOUT b, INOUT r, OUT o(0)) {
 		   LOOPEACH(NOW(r)) {
 		      FORK {
 			 AWAIT(NOW(a));
@@ -23,9 +21,9 @@ service abro() {
 		      }
 		      EMIT o(PREVAL(o) + 1);
 		   }
-		}
+		},
+		{ sweep: false, debuggerName: abroDebug }
 	     );
-	     m.debuggerOn("debug");
 	  }
        }
      </head>
