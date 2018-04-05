@@ -10,7 +10,7 @@ service validation() {
       <script src="./form-validation-hh.js" lang="hiphop"/>
     </head>
   ~{
-     const m;
+     var m;
 
      window.onload = function() {
 	m = require("./form-validation-hh.js", "hiphop");

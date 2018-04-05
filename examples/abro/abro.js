@@ -8,8 +8,7 @@ service abro() {
        <script src="hiphop" lang="hopscript"/>
        <script src="./abro-hh.js" lang="hiphop"/>
        ~{
-	  const hh;
-	  const m;
+	  var m;
 
 	  window.onload = function() {
 	     m = require("./abro-hh.js", "hiphop");
