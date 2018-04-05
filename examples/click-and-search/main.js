@@ -123,7 +123,11 @@ service wiki(word) {
    const svc = hop.webService(`https://en.wikipedia.org/w/api.php?action=parse&format=json&page=${word}`);
    return new Promise(resolve => {
       svc().post(function(res) {
-	 const page = res.parse.text['*'];
+	 let page;
+
+	 try {
+	    page = res.parse.text['*'];
+	 } catch (e) {}
    	 resolve(page || 'Page not found');
       });
    });
