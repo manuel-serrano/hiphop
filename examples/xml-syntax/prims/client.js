@@ -140,43 +140,41 @@ Num.prototype.computeMove = function( suspect, G ) {
 /*---------------------------------------------------------------------*/
 /*    number ...                                                       */
 /*---------------------------------------------------------------------*/
-function number(G) {
-   let num = new Num(G);
+function NUMBER( attr, _ ) {
+   let num = new Num( attr.G );
    var numid = "num" + num.value;
    G.count++;
 
-   function prey(number) {
-      let prey = false;
+   var trap = <hh.trap EXIT id=${numid}>
+     <hh.loop>
+       <hh.await go/>
+       <hh.emit number value=${num}/>
+       <hh.emit killn apply=${function() {
+	  let prey = false;
 
-      number.find( function( other ) {
-	 return (prey = num.computeMove( other, G ));
-      });
-      return prey;
-   }
-
-   let trap = TRAP Exit {
-      LOOP {
-	 AWAIT(NOW(killn) && NOW(numbers));
-	 EMIT numbers(num);
-	 EMIT killn(prey(VAL(numbers)));
-	 IF (VAL(killn).indexOf(num) >= 0) {
-	    ATOM {
-	       num.dead = true;
-	       G.mach.getElementById( "numbers" ).removeChild( trap );
-	    }
-	    EXIT Exit;
-	 } ELSE {
-	    IF (num.pery && VAL(killn).indexOf(num.prey) >= 0) {
-	       ATOM {
-		  num.init();
-	       }
-	    }
-	    ATOM {
-	       num.move();
-	    }
-	 }
-      }
-   }
+	  this.value.number.find( function( other ) {
+	     return (prey = num.computeMove( other, attr.G ));
+	  });
+	  return prey;
+       }}/>
+       <hh.if apply=${function( kills ) { return this.value.killn.indexOf( num ) >= 0; } }>
+	 <hh.then>
+	   <hh.atom apply=${function() {
+	      num.dead = true;
+	      G.mach.getElementById( "numbers" ).removeChild( trap );
+	   }}/>
+	   <hh.exit EXIT/>
+	 </hh.then>
+	 <hh.else>
+	   <hh.if apply=${function( kills ) {
+	      return num.prey && this.value.killn.indexOf( num.prey ) >= 0 }}>
+		  <hh.atom apply=${function() { num.init() } }/>
+	   </hh.if>
+	   <hh.atom apply=${function() { num.move() } }/>
+	 </hh.else>
+       </hh.if>
+     </hh.loop>
+   </hh.trap>;
 
    return trap;
 }
@@ -191,28 +189,27 @@ function prims( G ) {
       return [];
    }
 
-   const reduce = function(acc, n) {
-      if (n)
-	 acc.push(n);
-      return acc;
-   }
-
-   return MODULE (INOUT go,
-		  INOUT killn COMBINE (reduce),
-		  INOUT numbers COMBINE (reduce)) {
-      FORK numbers {
-	 LOOP {
-	    ATOM {
-	       G.ctx.clearRect( 0, 0, G.width, G.height )
-	    }
-	    EMIT killn([]);
-	    EMIT numbers([]);
-	    PAUSE;
-	 }
-      } PAR {
-	 ${number(G)}
+   const sigProp = {
+      combine: function(acc, n) {
+	 if (n)
+	    acc.push(n);
+	 return acc;
       }
    }
+   return <hh.Module go killn=${sigProp} number=${sigProp}>
+     <hh.parallel id="numbers">
+       <hh.loop>
+	 <hh.atom apply=${function() {G.ctx.clearRect( 0, 0, G.width, G.height )}}/>
+	 <hh.emit killn apply=${reinit}/>
+	 <hh.emit number apply=${reinit}/>
+         <hh.emit go/>
+         <hh.pause/>
+       </hh.loop>
+
+       <number G=${G}/>
+
+     </hh.parallel>
+   </hh.Module>;
 }
 
 /*---------------------------------------------------------------------*/
@@ -220,7 +217,7 @@ function prims( G ) {
 /*---------------------------------------------------------------------*/
 function addNumber( G ) {
    G.mach.getElementById( "numbers" )
-      .appendChild( number(G) );
+      .appendChild( <number G=${G}/> );
 }
    
 /*---------------------------------------------------------------------*/
@@ -236,6 +233,7 @@ exports.resume = function() {
    G.timer = setInterval( function() {
       G.mach.react();
          
+   console.log(G.mach.stats());
    }, G.speed  );
 }
    
@@ -260,6 +258,10 @@ exports.setSpeed = function( speed ) {
 exports.start = function( g, speed ) {
    G = g;
    hh = require( "hiphop" );
+
+   /* local bindings */
+   hh.THEN = hh.SEQUENCE;
+   hh.ELSE = hh.SEQUENCE;
 
    G.ctx = G.getContext( "2d" );
    G.predatorColor = "#00a";
