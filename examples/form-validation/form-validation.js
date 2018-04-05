@@ -5,43 +5,35 @@ const dir = path.dirname(module.filename);
 
 service validation() {
   return <html>
-  <head css=${dir + "/styles.css"}>
-  </head>
+    <head css=${dir + "/styles.css"}>
+      <script src="hiphop" lang="hopscript"/>
+      <script src="./form-validation-hh.js" lang="hiphop"/>
+    </head>
   ~{
-     let form;
-     let reqId = 0;
+     const m;
 
      window.onload = function() {
-	form = document.getElementById("form");
-	form.className = "wrong";
-	form.addEventListener("input", function() {
-	   let curReqId = ++reqId;
-           form.className = "checking";
-	   check(form.value, function(res) {
-	      setTimeout(function() {
-		 if (curReqId != reqId) {
-		    return;
-		 }
-		 form.className = res;
-	      }, Math.round(Math.random() * 1000));
-	   });
-	});
+	m = require("./form-validation-hh.js", "hiphop");
      }
 
-     function check(data, callback) {
+     function check(data) {
 	var req = new XMLHttpRequest();
 	var svc = "http://localhost:8080/hop/checkSvc/";
-	req.onreadystatechange = function() {
-           if (req.readyState == 4 && req.status == 200) {
-	      callback(req.responseText);
-           }
-	};
-	req.open("GET", svc + "?data=" + data, true);
-	req.send();
+	return new Promise(function(resolve, reject) {
+	   req.onreadystatechange = function() {
+              if (req.readyState == 4 && req.status == 200) {
+		 resolve(req.responseText);
+              }
+	   }
+	   req.open("GET", svc + "?data=" + data, true);
+	   req.send();
+	})
      }
   }
   <body>
-    <input type="text" id="form"/>
+    <input type="text"
+	   class=~{m.value.status}
+	   oninput=~{m.inputAndReact('text', this.value)}/>
   </body>
   </html>
 }
