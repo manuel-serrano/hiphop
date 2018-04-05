@@ -4,26 +4,15 @@ require("hiphop");
 
 service abro() {
    return <html>
-     <head module=${"hiphop"}>
+     <head>
+       <script src="hiphop" lang="hopscript"/>
+       <script src="./abro-hh.js" lang="hiphop"/>
        ~{
-	  var hh;
-	  var m;
+	  const hh;
+	  const m;
 
 	  window.onload = function() {
-	     hh = require("hiphop");
-	     m = new hh.ReactiveMachine(
-		MODULE (INOUT a, INOUT b, INOUT r, OUT o(0)) {
-		   LOOPEACH(NOW(r)) {
-		      FORK {
-			 AWAIT(NOW(a));
-		      } PAR {
-			 AWAIT(NOW(b));
-		      }
-		      EMIT o(PREVAL(o) + 1);
-		   }
-		},
-		{ sweep: false, debuggerName: abroDebug }
-	     );
+	     m = require("./abro-hh.js", "hiphop");
 	  }
        }
      </head>
