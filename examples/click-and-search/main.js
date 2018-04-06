@@ -14,7 +14,13 @@ service clickAndSearch() {
 
 	   function searchWiki(wordId) {
 	      var word = document.getElementById(wordId).innerHTML;
-	      return new Promise(res => ${wiki}(word).post(r => res(r)));
+	      return new Promise(res => {
+		 try {
+		    ${wiki}(word).post(r => res(r))
+		 } catch (e) {
+		    console.log('bug req cli');
+		 }
+	      });
 	   }
 
 	   function translate(wordId) {
@@ -22,12 +28,16 @@ service clickAndSearch() {
 	      var req = new XMLHttpRequest();
 	      var svc = "http://mymemory.translated.net/api/get?langpair=en|fr&q=" + word;
 	      return new Promise(res => {
-		 req.onreadystatechange = () => {
-	   	    if (req.readyState == 4 && req.status == 200)
-	   	       res(JSON.parse(req.responseText).responseData.translatedText);
-		 };
-		 req.open("GET", svc, true);
-		 req.send();
+		 try {
+		    req.onreadystatechange = () => {
+	   	       if (req.readyState == 4 && req.status == 200)
+	   		  res(JSON.parse(req.responseText).responseData.translatedText);
+		    };
+		    req.open("GET", svc, true);
+		    req.send();
+		 } catch (e) {
+		    ocnsole.log('bug req cli trans');
+		 }
 	      });
 	   }
 
@@ -122,13 +132,17 @@ service wiki(word) {
 
    const svc = hop.webService(`https://en.wikipedia.org/w/api.php?action=parse&format=json&page=${word}`);
    return new Promise(resolve => {
-      svc().post(function(res) {
-	 let page;
+      try {
+	 svc().post(function(res) {
+	    let page;
 
-	 try {
-	    page = res.parse.text['*'];
-	 } catch (e) {}
-   	 resolve(page || 'Page not found');
-      });
+	    try {
+	       page = res.parse.text['*'];
+	    } catch (e) {}
+   	    resolve(page || 'Page not found');
+	 });
+      } catch (e) {
+	 console.log('bug req srv');
+      }
    });
 }
