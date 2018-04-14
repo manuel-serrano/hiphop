@@ -1,0 +1,5 @@
+Run
+	hop ./prims.js
+
+App
+	http://localhost:8080/hop/prims
