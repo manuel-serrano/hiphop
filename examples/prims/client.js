@@ -269,6 +269,6 @@ exports.start = function( g, speed ) {
    G.count = 2;
 
    exports.setSpeed( speed );
-   G.mach = new hh.ReactiveMachine( prims( G ), {sweep:true} );
+   G.mach = new hh.ReactiveMachine(prims(G));
    exports.resume();
 }

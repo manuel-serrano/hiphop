@@ -28,11 +28,12 @@ service prims( o ) {
    let canvas = <canvas width=${width} height=${height}/>;
 
    return <html>
-     <head module=${ [ "./client.out.js", "hiphop" ] }
-	   css=${require.resolve( "./prims.hss" )}>
+     <head css=${require.resolve( "./prims.hss" )}>
+       <script src="hiphop" lang="hopscript"/>
+       <script src="./client.js" lang="hiphop"/>
        ~{ var pc;
 	  window.onload = function() {
-	     pc = require( ${require.resolve( "./client.out.js" )} );
+	     pc = require("./client.js", "hiphop");
 	     pc.start( ${canvas}, ${speed} );
 	  }
 	}
