@@ -166,7 +166,7 @@ function number(G) {
 	    }
 	    EXIT Exit;
 	 } ELSE {
-	    IF (num.pery && VAL(killn).indexOf(num.prey) >= 0) {
+	    IF (num.prey && VAL(killn).indexOf(num.prey) >= 0) {
 	       ATOM {
 		  num.init();
 	       }
