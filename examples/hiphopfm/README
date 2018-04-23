@@ -1,0 +1,11 @@
+Run
+	hop ./hiphopfm.js
+
+App
+	http://localhost:8080/hop/hiphopfm
+
+Debugger
+	http://localhost:8080/hop/debug
+
+Note
+	You may disable CORS on your browser to use this application.

@@ -78,32 +78,45 @@ module.exports = function(controlsView, genresView, detailView) {
       let audio = new Audio();
       let errorListener = null;
       let endedListener = null;
+      let loadedListener = null;
 
-      function start(src, doneReact) {
-	 audio.src = src;
-	 audio.play()
-
-	 if (errorListener) {
-	    audio.removeEventListener("error", errorListener);
-	 }
-	 errorListener = function() { doneReact("ended") };
-	 audio.addEventListener("error", errorListener);
-
-	 if (endedListener) {
-	    audio.removeEventListener("ended", endedListener);
-	 }
-	 endedListener = function() { doneReact("error") };
-	 audio.addEventListener("ended", endedListener);
+      function load(src) {
+	 return new Promise(function(resolve) {
+	    if (loadedListener) {
+	       loadedListener = null;
+	    }
+	    loadedListener = function() { resolve() }
+	    audio.onloadeddata = loadedListener;
+	    audio.src = src;
+	 });
       }
 
-      return MODULE HiphopAudio {
-	    IN src, playPause, seekTo;
-	 OUT paused, trackEnded, position, duration;
+      function start() {
+	 audio.play()
+
+	 return new Promise(function(resolve, reject) {
+	    if (errorListener) {
+	       audio.removeEventListener("error", errorListener);
+	    }
+	    errorListener = function() { reject("error") };
+	    audio.addEventListener("error", errorListener);
+
+	    if (endedListener) {
+	       audio.removeEventListener("ended", endedListener);
+	    }
+	    endedListener = function() { resolve("ended") };
+	    audio.addEventListener("ended", endedListener);
+	 })
+      }
+
+      return MODULE HiphopAudio (IN src, IN playPause, IN seekTo,
+				 OUT paused, OUT trackEnded, OUT position, OUT duration, OUT error, OUT loaded) {
+	 PROMISE loaded, error load(VAL(src));
 	 TRAP Ended {
 	    FORK {
 	       SUSPEND TOGGLE(NOW(playPause)) EMITWHENSUSPENDED paused {
 		  FORK {
-		     EXECEMIT trackEnded start(VAL(src), DONEREACT)
+		     PROMISE trackEnded, error start()
 		     ONRES audio.play()
 		     ONSUSP audio.pause()
 		     ONKILL audio.pause();
