@@ -471,4 +471,8 @@ exports.HHTemporalExpression = (immediate, expr) => (
    `${immediate ? "immediate" : ""} ${hhExpr("apply", expr)}`
 );
 
+exports.HHCountTemporalExpression = (countExpr, expr) => (
+   `${hhExpr("countApply", countExpr)} ${hhExpr("apply", expr)}`
+);
+
 exports.HHAccessor = (symb, id) => `${symb}${id ? `.${id}` : ''}`;

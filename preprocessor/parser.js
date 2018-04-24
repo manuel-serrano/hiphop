@@ -553,9 +553,21 @@ Parser.prototype.__hhSuspend = function() {
 }
 
 Parser.prototype.__hhTemporalExpression = function(inFor=false) {
-   let immediate = false;
-   let expr;
    const token = this.peek();
+   if (token.value === "COUNT") {
+      this.consumeHHReserved("COUNT");
+      this.consume("(");
+      const countExpr = this.__assignmentExpression();
+      this.consume(",");
+      const expr = this.__expression();
+      this.consume(")");
+      return this.map(token, gen.HHCountTemporalExpression(countExpr, expr));
+   }
+
+   let immediate = false;
+   let count = false;
+   let expr;
+
    if (token.value == "IMMEDIATE") {
       this.consumeHHReserved("IMMEDIATE");
       immediate = true;
