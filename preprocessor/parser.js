@@ -19,23 +19,76 @@ function Parser(lexer, iFile, sourceMap) {
    this.hasHHcode = false;
    this.lexer = lexer;
    this.peekedTokens = [];
+   this.iFile = iFile;
+   this.sourceMap = sourceMap;
    this.genLine = 1;
    this.genColumn = 0;
-   this.iFile = iFile;
-
-   this.map = (token, genCode) => {
-      sourceMap.addMapping({
-	 generated: { line: this.genLine, column: this.genColumn},
-	 source: iFile,
-	 original: { line: token.line, column: token.column }
-      })
-      this.genColumn += genCode.length;
-      this.genLine += genCode.split(/\r\n|\r|\n/).length;
-      return genCode;
-   }
 }
 
 exports.Parser = Parser;
+
+Parser.prototype.map = function(token, generated) {
+   return {
+      sourceLine: token.line,
+      sourceColumn: token.column,
+      generated
+   }
+}
+
+Parser.prototype.updateGeneratedLineColumn = function(code) {
+   let i = 0;
+   const len = code.length;
+
+   while (i < len) {
+      const c = code[i];
+      if (c == "\n" || c == "\r") {
+      	 this.genColumn = 0;
+      	 this.gemLine++;
+      } else {
+      	 this.genColumn++;
+      }
+      i++;
+   }
+}
+
+Parser.prototype._gen = function(generated) {
+   let code = "";
+
+   if (generated instanceof Array) {  // array from gen.js
+      code = generated.reduce((acc, c) => acc + this._gen(c), code);
+   } else if (generated instanceof Object) { // mapping from this.map()
+      code += this.fillSourceMap(generated);
+   } else if (generated !== undefined) { // code from gen.js
+      this.updateGeneratedLineColumn(generated);
+      code += generated;
+   }
+
+   return code;
+}
+
+const mapped = [];
+Parser.prototype.fillSourceMap = function(mapping) {
+   let code = "";
+
+   if (mapped.indexOf(mapping) > -1) {
+      console.log("========= DUPLICATE =========");
+      console.log(this.genLine, this.genColumn);
+      console.log("         -----------");
+      console.log(mapping);
+      console.log("=============================");
+   }
+   mapped.push(mapping);
+   mapping.__mappedLine = this.genLine;
+   mapping.__mappedColumn = this.genColumn;
+   this.sourceMap.addMapping({
+      generated: { line: this.genLine, column: this.genColumn},
+      source: this.iFile,
+      original: { line: mapping.sourceLine, column: mapping.sourceColumn }
+   });
+   console.log(`${mapping.sourceLine}:${mapping.sourceColumn} => ${this.genLine}:${this.genColumn}`);
+
+   return this._gen(mapping.generated);
+}
 
 Parser.prototype.unexpectedToken = function(token=null, expected=null) {
    let got = token.value ? token.value : token.type;
@@ -49,9 +102,9 @@ Parser.prototype.unexpectedToken = function(token=null, expected=null) {
 
 Parser.prototype.gen = function() {
    console.error(`>>> HIPHOP.JS preprocessing ${this.iFile}`);
-   const se = this.__sourceElements();
+   const code = this._gen(this.__sourceElements());
    console.error(`<<< HIPHOP.JS preprocessing ${this.iFile}`);
-   return se;
+   return code;
 }
 
 Parser.prototype.peek = function(lookahead=0) {
@@ -177,11 +230,6 @@ function signalDeclaration(accessibility) {
       this.consume(")");
    }
 
-   //
-   // TODO: accessibility may be undefined. It results that gen.js try
-   // to access require("hiphop")[undefined]. Not a big dead, but do
-   // something better...
-   //
    return this.map(token, gen.Signal(id, accessibility, initExpr, combineExpr));
 }
 
@@ -1660,10 +1708,6 @@ Parser.prototype.__functionBody = function() {
    return this.__sourceElements(true);
 }
 
-Parser.prototype.__program = function() {
-   return this.__sourceElements();
-}
-
 Parser.prototype.__sourceElements = function(fn=false) {
    let els = [];
    const token = this.peek();
@@ -1676,7 +1720,7 @@ Parser.prototype.__sourceElements = function(fn=false) {
       }
       els.push(this.__sourceElement());
    }
-   return this.map(token, gen.Program(els));
+   return gen.Program(els);
 }
 
 Parser.prototype.__sourceElement = function() {
@@ -1693,46 +1737,3 @@ Parser.prototype.__sourceElement = function() {
       return this.__statement();
    }
 }
-
-//
-// Hiphop.js variabe scoping example
-// ---------------------------------
-//
-// \loopeach I {
-//    let foo = val(I);
-//    console.log(foo);
-//    \pause;
-//    foo = \val(G);
-//    \emit O;
-//    console.log(foo);
-// }
-//
-// SUSPEND IMMEDIATE FROM(expr) TO(expr) EMITWHENSUSPENDED S {
-// }
-//
-// SUSPEND(expr) {
-// }
-//
-// SUSPEND IMMEDIATE(expr) {
-// }
-//
-// SUSPEND(expr) EMITWHENSUSPENDED S {
-// }
-//
-// (function() {
-//    let foo;
-//    return <hh.loopeach I>
-//      <hh.atom apply=${function() { foo = this.value.I }}/>
-//      <hh.atom apply=${function() { console.log(foo) }}/>
-//      <hh.pause/>
-//      <hh.atom apply=${function() { foo = this.value.G }}/>
-//      <hh.emit O/>
-//      <hh.atom apply=${function() { console.log(foo) }}/>
-//    </hh.loopeach>
-// })()
-//
-//
-// COUNT EXPRESSIONS:
-//
-// AWAIT COUNT(expr, expr)
-//

@@ -255,7 +255,7 @@ Lexer.prototype.__xml = function() {
 Lexer.prototype.__literal = function() {
    let c = this.buffer[this.pos]
    let literal = "";
-   let column = this.pos;
+   let column = this.column;
 
    if (c == "'" || c == '"' || c == "`") {
       let delim = c;
@@ -325,7 +325,6 @@ Lexer.prototype.token = function() {
 	      || this.__operator()
 	      || this.__identifier()) {
       this.current.blankNext = this.__isBlank() || this.__isEOL();
-
       return this.current;
    } else {
       throw new Error(`${this.line}:${this.column} unexpected character ${this.buffer[this.pos]}`);
