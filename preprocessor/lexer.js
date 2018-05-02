@@ -12,22 +12,24 @@ const hhKeywords = [
    "EXECID", "WHILE", "PROMISE", "FOR", "THIS"
 ];
 
-function makeToken(type, line, column, value=null) {
+function makeToken(type, pos, line, column, value=null) {
    return {
       type: type,
+      pos: pos,
       line: line,
       column: column,
       value: value != null ? value : type
    };
 }
 
-function Lexer(buffer) {
+function Lexer(filename, buffer) {
    this.buffer = buffer;
    this.len = buffer.length;
    this.pos = 0;
    this.line = 1;
    this.column = 0;
    this.current = null;
+   this.filename;
 }
 
 exports.Lexer = Lexer;
@@ -125,8 +127,8 @@ Lexer.prototype.__skipComment = function() {
 
 Lexer.prototype.__newLine = function() {
    if (this.__isEOL()) {
+      this.current = makeToken("NEWLINE", this.pos, this.line, this.column);
       this.pos++;
-      this.current = makeToken("NEWLINE", this.line, this.column);
       this.line++;
       this.column = 0;
       return true;
@@ -169,7 +171,7 @@ Lexer.prototype.__operator = function() {
       this.column++;
    }
 
-   this.current = makeToken(value, this.line, column);
+   this.current = makeToken(value, pos, this.line, column);
    return true;
 }
 
@@ -178,8 +180,9 @@ Lexer.prototype.__identifier = function() {
       return false;
    }
 
-   let column = this.column;
-   let type = "IDENTIFIER";
+   const pos = this.pos;
+   const column = this.column;
+   const type = "IDENTIFIER";
    let identifier = "";
 
    do {
@@ -201,13 +204,13 @@ Lexer.prototype.__identifier = function() {
       type = "HHRESERVED";
    }
 
-   this.current = makeToken(type , this.line, column, identifier);
+   this.current = makeToken(type, pos, this.line, column, identifier);
    return true;
 }
 
 Lexer.prototype.__tilde = function() {
    if (this.buffer[this.pos] == "~") {
-      this.current = makeToken("~", this.line, this.column);
+      this.current = makeToken("~", this.pos, this.line, this.column);
       this.pos++;
       this.column++;
       return true;
@@ -237,7 +240,7 @@ Lexer.prototype.__xml = function() {
 	 }
       }
 
-      let token = makeToken("XML", this.line, column, tag);
+      let token = makeToken("XML", posStart, this.line, column, tag);
       this.current = token;
 
       token.leaf = this.buffer[this.pos - 2] == "/";
@@ -255,7 +258,8 @@ Lexer.prototype.__xml = function() {
 Lexer.prototype.__literal = function() {
    let c = this.buffer[this.pos]
    let literal = "";
-   let column = this.column;
+   const column = this.column;
+   const pos = this.pos;
 
    if (c == "'" || c == '"' || c == "`") {
       let delim = c;
@@ -273,7 +277,7 @@ Lexer.prototype.__literal = function() {
 	 } else if (this.__isEOL() || this.__isEOF()) {
 	    throw new Error(`${this.line}:${column} invalid litteral ${this.buffer.substring(column, this.pos)}`);
 	 } else if (c == delim) {
-	    this.current = makeToken("LITERAL", this.line, column, literal);
+	    this.current = makeToken("LITERAL", pos, this.line, column, literal);
 	    this.current.string = true;
 	    this.current.stringDelim = delim;
 	    this.current.template = delim == "`" ? true : false;
@@ -300,7 +304,7 @@ Lexer.prototype.__literal = function() {
 	    c = this.buffer[this.pos];
 	 } else if (this.__isEOL() || this.__isEOF() || this.__isBlank()
 		    || this.__isOperator()) {
-	    this.current = makeToken("LITERAL", this.line, column, literal);
+	    this.current = makeToken("LITERAL", pos, this.line, column, literal);
 	    return true;
 	 } else {
 	    throw new Error(`${this.line}:${column} invalid literal number ${c}`);
@@ -315,9 +319,9 @@ Lexer.prototype.token = function() {
    this.current = null;
 
    if (this.__skipBlank()) {
-      return makeToken("EOF", this.line, this.column);
+      return makeToken("EOF", this.pos, this.line, this.column);
    } else if (this.__skipComment()) {
-      return makeToken("EOF", this.line, this.column);
+      return makeToken("EOF", this.pos, this.line, this.column);
    } else if (this.__newLine()
 	      || this.__tilde()
 	      || this.__xml()
@@ -327,6 +331,6 @@ Lexer.prototype.token = function() {
       this.current.blankNext = this.__isBlank() || this.__isEOL();
       return this.current;
    } else {
-      throw new Error(`${this.line}:${this.column} unexpected character ${this.buffer[this.pos]}`);
+      throw new SyntaxError("Wrong token", this.filename, this.pos);
    }
 }

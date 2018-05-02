@@ -23,7 +23,7 @@ const sourceMap = new SourceMapGenerator({
 });
 const inputBuffer = fs.readFileSync(inputFile, "utf8");
 const outputBuffer = (new parser.Parser(
-   new lexer.Lexer(inputBuffer),
+   new lexer.Lexer(inputFile, inputBuffer),
    inputFile,
    sourceMap
 ).gen()) + (`

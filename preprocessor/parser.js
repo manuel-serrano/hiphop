@@ -90,13 +90,13 @@ Parser.prototype.fillSourceMap = function(mapping) {
    return this._gen(mapping.generated);
 }
 
-Parser.prototype.unexpectedToken = function(token=null, expected=null) {
+Parser.prototype.unexpectedToken = function(token, expected=null) {
    let got = token.value ? token.value : token.type;
 
    if (expected) {
-      throw new Error(`${this.iFile} at ${token.line}:${token.column} expected ${expected} got ${got}`);
+      throw new SyntaxError(`${this.iFile} at ${token.line}:${token.column} expected ${expected} got ${got}`, this.iFile, token.pos);
    } else {
-      throw new Error(`${this.iFile} at ${token.line}:${token.column} unexpected ${got}`);
+      throw new SyntaxError(`${this.iFile} at ${token.line}:${token.column} unexpected ${got}`, this.iFile, token.pos);
    }
 }
 
@@ -1016,8 +1016,7 @@ Parser.prototype.__propertyName = function() {
       this.consume();
       return this.map(peeked, gen.Literal(peeked.value));
    }
-   this.unexpectedToken("at " + peeked.pos + " wrong property name `" +
-		   peeked.value + "`");
+   this.unexpectedToken(peeked);
 }
 
 Parser.prototype.__newExpression = function() {
