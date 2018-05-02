@@ -70,13 +70,13 @@ const mapped = [];
 Parser.prototype.fillSourceMap = function(mapping) {
    let code = "";
 
-   if (mapped.indexOf(mapping) > -1) {
-      console.log("========= DUPLICATE =========");
-      console.log(this.genLine, this.genColumn);
-      console.log("         -----------");
-      console.log(mapping);
-      console.log("=============================");
-   }
+   // if (mapped.indexOf(mapping) > -1) {
+   //    console.log("========= DUPLICATE =========");
+   //    console.log(this.genLine, this.genColumn);
+   //    console.log("         -----------");
+   //    console.log(mapping);
+   //    console.log("=============================");
+   // }
    mapped.push(mapping);
    mapping.__mappedLine = this.genLine;
    mapping.__mappedColumn = this.genColumn;
@@ -85,7 +85,7 @@ Parser.prototype.fillSourceMap = function(mapping) {
       source: this.iFile,
       original: { line: mapping.sourceLine, column: mapping.sourceColumn }
    });
-   console.log(`${mapping.sourceLine}:${mapping.sourceColumn} => ${this.genLine}:${this.genColumn}`);
+   // console.log(`${mapping.sourceLine}:${mapping.sourceColumn} => ${this.genLine}:${this.genColumn}`);
 
    return this._gen(mapping.generated);
 }
@@ -101,9 +101,9 @@ Parser.prototype.unexpectedToken = function(token, expected=null) {
 }
 
 Parser.prototype.gen = function() {
-   console.error(`>>> HIPHOP.JS preprocessing ${this.iFile}`);
+   // console.error(`>>> HIPHOP.JS preprocessing ${this.iFile}`);
    const code = this._gen(this.__sourceElements());
-   console.error(`<<< HIPHOP.JS preprocessing ${this.iFile}`);
+   // console.error(`<<< HIPHOP.JS preprocessing ${this.iFile}`);
    return code;
 }
 
