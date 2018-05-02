@@ -182,7 +182,7 @@ Lexer.prototype.__identifier = function() {
 
    const pos = this.pos;
    const column = this.column;
-   const type = "IDENTIFIER";
+   let type = "IDENTIFIER";
    let identifier = "";
 
    do {
