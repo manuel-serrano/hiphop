@@ -4,4 +4,3 @@ doc/lib/bootstrap/css/bootstrap*.map
 doc/idx.json
 doc/lib
 doc/hss
-node_modules/*
