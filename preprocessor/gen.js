@@ -11,36 +11,28 @@ exports.Literal = (value, string=false, template=false) => {
    return value;
 }
 
-exports.XML = (openOrLeaf, xmlBody=undefined, close=undefined) => {
-   if (xmlBody !== undefined) {
-      return [openOrLeaf, xmlBody, close];
-   }
-   return openOrLeaf;
-}
+exports.XMLLeaf = (name, attrs) => {
+   const arr = ["<", name, " "];
 
-exports.XMLBody = els => {
-   let arr = [];
-
-   for (let i in els) {
-      let el = els[i];
-      if (el.stringDelim) {
-	 arr.push(el.stringDelim);
-	 arr.push(el.value);
-	 arr.push(el.stringDelim);
-      } else if (el.value) {
-	 arr.push(el.value);
-      } else {
-	 arr.push(el);
-      }
-
-      if (el.blankNext) {
-	 arr.push(" ");
-      }
-   }
+   attrs.forEach(attr => arr.push(attr));
+   arr.push("/");
+   arr.push(">");
    return arr;
 }
 
-exports.Tilde = stmt => ["~{", stmt, "}"];
+exports.XML = (name, attrs, body) => {
+   const arr = ["<", name, " "];
+
+   attrs.forEach(attr => arr.push(attr));
+   arr.push(">");
+   body.forEach(el => arr.push(el));
+   arr.push("</");
+   arr.push(name);
+   arr.push(">");
+   return arr;
+}
+
+exports.Tilde = block => ["~", block];
 
 exports.This = () => "this";
 

@@ -62,11 +62,10 @@ Parser.prototype._gen = function(generated) {
       this.updateGeneratedLineColumn(generated);
       code += generated;
    }
-
    return code;
 }
 
-const mapped = [];
+// const mapped = [];
 Parser.prototype.fillSourceMap = function(mapping) {
    let code = "";
 
@@ -77,7 +76,7 @@ Parser.prototype.fillSourceMap = function(mapping) {
    //    console.log(mapping);
    //    console.log("=============================");
    // }
-   mapped.push(mapping);
+   // mapped.push(mapping);
    mapping.__mappedLine = this.genLine;
    mapping.__mappedColumn = this.genColumn;
    this.sourceMap.addMapping({
@@ -86,7 +85,6 @@ Parser.prototype.fillSourceMap = function(mapping) {
       original: { line: mapping.sourceLine, column: mapping.sourceColumn }
    });
    // console.log(`${mapping.sourceLine}:${mapping.sourceColumn} => ${this.genLine}:${this.genColumn}`);
-
    return this._gen(mapping.generated);
 }
 
@@ -722,6 +720,10 @@ Parser.prototype.__dollar = function() {
    return this.map(token, gen.Dollar(expr));
 }
 
+Parser.prototype.__tilde = function() {
+   return this.map(this.consume("~"), gen.Tilde(this.__block()));
+}
+
 Parser.prototype.__hhStatement = function() {
    let peeked = this.peek();
 
@@ -838,7 +840,7 @@ Parser.prototype.__primaryExpression = function() {
       let expr = this.__expression();
       this.consume(")");
       return expr;
-   case "XML":
+   case "<":
       return this.__xml();
    default:
       if (peeked.value == "VAL" || peeked.value == "PREVAL"
@@ -855,46 +857,75 @@ Parser.prototype.__primaryExpression = function() {
    }
 }
 
-Parser.prototype.__xmlBody = function() {
-   let els = [];
-   const token = this.peek();
+Parser.prototype.__xml = function() {
+   const startToken = this.consume("<");
+   const name = this.__identifier();
+   const attrs = [];
+   let leaf = false;
 
-   for (;;) {
-      let peeked = this.peek();
-
-      if (peeked.type == "EOF") {
-	 this.unexpectedToken(peeked, "</closing-xml-tag> (maybe)");
-      } else if (peeked.type == "~") {
+   while (this.peek().type !== ">") {
+      if (leaf) {
+	 this.unexpectedToken(this.peek(), ">");
+      } else if (this.peek().type === "/") {
+	 leaf = true;
 	 this.consume();
-	 els.push(this.map(peeked, gen.Tilde(this.__block())));
-      } else if (peeked.type == "XML") {
-	 if (peeked.closing) {
-	    break;
-	 }
-	 els.push(this.__xml());
       } else {
-	 els.push(peeked);
-	 this.consume();
+	 attrs.push(this.__identifier());
+	 if (this.peek().type === "=") {
+	    attrs.push(this.consume().value);
+	    switch (this.peek().type) {
+	    case "LITERAL":
+	    case "IDENTIFIER":
+	       attrs.push(this.__primaryExpression());
+	       break;
+	    case "~":
+	       attrs.push(this.__tilde());
+	       break;
+	    default:
+	       this.unexpectedToken(this.peek());
+	    }
+	 }
       }
    }
-   return this.map(token, gen.XMLBody(els));
-}
+   this.consume();
 
-Parser.prototype.__xml = function() {
-   let openOrLeaf = this.consume("XML");
-
-   if (openOrLeaf.openning) {
-      let body = this.__xmlBody();
-      let close = this.consume("XML");
-
-      if (!close.closing) {
-	 this.unexpectedToken(close, "</closing-xml-tag>");
-      }
-      return this.map(openOrLeaf, gen.XML(openOrLeaf.value, body, close.value));
-   } else if (openOrLeaf.leaf) {
-      return this.map(openOrLeaf, gen.XML(openOrLeaf.value));
+   if (leaf) {
+      return this.map(startToken, gen.XMLLeaf(name, attrs));
    } else {
-      this.unexpectedToken(openOrLeaf, "<openning-xml-tag>");
+      const body = [];
+      const closing = () => {
+	 const tag = (this.peek().type     // <
+		      + this.peek(1).type  // /
+		      + this.peek(2).value // tag name
+		      + this.peek(3).type) // >
+	 return tag === `</${name.generated}>`;
+      }
+
+      while(!closing()) {
+	 switch (this.peek().type) {
+	 case "<":
+	    body.push(this.__xml());
+	    break;
+	 case "~":
+	    body.push(this.__tilde());
+	    break;
+	 default:
+	    const token = this.consume();
+	    if (token.newLine) {
+	       body.push('\n');
+	    }
+	    body.push(token.value);
+	    if (token.blankNext) {
+	       body.push(' ');
+	    }
+	 }
+      }
+
+      this.consume("<");
+      this.consume("/");
+      this.consume("IDENTIFIER", name.generated);
+      this.consume(">");
+      return this.map(startToken, gen.XML(name, attrs, body));
    }
 }
 
@@ -1233,6 +1264,10 @@ Parser.prototype.__expression = function(withInKwd=true) {
 
 Parser.prototype.__statement = function() {
    switch (this.peek().value) {
+   case "~":
+      return this.__tilde();
+   case "<":
+      return this.__xml();
    case "{":
       return this.__block();
    case "var":
@@ -1624,14 +1659,18 @@ Parser.prototype.__debugger = function() {
 // Functions and Programs
 // http://www.ecma-international.org/ecma-262/5.1/#sec-A.5
 //
+// In order to be more permissive (and more simple w.r.t. ~{code
+// there}), function declaration and function expression are the same
+// from the parser point-of-view.
+//
 
-Parser.prototype.__functionDeclaration = function(expr=false) {
-   let id = "";
+Parser.prototype.__functionDeclaration = function() {
+   let id = undefined;
    let params = "";
    let body = "";
 
    const token = this.consumeReserved();
-   if (!expr || (expr && this.peekIsIdentifier())) {
+   if (this.peekIsIdentifier()) {
       id = this.__identifier();
    }
 
@@ -1642,13 +1681,13 @@ Parser.prototype.__functionDeclaration = function(expr=false) {
    this.consume("{");
    body = this.__functionBody();
    this.consume("}");
-   return this.map(token, (expr
+   return this.map(token, (!id
 			   ? gen.FunctionExpression(id, params, body)
 			   : gen.FunctionDeclaration(id, params, body)))
 }
 
 Parser.prototype.__functionExpression = function() {
-   return this.__functionDeclaration(true);
+   return this.__functionDeclaration();
 }
 
 Parser.prototype.__serviceDeclaration = function(expr=false) {

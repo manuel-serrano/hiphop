@@ -220,48 +220,6 @@ Lexer.prototype.__tilde = function() {
    return false;
 }
 
-Lexer.prototype.__xml = function() {
-   //
-   // BUG: expression `a <b` will detect an invalide XML node `<b`
-   //
-   if (this.buffer[this.pos] == "<"
-       && (this.__isAlpha(this.pos + 1) || this.buffer[this.pos + 1] == "/")) {
-      let posStart = this.pos;
-      let column = this.column;
-      let tag = "";
-
-      for (;;) {
-	 if (this.__isEOF()) {
-	    throw new Error(`${this.line}:${column} invalid XML tag ${tag}`);
-	 }
-	 tag += this.buffer[this.pos];
-	 this.pos++;
-	 if (this.__isEOL()) {
-	    this.line++;
-	    this.column = 0;
-	 } else {
-	    this.column++;
-	 }
-	 if (this.buffer[this.pos - 1] == ">") {
-	    break;
-	 }
-      }
-
-      let token = makeToken("XML", posStart, this.line, column, tag);
-      this.current = token;
-
-      token.leaf = this.buffer[this.pos - 2] == "/";
-      token.closing = this.buffer[posStart + 1] == "/";
-      token.openning = !token.closing && !token.leaf;
-
-      if (token.closing && token.leaf) {
-	 throw new Error(`${this.line}:${column} invalid XML node ${token.value}`);
-      }
-      return true;
-   }
-   return false;
-}
-
 Lexer.prototype.__literal = function() {
    let c = this.buffer[this.pos]
    let literal = "";
@@ -331,7 +289,6 @@ Lexer.prototype.token = function() {
       return makeToken("EOF", this.pos, this.line, this.column);
    } else if (this.__newLine()
 	      || this.__tilde()
-	      || this.__xml()
 	      || this.__literal()
 	      || this.__operator()
 	      || this.__identifier()) {
