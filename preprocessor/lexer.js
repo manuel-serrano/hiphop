@@ -101,9 +101,6 @@ Lexer.prototype.__skipComment = function() {
 	 this.pos++;
 	 this.column++;
       }
-      this.pos++;
-      this.column++;
-      this.__skipBlank();
       return this.__skipComment();
    } else if (this.buffer[this.pos] == "/"
 	      && this.buffer[this.pos + 1] == "*") {
@@ -111,7 +108,12 @@ Lexer.prototype.__skipComment = function() {
       this.column += 2;
       while (!this.__isEOF()) {
 	 this.pos++;
-	 this.column++;
+	 if (this.__isEOL()) {
+	    this.line++;
+	    this.column = 0;
+	 } else {
+	    this.column++;
+	 }
 	 if (this.buffer[this.pos] == "*"
 	     && this.buffer[this.pos + 1] == "/") {
 	    this.pos += 2;
@@ -234,7 +236,12 @@ Lexer.prototype.__xml = function() {
 	 }
 	 tag += this.buffer[this.pos];
 	 this.pos++;
-	 this.column++;
+	 if (this.__isEOL()) {
+	    this.line++;
+	    this.column = 0;
+	 } else {
+	    this.column++;
+	 }
 	 if (this.buffer[this.pos - 1] == ">") {
 	    break;
 	 }
