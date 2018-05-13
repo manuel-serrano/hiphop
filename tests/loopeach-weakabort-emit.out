@@ -1,18 +1,18 @@
 weakabort terminated 1.
 
 MODULE0
-Module A B { 
-   LoopEach present A { 
-      WeakAbort present B { 
-         Nothing 
-         Fork { 
-            Sequence { 
-               Pause 
-               Emit B 
+MODULE INOUT A INOUT B { 
+   LOOPEACH NOW ( A ) { 
+      WEAKABORT NOW ( B ) { 
+         NOTHING 
+         FORK { 
+            SEQUENCE { 
+               PAUSE 
+               EMIT B 
             } 
          } 
       } 
-      Atom 
+      ATOM 
    } 
 } 
 
@@ -20,17 +20,17 @@ Module A B {
 weakabort terminated 2.
 
 MODULE0
-Module A B { 
-   LoopEach present A { 
-      WeakAbort present B { 
-         Fork { 
-            Sequence { 
-               Pause 
-               Emit B 
+MODULE INOUT A INOUT B { 
+   LOOPEACH NOW ( A ) { 
+      WEAKABORT NOW ( B ) { 
+         FORK { 
+            SEQUENCE { 
+               PAUSE 
+               EMIT B 
             } 
          } 
       } 
-      Atom 
+      ATOM 
    } 
 } 
 

@@ -1,20 +1,20 @@
 
 MODULE0
-Module S U A B { 
-   Fork { 
-      Run MODULE1 W=A Z=B 
-   } Par { 
-      Halt 
+MODULE INOUT S INOUT U INOUT A INOUT B { 
+   FORK { 
+      RUN MODULE1 W=A Z=B 
+   } PAR { 
+      HALT 
    } 
 } 
 
 
 MODULE1
-Module S U W Z { 
-   Fork { 
-      Emit W If USING present S 
-   } Par { 
-      Emit Z If USING present U 
+MODULE INOUT S INOUT U INOUT W INOUT Z { 
+   FORK { 
+      EMIT W If USING NOW ( S ) 
+   } PAR { 
+      EMIT Z If USING NOW ( U ) 
    } 
 } 
 
@@ -24,33 +24,33 @@ m.inputAndReact(S)
 ==================== ADD RUN PARALLEL ==================
 
 MODULE0
-Module S U A B { 
-   Fork { 
-      Run MODULE1 W=A Z=B 
-   } Par { 
-      Halt 
-   } Par { 
-      Run MODULE2 Z=A 
+MODULE INOUT S INOUT U INOUT A INOUT B { 
+   FORK { 
+      RUN MODULE1 W=A Z=B 
+   } PAR { 
+      HALT 
+   } PAR { 
+      RUN MODULE2 Z=A 
    } 
 } 
 
 
 MODULE1
-Module S U W Z { 
-   Fork { 
-      Emit W If USING present S 
-   } Par { 
-      Emit Z If USING present U 
+MODULE INOUT S INOUT U INOUT W INOUT Z { 
+   FORK { 
+      EMIT W If USING NOW ( S ) 
+   } PAR { 
+      EMIT Z If USING NOW ( U ) 
    } 
 } 
 
 
 MODULE2
-Module S U W Z { 
-   Fork { 
-      Emit W If USING present S 
-   } Par { 
-      Emit Z If USING present U 
+MODULE INOUT S INOUT U INOUT W INOUT Z { 
+   FORK { 
+      EMIT W If USING NOW ( S ) 
+   } PAR { 
+      EMIT Z If USING NOW ( U ) 
    } 
 } 
 
