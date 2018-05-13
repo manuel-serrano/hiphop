@@ -103,7 +103,7 @@ exports.Call = (expr, args) => [expr, "(", list(args), ")"];
 
 exports.Binary = (lhs, op, rhs) => ["(", lhs, " ", op, " ", rhs, ")"];
 
-exports.Prefix = (op, rhs) => ["(", op, "(", rhs, ")"];
+exports.Prefix = (op, rhs) => ["(", op, "(", rhs, "))"];
 
 exports.Postfix = (lhs, op) => ["(", "(", lhs, ")", op, ")"];
 
