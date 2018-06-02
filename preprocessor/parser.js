@@ -1664,7 +1664,7 @@ Parser.prototype.__debugger = function() {
 // from the parser point-of-view.
 //
 
-Parser.prototype.__functionDeclaration = function() {
+Parser.prototype.__functionDeclaration = function(exprContext=false) {
    let id = undefined;
    let params = "";
    let body = "";
@@ -1681,13 +1681,13 @@ Parser.prototype.__functionDeclaration = function() {
    this.consume("{");
    body = this.__functionBody();
    this.consume("}");
-   return this.map(token, (!id
+   return this.map(token, (exprContext
 			   ? gen.FunctionExpression(id, params, body)
 			   : gen.FunctionDeclaration(id, params, body)))
 }
 
 Parser.prototype.__functionExpression = function() {
-   return this.__functionDeclaration();
+   return this.__functionDeclaration(true);
 }
 
 Parser.prototype.__serviceDeclaration = function(expr=false) {

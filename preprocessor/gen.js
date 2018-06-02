@@ -123,21 +123,22 @@ exports.VariableDeclaration = (nameId, init) => init ? [nameId, "=", init] : nam
 
 exports.EmptyStatement = () => ";";
 
-exports.ExpressionStatement = expr => [expr, ";"];
+exports.ExpressionStatement = expr => expr;
 
 exports.If = (test, _then, _else) => {
-   let arr = ["if (", test, ")", _then];
+   let arr = ["if (", test, "){", _then, "}"];
 
    if (_else) {
-      arr.push("else ");
+      arr.push("else {");
       arr.push(_else);
+      arr.push("}");
    }
    return arr;
 }
 
-exports.Do = (test, stmt) => ["do ", stmt, " while (", test, ")"];
+exports.Do = (test, stmt) => ["do {", stmt, "} while (", test, ")"];
 
-exports.While = (test, stmt) => ["while (", test, ") ", stmt];
+exports.While = (test, stmt) => ["while (", test, ") {", stmt, "}"];
 
 exports.For = (vtype, initVarDecl, init, test, after, stmt) => {
    let arr = ["for ("];
@@ -162,8 +163,9 @@ exports.For = (vtype, initVarDecl, init, test, after, stmt) => {
    if (after) {
       arr.push(after);
    }
-   arr.push(") ");
+   arr.push(") {");
    arr.push(stmt);
+   arr.push("}");
    return arr;
 };
 
@@ -178,8 +180,9 @@ exports.ForIn = (vtype, varDecl, expr, stmt) => {
    arr.push(list(varDecl));
    arr.push(" in ")
    arr.push(expr);
-   arr.push(") ");
+   arr.push(") {");
    arr.push(stmt);
+   arr.push("}");
    return arr;
 };
 
@@ -256,7 +259,7 @@ exports.Parameter = (id, initExpr) => {
    return arr;
 }
 
-exports.Program = sourceEls => list(sourceEls, " ");
+exports.Program = sourceEls => list(sourceEls, ";");
 
 //
 // Hiphop.js nodes
