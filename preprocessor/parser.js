@@ -77,8 +77,8 @@ Parser.prototype.fillSourceMap = function(mapping) {
    //    console.log("=============================");
    // }
    // mapped.push(mapping);
-   mapping.__mappedLine = this.genLine;
-   mapping.__mappedColumn = this.genColumn;
+   // mapping.__mappedLine = this.genLine;
+   // mapping.__mappedColumn = this.genColumn;
    this.sourceMap.addMapping({
       generated: { line: this.genLine, column: this.genColumn},
       source: this.iFile,
@@ -100,7 +100,7 @@ Parser.prototype.unexpectedToken = function(token, expected=null) {
 
 Parser.prototype.gen = function() {
    // console.error(`>>> HIPHOP.JS preprocessing ${this.iFile}`);
-   const code = this._gen(this.__sourceElements());
+   const code = this._gen(this.__sourceElements([]));
    // console.error(`<<< HIPHOP.JS preprocessing ${this.iFile}`);
    return code;
 }
@@ -210,10 +210,11 @@ function signalDeclaration(accessibility) {
    let combineExpr = null;
    const token = this.peek();
    let id = this.__identifier();
+   const initAccessors = [];
 
    if (this.peek().type == "(") {
       this.consume("(");
-      initExpr = this.__expression();
+      initExpr = this.__expression(initAccessors);
       this.consume(")");
    }
 
@@ -228,7 +229,8 @@ function signalDeclaration(accessibility) {
       this.consume(")");
    }
 
-   return this.map(token, gen.Signal(id, accessibility, initExpr, combineExpr));
+   return this.map(token, gen.Signal(id, accessibility, initExpr,
+				     initAccessors, combineExpr));
 }
 
 function signalDeclarationList(declList, accessibility=undefined) {
@@ -336,12 +338,13 @@ Parser.prototype.__hhNothing = function() {
 
 Parser.prototype.__hhIf = function() {
    let test;
+   let testAccessors = [];
    let thenBody;
    let elseBody = "";
    const token = this.consumeHHReserved("IF");
 
    this.consume("(");
-   test = this.__expression();
+   test = this.__expression(testAccessors);
    this.consume(")");
    thenBody = this.__hhBlock();
 
@@ -354,7 +357,7 @@ Parser.prototype.__hhIf = function() {
       }
    }
 
-   return this.map(token, gen.HHIf(test, thenBody, elseBody));
+   return this.map(token, gen.HHIf(test, testAccessors, thenBody, elseBody));
 }
 
 Parser.prototype.__hhFork = function() {
@@ -420,13 +423,14 @@ Parser.prototype.__emitArguments = function() {
       const token = this.peek();
       let id = this.__identifier();
       let expr = null;
+      const exprAccessors = [];
 
       if (this.peek().type == "(") {
 	 this.consume();
-	 expr = this.__expression();
+	 expr = this.__expression(exprAccessors);
 	 this.consume(")");
       }
-      return this.map(token, gen.HHEmitExpr(id, expr));
+      return this.map(token, gen.HHEmitExpr(id, expr, exprAccessors));
    }
 
    let args = [];
@@ -487,7 +491,7 @@ Parser.prototype.__hhExecParameters = function() {
 			    `parameter ${param} already used`);
 	 }
 	 this.consumeHHReserved(param);
-	 params[param] = this.__expression();
+	 params[param] = this.__expression([]);
       } else {
 	 break;
       }
@@ -496,33 +500,36 @@ Parser.prototype.__hhExecParameters = function() {
 }
 
 Parser.prototype.__hhExec = function() {
-   return this.map(this.consumeHHReserved("EXEC"),
-		   gen.HHExec(this.__expression(), this.__hhExecParameters()));
-}
-
-Parser.prototype.__hhExecAssign = function() {
-   return this.map(this.consumeHHReserved("EXECASSIGN"),
-		   gen.HHExecAssign(this.__identifier(),
-				    this.__expression(),
-				    this.__hhExecParameters()));
+   const token = this.consumeHHReserved("EXEC");
+   const startAccessors = [];
+   const expr = this.__expression(startAccessors);
+   return this.map(token, gen.HHExec(expr, startAccessors,
+				     this.__hhExecParameters()));
 }
 
 Parser.prototype.__hhExecEmit = function() {
-   return this.map(this.consumeHHReserved("EXECEMIT"),
-		   gen.HHExecEmit(this.__identifier(),
-				  this.__expression(),
-				  this.__hhExecParameters()));
+   const token = this.consumeHHReserved("EXECEMIT");
+   const id = this.__identifier();
+   const startAccessors = [];
+   const expr = this.__expression(startAccessors);
+   return this.map(token, gen.HHExecEmit(id,
+					 expr,
+					 startAccessors,
+					 this.__hhExecParameters()));
 }
 
 Parser.prototype.__hhPromise = function() {
    const token = this.consumeHHReserved("PROMISE");
    const thenId = this.__identifier();
    this.consume(",");
-   return this.map(token,
-		   gen.HHPromise(thenId,
-				 this.__identifier(),
-				 this.__expression(),
-				 this.__hhExecParameters()));
+   const id = this.__identifier();
+   const startAccessors = [];
+   const expr = this.__expression(startAccessors);
+   return this.map(token, gen.HHPromise(thenId,
+					id,
+					expr,
+					startAccessors,
+					this.__hhExecParameters()));
 }
 
 Parser.prototype.__hhRun = function() {
@@ -531,7 +538,7 @@ Parser.prototype.__hhRun = function() {
 
    const token = this.consumeHHReserved("RUN");
    this.consume("(");
-   expr = this.__assignmentExpression();
+   expr = this.__assignmentExpression([]);
    while (this.peek().type != ")") {
       let calleeSignalId;
       let callerSignalId;
@@ -569,15 +576,17 @@ Parser.prototype.__hhSuspend = function() {
 	 this.immediate = true;
       }
       this.consume("(");
-      from = this.__expression();
+      const fromAccessors = [];
+      from = this.__expression(fromAccessors);
       this.consume(")");
       this.consumeHHReserved("TO");
       this.consume("(");
-      to = this.__expression();
+      const toAccessors = [];
+      to = this.__expression(toAccessors);
       this.consume(")");
       let ews = emitWhenSuspended.call(this);
-      return this.map(token, gen.HHSuspendFromTo(from,
-						 to,
+      return this.map(token, gen.HHSuspendFromTo(from, fromAccessors,
+						 to, toAccessors,
 						 immediate,
 						 this.__hhBlock(),
 						 ews));
@@ -586,28 +595,36 @@ Parser.prototype.__hhSuspend = function() {
 
       this.consumeHHReserved("TOGGLE");
       this.consume("(");
-      expr = this.__expression();
+      const toggleAccessors = [];
+      expr = this.__expression(toggleAccessors);
       this.consume(")");
       let ews = emitWhenSuspended.call(this);
-      return this.map(token, gen.HHSuspendToggle(expr, this.__hhBlock(), ews));
+      return this.map(token, gen.HHSuspendToggle(expr, toggleAccessors,
+						 this.__hhBlock(), ews));
    } else {
       let ews = emitWhenSuspended.call(this);
-      return this.map(token, gen.HHSuspend(this.__hhTemporalExpression(),
+      const texpr = this.__hhTemporalExpression();
+      return this.map(token, gen.HHSuspend(texpr,
 					   this.__hhBlock(),
 					   ews));
    }
 }
 
 Parser.prototype.__hhTemporalExpression = function(inFor=false) {
+   const accessors = [];
    const token = this.peek();
    if (token.value === "COUNT") {
+      const countAccessors = [];
       this.consumeHHReserved("COUNT");
       this.consume("(");
-      const countExpr = this.__assignmentExpression();
+      const countExpr = this.__assignmentExpression(countAccessors);
       this.consume(",");
-      const expr = this.__expression();
+      const expr = this.__expression(accessors);
       this.consume(")");
-      return this.map(token, gen.HHCountTemporalExpression(countExpr, expr));
+      return this.map(token, gen.HHCountTemporalExpression(countExpr,
+							   countAccessors,
+							   expr,
+							   accessors));
    }
 
    let immediate = false;
@@ -622,14 +639,16 @@ Parser.prototype.__hhTemporalExpression = function(inFor=false) {
    if (!immediate && !inFor) {
       this.consume("(");
    }
-   expr = this.__expression();
+   expr = this.__expression(accessors);
    if (!immediate && !inFor) {
       this.consume(")");
    }
-   return this.map(token, gen.HHTemporalExpression(immediate, expr));
+   return this.map(token, gen.HHTemporalExpression(immediate,
+						   expr,
+						   accessors));
 }
 
-Parser.prototype.__hhAccessor = function() {
+Parser.prototype.__hhAccessor = function(accessors) {
    let peeked = this.peek();
    let symb = peeked.value;
 
@@ -639,6 +658,7 @@ Parser.prototype.__hhAccessor = function() {
 
       if (needId) {
 	 this.consume("(");
+	 accessors.push({ type: reduc, symb: this.peek().value });
 	 id = this.__identifier();
 	 this.consume(")");
       }
@@ -672,10 +692,12 @@ Parser.prototype.__hhAccessor = function() {
 
 Parser.prototype.__hhAtom = function() {
    const token = this.consumeHHReserved("ATOM");
+   const accessors = [];
    if (this.peek().value != "{") {
       this.unexpectedToken(this.peek(), "{");
    }
-   return this.map(token, gen.HHAtom(this.__statement()));
+   const stmts = this.__statement(accessors);
+   return this.map(token, gen.HHAtom(stmts, accessors));
 }
 
 Parser.prototype.__hhWhile = function() {
@@ -689,7 +711,7 @@ Parser.prototype.__hhWhile = function() {
 // TODO: for operands should be optional
 //
 Parser.prototype.__hhFor = function() {
-   let declList = [];
+   const declList = [];
    const token = this.consumeHHReserved("FOR");
    this.consume("(");
    signalDeclarationList.call(this, declList);
@@ -698,8 +720,10 @@ Parser.prototype.__hhFor = function() {
    this.consume(";");
    const eachStmt = this.__hhStatement();
    this.consume(")");
-   return this.map(token,
-		   gen.HHFor(declList, whileExpr, eachStmt, this.__hhBlock()));
+   return this.map(token, gen.HHFor(declList,
+				    whileExpr,
+				    eachStmt,
+				    this.__hhBlock()));
 }
 
 Parser.prototype.__hhSequence = function() {
@@ -710,18 +734,18 @@ Parser.prototype.__hhSequence = function() {
    return this.__hhBlock();
 }
 
-Parser.prototype.__dollar = function() {
+Parser.prototype.__dollar = function(accessors) {
    let expr;
 
    const token = this.consume("IDENTIFIER", "$");
    this.consume("{");
-   expr = this.__expression();
+   expr = this.__expression(accessors);
    this.consume("}");
    return this.map(token, gen.Dollar(expr));
 }
 
-Parser.prototype.__tilde = function() {
-   return this.map(this.consume("~"), gen.Tilde(this.__block()));
+Parser.prototype.__tilde = function(accessors) {
+   return this.map(this.consume("~"), gen.Tilde(this.__block(accessors)));
 }
 
 Parser.prototype.__hhStatement = function() {
@@ -762,8 +786,6 @@ Parser.prototype.__hhStatement = function() {
       return this.__hhExit();
    case "EXEC":
       return this.__hhExec();
-   case "EXECASSIGN":
-      return this.__hhExecAssign();
    case "EXECEMIT":
       return this.__hhExecEmit();
    case "SUSPEND":
@@ -799,7 +821,7 @@ Parser.prototype.__hhStatement = function() {
 // Hop.js parser. See hop/js2scheme/parser.scm.
 //
 
-Parser.prototype.__primaryExpression = function() {
+Parser.prototype.__primaryExpression = function(accessors) {
    let peeked = this.peek();
 
    switch (peeked.type) {
@@ -809,16 +831,16 @@ Parser.prototype.__primaryExpression = function() {
 	 this.consume();
 	 return this.map(peeked, gen.This());
       case "function":
-	 return this.__functionExpression();
+	 return this.__functionExpression(accessors);
       case "service":
-	 return this.__serviceExpression();
+	 return this.__serviceExpression(accessors);
       default:
 	 this.consume();
 	 return this.map(peeked, gen.Unresolved(peeked.value));
       }
    case "IDENTIFIER":
       if (peeked.value == "$" && this.peek(1).value == "{") {
-	 return this.__dollar();
+	 return this.__dollar(accessors);
       } else {
 	 return this.__identifier();
       }
@@ -832,16 +854,16 @@ Parser.prototype.__primaryExpression = function() {
 					  peeked.string,
 					  peeked.template));
    case "[":
-      return this.__arrayLiteral();
+      return this.__arrayLiteral(accessors);
    case "{":
-      return this.__objectLiteral();
+      return this.__objectLiteral(accessors);
    case "(":
       this.consume("(");
-      let expr = this.__expression();
+      let expr = this.__expression(accessors);
       this.consume(")");
       return expr;
    case "<":
-      return this.__xml();
+      return this.__xml(accessors);
    default:
       if (peeked.value == "VAL" || peeked.value == "PREVAL"
 	  || peeked.value == "PRE" || peeked.value == "NOW"
@@ -849,7 +871,7 @@ Parser.prototype.__primaryExpression = function() {
 	  || peeked.value == "DONE" || peeked.value == "DONEREACT"
 	  || peeked.value == "EXECID" || peeked.value == "THIS") {
 	 this.hasHHcode = true;
-	 return this.__hhAccessor();
+	 return this.__hhAccessor(accessors);
       } else {
 	 this.hasHHcode = true;
 	 return this.__hhStatement();
@@ -857,7 +879,7 @@ Parser.prototype.__primaryExpression = function() {
    }
 }
 
-Parser.prototype.__xml = function() {
+Parser.prototype.__xml = function(accessors) {
    const startToken = this.consume("<");
    const name = this.__identifier();
    const attrs = [];
@@ -876,10 +898,10 @@ Parser.prototype.__xml = function() {
 	    switch (this.peek().type) {
 	    case "LITERAL":
 	    case "IDENTIFIER":
-	       attrs.push(this.__primaryExpression());
+	       attrs.push(this.__primaryExpression(accessors));
 	       break;
 	    case "~":
-	       attrs.push(this.__tilde());
+	       attrs.push(this.__tilde(accessors));
 	       break;
 	    default:
 	       this.unexpectedToken(this.peek());
@@ -904,10 +926,10 @@ Parser.prototype.__xml = function() {
       while(!closing()) {
 	 switch (this.peek().type) {
 	 case "<":
-	    body.push(this.__xml());
+	    body.push(this.__xml(accessors));
 	    break;
 	 case "~":
-	    body.push(this.__tilde());
+	    body.push(this.__tilde(accessors));
 	    break;
 	 default:
 	    const token = this.consume();
@@ -938,7 +960,7 @@ Parser.prototype.__identifier = function() {
    return this.map(token, gen.Identifier(token.value));
 }
 
-Parser.prototype.__arrayLiteral = function() {
+Parser.prototype.__arrayLiteral = function(accessors) {
    let pos = this.consume("[");
    let slots = [];
    let peeked = this.peek();
@@ -954,7 +976,7 @@ Parser.prototype.__arrayLiteral = function() {
 	 this.consume();
 	 slots.push(this.map(peeked, gen.EmptySlot()));
       } else {
-	 slots.push(this.__assignmentExpression());
+	 slots.push(this.__assignmentExpression(accessors));
 	 if (this.peek().type != "]") {
 	    this.consume(",");
 	 }
@@ -965,7 +987,7 @@ Parser.prototype.__arrayLiteral = function() {
    return this.map(peeked, gen.ArrayLiteral(slots));
 }
 
-Parser.prototype.__objectLiteral = function() {
+Parser.prototype.__objectLiteral = function(accessors) {
    let token = this.consume("{");
    let pos = token.pos;
    let props = [];
@@ -988,7 +1010,7 @@ Parser.prototype.__objectLiteral = function() {
       } else if (expectComa) {
 	 this.unexpectedToken(peeked, ",");
       } else {
-	 props.push(this.__propertyAssignment());
+	 props.push(this.__propertyAssignment(accessors));
 	 expectComa = true;
       }
    }
@@ -997,7 +1019,7 @@ Parser.prototype.__objectLiteral = function() {
    return this.map(token, gen.ObjectLiteral(props));
 }
 
-Parser.prototype.__propertyAssignment = function() {
+Parser.prototype.__propertyAssignment = function(accessors) {
    let peeked = this.peek();
 
    if (peeked.value == "get") {
@@ -1009,7 +1031,7 @@ Parser.prototype.__propertyAssignment = function() {
       this.consume("(");
       this.consume(")");
       this.consume("{");
-      body = this.__functionBody();
+      body = this.__functionBody(accessors);
       this.consume("}");
       return this.map(peeked, gen.PropertyAssignmentGet(name, body));
 
@@ -1024,7 +1046,7 @@ Parser.prototype.__propertyAssignment = function() {
       arg = this.__identifier();
       this.consume(")");
       this.consume("{");
-      body = this.__functionBody();
+      body = this.__functionBody(accessors);
       this.consume("}");
       return this.map(peeked, gen.PropertyAssignmentSet(name, arg, body));
 
@@ -1034,7 +1056,7 @@ Parser.prototype.__propertyAssignment = function() {
       this.consume(":");
       return this.map(peeked,
 		      gen.PropertyAssignment(name,
-					     this.__assignmentExpression()));
+					     this.__assignmentExpression(accessors)));
    }
 }
 
@@ -1050,11 +1072,11 @@ Parser.prototype.__propertyName = function() {
    this.unexpectedToken(peeked);
 }
 
-Parser.prototype.__newExpression = function() {
+Parser.prototype.__newExpression = function(accessors) {
    const peeked = this.peek();
    if (this.peekIsReserved("new")) {
       let pos = this.consume().pos;
-      let classOrExpr = this.__newExpression();
+      let classOrExpr = this.__newExpression(accessors);
       let args = null;
 
       if (this.peek().type == "(") {
@@ -1062,41 +1084,43 @@ Parser.prototype.__newExpression = function() {
       }
       return this.map(peeked, gen.New(classOrExpr, args));
    } else {
-      return this.__accessOrCall(this.__primaryExpression(), false);
+      return this.__accessOrCall(accessors, this.__primaryExpression(accessors), false);
    }
 }
 
-Parser.prototype.__accessOrCall = function(expr, callAllowed) {
+Parser.prototype.__accessOrCall = function(accessors, expr, callAllowed) {
    let peeked = this.peek();
    let pos = peeked.pos;
 
    if (peeked.type == "[") {
       this.consume();
-      let field = this.__expression();
+      let field = this.__expression(accessors);
       this.consume();
-      return this.__accessOrCall(this.map(peeked,
-					  gen.AccessBracket(expr, field)),
+      return this.__accessOrCall(accessors,
+				 this.map(peeked, gen.AccessBracket(expr, field)),
 				 callAllowed);
    } else if (peeked.type == ".") {
       this.consume();
       let field = this.__identifier();
-      return this.__accessOrCall(this.map(peeked, gen.AccessDot(expr, field)),
+      return this.__accessOrCall(accessors,
+				 this.map(peeked, gen.AccessDot(expr, field)),
 				 callAllowed);
    } else if (peeked.type == "(" && callAllowed) {
-      let args = this.__arguments();
-      return this.__accessOrCall(this.map(peeked, gen.Call(expr, args)),
+      let args = this.__arguments(accessors);
+      return this.__accessOrCall(accessors,
+				 this.map(peeked, gen.Call(expr, args)),
 				 callAllowed);
    } else {
       return expr;
    }
 }
 
-Parser.prototype.__arguments = function() {
+Parser.prototype.__arguments = function(accessors) {
    let args = [];
 
    this.consume("(");
    while (!this.peekHasType(")")) {
-      args.push(this.__assignmentExpression());
+      args.push(this.__assignmentExpression(accessors));
       if (this.peek().type != ")") {
 	 this.consume(",");
       }
@@ -1106,12 +1130,12 @@ Parser.prototype.__arguments = function() {
    return args;
 }
 
-Parser.prototype.__leftHandSideExpression = function() {
-   return this.__accessOrCall(this.__newExpression(), true);
+Parser.prototype.__leftHandSideExpression = function(accessors) {
+   return this.__accessOrCall(accessors, this.__newExpression(accessors), true);
 }
 
-Parser.prototype.__postfixExpression = function() {
-   let lhs = this.__leftHandSideExpression();
+Parser.prototype.__postfixExpression = function(accessors) {
+   let lhs = this.__leftHandSideExpression(accessors);
    let peeked = this.peek();
 
    if ((peeked.type == "++" || peeked.type == "--") && !peeked.newLine) {
@@ -1122,7 +1146,7 @@ Parser.prototype.__postfixExpression = function() {
    }
 }
 
-Parser.prototype.__unaryExpression = function() {
+Parser.prototype.__unaryExpression = function(accessors) {
    let peeked = this.peek();
 
    if ((peeked.type == "RESERVED" && (peeked.value == "delete"
@@ -1131,16 +1155,16 @@ Parser.prototype.__unaryExpression = function() {
        || ["+", "-", "~", "!"].indexOf(peeked.type) > -1) {
       this.consume();
       return this.map(peeked,
-		      gen.Unary(peeked.value, this.__unaryExpression()));
+		      gen.Unary(peeked.value, this.__unaryExpression(accessors)));
    } else if (peeked.type == "++" || peeked.type == "--") {
       this.consume();
       return this.map(peeked,
-		      gen.Prefix(peeked.type, this.__unaryExpression()));
+		      gen.Prefix(peeked.type, this.__unaryExpression(accessors)));
    }
-   return this.__postfixExpression();
+   return this.__postfixExpression(accessors);
 }
 
-Parser.prototype.__binaryExpression = function(withInKwd=true) {
+Parser.prototype.__binaryExpression = function(accessors, withInKwd=true) {
    function getLevel(op) {
       switch(op.value) {
       case "||":
@@ -1183,7 +1207,7 @@ Parser.prototype.__binaryExpression = function(withInKwd=true) {
 
    function binary(level) {
       if (level > 10) {
-	 return this.__unaryExpression();
+	 return this.__unaryExpression(accessors);
       } else {
  	 let expr = binary.call(this, level + 1);
 	 for (;;) {
@@ -1209,42 +1233,42 @@ Parser.prototype.__binaryExpression = function(withInKwd=true) {
    return binary.call(this, 1);
 }
 
-Parser.prototype.__conditionalExpression = function(withInKwd=true) {
-   let expr = this.__binaryExpression(withInKwd);
+Parser.prototype.__conditionalExpression = function(accessors, withInKwd=true) {
+   let expr = this.__binaryExpression(accessors, withInKwd);
    let peeked = this.peek();
 
    if (peeked.type == "?") {
       this.consume();
-      let then_ = this.__assignmentExpression(withInKwd);
+      let then_ = this.__assignmentExpression(accessors, withInKwd);
       this.consume(":");
-      let else_ = this.__assignmentExpression(withInKwd);
+      let else_ = this.__assignmentExpression(accessors, withInKwd);
       return this.map(peeked, gen.Conditional(expr, then_, else_));
    } else {
       return expr;
    }
 }
 
-Parser.prototype.__assignmentExpression = function(withInKwd=true) {
+Parser.prototype.__assignmentExpression = function(accessors, withInKwd=true) {
    function isAssignOp(op) {
       return ["=", "*=", "/=", "%=", "+=", "-=", "<<=", ">>=", ">>>=", "&=",
 	      "^=", "|="].indexOf(op) > -1;
    }
 
-   let lhs = this.__conditionalExpression(withInKwd);
+   let lhs = this.__conditionalExpression(accessors, withInKwd);
    if (isAssignOp(this.peek().type)) {
       const token = this.peek();
       let op = this.consume();
-      let rhs = this.__assignmentExpression(withInKwd);
+      let rhs = this.__assignmentExpression(accessors, withInKwd);
       return this.map(token, gen.Assign(lhs, op.value, rhs));
    } else {
       return lhs;
    }
 }
 
-Parser.prototype.__expression = function(withInKwd=true) {
+Parser.prototype.__expression = function(accessors, withInKwd=true) {
    const token = this.peek();
    let pos = token.pos;
-   let exprs = [this.__assignmentExpression(withInKwd)];
+   let exprs = [this.__assignmentExpression(accessors, withInKwd)];
 
    for(;;) {
       if (!this.peekHasType(",")) {
@@ -1252,7 +1276,7 @@ Parser.prototype.__expression = function(withInKwd=true) {
       }
 
       this.consume();
-      exprs.push(this.__assignmentExpression(withInKwd));
+      exprs.push(this.__assignmentExpression(accessors, withInKwd));
    }
    return exprs.length == 1 ? exprs[0] : this.map(token, gen.Sequence(exprs));
 }
@@ -1262,76 +1286,76 @@ Parser.prototype.__expression = function(withInKwd=true) {
 // http://www.ecma-international.org/ecma-262/5.1/#sec-A.4
 //
 
-Parser.prototype.__statement = function() {
+Parser.prototype.__statement = function(accessors) {
    switch (this.peek().value) {
    case "~":
       return this.__tilde();
    case "<":
       return this.__xml();
    case "{":
-      return this.__block();
+      return this.__block(accessors);
    case "var":
    case "const":
    case "let":
-      return this.__variableStatement(this.peek().value);
+      return this.__variableStatement(accessors, this.peek().value);
    case ";":
       return this.__emptyStatement();
    case "if":
-      return this.__ifStatement();
+      return this.__ifStatement(accessors);
    case "for":
    case "while":
    case "do":
-      return this.__iterationStatement();
+      return this.__iterationStatement(accessors);
    case "continue":
       return this.__continueStatement();
    case "break":
       return this.__breakStatement();
    case "return":
-      return this.__returnStatement();
+      return this.__returnStatement(accessors);
    case "with":
-      return this.__withStatement();
+      return this.__withStatement(accessors);
    case "switch":
-      return this.__switchStatement();
+      return this.__switchStatement(accessors);
    case "throw":
-      return this.__throwStatement();
+      return this.__throwStatement(accessors);
    case "try":
-      return this.__tryStatement();
+      return this.__tryStatement(accessors);
    case "debugger":
       return this.__debuggerStatement();
    case "function":
-      return this.__functionDeclaration();
+      return this.__functionDeclaration(accessors);
    default:
       if (this.peek(1).type == ":") {
-	 return this.__labelledStatement();
+	 return this.__labelledStatement(accessors);
       } else {
-	 return this.__expressionStatement();
+	 return this.__expressionStatement(accessors);
       }
    }
 }
 
-Parser.prototype.__block = function() {
+Parser.prototype.__block = function(accessors) {
    let stmts = [];
    const token = this.consume("{");
 
    while (!this.peekHasType("}")) {
-      stmts.push(this.__statement());
+      stmts.push(this.__statement(accessors));
    }
    this.consume();
    return this.map(token, gen.Block(stmts));
 }
 
-Parser.prototype.__variableStatement = function(vtype) {
+Parser.prototype.__variableStatement = function(accessors, vtype) {
    let varStmt;
    const token = this.consumeReserved(vtype);
 
    varStmt = this.map(
       token,
-      gen.VariableStmt(vtype, this.__variableDeclarationList()));
+      gen.VariableStmt(vtype, this.__variableDeclarationList(accessors)));
    this.consumeOptionalEmpty();
    return varStmt;
 }
 
-Parser.prototype.__variableDeclarationList = function(withInKwd=true) {
+Parser.prototype.__variableDeclarationList = function(accessors, withInKwd=true) {
    let varDecls = [];
 
    for(;;) {
@@ -1344,19 +1368,19 @@ Parser.prototype.__variableDeclarationList = function(withInKwd=true) {
       } else if (peeked.value == "in" && !withInKwd) {
 	 break;
       }
-      varDecls.push(this.__variableDeclaration(withInKwd));
+      varDecls.push(this.__variableDeclaration(accessors, withInKwd));
    }
    return varDecls;
 }
 
-Parser.prototype.__variableDeclaration = function(withInKwd=true) {
+Parser.prototype.__variableDeclaration = function(accessors, withInKwd=true) {
    const token = this.peek();
    let id = this.__identifier();
    let init = "";
 
    if (this.peekHasType("=")) {
       this.consume();
-      init = this.__assignmentExpression(withInKwd);
+      init = this.__assignmentExpression(accessors, withInKwd);
    }
    return this.map(token, gen.VariableDeclaration(id, init));
 }
@@ -1365,7 +1389,7 @@ Parser.prototype.__emptyStatement = function() {
    return this.map(this.consume(), gen.EmptyStatement());
 }
 
-Parser.prototype.__expressionStatement = function() {
+Parser.prototype.__expressionStatement = function(accessors) {
    let peeked = this.peek();
    let expression = "";
 
@@ -1374,29 +1398,29 @@ Parser.prototype.__expressionStatement = function() {
        || peeked.type == "service") {
       this.unexpectedToken(peeked, "expression");
    }
-   expression = this.__expression(false);
+   expression = this.__expression(accessors, false);
    this.consumeOptionalEmpty();
    return this.map(peeked, gen.ExpressionStatement(expression));
 }
 
-Parser.prototype.__ifStatement = function() {
+Parser.prototype.__ifStatement = function(accessors) {
    let test = "";
    let then_ = "";
    let else_ = "";
    const token = this.consumeReserved("if");
 
    this.consume("(");
-   test = this.__expression();
+   test = this.__expression(accessors);
    this.consume(")");
-   then_ = this.__statement();
+   then_ = this.__statement(accessors);
    if (this.peekHasValue("else")) {
       this.consume();
-      else_ = this.__statement();
+      else_ = this.__statement(accessors);
    }
    return this.map(token, gen.If(test, then_, else_));
 }
 
-Parser.prototype.__iterationStatement = function() {
+Parser.prototype.__iterationStatement = function(accessors) {
    let test;
    let stmt;
    const token = this.peek();
@@ -1404,17 +1428,17 @@ Parser.prototype.__iterationStatement = function() {
    switch (token.value) {
    case "do":
       this.consume();
-      stmt = this.__statement();
+      stmt = this.__statement(accessors);
       this.consumeReserved("while");
       this.consume("(");
-      test = this.__expression();
+      test = this.__expression(accessors);
       this.consume(")");
       this.consumeOptionalEmpty();
       return this.map(token, gen.Do(test, stmt));
    case "while":
       this.consume();
       this.consume("(");
-      test = this.__expression();
+      test = this.__expression(accessors);
       this.consume(")");
       return this.map(token, gen.While(test, this.__statement()));
    case "for":
@@ -1440,7 +1464,7 @@ Parser.prototype.__iterationStatement = function() {
 	 //
 	 // http://www.ecma-international.org/ecma-262/5.1/#sec-12.6
 	 //
-	 initVarDecl = this.__variableDeclarationList(false);
+	 initVarDecl = this.__variableDeclarationList(accessors, false);
       } else {
 	 //
 	 // More permissive than the specification: an Expression
@@ -1450,25 +1474,25 @@ Parser.prototype.__iterationStatement = function() {
 	 // http://www.ecma-international.org/ecma-262/5.1/#sec-12.6
 	 //
 	 if (this.peek().type != ";") {
-	    init = this.__expression();
+	    init = this.__expression(accessors);
 	 }
       }
 
       if (this.peekIsReserved("in")) {
 	 this.consume()
-	 forInExpr = this.__expression();
+	 forInExpr = this.__expression(accessors);
       } else {
 	 this.consume(";");
 	 if (!this.peekHasType(";")) {
-	    test = this.__expression();
+	    test = this.__expression(accessors);
 	 }
 	 this.consume(";")
 	 if (!this.peekHasType(")")) {
-	    after = this.__expression();
+	    after = this.__expression(accessors);
 	 }
       }
       this.consume(")");
-      stmt = this.__statement();
+      stmt = this.__statement(accessors);
 
       return this.map(token,
 		      forInExpr
@@ -1505,14 +1529,14 @@ Parser.prototype.__breakStatement = function() {
    return this.map(token, gen.Break(identifier));
 }
 
-Parser.prototype.__returnStatement = function() {
+Parser.prototype.__returnStatement = function(accessors) {
    let expr = "";
    const token = this.consumeReserved("return");
    let pos = token.pos;
    let peeked = this.peek();
 
    if (peeked.type != ";" && !peeked.newLine) {
-      expr = this.__expression();
+      expr = this.__expression(accessors);
    }
    this.consumeOptionalEmpty();
 
@@ -1523,33 +1547,33 @@ Parser.prototype.__returnStatement = function() {
 // TODO: Should trigger an error in strict mode
 // http://www.ecma-international.org/ecma-262/5.1/#sec-12.10
 //
-Parser.prototype.__withStatement = function() {
+Parser.prototype.__withStatement = function(accessors) {
    let expr = "";
    let stmt = "";
    const token = this.consumeReserved("with");
    let pos = token.pos;
 
    this.consume("(");
-   expr = this.__expression();
+   expr = this.__expression(accessors);
    this.consume(")");
-   stmt = this.__statement();
+   stmt = this.__statement(accessors);
    return this.map(token, gen.With(expr, stmt));
 }
 
-Parser.prototype.__switchStatement = function() {
+Parser.prototype.__switchStatement = function(accessors) {
    let expr = null;
    let caseBlock = null;
    const token = this.consumeReserved("switch");
    let pos = token.pos;
 
    this.consume("(");
-   expr = this.__expression();
+   expr = this.__expression(accessors);
    this.consume(")");
-   caseBlock = this.__caseBlock();
+   caseBlock = this.__caseBlock(accessors);
    return this.map(token, gen.Switch(expr, caseBlock));
 }
 
-Parser.prototype.__caseBlock = function() {
+Parser.prototype.__caseBlock = function(accessors) {
    let defaultUsed = false;
    let clauses = [];
    const token = this.consume("{");
@@ -1561,13 +1585,13 @@ Parser.prototype.__caseBlock = function() {
       if (peeked.type == "}") {
 	 break;
       } else if (peeked.value == "case") {
-	 clauses.push(this.__caseClause());
+	 clauses.push(this.__caseClause(accessors));
       } else if (peeked.value == "default") {
 	 if (defaultUsed) {
 	    throw new Error(`at ${peeked.pos} only one default clause allowed`);
 	 }
 	 defaultUsed = true;
-	 clauses.push(this.__defaultClause());
+	 clauses.push(this.__defaultClause(accessors));
       } else {
 	 this.unexpectedToken(peeked);
       }
@@ -1577,9 +1601,9 @@ Parser.prototype.__caseBlock = function() {
    return this.map(token, gen.CaseBlock(clauses));
 }
 
-Parser.prototype.__caseClause = function() {
+Parser.prototype.__caseClause = function(accessors) {
    let pos = this.consumeReserved("case");
-   let expr = this.__expression();
+   let expr = this.__expression(accessors);
    let stmts = [];
 
    this.consume(":");
@@ -1590,12 +1614,12 @@ Parser.prototype.__caseClause = function() {
 	      && (peeked.value == "case" || peeked.value == "default"))) {
 	 break;
       }
-      stmts.push(this.__statement());
+      stmts.push(this.__statement(accessors));
    }
    return this.map(pos, gen.CaseClause(expr, stmts));
 }
 
-Parser.prototype.__defaultClause = function() {
+Parser.prototype.__defaultClause = function(accessors) {
    let pos = this.consumeReserved("default");
    let stmts = [];
 
@@ -1607,46 +1631,48 @@ Parser.prototype.__defaultClause = function() {
 	      && (peeked.value == "case" || peeked.value == "default"))) {
 	 break;
       }
-      stmts.push(this.__statement());
+      stmts.push(this.__statement(accessors));
    }
    return this.map(pos, gen.DefaultClause(stmts));
 }
 
-Parser.prototype.__labelledStatement = function() {
+Parser.prototype.__labelledStatement = function(accessors) {
    const token = this.peek();
    let identifier = this.__identifier();
 
    this.consume(";");
-   return this.map(token, gen.LabelledStmt(identifier, this.__statement()));
+   return this.map(token, gen.LabelledStmt(identifier, this.__statement(accessors)));
 }
 
-Parser.prototype.__throwStatement = function() {
+Parser.prototype.__throwStatement = function(accessors) {
    let expr = "";
    const token = this.consumeReserved("throw");
 
-   expr = this.__expression();
+   expr = this.__expression(accessors);
    this.consumeOptionalEmpty();
    return this.map(token, gen.Throw(expr));
 }
 
-Parser.prototype.__tryStatement = function() {
+Parser.prototype.__tryStatement = function(accessors) {
    return this.map(this.consumeReserved("try"),
-		   gen.Try(this.__block(), this.__catch(), this.__finally()));
+		   gen.Try(this.__block(accessors),
+			   this.__catch(accessors),
+			   this.__finally(accessors)));
 }
 
-Parser.prototype.__catch = function() {
+Parser.prototype.__catch = function(accessors) {
    let identifier = "";
    const token = this.consume("catch");
 
    this.consume("(");
    identifier = this.__identifier();
    this.consume(")");
-   return this.map(token, gen.Catch(identifier, this.__block()));
+   return this.map(token, gen.Catch(identifier, this.__block(accessors)));
 }
 
-Parser.prototype.__finally = function() {
+Parser.prototype.__finally = function(accessors) {
    return this.map(this.consumeReserved("finally"),
-		   gen.Finally(this.__block()));
+		   gen.Finally(this.__block(accessors)));
 }
 
 Parser.prototype.__debugger = function() {
@@ -1664,7 +1690,7 @@ Parser.prototype.__debugger = function() {
 // from the parser point-of-view.
 //
 
-Parser.prototype.__functionDeclaration = function(exprContext=false) {
+Parser.prototype.__functionDeclaration = function(accessors, exprContext=false) {
    let id = undefined;
    let params = "";
    let body = "";
@@ -1675,22 +1701,22 @@ Parser.prototype.__functionDeclaration = function(exprContext=false) {
    }
 
    this.consume("(");
-   params = this.__formalParameterList();
+   params = this.__formalParameterList(accessors);
    this.consume(")");
 
    this.consume("{");
-   body = this.__functionBody();
+   body = this.__functionBody(accessors);
    this.consume("}");
    return this.map(token, (exprContext
 			   ? gen.FunctionExpression(id, params, body)
 			   : gen.FunctionDeclaration(id, params, body)))
 }
 
-Parser.prototype.__functionExpression = function() {
-   return this.__functionDeclaration(true);
+Parser.prototype.__functionExpression = function(accessors) {
+   return this.__functionDeclaration(accessors, true);
 }
 
-Parser.prototype.__serviceDeclaration = function(expr=false) {
+Parser.prototype.__serviceDeclaration = function(accessors, expr=false) {
    let id = "";
    let params = "";
    let body = "";
@@ -1701,12 +1727,12 @@ Parser.prototype.__serviceDeclaration = function(expr=false) {
    }
 
    this.consume("(");
-   params = this.__formalParameterList();
+   params = this.__formalParameterList(accessors);
    this.consume(")");
 
    if (this.peek().type == "{") {
       this.consume("{");
-      body = this.__functionBody();
+      body = this.__functionBody(accessors);
       this.consume("}");
    } else {
       this.consumeOptionalEmpty();
@@ -1717,11 +1743,11 @@ Parser.prototype.__serviceDeclaration = function(expr=false) {
 			   : gen.ServiceDeclaration(id, params, body)));
 }
 
-Parser.prototype.__serviceExpression = function() {
-   return this.__serviceDeclaration(true);
+Parser.prototype.__serviceExpression = function(accessors) {
+   return this.__serviceDeclaration(accessors, true);
 }
 
-Parser.prototype.__formalParameterList = function() {
+Parser.prototype.__formalParameterList = function(accessors) {
    let params = [];
    let iter = false;
 
@@ -1732,7 +1758,7 @@ Parser.prototype.__formalParameterList = function() {
 
       if (this.peekHasType("=")) {
 	 this.consume();
-	 initExpr = this.__assignmentExpression();
+	 initExpr = this.__assignmentExpression(accessors);
       }
       params.push(this.map(token, gen.Parameter(id, initExpr)));
       if (!this.peekHasType(")")) {
@@ -1742,11 +1768,11 @@ Parser.prototype.__formalParameterList = function() {
    return params;
 }
 
-Parser.prototype.__functionBody = function() {
-   return this.__sourceElements(true);
+Parser.prototype.__functionBody = function(accessors) {
+   return this.__sourceElements(accessors, true);
 }
 
-Parser.prototype.__sourceElements = function(fn=false) {
+Parser.prototype.__sourceElements = function(accessors, fn=false) {
    let els = [];
    const token = this.peek();
 
@@ -1756,22 +1782,22 @@ Parser.prototype.__sourceElements = function(fn=false) {
       if ((!fn && tokenType == "EOF") || (fn && tokenType == "}")) {
 	 break;
       }
-      els.push(this.__sourceElement());
+      els.push(this.__sourceElement(accessors));
    }
    return gen.Program(els);
 }
 
-Parser.prototype.__sourceElement = function() {
+Parser.prototype.__sourceElement = function(accessors) {
    let peeked = this.peek();
 
    switch (peeked.value) {
    case "EOF":
       this.unexpectedToken(peeked);
    case "function":
-      return this.__functionDeclaration();
+      return this.__functionDeclaration(accessors);
    case "service":
-      return this.__serviceDeclaration();
+      return this.__serviceDeclaration(accessors);
    default:
-      return this.__statement();
+      return this.__statement(accessors);
    }
 }

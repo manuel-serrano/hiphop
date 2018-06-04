@@ -282,7 +282,7 @@ const accmap = {
    'INOUT': 3
 }
 
-exports.Signal = (id, accessibility, initExpr, combineExpr) => {
+exports.Signal = (id, accessibility, initExpr, initAccessors,combineExpr) => {
    const direction = accessibility ? ["accessibility: ", accmap[accessibility], ","] : undefined;
    const iexpr = initExpr ? ["initApply: function(){return ", initExpr, "},"] : undefined;
    let combexpr = undefined;
@@ -298,7 +298,12 @@ exports.Signal = (id, accessibility, initExpr, combineExpr) => {
 	 combexpr.push("combine: ", combineExpr.identifier);
       }
    }
-   return [id, "=${{", direction, iexpr, combexpr, "}}"];
+
+   const iacc = ["initAccessors: ["];
+   iacc.push(hhExpandAccessors(initAccessors));
+   iacc.push("],");
+	 
+   return [id, "=${{", direction, iexpr, iacc, combexpr, "}}"];
 }
 
 exports.HHSequence = stmts => ["<hh.sequence>", list(stmts, ""), "</hh.sequence>"];
@@ -309,8 +314,11 @@ exports.HHPause = () => `<hh.pause/>`;
 
 exports.HHNothing = () => `<hh.nothing/>`;
 
-exports.HHIf = (test, t, e) => [
-   "<hh.if ", hhExpr("apply", test), ">", t, e, "</hh.if>"
+exports.HHIf = (test, accessors, t, e) => [
+   "<hh.if ",
+   hhExpr("apply", test),
+   " ", hhAccessors("applyAccessors", accessors),
+   ">", t, e, "</hh.if>"
 ];
 
 exports.HHFork = (branches, forkId) => {
@@ -334,7 +342,11 @@ exports.HHLoopeach = (texpr, body) => [
 
 exports.HHAwait = texpr => ["<hh.await ", texpr, "/>"];
 
-exports.HHEmitExpr = (id, expr) => expr ? [id, hhExpr(" apply", expr)] : id;
+exports.HHEmitExpr = (id, expr, accessors) => expr ? [
+   id,
+   hhExpr(" apply", expr),
+   hhAccessors(" applyAccessors", accessors)
+] : id;
 
 function emit(args, constr) {
    if (args.length == 1) {
@@ -379,22 +391,34 @@ exports.HHSuspend = (texpr, body, emitWhenSuspended) => {
    return ["<hh.suspend ", texpr, " ", ews, ">", body, "</hh.suspend>"];
 }
 
-exports.HHSuspendToggle = (expr, body, emitWhenSuspended) => {
+exports.HHSuspendToggle = (expr, exprAccessors, body, emitWhenSuspended) => {
    const ews = emitWhenSuspended ? ["emitWhenSuspended=", emitWhenSuspended] : undefined;
    return [
-      "<hh.suspend ", hhExpr("toggleApply", expr), " ", ews, ">",
+      "<hh.suspend ",
+      hhExpr("toggleApply", expr),
+      hhAccessors(" toggleAccessors", exprAccessors),
+      " ", ews, ">",
       body,
       "</hh.suspend>"
    ];
 }
 
-exports.HHSuspendFromTo = (from, to, immediate, body, emitWhenSuspended) => {
+exports.HHSuspendFromTo = (from, fromAccessors,
+			   to, toAccessors,
+			   immediate,
+			   body,
+			   emitWhenSuspended) => {
    const immBuf = immediate ? "immediate" : "";
    const fromArr = hhExpr("fromApply", from);
+   const fromAccessors = hhAccessors("fromAccessors", fromAccessors);
    const toArr = hhExpr("toApply", to);
+   const toAccessors = hhAccessors("toAccessors", toAccessors);
    const ews = emitWhenSuspended ? ["emitWhenSuspended=", emitWhenSuspended] : undefined;
    return [
-      "<hh.suspend ${immBuf} ", fromArr, " ", toArr, " ", ews, ">",
+      "<hh.suspend ${immBuf} ",
+      fromArr, " ", toAccessors, " ",
+      toArr, " ", toAccessors, " ",
+      ews, ">",
       body,
       "</hh.suspend>"
    ];
@@ -414,20 +438,22 @@ exports.HHExecParams = params => {
    return paramsArr;
 };
 
-exports.HHExec = (startExpr, params) => HHExecEmit(undefined, startExpr, params);
+exports.HHExec = (startExpr, startAccessors, params) => (
+   HHExecEmit(undefined, startExpr, startAccessors, params)
+);
 
-const HHExecEmit = (id, startExpr, params) => [
+const HHExecEmit = (id, startExpr, startAccessors, params) => [
    "<hh.exec ",
    id,
-   " ",
-   hhJSStmt("apply", startExpr),
+   hhJSStmt(" apply", startExpr),
+   hhAccessors(" applyAccessors", startAccessors),
    " ",
    params,
    "/>"
 ];
 exports.HHExecEmit = HHExecEmit;
 
-exports.HHPromise = (thenId, catchId, expr, params) => [
+exports.HHPromise = (thenId, catchId, expr, exprAccessors,params) => [
    "<hh.local promiseReturn>",
    "<hh.exec promiseReturn apply=${function(){",
    "let self = this;",
@@ -435,14 +461,18 @@ exports.HHPromise = (thenId, catchId, expr, params) => [
    "self.terminateExecAndReact({resolve: true, value: v});",
    "}).catch(function(v) {self.terminateExecAndReact(",
    "{resolve: false, value: v}); }); }} ",
+   hhAccessors("applyAccessors", exprAccessors),
    params, "/>",
-   "<hh.if apply=${function() {return this.value.promiseReturn.resolve}}>",
+   "<hh.if apply=${function() {return this.value.promiseReturn.resolve}}",
+   " applyAccessors=${[{type:'value', name:'promiseReturn'}]}>",
    "<hh.emit ",
    thenId,
-   " apply=${function() { return this.value.promiseReturn.value;}}/>",
+   " apply=${function() { return this.value.promiseReturn.value;}}",
+   " applyAccessors=${[{type:'value', name:'promiseReturn'}]} />",
    "<hh.emit ",
    catchId,
-   " apply=${function() { return this.value.promiseReturn.value; }}/>",
+   " apply=${function() { return this.value.promiseReturn.value; }}",
+   " applyAccessors=${[{type:'value', name:'promiseReturn'}]}/>",
    "</hh.if></hh.local>"
 ];
 
@@ -455,12 +485,17 @@ exports.HHBlock = (varDecls, seq) => {
    return ["${(function(){", list(varDecls, ""), " return ", seq, "})()}"];
 }
 
-exports.HHAtom = jsStmts => ["<hh.atom ", hhJSStmt("apply", jsStmts), "/>"];
+exports.HHAtom = (jsStmts, accessors) => [
+   "<hh.atom ",
+   hhAccessors("applyAccessors", accessors),
+   hhJSStmt(" apply", jsStmts),
+   "/>"
+];
 
-exports.HHWhile = (expr, body) => [
+exports.HHWhile = (texpr, body) => [
    "<hh.trap While>",
    "<hh.loop>",
-   "<hh.if ", expr, ">",
+   "<hh.if ", texpr, ">",
    "<hh.nothing/>",
    "<hh.exit While/>",
    "</hh.if>",
@@ -483,19 +518,44 @@ exports.HHFor = (declList, whileExpr, eachStmt, body) => [
    "</hh.trap>"
 ];
 
-const hhExpr = (attr, expr) => [attr, "=", "${function(){return ", expr, "}}"];
+const hhExpr = (attr, expr) => [
+   attr, "=","${function(){return ", expr, "}}"
+];
 
 const hhJSStmt = (attr, stmts) => [attr, "=", "${function(){", stmts, "}}"];
 
-exports.HHTemporalExpression = (immediate, expr) => [
+const hhExpandAccessors = accessors => {
+   function printAccessor(accessor, last) {
+      return `{type:'${accessor.type}', name:'${accessor.symb}'} ${last ? '' : ','}`;
+   }
+
+   const ret = [];
+   const len = accessors.length;
+   for (let i = 0; i < len; i++) {
+      ret.push(printAccessor(accessors[i], i === len - 1));
+   }
+   return ret;
+}
+
+const hhAccessors = (tag, accessors) => {
+ 
+   const ret = [" ", tag, "=${["];
+   ret.push(hhExpandAccessors(accessors));
+   ret.push("]} ");
+   return ret;
+};
+
+exports.HHTemporalExpression = (immediate, expr, accessors) => [
    immediate ? "immediate " : undefined,
-   hhExpr("apply", expr)
+   hhExpr("apply", expr),
+   hhAccessors(" applyAccessors", accessors)
 ];
 
-exports.HHCountTemporalExpression = (countExpr, expr) => [
+exports.HHCountTemporalExpression = (countExpr, countAccessors, expr, accessors) => [
    hhExpr("countApply", countExpr),
-   " ",
-   hhExpr("apply", expr)
+   hhAccessors(" countAccessors", countAccessors),
+   hhExpr(" apply", expr),
+   hhAccessors(" applyAccessors", accessors)
 ];
 
 exports.HHAccessor = (symb, id) => id ? [symb, ".", id] : [symb];
