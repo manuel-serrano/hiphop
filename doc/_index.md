@@ -9,7 +9,7 @@ allow orchestrate web applications.
 ## How to use it?
 
 * Install [Hop.js](http://hop-dev.inria.fr)
-* Download [Hiphop.js](), and extract the tarball inside
+* Download [Hiphop.js](https://www-sop.inria.fr/members/Colin.Vidal/hiphop/hiphopjs-0.0.1.tar.gz), and extract the tarball inside
 `$HOME/.node\_modules/`
 * Add theses lines on the top of Hop.js program :
 ```hopscript
