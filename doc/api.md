@@ -430,6 +430,7 @@ ${ doc.include("../tests/atom-exprs.js", 9, 13) }
 ```
 
 ### <hiphop.parallel> ###
+### <hiphop.fork> ###
 [:@glyphicon glyphicon-tag tag]
 
 Children of the node:
@@ -458,13 +459,13 @@ there are defined. The sequence is usually implicit. However, it can
 be used to avoid ambiguous situations:
 
 ```hopscript
-<hiphop.parallel>
+<hiphop.fork>
   <instruction1/>
   <instruction2/>
   <instruction3/>
   ...
   <instructionN/>
-</hiphop.parallel>
+</hiphop.fork>
 ```
 
 Here, there will be N branches executed in parallel. But if the
@@ -472,7 +473,7 @@ instruction 2 and 3 must be sequentially executed, the sequence is
 mandatory:
 
 ```hopscript
-<hiphop.parallel>
+<hiphop.fork>
   <instruction1/>
   <hiphop.sequence>
     <instruction2/>
@@ -480,7 +481,7 @@ mandatory:
   </hiphop.sequence>
   ...
   <instructionN/>
-</hiphop.parallel>
+</hiphop.fork>
 ```
 ### <hiphop.run/> ###
 [:@glyphicon glyphicon-tag tag]
