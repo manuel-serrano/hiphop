@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Wed Jul 18 13:52:38 2018 (serrano)                */
+/*    Last change :  Thu Jul 19 10:13:03 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -50,11 +50,39 @@ function J2SNumber( loc, num ) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    J2SBool ...                                                      */
+/*---------------------------------------------------------------------*/
+function J2SBool( loc, bool ) {
+   return new ast.J2SBool( loc, false, false, false,
+			     "bool" /* type */, null /* hint */,
+			     false /* range */, bool );
+}
+
+/*---------------------------------------------------------------------*/
 /*    J2SRef ...                                                       */
 /*---------------------------------------------------------------------*/
 function J2SRef( loc, id ) {
    return new ast.J2SUnresolvedRef( loc, undefined, undefined, undefined,
 				    "any", null, undefined, false, id );
+}
+
+/*---------------------------------------------------------------------*/
+/*    J2SHopRef ...                                                    */
+/*---------------------------------------------------------------------*/
+function J2SHopRef( loc, id ) {
+   return new ast.J2SHopRef( loc, undefined, undefined, undefined,
+			     "any" /* type */, null /* hint */,
+			     undefined /* range */, id,
+			     "any" /* itype */, "any" /* rtype */,
+			     "any" /* vtype */, false /* module */ );
+}
+
+/*---------------------------------------------------------------------*/
+/*    J2SThis ...                                                      */
+/*---------------------------------------------------------------------*/
+function J2SThis( loc, decl ) {
+   return new ast.J2SThis( loc, undefined, undefined, undefined,
+			   "any", null, undefined, false, decl );
 }
 
 /*---------------------------------------------------------------------*/
@@ -161,7 +189,10 @@ exports.J2SNull = J2SNull;
 exports.J2SUndefined = J2SUndefined;
 exports.J2SString = J2SString;
 exports.J2SNumber = J2SNumber;
+exports.J2SBool = J2SBool;
 exports.J2SRef = J2SRef;
+exports.J2SHopRef = J2SHopRef;
+exports.J2SThis = J2SThis;
 exports.J2SAccess = J2SAccess;
 exports.J2SCall = J2SCall;
 exports.J2SObjInit = J2SObjInit;

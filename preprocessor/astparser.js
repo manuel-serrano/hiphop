@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Jul 18 16:55:51 2018 (serrano)                */
+/*    Last change :  Thu Jul 19 08:56:50 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -78,15 +78,63 @@ function hhref( loc, name ) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseHHExpression ...                                            */
+/*    parseHHAccessors ...                                             */
 /*---------------------------------------------------------------------*/
-function parseHHExpression() {
-   this.addPlugin( "NOW", parseNow );
-   this.addPlugin( "PRE", parsePre );
-   this.addPlugin( "VAL", parseVal );
-   this.addPlugin( "PREVAL", parsePreval );
+function parseHHAccessors( parser ) {
+   
+   let accessors = [];
+
+   const hhparser = function( token ) {
+      const loc = token[ "%location" ];
+      let pre = false, val = false, access = "present";
+      
+      this.consumeToken( this.LPAREN );
+      const tid = this.consumeToken( this.ID );
+      const ltid = tid[ "%location" ];
+      
+      this.consumeToken( this.RPAREN );
+
+      switch( token.value ) {
+	 case "NOW": break;
+	 case "PRE": pre = true; access = "pre"; break;
+	 case "VAL": val = true; access = "value"; break;
+	 case "PREVAL": pre = true, val = true; access = "preValue"; break;
+      }
+
+      const signame = astutils.J2SDataPropertyInit(
+	 ltid,
+	 astutils.J2SString( ltid, "signame" ),
+	 astutils.J2SString( ltid,  tid.value ) );
+      const sigpre = astutils.J2SDataPropertyInit(
+	 ltid,
+	 astutils.J2SString( ltid, "pre" ),
+	 astutils.J2SBool( ltid, pre ) );
+      const sigval = astutils.J2SDataPropertyInit(
+	 ltid,
+	 astutils.J2SString( ltid, "val" ),
+	 astutils.J2SBool( ltid, val ) );
+      const attrs = astutils.J2SObjInit( loc, [ signame, sigpre, sigval ] );
+      const sigaccess = astutils.J2SCall(
+	 loc, hhref( loc, "SIGACCESS" ), null, [ attrs ] );
+
+      // push the accessor dependencies list
+      accessors.push( sigaccess );
+
+      // return the actual expression
+      return astutils.J2SAccess(
+	 ltid,
+	 astutils.J2SAccess( ltid,
+			     astutils.J2SHopRef( loc, "this" ),
+			     astutils.J2SString( loc, access ) ),
+	 astutils.J2SString( ltid, tid.value ) );
+   }
+   
+   this.addPlugin( "NOW", hhparser );
+   this.addPlugin( "PRE", hhparser );
+   this.addPlugin( "VAL", hhparser );
+   this.addPlugin( "PREVAL", hhparser );
    try {
-      return this.parseExpression();
+      return parser( accessors );
    } finally {
       this.removePlugin( "PREVAL" );
       this.removePlugin( "VAL" );
@@ -96,33 +144,48 @@ function parseHHExpression() {
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseNow ...                                                     */
+/*    parseHHExpression ...                                            */
 /*---------------------------------------------------------------------*/
-function parseNow() {
-   console.log( "parseNow" );
+function parseHHExpression() {
+   return parseHHAccessors.call( this, accessors => {
+      const expr = this.parseExpression();
+      return { expr: expr, accessors: accessors };
+   } );
 }
 
 /*---------------------------------------------------------------------*/
-/*    parsePre ...                                                     */
+/*    parseAtomBlock ...                                               */
 /*---------------------------------------------------------------------*/
-function parsePre() {
-   console.log( "parsePre" );
+function parseAtomBlock() {
+   return parseHHAccessors.call( this, accessors => {
+      const block = this.parseBlock();
+      return { block: block, accessors: accessors };
+   } );
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseVal ...                                                     */
+/*    parseDelay ...                                                   */
 /*---------------------------------------------------------------------*/
-function parseVal() {
-   console.log( "parseVal" );
-}
+function parseDelay() {
+   if( isIdToken( this, this.peekToken(), "COUNT" ) ) {
+      this.consumeAny();
+      this.consumeToken( this.LPAREN );
+      const { expr: count, accessors } = parseHHExpression.call( this );
+      this.consumeToken( this.COMMA );
+      const { expr, accessors } = parseHHExpression.call( this );
+      this.consumeToken( this.RPAREN );
+      return { expr: expr, count: count, immediate: false, accessors: accessors };
+   } else if( isIdToken( this, this.peekToken(), "IMMEDIATE" ) ) {
+      this.consumeAny();
+      const { expr, accessors } = parseHHExpression.call( this );
+      return { expr: expr, count: false, immediate: true, accessors: accessors };
+   } else {
+      const { expr, accessors } = parseHHExpression.call( this );
 
-/*---------------------------------------------------------------------*/
-/*    parsePreval ...                                                  */
-/*---------------------------------------------------------------------*/
-function parsePreval() {
-   console.log( "parsePreval" );
+      return { expr: expr, count: false, immediate: false, accessors: accessors };
+   }
 }
-
+      
 /*---------------------------------------------------------------------*/
 /*    parseHHBlock ...                                                 */
 /*---------------------------------------------------------------------*/
@@ -170,11 +233,14 @@ function parseHHBlock() {
 	       case "EMIT":
 		  nodes.push( parseEmit.call( this, this.consumeAny() ) );
 		  break
+	       case "SUSTAIN":
+		  nodes.push( parseSustain.call( this, this.consumeAny() ) );
+		  break
 	       case "AWAIT":
 		  nodes.push( parseAwait.call( this, this.consumeAny() ) );
 		  break
-	       case "VAL":
-		  nodes.push( parseVal.call( this, this.consumeAny() ) );
+	       case "IF":
+		  nodes.push( parseIf.call( this, this.consumeAny() ) );
 		  break
 	       default:
 		  throw tokenValueError( this.consumeAny() );
@@ -257,10 +323,6 @@ function parseModule( token ) {
    let id;
    let attrs;
 
-   #:tprint( "MOD=", #:typeof( this ) );
-
-   console.log( "this.peek=", this.peekToken );
-   
    if( this.peekToken().type === this.ID ) {
       let id = this.consumeAny();
       const locid = id[ "%location" ];
@@ -288,14 +350,17 @@ function parseModule( token ) {
 /*    parseAtom ...                                                    */
 /*---------------------------------------------------------------------*/
 function parseAtom( token ) {
+   #:tprint( "parseAtom" );
    const loc = token[ "%location" ];
+   const { block, accessors } = parseAtomBlock.call( this );
    const appl = astutils.J2SDataPropertyInit(
       loc, 
       astutils.J2SString( loc, "apply" ),
-      astutils.J2SFun( loc, [], this.parseBlock( this ) ) );
+      astutils.J2SFun( loc, [], block ) );
    const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), appl ] );
    
-   return astutils.J2SCall( loc, hhref( loc, "ATOM" ), null, [ attrs ] );
+   return astutils.J2SCall( loc, hhref( loc, "ATOM" ), null,
+			    [ attrs ].concat( accessors ) );
 }
 
 /*---------------------------------------------------------------------*/
@@ -381,9 +446,9 @@ function parseFork( token ) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseEmit ...                                                    */
+/*    parseEmitSustain ...                                             */
 /*---------------------------------------------------------------------*/
-function parseEmit( token ) {
+function parseEmitSustain( token, command ) {
    
    function parseSignalEmit( loc, locinit ) {
       const id = this.consumeToken( this.ID );
@@ -396,7 +461,7 @@ function parseEmit( token ) {
       if( this.peekToken().type === this.LPAREN ) {
 	 const lparen = this.consumeAny();
 	 const ll = lparen[ "%location" ];
-	 const expr = this.parseExpression();
+	 const { expr, accessors } = this.parseHHExpression();
 	 const rparen = this.consumeToken( this.RPAREN );
 	 const lr = rparen[ "%location" ];
 	 const fun = astutils.J2SFun(
@@ -414,8 +479,9 @@ function parseEmit( token ) {
       }
 
       
-      return astutils.J2SCall( loc, hhref( loc, "EMIT" ), null,
-			       [ astutils.J2SObjInit( locid, inits ) ] );
+      return astutils.J2SCall(
+	 loc, hhref( loc, command ), null,
+	 [ astutils.J2SObjInit( locid, inits ) ].concat( accessors ) );
    }
 
    const loc = token[ "%location" ];
@@ -436,38 +502,88 @@ function parseEmit( token ) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseDelay ...                                                   */
+/*    parseEmit ...                                                    */
 /*---------------------------------------------------------------------*/
-function parseDelay() {
-   if( isIdToken( this, this.peekToken(), "COUNT" ) ) {
-      this.consumeAny();
-      this.consumeToken( this.LPAREN );
-      const count = this.parseExpression();
-      this.consumeToken( this.COMMA );
-      const expr = this.parseExpression();
-      this.consumeToken( this.RPAREN );
-   } else if( isIdToken( this, this.peekToken(), "IMMEDIATE" ) ) {
-      this.consumeAny();
-      const expr = this.parseExpression();
-   } else {
-      const expr = this.parseExpression();
-   }
+function parseEmit( token ) {
+   return parseEmitSustain( token, "EMIT" );
 }
-      
+
+/*---------------------------------------------------------------------*/
+/*    parseSustain ...                                                 */
+/*---------------------------------------------------------------------*/
+function parseSustain( token ) {
+   return parseEmitSustain( token, "SUSTAIN" );
+}
+
 /*---------------------------------------------------------------------*/
 /*    parseAwait ...                                                   */
 /*---------------------------------------------------------------------*/
 function parseAwait( token ) {
    const loc = token[ "%location" ];
-   const id = this.consumeToken( this.ID );
-   const locid = id[ "%location" ];
-   const init =  astutils.J2SDataPropertyInit(
-      locid,
-      astutils.J2SString( locid, id.value ),
-      astutils.J2SString( locid, id.value ) );
-   const sig = astutils.J2SObjInit( locid, [ init ] );
+   const { expr, count, immediate, accessors } = parseDelay.call( this );
+
+   const fun = astutils.J2SFun(
+      loc, [],
+      astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, expr ) ] ) );
+   const cntfun = count
+	 ? astutils.J2SFun(
+	    loc, [],
+	    astutils.J2SBlock(
+	       loc, loc,
+	       [ astutils.J2SStmtExpr( loc, astutils.J2SReturn( loc, count ) ) ] ) )
+	 : false;
+   const appl = astutils.J2SDataPropertyInit(
+      loc,
+      astutils.J2SString( loc, "apply" ),
+      fun );
+   const imm = astutils.J2SDataPropertyInit(
+      loc,
+      astutils.J2SString( loc, "immediate" ),
+      astutils.J2SBool( loc, immediate ) );
+   const cntappl = cntfun
+	 ? astutils.J2SDataPropertyInit(
+	    loc,
+	    astutils.J2SString( loc, "countapply" ),
+	    cntfun )
+	 : false;
+   const attrs = cntappl
+	 ? astutils.J2SObjInit( loc, [ appl, cntappl, imm ] )
+	 : astutils.J2SObjInit( loc, [ appl, imm ] );
    
-   return astutils.J2SCall( loc, hhref( loc, "AWAIT" ), null, [ sig ] );
+   return astutils.J2SCall( loc, hhref( loc, "AWAIT" ),
+			    null,
+			    [ attrs ].concat( accessors ) );
+}
+
+/*---------------------------------------------------------------------*/
+/*    parseIf ...                                                      */
+/*---------------------------------------------------------------------*/
+function parseIf( token ) {
+   const loc = token[ "%location" ];
+
+   this.consumeToken( this.LPAREN );
+   const { expr: expr, accessors } = parseHHExpression.call( this );
+   this.consumeToken( this.RPAREN );
+
+   const fun = astutils.J2SFun(
+      loc, [],
+      astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, expr ) ] ) );
+   const appl = astutils.J2SDataPropertyInit(
+      loc,
+      astutils.J2SString( loc, "apply" ),
+      fun );
+   const attrs = astutils.J2SObjInit( loc, [ appl ] );
+
+   const then = parseHHBlock.call( this );
+
+   const args = [ attrs ].concat( accessors );
+   args.push( then );
+   if( this.peekToken().type == this.ELSE ) {
+      this.consumeAny();
+      args.push( parseHHBlock.call( this ) );
+   }
+
+   return astutils.J2SCall( loc, hhref( loc, "IF" ), null, args );
 }
 
 /*---------------------------------------------------------------------*/
@@ -481,6 +597,8 @@ parser.addPlugin( "HALT", parseHalt );
 parser.addPlugin( "SEQUENCE", parseSequence );
 parser.addPlugin( "FORK", parseFork );
 parser.addPlugin( "EMIT", parseEmit );
+parser.addPlugin( "SUSTAIN", parseSustain );
 parser.addPlugin( "AWAIT", parseAwait );
+parser.addPlugin( "IF", parseIf );
 
 exports.parse = parser.parse.bind( parser );
