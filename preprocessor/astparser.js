@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Jul 19 13:30:43 2018 (serrano)                */
+/*    Last change :  Thu Jul 19 17:11:36 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -247,6 +247,9 @@ function parseHHBlock() {
 		  break
 	       case "WEAKABORT":
 		  nodes.push( parseWeakabort.call( this, this.consumeAny() ) );
+		  break
+	       case "SUSPEND":
+		  nodes.push( parseSuspend.call( this, this.consumeAny() ) );
 		  break
 	       default:
 		  throw tokenValueError( this.consumeAny() );
@@ -601,7 +604,7 @@ function parseAbortWeakabort( loc, command ) {
    
    const block = astutils.J2SBlock( loc, loc, parseHHBlock.call( this ) );
    
-   return astutils.J2SCall( loc, hhref( loc, command ), null, [ block] );
+   return astutils.J2SCall( loc, hhref( loc, command ), null, [ block ] );
 }
    
 /*---------------------------------------------------------------------*/
@@ -617,7 +620,65 @@ function parseAbort( token ) {
 function parseWeakAbort( token ) {
    return parseAbortWeakabort( token[ "%location" ], "WEAKABORT" );
 }
+
+/*---------------------------------------------------------------------*/
+/*    parseSuspend ...                                                 */
+/*---------------------------------------------------------------------*/
+function parseSuspend( token ) {
+
+   function parseEmitwhensuspended( inits ) {
+      if( isIdToken( this, this.peekToken(), "EMITWHENSUSPENDED" ) ) {
+	 const l = this.consumeAny()[ "%location" ];
+	 const id = this.consumeToken( this.id );
+
+	 inits.push( 
+	    astutils.J2SDataPropertyInit(
+	       l,
+	       astutils.J2SString( l, "immediate" ),
+	       astutils.J2SString( id[ "%location" ], id.value ) ) )
+      }
+   }
+
+      
+   const loc = token[ "%location" ];
+   let delay;
+   let inits = [];
    
+   if( isIdToken( this, this.peekToken(), "FROM" ) ) {
+      // SUSPEND FROM delay TO delay [whenemitsuspended] BLOCK
+      this.consumeAny();
+      
+      const { fexpr, fcount, fimmediate, faccessors } = parseDelay.call( this );
+
+      if( !isIdToken( this, this.peekToken(), "TO" ) ) {
+	 const t = this.consumeAny();
+	 throw new SyntaxError( "SUSPEND: unexpected token `" + t.value + "'",
+				t[ "%location" ] );
+      }
+
+      parseEmitwhensuspended( inits );
+      
+      const to = parseDelay.call( this );
+
+      const block= parseHHBlock.call( this );
+   } else if( isIdToken( this, this.peekToken(), "TOGGLE" ) ) {
+      // SUSPEND TOGGLE delay [whenemitsuspended] BLOCK
+      this.consumeAny();
+      const delay = parseDelay.call( this );
+      
+      parseEmitwhensuspended( inits );
+      
+      const block = parseHHBlock.call( this );
+   } else {
+      // SUSPEND delay BLOCK
+      const { dexpr, dcount, dimmediate, daccessors } = parseDelay.call( this );
+      const block = parseHHBlock.call( this );
+   }
+
+   const attrs = astutils.J2SObjInit( loc, inits );
+   return astutils.J2SCall( loc, hhref( loc, "SUSPEND" ), null, [ block ] );
+}
+
 /*---------------------------------------------------------------------*/
 /*    exports                                                          */
 /*---------------------------------------------------------------------*/
@@ -634,5 +695,6 @@ parser.addPlugin( "AWAIT", parseAwait );
 parser.addPlugin( "IF", parseIf );
 parser.addPlugin( "ABORT", parseAbort );
 parser.addPlugin( "WEAKABORT", parseAbort );
+parser.addPlugin( "SUSPEND", parseSuspend );
 
 exports.parse = parser.parse.bind( parser );
