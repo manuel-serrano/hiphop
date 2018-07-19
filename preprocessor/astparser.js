@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Jul 19 08:56:50 2018 (serrano)                */
+/*    Last change :  Thu Jul 19 13:30:43 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -241,6 +241,12 @@ function parseHHBlock() {
 		  break
 	       case "IF":
 		  nodes.push( parseIf.call( this, this.consumeAny() ) );
+		  break
+	       case "ABORT":
+		  nodes.push( parseAbort.call( this, this.consumeAny() ) );
+		  break
+	       case "WEAKABORT":
+		  nodes.push( parseWeakabort.call( this, this.consumeAny() ) );
 		  break
 	       default:
 		  throw tokenValueError( this.consumeAny() );
@@ -574,18 +580,44 @@ function parseIf( token ) {
       fun );
    const attrs = astutils.J2SObjInit( loc, [ appl ] );
 
-   const then = parseHHBlock.call( this );
+   const then = astutils.J2SBlock( loc, loc, parseHHBlock.call( this ) );
 
    const args = [ attrs ].concat( accessors );
    args.push( then );
+   
    if( this.peekToken().type == this.ELSE ) {
-      this.consumeAny();
-      args.push( parseHHBlock.call( this ) );
+      const loce = this.consumeAny()[ "%location" ];
+      args.push( astutils.J2SBlock( loce, loce, parseHHBlock.call( this ) ) );
    }
 
    return astutils.J2SCall( loc, hhref( loc, "IF" ), null, args );
 }
 
+/*---------------------------------------------------------------------*/
+/*    parseAbortWeakabort ...                                          */
+/*---------------------------------------------------------------------*/
+function parseAbortWeakabort( loc, command ) {
+   const loc = token[ "%location" ];
+   
+   const block = astutils.J2SBlock( loc, loc, parseHHBlock.call( this ) );
+   
+   return astutils.J2SCall( loc, hhref( loc, command ), null, [ block] );
+}
+   
+/*---------------------------------------------------------------------*/
+/*    parseAbort ...                                                   */
+/*---------------------------------------------------------------------*/
+function parseAbort( token ) {
+   return parseAbortWeakabort( token[ "%location" ], "ABORT" );
+}
+   
+/*---------------------------------------------------------------------*/
+/*    parseWeakabort ...                                               */
+/*---------------------------------------------------------------------*/
+function parseWeakAbort( token ) {
+   return parseAbortWeakabort( token[ "%location" ], "WEAKABORT" );
+}
+   
 /*---------------------------------------------------------------------*/
 /*    exports                                                          */
 /*---------------------------------------------------------------------*/
@@ -600,5 +632,7 @@ parser.addPlugin( "EMIT", parseEmit );
 parser.addPlugin( "SUSTAIN", parseSustain );
 parser.addPlugin( "AWAIT", parseAwait );
 parser.addPlugin( "IF", parseIf );
+parser.addPlugin( "ABORT", parseAbort );
+parser.addPlugin( "WEAKABORT", parseAbort );
 
 exports.parse = parser.parse.bind( parser );
