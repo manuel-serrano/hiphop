@@ -7,15 +7,17 @@ fi
 space="     "
 dir=$(pwd)
 hop="/usr/local/bin/$HOPBIN"
-hop_opt="--no-server --no-sofile -q"
+hop_opt="--no-server --no-sofile -q -g"
 CC=/usr/bin/gcc
 batchfile=/tmp/batch.js
 output_hop=/tmp/TEST-HOPJS.out
 
 run_test() {
-    i=$((i + 1))
+  i=$((i + 1))
+  file=$1
+  suf=$2
 
-    echo -n "$i. $file ... "
+    echo -n "$i. $file$suf ... "
 
     if [ -f $file.in ]; then
 	cat <<EOF > $batchfile
@@ -23,7 +25,7 @@ run_test() {
 "use strict"
 
 const batch = require("hiphop");
-let test = require("$dir/$file.js");
+let test = require("$dir/$file$suf.js", "hiphop");
 
 if (test.prg)
    try {
@@ -43,6 +45,7 @@ EOF
     then
 	echo -en "\x1B[31m\x1B[1mfailure\x1B[0m"
 	failure=$(($failure+1))
+	cat $output_hop
     else
 	echo -en "\x1B[32m\x1B[1mok\x1B[0m"
 	success=$(($success+1))
@@ -67,8 +70,9 @@ then
     exit 1
 fi
 
-if [ "$1" == "-g" ] || [ "$2" == "-g" ]; then
-    hop_opt+=" -g"
+if [ "$1" == "-g" ]; then
+  hop_opt+=" -g";
+  shift
 fi
 
 if [ "$1" != "" ]; then
@@ -82,15 +86,31 @@ if [ "$1" != "" ]; then
 fi
 
 init_stats
-clear
+
 echo -e "\x1B[1m$space*** HIPHOP.JS TESTS ***\x1B[0m"
-for file in *.out
-do
+
+if [ "$1 " != " " ]; then
+  file=`basename $1 .js`
+  file=`basename $file .hh`
+  
+  if [ "$file.js" = $1 -a -f $file.js ]; then
+    run_test $file
+  fi
+  if [ "$file.hh.js" = $1 -a -f $file.hh.js ]; then
+    run_test $file .hh
+  fi
+else
+  for file in *.out; do
     file=${file%.*}
     if [ -f $file.js ]; then
-	run_test
+      run_test $file
     fi
-done
+    if [ -f $file.hh.js ]; then
+      run_test $file .hh
+    fi
+  done
+fi
+
 print_stats
 
 rm $batchfile
