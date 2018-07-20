@@ -7,10 +7,12 @@ fi
 space="     "
 dir=$(pwd)
 hop="/usr/local/bin/$HOPBIN"
-hop_opt="--no-server --no-sofile -q -g"
+hop_opt="--no-server --no-sofile -q"
 CC=/usr/bin/gcc
 batchfile=/tmp/batch.js
 output_hop=/tmp/TEST-HOPJS.out
+verb=
+debug=
 
 run_test() {
   i=$((i + 1))
@@ -35,6 +37,9 @@ if (test.prg)
       process.exit(1);
    }
 EOF
+	if [ "$verb " != " " ]; then
+	  echo "$hop $hop_opt $batchfile"
+	fi
 	$hop $hop_opt $batchfile < $file.in > $output_hop
     else
 	$hop $hop_opt $file.js > $output_hop
@@ -45,7 +50,11 @@ EOF
     then
 	echo -en "\x1B[31m\x1B[1mfailure\x1B[0m"
 	failure=$(($failure+1))
-	cat $output_hop
+
+	if [ "$debug " != " " ]; then
+	  cat $output_hop
+	  exit 1
+	fi
     else
 	echo -en "\x1B[32m\x1B[1mok\x1B[0m"
 	success=$(($success+1))
@@ -70,20 +79,24 @@ then
     exit 1
 fi
 
-if [ "$1" == "-g" ]; then
-  hop_opt+=" -g";
-  shift
-fi
+while : ; do
+  case $1 in
+    "")
+      break;;
 
-if [ "$1" != "" ]; then
-    file=${1%.*}
-    if [ -f $file.out ]; then
-	echo -e "\x1B[1m$space*** DEBUG TEST FOR $file. ***"
-	echo -e "$space*** TMP FILES WILL NOT BE REMOVED ***\x1B[0m"
-	run_test
-	exit 0
-    fi
-fi
+    -v)
+      verb="$verb -v";;
+
+    -g)
+      debug=yes;
+      hop_opt+=" -g";;
+
+    *)
+      break
+  esac
+
+  shift
+done
 
 init_stats
 

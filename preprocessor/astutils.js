@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Thu Jul 19 10:13:03 2018 (serrano)                */
+/*    Last change :  Fri Jul 20 19:38:07 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -138,14 +138,14 @@ function J2SPragma( loc, lang, vars, vals, expr ) {
 /*---------------------------------------------------------------------*/
 /*    J2SFun ...                                                       */
 /*---------------------------------------------------------------------*/
-function J2SFun( loc, params, body ) {
+function J2SFun( loc, name, params, body ) {
    return new ast.J2SFun( loc, undefined, undefined, undefined,
 			  "unknown" /* type */, null /* hint */,
 			  undefined /* range */, "unknown" /* rtype */,
 			  "this" /* idthis */, false /* idgen */,
 			  "normal" /* mode */, false /* decl */,
 			  false /* need_bind_exit_return */, false /* vararg */,
-			  "" /* name */, false /* generator */,
+			  name /* name */, false /* generator */,
 			  true /* optimize */, false /* thisp */,
 			  params, 3 /* constrsize */, false /* src */,
 			  false /* _method */, false /* ismethodof */, body );

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Jul 20 08:50:03 2018 (serrano)                */
+/*    Last change :  Fri Jul 20 19:39:11 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -100,7 +100,7 @@ function parseHHAccessors( parser ) {
 
       switch( token.value ) {
 	 case "NOW": break;
-	 case "PRE": pre = true; access = "pre"; break;
+	 case "PRE": pre = true; access = "prePresent"; break;
 	 case "VAL": val = true; access = "value"; break;
 	 case "PREVAL": pre = true, val = true; access = "preValue"; break;
       }
@@ -198,10 +198,10 @@ function parseDelay( loc, action = "apply", id = false ) {
       this.consumeToken( this.RPAREN );
 
       const fun = astutils.J2SFun(
-	 loc, [],
+	 loc, "delayfun", [], 
 	 astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, expr ) ] ) );
       const cntfun = astutils.J2SFun(
-	 loc, [],
+	 loc, "cntfun", [], 
 	 astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, count ) ] ) );
 
       const inits = [
@@ -229,7 +229,7 @@ function parseDelay( loc, action = "apply", id = false ) {
       const { expr, accessors } = parseHHExpression.call( this );
       
       const fun = astutils.J2SFun(
-	 loc, [],
+	 loc, "hhexprfun", [], 
 	 astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, expr ) ] ) );
       
       const inits = [
@@ -444,7 +444,7 @@ function parseAtom( token ) {
    const appl = astutils.J2SDataPropertyInit(
       loc, 
       astutils.J2SString( loc, "apply" ),
-      astutils.J2SFun( loc, [], block ) );
+      astutils.J2SFun( loc, "atomfun", [], block ) );
    const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), appl ] );
    
    return astutils.J2SCall( loc, hhref( loc, "ATOM" ), null,
@@ -571,7 +571,7 @@ function parseEmitSustain( token, command ) {
 	 const rparen = this.consumeToken( this.RPAREN );
 	 const lr = rparen.location;
 	 const fun = astutils.J2SFun(
-	    ll, [],
+	    ll, "emitfun", [],
 	    astutils.J2SBlock(
 	       ll, lr,
 	       [ astutils.J2SReturn( ll, expr ) ] ) );
@@ -628,49 +628,6 @@ function parseSustain( token ) {
    return parseEmitSustain.apply( this, [ token, "SUSTAIN" ] );
 }
 
-/* {*---------------------------------------------------------------------*} */
-/* {*    parseAwait ...                                                   *} */
-/* {*    -------------------------------------------------------------    *} */
-/* {*    stmt ::= ...                                                     *} */
-/* {*       | AWAIT delay                                                 *} */
-/* {*---------------------------------------------------------------------*} */
-/* function parseAwait( token ) {                                      */
-/*    const loc = token[ "%location" ];                                */
-/*    const { expr, count, immediate, accessors } = parseDelay.call( this ); */
-/*                                                                     */
-/*    const fun = astutils.J2SFun(                                     */
-/*       loc, [],                                                      */
-/*       astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, expr ) ] ) ); */
-/*    const cntfun = count                                             */
-/* 	 ? astutils.J2SFun(                                            */
-/* 	    loc, [],                                                   */
-/* 	    astutils.J2SBlock(                                         */
-/* 	       loc, loc,                                               */
-/* 	       [ astutils.J2SStmtExpr( loc, astutils.J2SReturn( loc, count ) ) ] ) ) */
-/* 	 : false;                                                      */
-/*    const appl = astutils.J2SDataPropertyInit(                       */
-/*       loc,                                                          */
-/*       astutils.J2SString( loc, "apply" ),                           */
-/*       fun );                                                        */
-/*    const imm = astutils.J2SDataPropertyInit(                        */
-/*       loc,                                                          */
-/*       astutils.J2SString( loc, "immediate" ),                       */
-/*       astutils.J2SBool( loc, immediate ) );                         */
-/*    const cntappl = cntfun                                           */
-/* 	 ? astutils.J2SDataPropertyInit(                               */
-/* 	    loc,                                                       */
-/* 	    astutils.J2SString( loc, "countapply" ),                   */
-/* 	    cntfun )                                                   */
-/* 	 : false;                                                      */
-/*    const attrs = cntappl                                            */
-/* 	 ? astutils.J2SObjInit( loc, [ appl, cntappl, imm ] )          */
-/* 	 : astutils.J2SObjInit( loc, [ appl, imm ] );                  */
-/*                                                                     */
-/*    return astutils.J2SCall( loc, hhref( loc, "AWAIT" ),             */
-/* 			    null,                                      */
-/* 			    [ attrs ].concat( accessors ) );           */
-/* }                                                                   */
-
 /*---------------------------------------------------------------------*/
 /*    parseAwait ...                                                   */
 /*    -------------------------------------------------------------    */
@@ -702,7 +659,7 @@ function parseIf( token ) {
    this.consumeToken( this.RPAREN );
 
    const fun = astutils.J2SFun(
-      loc, [],
+      loc, "iffun", [],
       astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, expr ) ] ) );
    const appl = astutils.J2SDataPropertyInit(
       loc,
