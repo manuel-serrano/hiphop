@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sat Jul 21 06:50:53 2018 (serrano)                */
+/*    Last change :  Sat Jul 21 08:15:13 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -579,7 +579,7 @@ function parseEmitSustain( token, command ) {
 
 	 const val = astutils.J2SDataPropertyInit(
 	    locid,
-	    astutils.J2SString( locid, "ifapply" ),
+	    astutils.J2SString( locid, "apply" ),
 	    fun );
 
 	 inits.push( val );
