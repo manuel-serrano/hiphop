@@ -38,15 +38,29 @@ if (test.prg)
    }
 EOF
 	if [ "$verb " != " " ]; then
+	  echo "$hop $hop_opt $batchfile < $file.in"
+	fi
+    
+	$hop $hop_opt $batchfile < $file.in > $output_hop 2>&1
+	status=$?
+    else
+	cat <<EOF > $batchfile
+"use hopscript"
+"use strict"
+
+const batch = require("hiphop");
+let test = require("$dir/$file$suf.js", "hiphop");
+EOF
+	if [ "$verb " != " " ]; then
 	  echo "$hop $hop_opt $batchfile"
 	fi
-	$hop $hop_opt $batchfile < $file.in > $output_hop
-    else
-	$hop $hop_opt $file.js > $output_hop
+	$hop $hop_opt $batchfile > $output_hop 2>&1
+	status=$?
     fi
+
     diff_out=$(diff $output_hop $file.out)
 
-    if [ "$diff_out" != "" ]
+    if [ $status != "0" -o "$diff_out" != "" ]
     then
 	echo -en "\x1B[31m\x1B[1mfailure\x1B[0m"
 	failure=$(($failure+1))
@@ -105,7 +119,7 @@ echo -e "\x1B[1m$space*** HIPHOP.JS TESTS ***\x1B[0m"
 if [ "$1 " != " " ]; then
   file=`basename $1 .js`
   file=`basename $file .hh`
-  
+
   if [ "$file.js" = $1 -a -f $file.js ]; then
     run_test $file
   fi
@@ -126,5 +140,8 @@ fi
 
 print_stats
 
-rm $batchfile
+if [ "$debug " = " " ]; then
+  rm $batchfile
+fi
+
 rm $output_hop

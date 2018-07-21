@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Jul 20 19:39:11 2018 (serrano)                */
+/*    Last change :  Sat Jul 21 06:50:53 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -157,29 +157,6 @@ function parseHHExpression() {
    } );
 }
 
-/*---------------------------------------------------------------------*/
-/*    parseDelay ...                                                   */
-/*---------------------------------------------------------------------*/
-/* function parseDelay() {                                             */
-/*    if( isIdToken( this, this.peekToken(), "COUNT" ) ) {             */
-/*       this.consumeAny();                                            */
-/*       this.consumeToken( this.LPAREN );                             */
-/*       const { expr: count, accessors } = parseHHExpression.call( this ); */
-/*       this.consumeToken( this.COMMA );                              */
-/*       const { expr, accessors } = parseHHExpression.call( this );   */
-/*       this.consumeToken( this.RPAREN );                             */
-/*       return { expr: expr, count: count, immediate: false, accessors: accessors }; */
-/*    } else if( isIdToken( this, this.peekToken(), "IMMEDIATE" ) ) {  */
-/*       this.consumeAny();                                            */
-/*       const { expr, accessors } = parseHHExpression.call( this );   */
-/*       return { expr: expr, count: false, immediate: true, accessors: accessors }; */
-/*    } else {                                                         */
-/*       const { expr, accessors } = parseHHExpression.call( this );   */
-/*                                                                     */
-/*       return { expr: expr, count: false, immediate: false, accessors: accessors }; */
-/*    }                                                                */
-/* }                                                                   */
-      
 /*---------------------------------------------------------------------*/
 /*    parseDelay ...                                                   */
 /*    -------------------------------------------------------------    */
@@ -336,10 +313,42 @@ function parseHHBlock() {
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
 /*       | MODULE [ident] ( signal, ... ) block                        */
+/*    signal ::= [direction] ident [combine]                           */
+/*    direction ::= IN | OUT | INOUT                                   */
+/*    combine ::= COMBINE expr                                         */
 /*---------------------------------------------------------------------*/
 function parseModule( token ) {
    
-   function signal( loc, name, direction ) {
+   function parseSignal( token ) {
+      const loc = token.location;
+      let name, direction;
+	    
+      switch( token.value ) {
+	 case "IN": {
+	    let t = this.consumeToken( this.ID );
+	    direction = "IN"
+	    name = t.value;
+	    break;
+	 }
+	 case "OUT": {
+	    let t = this.consumeToken( this.ID );
+	    direction = "OUT"
+	    name = t.value;
+	    break;
+	 }
+	 case "INOUT": {
+	    let t = this.consumeToken( this.ID );
+	    direction = "INOUT"
+	    name = t.value;
+	    break;
+	 }
+	 default: {
+	    direction = "INOUT"
+	    name = token.value;
+	 }
+
+      }
+      
       const dir = astutils.J2SDataPropertyInit(
 	 loc,
 	 astutils.J2SString( loc, "direction" ),
@@ -348,8 +357,21 @@ function parseModule( token ) {
 	 loc,
 	 astutils.J2SString( loc, "name" ),
 	 astutils.J2SString( loc, name ) );
-      const attrs = astutils.J2SObjInit( loc, [ dir, id ] );
+
+      const inits = [ dir, id ];
       
+      if( isIdToken( this, this.peekToken(), "COMBINE" ) ) {
+	 const locc = this.consumeAny().location;
+	 const fun = this.parseExpression();
+
+	 const combine = astutils.J2SDataPropertyInit(
+	    loc,
+	    astutils.J2SString( loc, "combine_func" ),
+	    fun );
+	 inits.push( combine );
+      }
+
+      const attrs = astutils.J2SObjInit( loc, inits );
       return astutils.J2SCall( loc, hhref( loc, "SIGNAL" ), null, [ attrs ] );
    }
 
@@ -363,30 +385,8 @@ function parseModule( token ) {
 	    this.consumeAny();
 	    return args;
 	 } else {
-	    const t = this.consumeToken( this.ID );
+	    args.push( parseSignal.call( this, this.consumeToken( this.ID ) ) );
 	    
-	    switch( t.value ) {
-	       case "IN": {
-		  let t = this.consumeToken( this.ID );
-		  args.push( signal( t.location, t.value, "IN" ) );
-		  break;
-	       }
-	       case "OUT": {
-		  let t = this.consumeToken( this.ID );
-		  args.push( signal( t.location, t.value, "OUT" ) );
-		  break;
-	       }
-	       case "INOUT": {
-		  let t = this.consumeToken( this.ID );
-		  args.push( signal( t.location, t.value, "INOUT" ) );
-		  break;
-	       }
-	       default: {
-		  args.push( signal( t.location, t.value, "INOUT" ) );
-	       }
-
-	    }
-
 	    if( this.peekToken().type === this.RPAREN ) {
 	       this.consumeAny();
 	       return args;
@@ -567,9 +567,10 @@ function parseEmitSustain( token, command ) {
       if( this.peekToken().type === this.LPAREN ) {
 	 const lparen = this.consumeAny();
 	 const ll = lparen.location;
-	 const { expr, axs } = this.parseHHExpression();
+	 const { expr, accessors: axs } = parseHHExpression.call( this );
 	 const rparen = this.consumeToken( this.RPAREN );
 	 const lr = rparen.location;
+
 	 const fun = astutils.J2SFun(
 	    ll, "emitfun", [],
 	    astutils.J2SBlock(
