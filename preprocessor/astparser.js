@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sat Jul 21 08:15:13 2018 (serrano)                */
+/*    Last change :  Sat Jul 21 13:54:59 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -167,11 +167,16 @@ function parseHHExpression() {
 function parseDelay( loc, action = "apply", id = false ) {
    if( isIdToken( this, this.peekToken(), "COUNT" ) ) {
       // COUNT( hhexpr, hhexpr )
-      this.consumeAny();
+      const loccnt = this.consumeAny();
       this.consumeToken( this.LPAREN );
-      const { expr: count, accessors: axsc } = parseHHExpression.call( this );
-      this.consumeToken( this.COMMA );
-      const { expr, accessors: axse } = parseHHExpression.call( this );
+      const { expr: exprs, accessors } = parseHHExpression.call( this );
+
+      if( typeof( exprs ) != "J2SSequence" || exprs.exprs.length() != 2 ) {
+	 throw new SyntaxError( "Illegal count expression", loccnt );
+      }
+      const count = exprs.exprs.car;
+      const expr = exprs.exprs.cdr.car;
+
       this.consumeToken( this.RPAREN );
 
       const fun = astutils.J2SFun(
@@ -180,7 +185,7 @@ function parseDelay( loc, action = "apply", id = false ) {
       const cntfun = astutils.J2SFun(
 	 loc, "cntfun", [], 
 	 astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, count ) ] ) );
-
+      
       const inits = [
 	 astutils.J2SDataPropertyInit(
 	    loc, astutils.J2SString( loc, "immediate" ),
@@ -190,9 +195,9 @@ function parseDelay( loc, action = "apply", id = false ) {
 	    fun ),
 	 astutils.J2SDataPropertyInit(
 	    loc, astutils.J2SString( loc, "count" + action ),
-	    fun ) ];
+	    cntfun ) ];
       
-      return { inits: inits, accessors: axsc + axse };
+      return { inits: inits, accessors: accessors };
    } else {
       let immediate = false;
       
