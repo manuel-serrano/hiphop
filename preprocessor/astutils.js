@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Fri Jul 20 19:38:07 2018 (serrano)                */
+/*    Last change :  Mon Jul 23 07:51:56 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -183,6 +183,29 @@ function J2SReturn( loc, expr ) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    J2SDeclInit ...                                                  */
+/*---------------------------------------------------------------------*/
+function J2SDeclInit( loc, id, val ) {
+   return new ast.J2SDeclInit( loc, undefined, undefined, undefined,
+			       id, false /* _scmid */, -1 /* key */,
+			       true /* writable */, true /* immutable */,
+			       true /* ronly */, "local" /* scope */,
+			       0 /* usecnt */, false /* useinloop */,
+			       false /* useinfun */, null /* usage */,
+			       "any" /* utype */, "any" /* itype */,
+			       "any" /* vtype */, null /* hint */,
+			       undefined /* range */, "let" /* binder */,
+			       val );
+}
+
+/*---------------------------------------------------------------------*/
+/*    J2SVarDecls ...                                                  */
+/*---------------------------------------------------------------------*/
+function J2SVarDecls( loc, decls ) {
+   return new ast.J2SVarDecls( loc, undefined, undefined, undefined, decls );
+}
+
+/*---------------------------------------------------------------------*/
 /*    exports                                                          */
 /*---------------------------------------------------------------------*/
 exports.J2SNull = J2SNull;
@@ -203,3 +226,5 @@ exports.J2SReturn = J2SReturn;
 exports.J2SBlock = J2SBlock;
 exports.J2SStmtExpr = J2SStmtExpr;
 exports.J2SSeq = J2SSeq;
+exports.J2SDeclInit = J2SDeclInit;
+exports.J2SVarDecls = J2SVarDecls;

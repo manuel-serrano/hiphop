@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sat Jul 21 13:54:59 2018 (serrano)                */
+/*    Last change :  Mon Jul 23 06:59:45 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -78,10 +78,10 @@ function hhref( loc, name ) {
 /*    parseHHAccessors ...                                             */
 /*    -------------------------------------------------------------    */
 /*    hhexpr ::= jsexpr                                                */
-/*       | NOW( ident )                                                */
-/*       | PRE( ident )                                                */
-/*       | VAL( ident )                                                */
-/*       | PREVAL( ident )                                             */
+/*       | now( ident )                                                */
+/*       | pre( ident )                                                */
+/*       | val( ident )                                                */
+/*       | preval( ident )                                             */
 /*---------------------------------------------------------------------*/
 function parseHHAccessors( parser ) {
    
@@ -99,10 +99,10 @@ function parseHHAccessors( parser ) {
       this.consumeToken( this.RPAREN );
 
       switch( token.value ) {
-	 case "NOW": break;
-	 case "PRE": pre = true; access = "prePresent"; break;
-	 case "VAL": val = true; access = "value"; break;
-	 case "PREVAL": pre = true, val = true; access = "preValue"; break;
+	 case "now": break;
+	 case "pre": pre = true; access = "prePresent"; break;
+	 case "val": val = true; access = "value"; break;
+	 case "preval": pre = true, val = true; access = "preValue"; break;
       }
 
       const signame = astutils.J2SDataPropertyInit(
@@ -133,17 +133,17 @@ function parseHHAccessors( parser ) {
 	 astutils.J2SString( locid, tid.value ) );
    }
    
-   this.addPlugin( "NOW", hhparser );
-   this.addPlugin( "PRE", hhparser );
-   this.addPlugin( "VAL", hhparser );
-   this.addPlugin( "PREVAL", hhparser );
+   this.addPlugin( "now", hhparser );
+   this.addPlugin( "pre", hhparser );
+   this.addPlugin( "val", hhparser );
+   this.addPlugin( "preval", hhparser );
    try {
       return parser.call( this, accessors );
    } finally {
-      this.removePlugin( "PREVAL" );
-      this.removePlugin( "VAL" );
-      this.removePlugin( "PRE" );
-      this.removePlugin( "NOW" );
+      this.removePlugin( "preval" );
+      this.removePlugin( "val" );
+      this.removePlugin( "pre" );
+      this.removePlugin( "now" );
    }
 }
 
@@ -246,69 +246,9 @@ function parseHHBlock() {
 	    this.consumeAny();
 	    return nodes;
 
-	 case this.DOLLAR:
-	    this.consumeAny();
-	    nodes.push( this.parseExpression() );
-	    this.consumeToken( this.RBRACE );
-	    break;
-
-	 case this.ID:
-	    switch( this.peekToken().value ) {
-	       case "ATOM":
-		  nodes.push( parseAtom.call( this, this.consumeAny() ) );
-		  break
-	       case "NOTHING":
-		  nodes.push( parseNothing.call( this, this.consumeAny() ) );
-		  break
-	       case "PAUSE":
-		  nodes.push( parsePause.call( this, this.consumeAny() ) );
-		  break
-	       case "HALT":
-		  nodes.push( parseHalt.call( this, this.consumeAny() ) );
-		  break
-	       case "SEQUENCE":
-		  nodes.push( parseSequence.call( this, this.consumeAny() ) );
-		  break
-	       case "FORK":
-		  nodes.push( parseFork.call( this, this.consumeAny() ) );
-		  break
-	       case "EMIT":
-		  nodes.push( parseEmit.call( this, this.consumeAny() ) );
-		  break
-	       case "SUSTAIN":
-		  nodes.push( parseSustain.call( this, this.consumeAny() ) );
-		  break
-	       case "AWAIT":
-		  nodes.push( parseAwait.call( this, this.consumeAny() ) );
-		  break
-	       case "IF":
-		  nodes.push( parseIf.call( this, this.consumeAny() ) );
-		  break
-	       case "ABORT":
-		  nodes.push( parseAbort.call( this, this.consumeAny() ) );
-		  break
-	       case "WEAKABORT":
-		  nodes.push( parseWeakabort.call( this, this.consumeAny() ) );
-		  break
-	       case "SUSPEND":
-		  nodes.push( parseSuspend.call( this, this.consumeAny() ) );
-		  break
-	       case "LOOP":
-		  nodes.push( parseLoop.call( this, this.consumeAny() ) );
-		  break
-	       case "LOOPEACH":
-		  nodes.push( parseLoopeach.call( this, this.consumeAny() ) );
-		  break
-	       case "LOCAL":
-		  nodes.push( parseLocal.call( this, this.consumeAny() ) );
-		  break
-	       default:
-		  throw tokenValueError( this.consumeAny() );
-	    }
-	    break;
-
 	 default:
-	    throw tokenTypeError( this.consumeAny() );
+	    nodes.push( parseHiphop.call( this, this.peekToken(), false ) );
+	    break;
       }
    }
 }
@@ -317,41 +257,43 @@ function parseHHBlock() {
 /*    parseModule ...                                                  */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | MODULE [ident] ( signal, ... ) block                        */
+/*       | module [ident] ( signal, ... ) block                        */
 /*    signal ::= [direction] ident [combine]                           */
-/*    direction ::= IN | OUT | INOUT                                   */
-/*    combine ::= COMBINE expr                                         */
+/*    direction ::= in | out | inout                                   */
+/*    combine ::= combine expr                                         */
 /*---------------------------------------------------------------------*/
-function parseModule( token ) {
+function parseModule( token, declaration ) {
    
    function parseSignal( token ) {
       const loc = token.location;
       let name, direction;
-	    
-      switch( token.value ) {
-	 case "IN": {
-	    let t = this.consumeToken( this.ID );
-	    direction = "IN"
-	    name = t.value;
-	    break;
-	 }
-	 case "OUT": {
-	    let t = this.consumeToken( this.ID );
-	    direction = "OUT"
-	    name = t.value;
-	    break;
-	 }
-	 case "INOUT": {
-	    let t = this.consumeToken( this.ID );
-	    direction = "INOUT"
-	    name = t.value;
-	    break;
-	 }
-	 default: {
-	    direction = "INOUT"
-	    name = token.value;
-	 }
 
+      if( token.type === this.in ) {
+	 let t = this.consumeToken( this.ID );
+	 direction = "IN"
+	 name = t.value;
+      } else if( token.type === this.ID ) {
+	 switch( token.value ) {
+	    case "out": {
+	       let t = this.consumeToken( this.ID );
+	       direction = "OUT"
+	       name = t.value;
+	       break;
+	    }
+	    case "inout": {
+	       let t = this.consumeToken( this.ID );
+	       direction = "INOUT"
+	       name = t.value;
+	       break;
+	    }
+	    default: {
+	       direction = "INOUT"
+	       name = token.value;
+	    }
+
+	 }
+      } else {
+	 tokenTypeError( token )
       }
       
       const dir = astutils.J2SDataPropertyInit(
@@ -390,7 +332,7 @@ function parseModule( token ) {
 	    this.consumeAny();
 	    return args;
 	 } else {
-	    args.push( parseSignal.call( this, this.consumeToken( this.ID ) ) );
+	    args.push( parseSignal.call( this, this.consumeAny() ) );
 	    
 	    if( this.peekToken().type === this.RPAREN ) {
 	       this.consumeAny();
@@ -407,7 +349,7 @@ function parseModule( token ) {
    let attrs;
 
    if( this.peekToken().type === this.ID ) {
-      let id = this.consumeAny();
+      id = this.consumeAny();
       const locid = id.location;
 
       attrs = astutils.J2SObjInit(
@@ -417,23 +359,31 @@ function parseModule( token ) {
 	    astutils.J2SString( locid, "id" ),
 	    astutils.J2SString( locid, id.value ) ),
 	   locInit( loc ) ] );
+   } else if( declaration ) {
+      tokenTypeError( this.consumeAny() );
    } else {
       attrs = astutils.J2SObjInit( loc, [ locInit( loc ) ] );
    }
 
    const args = parseSiglist.call( this );
    const stmts = parseHHBlock.call( this );
+   const mod = astutils.J2SCall( loc, hhref( loc, "MODULE" ), 
+				 null,
+				 [ attrs ].concat( args, stmts ) );
 
-   return astutils.J2SCall( loc, hhref( loc, "MODULE" ), 
-			    null,
-			    [ attrs ].concat( args, stmts ) );
+   if( declaration ) {
+      return astutils.J2SVarDecls(
+	 loc, [ astutils.J2SDeclInit( loc, id.value, mod ) ] );
+   } else {
+      return mod;
+   }
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseAtom ...                                                    */
+/*    parseHop ...                                                     */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | atom block                                                  */
+/*       | hop block                                                   */
 /*---------------------------------------------------------------------*/
 function parseAtom( token ) {
    
@@ -516,7 +466,7 @@ function parseSequence( token ) {
 /*    parseFork ...                                                    */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | FORK [ident] block [ PAR block ... ]                        */
+/*       | fork [ident] block [ par block ... ]                        */
 /*---------------------------------------------------------------------*/
 function parseFork( token ) {
    const loc = token.location;
@@ -544,7 +494,7 @@ function parseFork( token ) {
 				[ astutils.J2SObjInit( loc, [ locInit( loc ) ] ) ]
 				.concat( parseHHBlock.call( this ) ) ) );
 
-   while( isIdToken( this, this.peekToken(), "PAR" ) ){
+   while( isIdToken( this, this.peekToken(), "par" ) ){
       body.push( parseSequence.call( this, this.consumeAny() ) );
    }
 
@@ -610,7 +560,7 @@ function parseEmitSustain( token, command ) {
    } else {
       return astutils.J2SCall(
 	 loc, hhref( loc, "SEQUENCE" ), null,
-	 [ astutils.J2SObjInit( locid, locinit ) ].concat( nodes ) );
+	 [ astutils.J2SObjInit( loc, [ locinit ] ) ].concat( nodes ) );
    }
 }
 
@@ -638,7 +588,7 @@ function parseSustain( token ) {
 /*    parseAwait ...                                                   */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | AWAIT delay                                                 */
+/*       | await delay                                                 */
 /*---------------------------------------------------------------------*/
 function parseAwait( token ) {
    const loc = token.location;
@@ -818,7 +768,7 @@ function parseLoop( token ) {
 /*    parseLoopeach ...                                                */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | LOOPEACH ( delay ) block                                    */
+/*       | foreach ( delay ) block                                     */
 /*---------------------------------------------------------------------*/
 function parseLoopeach( token ) {
    const loc = token.location;
@@ -886,24 +836,67 @@ function parseLocal( token ) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    parseHiphop ...                                                  */
+/*---------------------------------------------------------------------*/
+function parseHiphop( token, declaration ) {
+   const next = this.consumeAny();
+
+   switch( next.type ) {
+      case this.ID:
+	 switch( next.value ) {
+	    case "module":
+	       return parseModule.call( this, next, declaration );
+	    case "hop":
+	       return parseAtom.call( this, next );
+	    case "nothing":
+	       return parseNothing.call( this, next );
+	    case "pause":
+	       return parsePause.call( this, next );
+	    case "halt":
+	       return parseHalt.call( this, next );
+	    case "sequence":
+	       return parseSequence.call( this, next );
+	    case "fork":
+	       return parseFork.call( this, next );
+	    case "emit":
+	       return parseEmit.call( this, next );
+	    case "sustain":
+	       return parseSustain.call( this, next );
+	    case "if":
+	       return parseIf.call( this, next );
+	    case "abort":
+	       return parseAbort.call( this, next );
+	    case "weakabort":
+	       return parseWeakabort.call( this, next );
+	    case "suspend":
+	       return parseSuspend.call( this, next );
+	    case "loop":
+	       return parseLoop.call( this, next );
+	    case "foreach":
+	       return parseLoopeach.call( this, next );
+	    case "local":
+	       return parseLocal.call( this, next );
+	    default:
+	       throw tokenValueError( next );
+	 }
+
+      case this.await:
+	 return parseAwait.call( this, next );
+	 
+      case this.DOLLAR:
+	 const expr = this.parseExpression();
+	 this.consumeToken( this.RBRACE );
+
+	 return expr;
+
+      default:
+	 throw tokenTypeError( this.consumeAny() );
+   }
+}
+
+/*---------------------------------------------------------------------*/
 /*    exports                                                          */
 /*---------------------------------------------------------------------*/
-parser.addPlugin( "MODULE", parseModule );
-parser.addPlugin( "ATOM", parseAtom );
-parser.addPlugin( "NOTHING", parseNothing );
-parser.addPlugin( "PAUSE", parsePause );
-parser.addPlugin( "HALT", parseHalt );
-parser.addPlugin( "SEQUENCE", parseSequence );
-parser.addPlugin( "FORK", parseFork );
-parser.addPlugin( "EMIT", parseEmit );
-parser.addPlugin( "SUSTAIN", parseSustain );
-parser.addPlugin( "AWAIT", parseAwait );
-parser.addPlugin( "IF", parseIf );
-parser.addPlugin( "ABORT", parseAbort );
-parser.addPlugin( "WEAKABORT", parseWeakabort );
-parser.addPlugin( "SUSPEND", parseSuspend );
-parser.addPlugin( "LOOP", parseLoop );
-parser.addPlugin( "LOOPEACH", parseLoopeach );
-parser.addPlugin( "LOCAL", parseLocal );
+parser.addPlugin( "hiphop", parseHiphop );
 
 exports.parse = parser.parse.bind( parser );

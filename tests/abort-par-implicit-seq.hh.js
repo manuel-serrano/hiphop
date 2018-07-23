@@ -2,19 +2,19 @@
 
 var hh = require("hiphop");
 
-const prg = MODULE( IN I, OUT O ) {
-   LOCAL( L ) {
-      FORK {
-	 ABORT NOW( L ) {
-	    LOOP {
-	       EMIT O;
-	       PAUSE;
-	    }
+hiphop module prg( in I, out O ) {
+   let L;
+
+   fork {
+      abort now( L ) {
+	 loop {
+	    emit O;
+	    pause;
 	 }
-      } PAR {
-	 AWAIT NOW( I );
-	 EMIT L;
       }
+   } par {
+      await now( I );
+      emit L;
    }
 }
 

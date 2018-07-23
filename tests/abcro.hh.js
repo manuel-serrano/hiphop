@@ -3,17 +3,16 @@
 
 var hh = require("hiphop");
 
-var prg = MODULE( IN A, IN B, IN C, IN R, OUT O ) {
-   LOOPEACH( NOW( R ) ) {
-      FORK {
-	 AWAIT NOW( A );
-      } PAR {
-	 AWAIT NOW( B );
-      } PAR {
-	 AWAIT NOW( C );
+hiphop module prg( in A, in B, in C, in R, out O ) {
+   foreach( now( R ) ) {
+      fork {
+	 await now( A );
+      } par {
+	 await now( B );
+      } par {
+	 await now( C );
       }
-      EMIT O;
+      emit O;
    }
 }
-
 exports.prg = new hh.ReactiveMachine( prg, "ABCRO" );
