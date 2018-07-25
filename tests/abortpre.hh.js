@@ -1,15 +1,15 @@
 "use hopscript"
 
-var hh = require("hiphop");
+var hh = require( "hiphop" );
 
-var prg = MODULE( INOUT O, INOUT S ) {
-   LOOP {
-      ABORT PRE( S ) {
-	 EMIT S;
-	 PAUSE;
-	 EMIT O;
+hiphop module prg( O, S ) {
+   loop {
+      abort pre( S ) {
+	 emit S;
+	 yield;
+	 emit O;
       }
-      PAUSE;
+      yield;
    }
 }
 

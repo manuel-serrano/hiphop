@@ -1,13 +1,13 @@
 "use hopscript"
 
-var hh = require("hiphop");
+var hh = require( "hiphop" );
 
-var prg = MODULE( IN I, OUT O ) {
-   LOOP {
-      AWAIT IMMEDIATE NOW( I );
-      EMIT O;
-      PAUSE;
+hiphop module prg( in I, out O ) {
+   loop {
+      await immediate now( I );
+      emit O;
+      yield;
    }
 }
 
-exports.prg = new hh.ReactiveMachine(prg, "awaitimmediate");
+exports.prg = new hh.ReactiveMachine( prg, "awaitimmediate" );

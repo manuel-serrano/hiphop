@@ -1,6 +1,6 @@
 "use hopscript"
 
-var hh = require("hiphop");
+var hh = require( "hiphop" );
 
 hiphop module prg( in I, out O ) {
    let L;
@@ -9,7 +9,7 @@ hiphop module prg( in I, out O ) {
       abort now( L ) {
 	 loop {
 	    emit O;
-	    pause;
+	    yield;
 	 }
       }
    } par {
@@ -18,4 +18,4 @@ hiphop module prg( in I, out O ) {
    }
 }
 
-exports.prg = new hh.ReactiveMachine(prg, "abortpar");
+exports.prg = new hh.ReactiveMachine( prg, "abortpar" );

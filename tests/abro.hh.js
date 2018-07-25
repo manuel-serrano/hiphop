@@ -1,16 +1,16 @@
 "use hopscript"
 
-var hh = require("hiphop");
+var hh = require( "hiphop" );
 
-var prg = MODULE( IN A, IN B, IN R, OUT O ) {
-   LOOPEACH( NOW( R ) ) {
-      FORK {
-	 AWAIT NOW( A );
-      } PAR {
-	 AWAIT NOW( B );
+hiphop module prg( in A, in B, in R, out O ) {
+   for( now( R ) ) {
+      fork {
+	 await now( A );
+      } par {
+	 await now( B );
       }
-      EMIT O;
+      emit O;
    }
 }
 
-exports.prg = new hh.ReactiveMachine(prg, "ABRO");
+exports.prg = new hh.ReactiveMachine( prg, "ABRO" );

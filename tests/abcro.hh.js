@@ -4,7 +4,7 @@
 var hh = require("hiphop");
 
 hiphop module prg( in A, in B, in C, in R, out O ) {
-   foreach( now( R ) ) {
+   for( now( R ) ) {
       fork {
 	 await now( A );
       } par {

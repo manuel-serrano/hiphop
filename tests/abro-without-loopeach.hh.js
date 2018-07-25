@@ -2,20 +2,20 @@
 
 var hh = require("hiphop");
 
-var prg = MODULE( IN A, IN B, IN R, OUT O ) {
-   LOOP {
-      ABORT( NOW( R ) ) {
-	 FORK {
-	    AWAIT NOW( A );
-	 } PAR {
-	    AWAIT NOW( B );
+hiphop module prg( in A, in B, in R, out O ) {
+   loop {
+      abort( now( R ) ) {
+	 fork {
+	    await now( A );
+	 } par {
+	    await now( B );
 	 }
-	 EMIT O;
-	 HALT;
+	 emit O;
+	 break;
       }
    }
 };
 
-exports.prg = new hh.ReactiveMachine(prg, "ABRO");
+exports.prg = new hh.ReactiveMachine( prg, "ABRO" );
 
 

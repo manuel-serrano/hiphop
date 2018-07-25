@@ -1,16 +1,16 @@
 "use strict"
 
-var hh = require("hiphop");
+var hh = require( "hiphop" );
 
-var func = function() {
-   console.log("atom works!");
+function func() {
+   console.log( "atom works!" );
 }
 
-var prg = MODULE() {
-   LOOP {
-      PAUSE;
-      ATOM { func() };
+hiphop module prg() {
+   loop {
+      yield;
+      hop { func() };
    }
 }
 
-exports.prg = new hh.ReactiveMachine(prg, "atom");
+exports.prg = new hh.ReactiveMachine( prg, "atom" );

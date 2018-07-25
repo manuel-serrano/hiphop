@@ -15,4 +15,6 @@ let machine = new hh.ReactiveMachine(prg, "test");
 try {
 machine.react();
 
-} catch(e) {}
+} catch(e) {
+   e.notify();
+}

@@ -2,13 +2,13 @@
 
 var hh = require("hiphop");
 
-var prg = MODULE() {
-   LOOP {
-      LOCAL( L ) {
-	 EMIT L( "foo bar" );
-	 PAUSE;
-	 ATOM { console.log( "atom works! value of L is", VAL( L ) ) }
-      }
+hiphop module prg() {
+   loop {
+      let L;
+
+      emit L( "foo bar" );
+      yield;
+      hop { console.log( "atom works! value of L is", val( L ) ) }
    }
 }
 

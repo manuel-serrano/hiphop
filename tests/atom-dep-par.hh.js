@@ -2,23 +2,23 @@
 
 const hh = require("hiphop")
 
-const prg = MODULE( INOUT A COMBINE (x, y) => x + y ) {
-   FORK {
-      LOOP {
-	 EMIT A( 0 );
-	 PAUSE;
+hiphop module prg( A combine (x, y) => x + y ) {
+   fork {
+      loop {
+	 emit A( 0 );
+	 yield;
       }
-   } PAR {
-      LOOP {
-	 EMIT A( 1 );
-	 ATOM { console.log( VAL( A ) ) }
-	 PAUSE;
+   } par {
+      loop {
+	 emit A( 1 );
+	 hop { console.log( val( A ) ) }
+	 yield;
       }
-   } PAR {
-      LOOP {
-	 EMIT A( 2 );
-	 ATOM { console.log( VAL( A ) ) }
-	 PAUSE;
+   } par {
+      loop {
+	 emit A( 2 );
+	 hop { console.log( val( A ) ) }
+	 yield;
       }
    }
 }
