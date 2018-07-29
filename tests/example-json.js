@@ -61,4 +61,4 @@ var prg =
       </hh.loop>
     </hh.module>;
 
-exports.prg = new hh.ReactiveMachine(prg, "Foo");
+exports.prg = new hh.ReactiveMachine(prg, "example-json");

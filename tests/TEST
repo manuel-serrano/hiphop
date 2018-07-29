@@ -62,15 +62,16 @@ EOF
 
     if [ $status != "0" -o "$diff_out" != "" ]
     then
-	echo -en "\x1B[31m\x1B[1mfailure\x1B[0m"
+	echo -en "\x1B[32m\x1B[1mfailure\x1B[0m"
 	failure=$(($failure+1))
 
 	if [ "$debug " != " " ]; then
+	  echo ""
 	  cat $output_hop
 	  exit 1
 	fi
     else
-	echo -en "\x1B[32m\x1B[1mok\x1B[0m"
+	echo -en "\x1B[33m\x1B[1mok\x1B[0m"
 	success=$(($success+1))
     fi
 
@@ -81,10 +82,11 @@ init_stats() {
     i=0
     success=0
     failure=0
+    missing=0
 }
 
 print_stats() {
-    echo -e "\x1B[1m$space*** $success success   $failure failure ***\x1B[0m"
+    echo -e "\x1B[1m$space*** $success success   $failure failure   $missing missing ***\x1B[0m"
 }
 
 if [ "$(dirname $0)" != "." ]
@@ -131,9 +133,17 @@ else
     file=${file%.*}
     if [ -f $file.js ]; then
       run_test $file
+    else
+      echo -n "$i. $file ... "
+      echo -e "\x1B[31m\x1B[1mmissing\x1B[0m"
+      missing=$(($missing+1))
     fi
     if [ -f $file.hh.js ]; then
       run_test $file .hh
+    else
+      echo -n "$i. $file.hh ... "
+      echo -e "\x1B[31m\x1B[1mmissing\x1B[0m"
+      missing=$(($missing+1))
     fi
   done
 fi

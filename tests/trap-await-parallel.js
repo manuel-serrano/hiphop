@@ -1,7 +1,6 @@
 "use hopscript"
 
 const hh = require("hiphop");
-const tl = hh.timelib;
 
 const prg =
       <hh.module A B>

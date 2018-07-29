@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Mon Jul 23 07:51:56 2018 (serrano)                */
+/*    Last change :  Thu Jul 26 14:26:19 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -152,6 +152,22 @@ function J2SFun( loc, name, params, body ) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    J2SMethod ...                                                    */
+/*---------------------------------------------------------------------*/
+function J2SMethod( loc, name, params, body, self ) {
+   return new ast.J2SFun( loc, undefined, undefined, undefined,
+			  "unknown" /* type */, null /* hint */,
+			  undefined /* range */, "unknown" /* rtype */,
+			  "this" /* idthis */, false /* idgen */,
+			  "normal" /* mode */, false /* decl */,
+			  false /* need_bind_exit_return */, false /* vararg */,
+			  name /* name */, false /* generator */,
+			  true /* optimize */, self /* thisp */,
+			  params, 3 /* constrsize */, false /* src */,
+			  false /* _method */, false /* ismethodof */, body );
+}
+
+/*---------------------------------------------------------------------*/
 /*    J2SBlock ...                                                     */
 /*---------------------------------------------------------------------*/
 function J2SBlock( loc, endloc, nodes ) {
@@ -180,6 +196,21 @@ function J2SReturn( loc, expr ) {
    return new ast.J2SReturn( loc, undefined, undefined, undefined,
 			     false /* exit */, true /* tail */,
 			     undefined /* from */, expr );
+}
+
+/*---------------------------------------------------------------------*/
+/*    J2SDecl ...                                                      */
+/*---------------------------------------------------------------------*/
+function J2SDecl( loc, id ) {
+   return new ast.J2SDecl( loc, undefined, undefined, undefined,
+			   id, false /* _scmid */, -1 /* key */,
+			   true /* writable */, true /* immutable */,
+			   true /* ronly */, "local" /* scope */,
+			   0 /* usecnt */, false /* useinloop */,
+			   false /* useinfun */, null /* usage */,
+			   "any" /* utype */, "any" /* itype */,
+			   "any" /* vtype */, null /* hint */,
+			   undefined /* range */, "var" /* binder */ );
 }
 
 /*---------------------------------------------------------------------*/
@@ -222,9 +253,11 @@ exports.J2SObjInit = J2SObjInit;
 exports.J2SDataPropertyInit = J2SDataPropertyInit;
 exports.J2SPragma = J2SPragma;
 exports.J2SFun = J2SFun;
+exports.J2SMethod = J2SMethod;
 exports.J2SReturn = J2SReturn;
 exports.J2SBlock = J2SBlock;
 exports.J2SStmtExpr = J2SStmtExpr;
 exports.J2SSeq = J2SSeq;
+exports.J2SDecl = J2SDecl;
 exports.J2SDeclInit = J2SDeclInit;
 exports.J2SVarDecls = J2SVarDecls;

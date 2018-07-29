@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Mon Jul 23 11:33:13 2018 (serrano)                */
+/*    Last change :  Thu Jul 26 12:14:11 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -77,7 +77,8 @@ function hhref( loc, name ) {
 /*---------------------------------------------------------------------*/
 /*    parseHHAccessors ...                                             */
 /*    -------------------------------------------------------------    */
-/*    hhexpr ::= jsexpr                                                */
+/*    hhexpr ::= ${ jsexpr }                                           */
+/*       | jsexpr                                                      */
 /*       | now( ident )                                                */
 /*       | pre( ident )                                                */
 /*       | val( ident )                                                */
@@ -154,12 +155,89 @@ function parseHHAccessors( parser, iscnt = false ) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    parseHHThisBlock ...                                             */
+/*    -------------------------------------------------------------    */
+/*    Parse JS block with augmented expression as in parseHHAccessors. */
+/*---------------------------------------------------------------------*/
+function parseHHThisBlock() {
+   
+   let accessors = [];
+
+   const hhparser = function( token ) {
+      const loc = token.location
+      let pre = false, val = false, access = "present";
+      
+      this.consumeToken( this.LPAREN );
+      
+      const tid = this.consumeToken( this.ID );
+      const locid = tid.location;
+      
+      this.consumeToken( this.RPAREN );
+
+      switch( token.value ) {
+	 case "now": break;
+	 case "pre": pre = true; access = "prePresent"; break;
+	 case "val": val = true; access = "value"; break;
+	 case "preval": pre = true, val = true; access = "preValue"; break;
+      }
+
+      const signame = astutils.J2SDataPropertyInit(
+	 locid,
+	 astutils.J2SString( locid, "signame" ),
+	 astutils.J2SString( locid,  tid.value ) );
+      const sigpre = astutils.J2SDataPropertyInit(
+	 locid,
+	 astutils.J2SString( locid, "pre" ),
+	 astutils.J2SBool( locid, pre ) );
+      const sigval = astutils.J2SDataPropertyInit(
+	 locid,
+	 astutils.J2SString( locid, "val" ),
+	 astutils.J2SBool( locid, val ) );
+
+      const attrs =
+	    astutils.J2SObjInit( loc, [ signame, sigpre, sigval ] );
+      const sigaccess = astutils.J2SCall(
+	 loc, hhref( loc, "SIGACCESS" ), null, [ attrs ] );
+
+      // push the accessor dependencies list
+      accessors.push( sigaccess );
+
+      // return the actual expression
+      return astutils.J2SAccess(
+	 locid,
+	 astutils.J2SAccess( locid,
+			     astutils.J2SHopRef( loc, "this" ),
+			     astutils.J2SString( loc, access ) ),
+	 astutils.J2SString( locid, tid.value ) );
+   }
+   
+   this.addPlugin( "now", hhparser );
+   this.addPlugin( "pre", hhparser );
+   this.addPlugin( "val", hhparser );
+   this.addPlugin( "preval", hhparser );
+   try {
+      const { self, block } = this.parseThisBlock();
+      return { self: self, block: block, accessors: accessors };
+   } finally {
+      this.removePlugin( "preval" );
+      this.removePlugin( "val" );
+      this.removePlugin( "pre" );
+      this.removePlugin( "now" );
+   }
+}
+
+/*---------------------------------------------------------------------*/
 /*    parseHHExpression ...                                            */
 /*---------------------------------------------------------------------*/
 function parseHHExpression() {
    return parseHHAccessors.call( this, accessors => {
-      const expr = this.parseExpression();
-      return { expr: expr, accessors: accessors };
+      if( this.peekToken().type === this.DOLLAR ) {
+	 const expr = this.parseDollarExpression();
+	 return { expr: expr, accessors: accessors };
+      } else {
+	 const expr = this.parseCondExpression();
+	 return { expr: expr, accessors: accessors };
+      }
    } );
 }
 
@@ -167,12 +245,43 @@ function parseHHExpression() {
 /*    parseHHCondExpression ...                                        */
 /*---------------------------------------------------------------------*/
 function parseHHCondExpression( iscnt ) {
-   return parseHHAccessors.apply( this, [ accessors => {
-      const expr = this.parseCondExpression();
-      return { expr: expr, accessors: accessors };
-   }, iscnt ] );
+   return parseHHAccessors.call(
+      this,
+      accessors => {
+	 if( this.peekToken().type === this.DOLLAR ) {
+	    const expr = this.parseDollarExpression();
+	    return { expr: expr, accessors: accessors };
+	 } else {
+	    const expr = this.parseCondExpression();
+	    return { expr: expr, accessors: accessors };
+	 }
+      },
+      iscnt );
 }
 
+/*---------------------------------------------------------------------*/
+/*    parseValueApply ...                                              */
+/*---------------------------------------------------------------------*/
+function parseValueApply( loc ) {
+   const { expr: expr, accessors } = parseHHExpression.call( this );
+   let init;
+   if( typeof expr == "J2SDollar" ) {
+      init = astutils.J2SDataPropertyInit(
+	 loc,
+	 astutils.J2SString( loc, "value" ),
+	 expr.node );
+   } else {
+      const fun = astutils.J2SFun(
+	 loc, "iffun", [],
+	 astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, expr ) ] ) );
+      init = astutils.J2SDataPropertyInit(
+	 loc,
+	 astutils.J2SString( loc, "apply" ),
+	 fun );
+   }
+   return { init: init, accessors: accessors }
+}
+   
 /*---------------------------------------------------------------------*/
 /*    parseDelay ...                                                   */
 /*    -------------------------------------------------------------    */
@@ -216,7 +325,7 @@ function parseDelay( loc, action = "apply", id = false ) {
       let immediate = false;
       
       if( isIdToken( this, this.peekToken(), "immediate" ) ) {
-	 // IMMEDIATE( hhexpr )
+	 // immediate( hhexpr )
 	 this.consumeAny();
 	 immediate = true;
       }
@@ -250,10 +359,6 @@ function parseDelay( loc, action = "apply", id = false ) {
    }
 }
 
-let margin = 0;
-   function mkMargin() {
-      return #:make-string( margin, #:string-ref( " ", 0 ) );
-   }
 /*---------------------------------------------------------------------*/
 /*    parseHHBlock ...                                                 */
 /*    -------------------------------------------------------------    */
@@ -284,7 +389,7 @@ function parseHHBlock( consume = true ) {
 	    return nodes;
 	    
 	 default:
-	    nodes.push( parseHiphop.call( this, this.peekToken(), false ) );
+	    nodes.push( parseStmt.call( this, this.peekToken(), false ) );
 	    break;
       }
    }
@@ -345,9 +450,26 @@ function parseModule( token, declaration ) {
 
       const inits = [ dir, id ];
       
+      if( this.peekToken().type === this.EGAL ) {
+	 this.consumeAny();
+	 const { expr, accessors } = parseHHExpression.call( this );
+
+	 const func = astutils.J2SFun(
+	    loc, "initfunc", [],
+	    astutils.J2SBlock(
+	       loc, loc,
+	       [ astutils.J2SReturn( loc, expr ) ] ) );
+	 const initfunc = astutils.J2SDataPropertyInit(
+	    loc,
+	    astutils.J2SString( loc, "init_func" ),
+	    func );
+
+	 inits.push( initfunc );
+      }
+	 
       if( isIdToken( this, this.peekToken(), "combine" ) ) {
 	 const locc = this.consumeAny().location;
-	 const fun = this.parseExpression();
+	 const fun = this.parseCondExpression();
 
 	 const combine = astutils.J2SDataPropertyInit(
 	    loc,
@@ -519,7 +641,7 @@ function parseSequence( token, consume ) {
 /*    parseFork ...                                                    */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | fork [ident] block [ par block ... ]                        */
+/*       | fork ["name"] block [ par block ... ]                       */
 /*---------------------------------------------------------------------*/
 function parseFork( token ) {
    const loc = token.location;
@@ -527,7 +649,7 @@ function parseFork( token ) {
    let attrs;
    let body = [];
 
-   if( this.peekToken().type === this.ID ) {
+   if( this.peekToken().type === this.STRING ) {
       let id = this.consumeAny();
       const locid = id.location;
 
@@ -548,7 +670,7 @@ function parseFork( token ) {
 				.concat( parseHHBlock.call( this ) ) ) );
 
    while( isIdToken( this, this.peekToken(), "par" ) ) {
-      body.push( parseSequence.apply( this, [ this.consumeAny(), true ] ) );
+      body.push( parseSequence.call( this, this.consumeAny(), true ) );
    }
 
    return astutils.J2SCall( loc, hhref( loc, "FORK" ), 
@@ -575,20 +697,8 @@ function parseEmitSustain( token, command ) {
       if( this.peekToken().type === this.LPAREN ) {
 	 const lparen = this.consumeAny();
 	 const ll = lparen.location;
-	 const { expr, accessors: axs } = parseHHExpression.call( this );
+	 const { init: val, accessors: axs } = parseValueApply.call( this, ll );
 	 const rparen = this.consumeToken( this.RPAREN );
-	 const lr = rparen.location;
-
-	 const fun = astutils.J2SFun(
-	    ll, "emitfun", [],
-	    astutils.J2SBlock(
-	       ll, lr,
-	       [ astutils.J2SReturn( ll, expr ) ] ) );
-
-	 const val = astutils.J2SDataPropertyInit(
-	    locid,
-	    astutils.J2SString( locid, "apply" ),
-	    fun );
 
 	 inits.push( val );
 	 accessors = axs;
@@ -624,7 +734,7 @@ function parseEmitSustain( token, command ) {
 /*       | EMIT emitsig, ...                                           */
 /*---------------------------------------------------------------------*/
 function parseEmit( token ) {
-   return parseEmitSustain.apply( this, [ token, "EMIT" ] );
+   return parseEmitSustain.call( this, token, "EMIT" );
 }
 
 /*---------------------------------------------------------------------*/
@@ -634,7 +744,7 @@ function parseEmit( token ) {
 /*       | SUSTAIN emitsig, ...                                        */
 /*---------------------------------------------------------------------*/
 function parseSustain( token ) {
-   return parseEmitSustain.apply( this, [ token, "SUSTAIN" ] );
+   return parseEmitSustain.call( this, token, "SUSTAIN" );
 }
 
 /*---------------------------------------------------------------------*/
@@ -645,7 +755,7 @@ function parseSustain( token ) {
 /*---------------------------------------------------------------------*/
 function parseAwait( token ) {
    const loc = token.location;
-   const { inits, accessors } = parseDelay.apply( this, [ loc, "apply" ] );
+   const { inits, accessors } = parseDelay.call( this, loc, "apply" );
 
    return astutils.J2SCall(
       loc, hhref( loc, "AWAIT" ),
@@ -662,21 +772,14 @@ function parseAwait( token ) {
 /*---------------------------------------------------------------------*/
 function parseIf( token ) {
    const loc = token.location;
+   const inits = locInit( loc );
 
    this.consumeToken( this.LPAREN );
-   const { expr: expr, accessors } = parseHHExpression.call( this );
+   const { init, accessors } = parseValueApply.call( this, loc );
+   const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), init ] );
    this.consumeToken( this.RPAREN );
-
-   const fun = astutils.J2SFun(
-      loc, "iffun", [],
-      astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, expr ) ] ) );
-   const appl = astutils.J2SDataPropertyInit(
-      loc,
-      astutils.J2SString( loc, "apply" ),
-      fun );
-   const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), appl ] );
-
-   const then = parseHiphop.apply( this, [ this.peekToken(), false ] );
+   
+   const then = parseStmt.call( this, this.peekToken(), false );
 //   const then = astutils.J2SBlock( loc, loc, parseHHBlock.call( this ) );
 
    const args = [ attrs ].concat( accessors );
@@ -684,7 +787,7 @@ function parseIf( token ) {
    
    if( this.peekToken().type == this.ELSE ) {
       const loce = this.consumeAny().location;
-      args.push( parseHiphop.apply( this, [ this.peekToken(), false ] ) );
+      args.push( parseStmt.call( this, this.peekToken(), false ) );
 //      args.push( astutils.J2SBlock( loce, loce, parseHHBlock.call( this ) ) );
    }
 
@@ -696,7 +799,7 @@ function parseIf( token ) {
 /*---------------------------------------------------------------------*/
 function parseAbortWeakabort( token, command ) {
    const loc = token.location;
-   const { inits, accessors } = parseDelay.apply( this, [ loc, "apply" ] );
+   const { inits, accessors } = parseDelay.call( this, loc, "apply" );
    const stmts = parseHHBlock.call( this );
    
    return astutils.J2SCall(
@@ -713,7 +816,7 @@ function parseAbortWeakabort( token, command ) {
 /*       | ABORT delay block                                           */
 /*---------------------------------------------------------------------*/
 function parseAbort( token ) {
-   return parseAbortWeakabort.apply( this, [ token, "ABORT" ] );
+   return parseAbortWeakabort.call( this, token, "ABORT" );
 }
    
 /*---------------------------------------------------------------------*/
@@ -723,7 +826,7 @@ function parseAbort( token ) {
 /*       | WEAKABORT delay block                                       */
 /*---------------------------------------------------------------------*/
 function parseWeakabort( token ) {
-   return parseAbortWeakabort.apply( this, [ token, "WEAKABORT" ] );
+   return parseAbortWeakabort.call( this, token, "WEAKABORT" );
 }
 
 /*---------------------------------------------------------------------*/
@@ -731,8 +834,8 @@ function parseWeakabort( token ) {
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
 /*       | SUSPEND delay { stmt }                                      */
-/*       | SUSPEND FROM delay TO delay [emit] { stmt }                 */
-/*       | SUSPEND TOGGLE delay [emit] { stmt }                        */
+/*       | SUSPEND from delay to delay [emit] { stmt }                 */
+/*       | SUSPEND toggle delay [emit] { stmt }                        */
 /*                                                                     */
 /*    (MS: I am not sure about the delay arguments. It looks like      */
 /*    to me that immediate would be meaning less here.)                */
@@ -740,7 +843,7 @@ function parseWeakabort( token ) {
 function parseSuspend( token ) {
 
    function parseEmitwhensuspended( inits ) {
-      if( isIdToken( this, this.peekToken(), "EMITWHENSUSPENDED" ) ) {
+      if( isIdToken( this, this.peekToken(), "emitwhensuspended" ) ) {
 	 const loc = this.consumeAny().location
 	 const id = this.consumeToken( this.id );
 
@@ -757,41 +860,41 @@ function parseSuspend( token ) {
    let inits = [ locInit( loc ) ];
    let accessors = [];
    
-   if( isIdToken( this, this.peekToken(), "FROM" ) ) {
+   if( isIdToken( this, this.peekToken(), "from" ) ) {
       // SUSPEND FROM delay TO delay [whenemitsuspended] BLOCK
       const { inits: from, accessors: afrom } =
-	    parseDelay.apply(
-	       this, [ this.consumeAny().location, "fromApply" ] );
+	    parseDelay.call(
+	       this, this.consumeAny().location, "fromApply" );
       const tot = this.consumeAny();
-      if( !isIdToken( this, tot, "TO" ) ) {
+      if( !isIdToken( this, tot, "to" ) ) {
 	 throw new SyntaxError( "SUSPEND: unexpected token `" + tot.value + "'",
 				tot.location );
       }
 
-      parseEmitwhensuspended( inits );
+      parseEmitwhensuspended.call( this, inits );
       
       const { inits: to, accessors: ato } =
-	    parseDelay.apply( this, [ tot.location, "toApply" ] );
+	    parseDelay.call( this, tot.location, "toApply" );
 
-      inits = inits.push( from );
-      inits = inits.push( to );
+      inits = inits.concat( from );
+      inits = inits.concat( to );
       accessors = afrom.concat( ato );
-   } else if( isIdToken( this, this.peekToken(), "TOGGLE" ) ) {
+   } else if( isIdToken( this, this.peekToken(), "toggle" ) ) {
       // SUSPEND TOGGLE delay [whenemitsuspended] BLOCK
       const tot = this.consumeAny();
-      const { inits: toggle, atoggle } =
-	    parseDelay.apply( this, [ tot.location, "toggleApply", "toggleSignal" ] );
+      const { inits: toggle, accessors: atoggle } =
+	    parseDelay.call( this, tot.location, "toggleApply", "toggleSignal" );
       
-      parseEmitwhensuspended( inits );
+      parseEmitwhensuspended.call( this, inits );
 
-      inits.push( toogle );
+      inits = inits.concat( toggle );
       accessors = atoggle;
    } else {
       // SUSPEND delay BLOCK
-      const { inits: expr, accessors: aexpr } =
-	    parseDelay.apply( this,  [ loc, "apply" ] );
-      
-      inits.push( expr );
+      const { inits: is, accessors: aexpr } =
+	    parseDelay.call( this, loc, "apply" );
+
+      inits = inits.concat( is );
       accessors = aexpr;
    }
    const stmts = parseHHBlock.call( this );
@@ -799,7 +902,7 @@ function parseSuspend( token ) {
    const attrs = astutils.J2SObjInit( loc, inits );
    return astutils.J2SCall(
       loc, hhref( loc, "SUSPEND" ), null,
-      [ attrs ].concat( stmts ) );
+      [ attrs ].concat( accessors, stmts ) );
 }
 
 /*---------------------------------------------------------------------*/
@@ -842,9 +945,64 @@ function parseLoopeachEvery( token, action ) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    parseExec ...                                                    */
+/*    -------------------------------------------------------------    */
+/*    stmt ::= ...                                                     */
+/*       | exec [ident] block                                          */
+/*           [kill block] [suspend block] [resume block]               */
+/*---------------------------------------------------------------------*/
+function parseExec( token ) {
+   const loc = token.location;
+   let inits = [ locInit( loc ) ];
+   
+   if( this.peekToken().type === this.ID ) {
+      const id = this.consumeAny();
+      inits.push( astutils.J2SDataPropertyInit(
+	 loc, astutils.J2SString( loc, id.value ),
+	 astutils.J2SString( loc, "" ) ) );
+   }
+      
+   const { self, block, accessors } = parseHHThisBlock.call( this );
+   inits.push( astutils.J2SDataPropertyInit(
+      loc, astutils.J2SString( loc, "apply" ),
+      astutils.J2SMethod( loc, "execfun", [], block, self ) ) );
+
+   if( isIdToken( this, this.peekToken(), "kill" ) ) {
+      this.consumeAny();
+      const { self, block } = this.parseThisBlock();
+      inits.push( astutils.J2SDataPropertyInit(
+	 loc, astutils.J2SString( loc, "kill" ),
+	 astutils.J2SMethod( loc, "execkill", [], block, self ) ) );
+   }
+   
+   if( isIdToken( this, this.peekToken(), "suspend" ) ) {
+      this.consumeAny();
+      const { self, block } = this.parseThisBlock();
+      inits.push( astutils.J2SDataPropertyInit(
+	 loc, astutils.J2SString( loc, "susp" ),
+	 astutils.J2SMethod( loc, "execsusp", [], block, self ) ) );
+   }
+   
+   if( isIdToken( this, this.peekToken(), "resume" ) ) {
+      this.consumeAny();
+      const { self, block } = this.parseThisBlock();
+      inits.push( astutils.J2SDataPropertyInit(
+	 loc, astutils.J2SString( loc, "res" ),
+	 astutils.J2SMethod( loc, "execresume", [], block, self ) ) );
+   }
+   
+   const attrs = astutils.J2SObjInit( loc, inits );
+   
+   return astutils.J2SCall( loc, hhref( loc, "EXEC" ), null,
+			    [ attrs ].concat( accessors ) );
+}
+   
+   
+
+/*---------------------------------------------------------------------*/
 /*    parseLocal ...                                                   */
 /*---------------------------------------------------------------------*/
-function parseLocal( token ) {
+function parseLocal_not_used( token ) {
    const loc = token.location;
 
    function signal( loc, name, direction ) {
@@ -896,13 +1054,28 @@ function parseLocal( token ) {
 function parseLet( token ) {
    const loc = token.location;
 
-   function signal( loc, name, direction ) {
+   function signal( loc, name, direction, init = false ) {
       const id = astutils.J2SDataPropertyInit(
 	 loc,
 	 astutils.J2SString( loc, "name" ),
 	 astutils.J2SString( loc, name ) );
-      const attrs = astutils.J2SObjInit( loc, [ id ] );
+      const inits = [ id ];
+
+      if( init ) {
+	 const func = astutils.J2SFun(
+		  loc, "initfunc", [],
+		  astutils.J2SBlock(
+		     loc, loc,
+		     [ astutils.J2SReturn( loc, init ) ] ) );
+	 const initfunc = astutils.J2SDataPropertyInit(
+	    loc,
+	    astutils.J2SString( loc, "init_func" ),
+	    func );
+
+	 inits.push( initfunc );
+      }
       
+      const attrs = astutils.J2SObjInit( loc, inits );
       return astutils.J2SCall( loc, hhref( loc, "SIGNAL" ), null, [ attrs ] );
    }
 
@@ -911,14 +1084,26 @@ function parseLet( token ) {
 
       while( true ) {
 	 const t = this.consumeToken( this.ID );
-	 
-	 args.push( signal( t.location, t.value, "INOUT" ) );
 
-	 if( this.peekToken().type === this.SEMICOLON ) {
+	 if( this.peekToken().type === this.EGAL ) {
 	    this.consumeAny();
-	    return args;
+	    const { expr, accessors } = parseHHExpression.call( this );
+	    args.push( signal( t.location, t.value, "INOUT", expr ) );
 	 } else {
-	    this.consumeToken( this.COMMA );
+	    args.push( signal( t.location, t.value, "INOUT" ) );
+	 }
+	 
+	 switch( this.peekToken().type ) {
+	    case this.SEMICOLON:
+	       this.consumeAny();
+	       return args;
+	       
+	    case this.COMMA:
+	       this.consumeAny();
+	       break;
+	       
+	    default:
+	       tokenTypeError( this.consumeAny() );
 	 }
       }
    }
@@ -937,7 +1122,7 @@ function parseLet( token ) {
 /*---------------------------------------------------------------------*/
 function parseTrap( token ) {
    const col = this.consumeToken( this.COLUMN );
-   const block = parseHiphop.apply( this, [ this.peekToken, false ] );
+   const block = parseStmt.call( this, this.peekToken, false );
    const loc = token.location;
    const attrs = astutils.J2SObjInit(
       loc,
@@ -953,16 +1138,14 @@ function parseTrap( token ) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseHiphop ...                                                  */
+/*    parseStmt ...                                                    */
 /*---------------------------------------------------------------------*/
-function parseHiphop( token, declaration ) {
+function parseStmt( token, declaration ) {
    const next = this.consumeAny();
 
    switch( next.type ) {
       case this.ID:
 	 switch( next.value ) {
-	    case "module":
-	       return parseModule.call( this, next, declaration );
 	    case "hop":
 	       return parseAtom.call( this, next );
 	    case "nothing":
@@ -995,6 +1178,8 @@ function parseHiphop( token, declaration ) {
 /* 	       return parseLocal.call( this, next );                   */
 	    case "every":
 	       return parseLoopeachEvery.call( this, next, "EVERY" );
+	    case "async":
+	       return parseExec.call( this, next );
 	       
 	    default:
 	       if( this.peekToken().type === this.COLUMN ) {
@@ -1030,7 +1215,7 @@ function parseHiphop( token, declaration ) {
 	 }
 
       case this.LBRACE:
-	 return parseSequence.apply( this, [ next, false ] );
+	 return parseSequence.call( this, next, false );
 
       default:
 	 throw tokenTypeError( this.consumeAny() );
@@ -1038,25 +1223,22 @@ function parseHiphop( token, declaration ) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    parseHiphop ...                                                  */
+/*---------------------------------------------------------------------*/
+function parseHiphop( token, declaration ) {
+   const next = this.peekToken();
+
+   if( next.type === this.ID && next.value == "module" ) {
+      this.consumeAny();
+      return parseModule.call( this, next, declaration );
+   } else {
+      return parseStmt.call( this, token, declaration  );
+   }
+}
+
+/*---------------------------------------------------------------------*/
 /*    exports                                                          */
 /*---------------------------------------------------------------------*/
 parser.addPlugin( "hiphop", parseHiphop );
-/* parser.addPlugin(                                                   */
-/*    "hiphop",                                                        */
-/*    function( token, decl ) {                                        */
-/*       let next = this.peekToken();                                  */
-/*       console.log( mkMargin(), ">>> HIPHOP next=", next.value, next.type, */
-/* 		   next.location.cdr.cdr.car );                        */
-/*       margin+=3;                                                    */
-/*                                                                     */
-/*       let r = parseHiphop.apply( this, [ token, decl ] );           */
-/*                                                                     */
-/*       margin-=3;                                                    */
-/*       next = this.peekToken();                                      */
-/*       console.log( mkMargin(), "<<< HIPHOP next=", next.value, next.type, */
-/* 		   next.location.cdr.cdr.car );                        */
-/*       #:tprint( #:j2s->list( parser.jsToAst( r ) ) );               */
-/*       return r;                                                     */
-/*    } );                                                             */
 
 exports.parse = parser.parse.bind( parser );
