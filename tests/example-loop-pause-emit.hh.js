@@ -6,7 +6,7 @@ hiphop module prg( in I, S ) {
    loop {
       await now( I );
       yield;
-      emit S;
+      emit S();
    }
 }
 

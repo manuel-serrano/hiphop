@@ -3,12 +3,12 @@
 var hh = require( "hiphop" );
 
 hiphop module prg( A, B, C ) {
-   emit A;
+   emit A();
    T: {
       break T;
-      emit B;
+      emit B();
    }
-   emit C;
+   emit C();
 }
 
 exports.prg = new hh.ReactiveMachine( prg, "trapsimple" );

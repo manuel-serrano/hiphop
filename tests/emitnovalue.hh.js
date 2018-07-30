@@ -6,7 +6,7 @@ hiphop module prg( O ) {
    loop {
       emit O( 5 );
       yield;
-      emit O;
+      emit O();
    }
 }
 

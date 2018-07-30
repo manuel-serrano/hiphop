@@ -8,7 +8,7 @@ hiphop module prg( in A, in B, out O ) {
    } par {
       await now( B );
    }
-   emit O;
+   emit O();
 }
 
 exports.prg = new hh.ReactiveMachine( prg, "awaitpar" );

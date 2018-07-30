@@ -9,7 +9,7 @@ hiphop module prg( in A, in B, in R, out O ) {
       } par {
 	 await now( B );
       }
-      emit O;
+      emit O();
    }
 }
 

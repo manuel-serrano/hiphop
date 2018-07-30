@@ -4,13 +4,13 @@ var hh = require( "hiphop" );
 
 hiphop module prg( A, B, END1, END2 ) {
    fork {
-      emit A;
+      emit A();
       await immediate B;
-      emit END1;
+      emit END1();
    } par {
-      emit B;
+      emit B();
       await immediate B;
-      emit END2;
+      emit END2();
    }
 }
 

@@ -12,7 +12,7 @@ hiphop module prg( in A, in B, in C, in R, out O ) {
       } par {
 	 await now( C );
       }
-      emit O;
+      emit O();
    }
 }
 exports.prg = new hh.ReactiveMachine( prg, "ABCRO" );

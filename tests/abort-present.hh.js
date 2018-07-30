@@ -5,13 +5,13 @@ var hh = require( "hiphop" );
 hiphop module prg( in I, out J, out K, out V ) {
    loop {
       abort( now( I ) ) {
-	 emit J;
+	 emit J();
 	 yield;
-	 emit V;
+	 emit V();
 	 yield;
       }
       if( now( I ) ) {
-	 emit K;
+	 emit K();
       }
    }
 }

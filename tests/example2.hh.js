@@ -6,10 +6,10 @@ hiphop module prg( T, V ) {
    let S;
 
    loop {
-      emit S;
-      if( now( S ) ) emit T;
+      emit S();
+      if( now( S ) ) emit T();
       yield;
-      emit V;
+      emit V();
    }
 }
 

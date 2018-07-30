@@ -6,9 +6,9 @@ hiphop module prg( in X, Y, Z ) {
    await now( X );
 
    every( count( val( X ) + 5, true ) ) {
-      emit Y;
+      emit Y();
    }
-   emit Z;
+   emit Z();
 }
 
 var m = new hh.ReactiveMachine( prg );

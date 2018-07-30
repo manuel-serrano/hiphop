@@ -23,7 +23,7 @@ hiphop module prg( in RESS, in S, O, OT, in T ) {
       }
       emit OT( val( T ) );
    } par {
-      emit O;
+      emit O();
    }
 
    await now( RESS );

@@ -7,9 +7,9 @@ hiphop module prg( T ) {
    {
       let S;
 
-      emit S;
+      emit S();
 
-      if( now( S ) ) emit T;
+      if( now( S ) ) emit T();
    }
 }
 

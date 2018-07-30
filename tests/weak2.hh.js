@@ -5,14 +5,14 @@ var hh = require( "hiphop" );
 hiphop module m( in S, O, F, W, Z ) {
    weakabort now( S ) {
       loop {
-	 emit O;
+	 emit O();
 	 yield;
-	 emit W;
+	 emit W();
 	 yield;
-	 emit Z;
+	 emit Z();
       }
    }
-   emit F;
+   emit F();
 }
    
 exports.prg = new hh.ReactiveMachine( m, "wabort2" );

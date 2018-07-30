@@ -8,13 +8,13 @@ hiphop module prg( in I, out O ) {
    fork {
       abort now( L ) {
 	 loop {
-	    emit O;
+	    emit O();
 	    yield;
 	 }
       }
    } par {
       await now( I );
-      emit L;
+      emit L();
    }
 }
 

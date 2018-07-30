@@ -11,9 +11,9 @@ hiphop module prg( O, OT ) {
 	    this.notify( 5 );
 	 }, 3000 );
       }
-      emit OT;
+      emit OT();
    } par {
-      emit O;
+      emit O();
    }
 }
 

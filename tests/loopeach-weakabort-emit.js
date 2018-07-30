@@ -24,7 +24,7 @@ const machine = new hh.ReactiveMachine(
 machine.react();
 machine.react();
 machine.react();
-console.log(machine.pretty_print());
+//console.log(machine.pretty_print());
 
 const machine2 = new hh.ReactiveMachine(
    <hh.module A B>
@@ -48,7 +48,7 @@ machine2.react();
 machine2.react();
 machine2.react();
 machine2.react();
-console.log(machine2.pretty_print());
+//console.log(machine2.pretty_print());
 
 const machine3 = new hh.ReactiveMachine(
    <hh.module A B>

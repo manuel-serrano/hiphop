@@ -5,9 +5,9 @@ var hh = require( "hiphop" );
 hiphop module prg( J ) {
    let I;
    fork {
-      if( now( I ) ) emit J;
+      if( now( I ) ) emit J();
    } par {
-      emit I;
+      emit I();
    }
 }
 

@@ -5,10 +5,10 @@ var hh = require( "hiphop" );
 hiphop module prg( J ) {
    let I;
    fork {
-      emit I;
+      emit I();
    } par {
       await now( I );
-      emit J;
+      emit J();
    }
 }
 

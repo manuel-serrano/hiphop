@@ -4,12 +4,12 @@ var hh = require( "hiphop" );
 
 hiphop module prg( A, B, C ) {
    T: fork {
-      emit A;
+      emit A();
       break T;
    } par {
-      emit B;
+      emit B();
       yield;
-      emit C;
+      emit C();
    }
 }
 

@@ -13,7 +13,7 @@ hiphop module prg( in T, O, OT ) {
       }
       emit OT( val( T ) );
    } par {
-      emit O;
+      emit O();
    }
 }
 

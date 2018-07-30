@@ -4,7 +4,7 @@ const hh = require( "hiphop" );
 
 hiphop module prg( A, B ) {
    loop {
-      if( now( B ) ) emit A;
+      if( now( B ) ) emit A();
       yield;
    }
 }

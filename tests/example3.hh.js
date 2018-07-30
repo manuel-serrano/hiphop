@@ -7,12 +7,12 @@ hiphop module prg( in A, T, V ) {
       let S;
 
       loop {
-	 emit S;
+	 emit S();
 
-	 if( now( S ) ) emit T;
+	 if( now( S ) ) emit T();
 	 
 	 yield;
-	 emit V;
+	 emit V();
       }
    }
 }

@@ -28,7 +28,7 @@ hiphop module prg( SEQ=1 combine plus,
 	 emit TOOGLE( ${true} );
       } else {
 	 emit TOOGLE( ${false} );
-	 emit S;
+	 emit S();
       }
       yield;
    }

@@ -3,16 +3,16 @@
 const hh = require( "hiphop" );
 
 hiphop module prg( A, B, C, D ) {
-   emit A;
+   emit A();
    U: {
       T: {
 	 break T;
-	 emit B;
+	 emit B();
       }
       break U;
-      emit C;
+      emit C();
    }
-   emit D;
+   emit D();
 }
 
 exports.prg = new hh.ReactiveMachine( prg, "trapnested1" );

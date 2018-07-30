@@ -3,7 +3,7 @@
 const hh = require( "hiphop" );
 
 hiphop module prg( A, B ) {
-   emit A, B;
+   emit A(), B();
 }
 
 const m = new hh.ReactiveMachine( prg );

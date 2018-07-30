@@ -4,7 +4,7 @@ const hh = require( "hiphop" );
 
 const mach = new hh.ReactiveMachine(
    hiphop module( toogle ) {
-      suspend toggle val( toogle ) {
+      suspend toggle now( toogle ) {
 	 loop {
 	    hop { console.log( "plop" ); }
 	    yield;

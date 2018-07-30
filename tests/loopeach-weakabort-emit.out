@@ -1,38 +1,3 @@
 weakabort terminated 1.
-
-MODULE0
-MODULE INOUT A INOUT B { 
-   LOOPEACH NOW ( A ) { 
-      WEAKABORT NOW ( B ) { 
-         NOTHING 
-         FORK { 
-            SEQUENCE { 
-               PAUSE 
-               EMIT B 
-            } 
-         } 
-      } 
-      ATOM 
-   } 
-} 
-
-
 weakabort terminated 2.
-
-MODULE0
-MODULE INOUT A INOUT B { 
-   LOOPEACH NOW ( A ) { 
-      WEAKABORT NOW ( B ) { 
-         FORK { 
-            SEQUENCE { 
-               PAUSE 
-               EMIT B 
-            } 
-         } 
-      } 
-      ATOM 
-   } 
-} 
-
-
 weakabort terminated 3.

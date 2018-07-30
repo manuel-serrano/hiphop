@@ -694,14 +694,17 @@ function parseEmitSustain( token, command ) {
 	 astutils.J2SString( locid, id.value ) ) ];
       let accessors = [];
 
-      if( this.peekToken().type === this.LPAREN ) {
-	 const lparen = this.consumeAny();
+      const lparen = this.consumeToken( this.LPAREN );
+	 
+      if( this.peekToken().type !== this.RPAREN ) {
 	 const ll = lparen.location;
 	 const { init: val, accessors: axs } = parseValueApply.call( this, ll );
 	 const rparen = this.consumeToken( this.RPAREN );
 
 	 inits.push( val );
 	 accessors = axs;
+      } else {
+	 this.consumeAny();
       }
       
       return astutils.J2SCall(
@@ -997,6 +1000,67 @@ function parseExec( token ) {
 			    [ attrs ].concat( accessors ) );
 }
    
+/*---------------------------------------------------------------------*/
+/*    parseRun ...                                                     */
+/*    -------------------------------------------------------------    */
+/*    stmt ::= ...                                                     */
+/*       | run hhexpr( sigalias, ... )                                 */
+/*    sigalias ::= ident | ident = ident                               */
+/*---------------------------------------------------------------------*/
+function parseRun( token ) {
+   const loc = token.location;
+   const next = this.peekToken();
+   let inits = [ locInit( loc ) ];
+   
+   const { expr: call, accessors } = parseHHExpression.call( this );
+
+   if( !(typeof call == "J2SCall" ) ) {
+      throw new SyntaxError( "RUN: bad form", token.location );
+   } else {
+      const module = call.fun;
+      const args = call.args;
+      throw new SyntaxError( "RUN: TODO", token.location );
+   }
+				tot.location );
+/*    function parseSigList( inits ) {                                 */
+/*       let lbrace = this.consumeToken( this.LPAREN );                */
+/*                                                                     */
+/*       if( this.peekToken().type === this.RPAREN ) {                 */
+/* 	 this.consumeAny();                                            */
+/* 	 return                                                        */
+/*       } else {                                                      */
+/* 	 while( true ) {                                               */
+/* 	    const id = this.consumeToken( this.ID ).value;             */
+/* 	    let alias = ""                                             */
+/* 	                                                               */
+/* 	    if( this.peekToken().type === this.EGAL ) {                */
+/* 	       consumeAny();                                           */
+/* 	       alias = this.consumeToken( thisID ).value;              */
+/* 	    }                                                          */
+/* 	                                                               */
+/* 	    inits.push( astutils.J2SDataPropertyInit(                  */
+/* 	       loc, astutils.J2SString( loc, id ),                     */
+/* 	       astutils.J2SString( loc, alias ) ) );                   */
+/*                                                                     */
+/* 	    if( this.peekToken().type === this.RPAREN ) {              */
+/* 	       this.consumeAny();                                      */
+/* 	       return;                                                 */
+/* 	    } else {                                                   */
+/* 	       this.consumeToken( this.COMMA );                        */
+/* 	    }                                                          */
+/* 	 }                                                             */
+/*       }                                                             */
+/*    }                                                                */
+   
+   inits.push( astutils.J2SDataPropertyInit(
+      loc, astutils.J2SString( loc, "module" ), module ) );
+   parseSigList.call( this, inits );
+   
+   const attrs = astutils.J2SObjInit( loc, inits );
+   
+   return astutils.J2SCall( loc, hhref( loc, "RUN" ), null,
+			    [ attrs ].concat( accessors ) );
+}
    
 
 /*---------------------------------------------------------------------*/
@@ -1180,6 +1244,8 @@ function parseStmt( token, declaration ) {
 	       return parseLoopeachEvery.call( this, next, "EVERY" );
 	    case "async":
 	       return parseExec.call( this, next );
+	    case "run":
+	       return parseRun.call( this, next );
 	       
 	    default:
 	       if( this.peekToken().type === this.COLUMN ) {

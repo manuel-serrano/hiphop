@@ -30,7 +30,7 @@ hiphop module prg() {
 
    fork "par" {
       loop {
-	 emit G0;
+	 emit G0();
 	 yield;
       }
    } par {

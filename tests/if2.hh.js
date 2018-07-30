@@ -7,8 +7,8 @@ var s2 = false;
 
 hiphop module prg( O1, O2 ) {
    loop {
-      if( ${ s1 } ) emit O1;
-      if( ${ s2 } ) emit O2;
+      if( ${ s1 } ) emit O1();
+      if( ${ s2 } ) emit O2();
       yield;
    }
 }

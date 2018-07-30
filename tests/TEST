@@ -73,6 +73,11 @@ EOF
     else
 	echo -en "\x1B[33m\x1B[1mok\x1B[0m"
 	success=$(($success+1))
+	
+	if [ "$verb " != " " ]; then
+	  echo ""
+	  cat $output_hop
+	fi
     fi
 
     echo ".";
