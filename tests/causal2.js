@@ -13,8 +13,7 @@ let prg = <hh.module>
                </hh.module>;
 let machine = new hh.ReactiveMachine(prg, "test");
 try {
-machine.react();
-
+   machine.react();
 } catch(e) {
-   e.notify();
+   console.log( "causality error" );
 }

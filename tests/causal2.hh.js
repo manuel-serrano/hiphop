@@ -9,7 +9,7 @@ hiphop module prg() {
       ;
    }
    if( now( V_S_i ) ) {
-      emit V_S_C;
+      emit V_S_C();
    }
 }
    
@@ -17,4 +17,5 @@ let machine = new hh.ReactiveMachine( prg, "test" );
 try {
    machine.react();
 } catch(e) {
+   console.log( "causality error" );
 }

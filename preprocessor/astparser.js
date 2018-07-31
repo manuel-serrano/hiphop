@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Jul 26 12:14:11 2018 (serrano)                */
+/*    Last change :  Tue Jul 31 13:40:10 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1035,23 +1035,25 @@ function parseRun( token ) {
       inits.push( astutils.J2SDataPropertyInit(
 	 loc, astutils.J2SString( loc, "module" ), module ) );
 
-      args.forEach( a => {
-	 if( typeof a == "J2SUnresolvedRef" ) {
-	    inits.push( astutils.J2SDataPropertyInit(
-	       loc, astutils.J2SString( loc, a.id ),
-	       astutils.J2SString( loc, "" ) ) );
-	 } else if( (typeof a == "J2SAssig") &&
-		    (typeof a.lhs == "J2SUnresolvedRef") &&
-		    (typeof a.rhs == "J2SUnresolvedRef") ) {
-	    inits.push( astutils.J2SDataPropertyInit(
-	       loc, astutils.J2SString( loc, a.lhs.id ),
-	       astutils.J2SString( loc, a.rhs.id ) ) );
-	 } else {
-	    throw new SyntaxError( "RUN: bad argument",
-				   { filename: a.loc.cdr.car,
-				     pos: a.loc.cdr.cdr.car } );
-	 }
-      } );
+      if( typeof args == "pair" ) {
+	 args.forEach( a => {
+	    if( typeof a == "J2SUnresolvedRef" ) {
+	       inits.push( astutils.J2SDataPropertyInit(
+		  loc, astutils.J2SString( loc, a.id ),
+		  astutils.J2SString( loc, "" ) ) );
+	    } else if( (typeof a == "J2SAssig") &&
+		       (typeof a.lhs == "J2SUnresolvedRef") &&
+		       (typeof a.rhs == "J2SUnresolvedRef") ) {
+	       inits.push( astutils.J2SDataPropertyInit(
+		  loc, astutils.J2SString( loc, a.lhs.id ),
+		  astutils.J2SString( loc, a.rhs.id ) ) );
+	    } else {
+	       throw new SyntaxError( "RUN: bad argument",
+				      { filename: a.loc.cdr.car,
+					pos: a.loc.cdr.cdr.car } );
+	    }
+	 } );
+      }
 
       const attrs = astutils.J2SObjInit( loc, inits );
       
