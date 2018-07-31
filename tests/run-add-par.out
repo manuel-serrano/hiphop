@@ -1,59 +1,5 @@
-
-MODULE0
-MODULE INOUT S INOUT U INOUT A INOUT B { 
-   FORK { 
-      RUN MODULE1 W=A Z=B 
-   } PAR { 
-      HALT 
-   } 
-} 
-
-
-MODULE1
-MODULE INOUT S INOUT U INOUT W INOUT Z { 
-   FORK { 
-      EMIT W If USING NOW ( S ) 
-   } PAR { 
-      EMIT Z If USING NOW ( U ) 
-   } 
-} 
-
-
 m.inputAndReact(S)
 [ 'S', 'A' ]
 ==================== ADD RUN PARALLEL ==================
-
-MODULE0
-MODULE INOUT S INOUT U INOUT A INOUT B { 
-   FORK { 
-      RUN MODULE1 W=A Z=B 
-   } PAR { 
-      HALT 
-   } PAR { 
-      RUN MODULE2 Z=A 
-   } 
-} 
-
-
-MODULE1
-MODULE INOUT S INOUT U INOUT W INOUT Z { 
-   FORK { 
-      EMIT W If USING NOW ( S ) 
-   } PAR { 
-      EMIT Z If USING NOW ( U ) 
-   } 
-} 
-
-
-MODULE2
-MODULE INOUT S INOUT U INOUT W INOUT Z { 
-   FORK { 
-      EMIT W If USING NOW ( S ) 
-   } PAR { 
-      EMIT Z If USING NOW ( U ) 
-   } 
-} 
-
-
 m.inputAndReact(U)
 [ 'U', 'A' ]

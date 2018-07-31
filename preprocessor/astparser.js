@@ -42,19 +42,27 @@ function locInit( loc ) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    tokenLocation ...                                                */
+/*---------------------------------------------------------------------*/
+function tokenLocation( token ) {
+   return { filename: token.filename, pos: token.pos };
+}
+
+/*---------------------------------------------------------------------*/
 /*    tokenValueError ...                                              */
 /*---------------------------------------------------------------------*/
 function tokenValueError( token ) {
    return new SyntaxError( "unexpected token `" + token.value + "'",
-			   { filename: token.filename, pos: token.pos } );
+			   tokenLocation( token ) );
 }
+
 
 /*---------------------------------------------------------------------*/
 /*    tokenTypeError ...                                               */
 /*---------------------------------------------------------------------*/
 function tokenTypeError( token ) {
    return new SyntaxError( "unexpected token `" + token.type + "'",
-			   { filename: token.filename, pos: token.pos } );
+			   tokenLocation( token ) );
 }
 
 /*---------------------------------------------------------------------*/
@@ -597,28 +605,33 @@ function parsePause( token ) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseHaltExit ...                                                */
+/*    parseExit ...                                                    */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | break                                                       */
 /*       | break lbl                                                   */
 /*---------------------------------------------------------------------*/
-function parseHaltExit( token ) {
-   if( this.peekToken().type === this.ID ) {
-      const id = this.consumeAny();
-      const loc = id.location;
-      const attrs = astutils.J2SObjInit(
+function parseExit( token ) {
+   const id = this.consumeToken( this.ID );
+   const loc = id.location;
+   const attrs = astutils.J2SObjInit(
+      loc,
+      [ astutils.J2SDataPropertyInit(
 	 loc,
-	 [ astutils.J2SDataPropertyInit(
-	    loc,
-	    astutils.J2SString( loc, id.value ),
-	    astutils.J2SString( loc, id.value ) ),
-	   locInit( loc ) ] );
-      
-      return astutils.J2SCall( loc, hhref( loc, "EXIT" ), null, [ attrs ] );
-   } else {
-      return parseEmpty( token, "HALT" );
-   }
+	 astutils.J2SString( loc, id.value ),
+	 astutils.J2SString( loc, id.value ) ),
+	locInit( loc ) ] );
+   
+   return astutils.J2SCall( loc, hhref( loc, "EXIT" ), null, [ attrs ] );
+}
+
+/*---------------------------------------------------------------------*/
+/*    parseHalt ...                                                    */
+/*    -------------------------------------------------------------    */
+/*    stmt ::= ...                                                     */
+/*       | exit                                                        */
+/*---------------------------------------------------------------------*/
+function parseHalt( token ) {
+   return parseEmpty( token, "HALT" );
 }
 
 /*---------------------------------------------------------------------*/
@@ -871,7 +884,7 @@ function parseSuspend( token ) {
       const tot = this.consumeAny();
       if( !isIdToken( this, tot, "to" ) ) {
 	 throw new SyntaxError( "SUSPEND: unexpected token `" + tot.value + "'",
-				tot.location );
+				tokenLocation( tot ) );
       }
 
       parseEmitwhensuspended.call( this, inits );
@@ -1015,13 +1028,38 @@ function parseRun( token ) {
    const { expr: call, accessors } = parseHHExpression.call( this );
 
    if( !(typeof call == "J2SCall" ) ) {
-      throw new SyntaxError( "RUN: bad form", token.location );
+      throw new SyntaxError( "RUN: bad form", tokenLocation( token ) );
    } else {
       const module = call.fun;
       const args = call.args;
-      throw new SyntaxError( "RUN: TODO", token.location );
+      inits.push( astutils.J2SDataPropertyInit(
+	 loc, astutils.J2SString( loc, "module" ), module ) );
+
+      args.forEach( a => {
+	 if( typeof a == "J2SUnresolvedRef" ) {
+	    inits.push( astutils.J2SDataPropertyInit(
+	       loc, astutils.J2SString( loc, a.id ),
+	       astutils.J2SString( loc, "" ) ) );
+	 } else if( (typeof a == "J2SAssig") &&
+		    (typeof a.lhs == "J2SUnresolvedRef") &&
+		    (typeof a.rhs == "J2SUnresolvedRef") ) {
+	    inits.push( astutils.J2SDataPropertyInit(
+	       loc, astutils.J2SString( loc, a.lhs.id ),
+	       astutils.J2SString( loc, a.rhs.id ) ) );
+	 } else {
+	    throw new SyntaxError( "RUN: bad argument",
+				   { filename: a.loc.cdr.car,
+				     pos: a.loc.cdr.cdr.car } );
+	 }
+      } );
+
+      const attrs = astutils.J2SObjInit( loc, inits );
+      
+      return astutils.J2SCall( loc, hhref( loc, "RUN" ), null,
+			       [ attrs ].concat( accessors ) );
    }
-				tot.location );
+}
+
 /*    function parseSigList( inits ) {                                 */
 /*       let lbrace = this.consumeToken( this.LPAREN );                */
 /*                                                                     */
@@ -1051,16 +1089,7 @@ function parseRun( token ) {
 /* 	 }                                                             */
 /*       }                                                             */
 /*    }                                                                */
-   
-   inits.push( astutils.J2SDataPropertyInit(
-      loc, astutils.J2SString( loc, "module" ), module ) );
-   parseSigList.call( this, inits );
-   
-   const attrs = astutils.J2SObjInit( loc, inits );
-   
-   return astutils.J2SCall( loc, hhref( loc, "RUN" ), null,
-			    [ attrs ].concat( accessors ) );
-}
+/* }                                                                   */
    
 
 /*---------------------------------------------------------------------*/
@@ -1216,8 +1245,8 @@ function parseStmt( token, declaration ) {
 	       return parseNothing.call( this, next );
 /* 	    case "pause":                                              */
 /* 	       return parsePause.call( this, next );                   */
-/* 	    case "halt":                                               */
-/* 	       return parseHalt.call( this, next );                    */
+	    case "halt":
+	       return parseHalt.call( this, next );
 /* 	    case "sequence":                                           */
 /* 	       return parseSequence.call( this, next );                */
 	    case "fork":
@@ -1265,7 +1294,7 @@ function parseStmt( token, declaration ) {
 	 return parseIf.call( this, next );
 	 
       case this.break:
-	 return parseHaltExit.call( this, next );
+	 return parseExit.call( this, next );
 	 
       case this.yield:
 	 return parsePause.call( this, next );

@@ -19,7 +19,7 @@ var run2 = <hh.module S U A B>
 var m = new hh.ReactiveMachine(run2, "run2");
 m.debug_emitted_func = console.log
 
-console.log(m.pretty_print());
+//console.log(m.pretty_print());
 console.log("m.inputAndReact(S)");
 m.inputAndReact("S")
 
@@ -28,6 +28,6 @@ m.getElementById("par").appendChild(<hh.run module=${m1} Z=A/>);
 
 console.log("==================== ADD RUN PARALLEL ==================");
 
-console.log(m.pretty_print());
+//console.log(m.pretty_print());
 console.log("m.inputAndReact(U)");
 m.inputAndReact("U")
