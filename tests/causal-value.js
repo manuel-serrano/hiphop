@@ -1,4 +1,4 @@
-"require hopscript"
+"use hopscript"
 let hh = require("hiphop");
 
 let prg =
@@ -12,5 +12,7 @@ let prg =
 let machine = new hh.ReactiveMachine(prg, "TEST");
 
 try {
-machine.react();
-}catch(e) {}
+   machine.react();
+} catch( e ) {
+   console.log( "causality error" );
+}

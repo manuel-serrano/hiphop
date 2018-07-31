@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Jul 31 13:40:10 2018 (serrano)                */
+/*    Last change :  Tue Jul 31 13:58:37 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -297,7 +297,7 @@ function parseValueApply( loc ) {
 /*       | count( hhexpr, hhexpr )                                     */
 /*       | immediate( hhexpr )                                         */
 /*---------------------------------------------------------------------*/
-function parseDelay( loc, action = "apply", id = false ) {
+function parseDelay( loc, tag, action = "apply", id = false ) {
    if( isIdToken( this, this.peekToken(), "count" ) ) {
       // COUNT( hhexpr, hhexpr )
       const loccnt = this.consumeAny();
@@ -334,8 +334,12 @@ function parseDelay( loc, action = "apply", id = false ) {
       
       if( isIdToken( this, this.peekToken(), "immediate" ) ) {
 	 // immediate( hhexpr )
-	 this.consumeAny();
+	 const imm = this.consumeAny();
 	 immediate = true;
+	 if( isIdToken( this, this.peekToken(), "count" ) ) {
+	    throw new SyntaxError( tag + ": can't use immediate with count expression.",
+				   tokenLocation( imm ) );
+	 }
       }
 
       // hhexpr
@@ -771,7 +775,7 @@ function parseSustain( token ) {
 /*---------------------------------------------------------------------*/
 function parseAwait( token ) {
    const loc = token.location;
-   const { inits, accessors } = parseDelay.call( this, loc, "apply" );
+   const { inits, accessors } = parseDelay.call( this, loc, "AWAIT", "apply" );
 
    return astutils.J2SCall(
       loc, hhref( loc, "AWAIT" ),
@@ -815,7 +819,7 @@ function parseIf( token ) {
 /*---------------------------------------------------------------------*/
 function parseAbortWeakabort( token, command ) {
    const loc = token.location;
-   const { inits, accessors } = parseDelay.call( this, loc, "apply" );
+   const { inits, accessors } = parseDelay.call( this, loc, "WEAKABORT", "apply" );
    const stmts = parseHHBlock.call( this );
    
    return astutils.J2SCall(
@@ -861,7 +865,7 @@ function parseSuspend( token ) {
    function parseEmitwhensuspended( inits ) {
       if( isIdToken( this, this.peekToken(), "emitwhensuspended" ) ) {
 	 const loc = this.consumeAny().location
-	 const id = this.consumeToken( this.id );
+	 const id = this.consumeToken( this.ID );
 
 	 inits.push( 
 	    astutils.J2SDataPropertyInit(
@@ -880,26 +884,28 @@ function parseSuspend( token ) {
       // SUSPEND FROM delay TO delay [whenemitsuspended] BLOCK
       const { inits: from, accessors: afrom } =
 	    parseDelay.call(
-	       this, this.consumeAny().location, "fromApply" );
+	       this, this.consumeAny().location, "SUSPEND", "fromApply" );
       const tot = this.consumeAny();
       if( !isIdToken( this, tot, "to" ) ) {
 	 throw new SyntaxError( "SUSPEND: unexpected token `" + tot.value + "'",
 				tokenLocation( tot ) );
       }
 
+      const { inits: to, accessors: ato } =
+	    parseDelay.call( this, tot.location, "SUSPEND", "toApply" );
+
       parseEmitwhensuspended.call( this, inits );
       
-      const { inits: to, accessors: ato } =
-	    parseDelay.call( this, tot.location, "toApply" );
-
       inits = inits.concat( from );
       inits = inits.concat( to );
       accessors = afrom.concat( ato );
+      accessors = [ astutils.J2SArray( loc, afrom ),
+		    astutils.J2SArray( loc, ato ) ];
    } else if( isIdToken( this, this.peekToken(), "toggle" ) ) {
       // SUSPEND TOGGLE delay [whenemitsuspended] BLOCK
       const tot = this.consumeAny();
       const { inits: toggle, accessors: atoggle } =
-	    parseDelay.call( this, tot.location, "toggleApply", "toggleSignal" );
+	    parseDelay.call( this, tot.location, "SUSPEND", "toggleApply", "toggleSignal" );
       
       parseEmitwhensuspended.call( this, inits );
 
@@ -908,7 +914,7 @@ function parseSuspend( token ) {
    } else {
       // SUSPEND delay BLOCK
       const { inits: is, accessors: aexpr } =
-	    parseDelay.call( this, loc, "apply" );
+	    parseDelay.call( this, loc, "SUSPEND", "apply" );
 
       inits = inits.concat( is );
       accessors = aexpr;
@@ -942,13 +948,14 @@ function parseLoop( token ) {
 /*    parseLoopeachEvery ...                                           */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | foreach ( delay ) block                                     */
+/*       | every ( delay ) block                                       */
+/*       | for ( delay ) block                                         */
 /*---------------------------------------------------------------------*/
-function parseLoopeachEvery( token, action ) {
+function parseLoopeachEvery( token, action, tag ) {
    const loc = token.location;
 
    this.consumeToken( this.LPAREN );
-   const { inits, accessors } = parseDelay.call( this, loc );
+   const { inits, accessors } = parseDelay.call( this, loc, tag );
    this.consumeToken( this.RPAREN );
 
    const stmts = parseHHBlock.call( this );
@@ -1272,7 +1279,7 @@ function parseStmt( token, declaration ) {
 /* 	    case "local":                                              */
 /* 	       return parseLocal.call( this, next );                   */
 	    case "every":
-	       return parseLoopeachEvery.call( this, next, "EVERY" );
+	       return parseLoopeachEvery.call( this, next, "EVERY", "EVERY" );
 	    case "async":
 	       return parseExec.call( this, next );
 	    case "run":
@@ -1290,7 +1297,7 @@ function parseStmt( token, declaration ) {
 /* 	 return parseLoop.call( this, next );                          */
 
       case this.for:
-	 return parseLoopeachEvery.call( this, next, "LOOPEACH" );
+	 return parseLoopeachEvery.call( this, next, "LOOPEACH", "FOR" );
 	 
       case this.if:
 	 return parseIf.call( this, next );

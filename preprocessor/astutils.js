@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Thu Jul 26 14:26:19 2018 (serrano)                */
+/*    Last change :  Tue Jul 31 15:13:10 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -237,6 +237,16 @@ function J2SVarDecls( loc, decls ) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    J2SArray ...                                                     */
+/*---------------------------------------------------------------------*/
+function J2SArray( loc, exprs ) {
+   return new ast.J2SArray( loc, undefined, undefined, undefined,
+			    "array" /* type */, null /* hint */,
+			    undefined /* range */,
+			    exprs.length, exprs );
+}
+
+/*---------------------------------------------------------------------*/
 /*    exports                                                          */
 /*---------------------------------------------------------------------*/
 exports.J2SNull = J2SNull;
@@ -261,3 +271,4 @@ exports.J2SSeq = J2SSeq;
 exports.J2SDecl = J2SDecl;
 exports.J2SDeclInit = J2SDeclInit;
 exports.J2SVarDecls = J2SVarDecls;
+exports.J2SArray = J2SArray;

@@ -11,7 +11,7 @@ hiphop module prg( in A, in B, in R, out O ) {
 	    await now( B );
 	 }
 	 emit O();
-	 break;
+	 halt;
       }
    }
 };

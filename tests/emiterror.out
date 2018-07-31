@@ -1,3 +1,1 @@
-*** SIGNAL ERROR on signal `O`
-*** [LOC DISABLED --- run hop -g to get location]
-*** Can't set values more that one time in a reaction to a single signal
+Can't set single signal `O' value more that once.
