@@ -1,10 +1,10 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/prims/client.js                      */
+/*    serrano/prgm/project/hiphop/0.2.x/examples/prims/client.js       */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Jan 16 07:20:47 2016                          */
-/*    Last change :  Tue Mar 29 11:58:59 2016 (serrano)                */
-/*    Copyright   :  2016 Manuel Serrano                               */
+/*    Last change :  Wed Aug  1 14:33:25 2018 (serrano)                */
+/*    Copyright   :  2016-18 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prims client part                                                */
 /*=====================================================================*/
@@ -13,7 +13,7 @@
 /*---------------------------------------------------------------------*/
 /*    Imports                                                          */
 /*---------------------------------------------------------------------*/
-var hh;
+const hh = require( "hiphop" );
 var G;
 
 /*---------------------------------------------------------------------*/
@@ -140,12 +140,12 @@ Num.prototype.computeMove = function( suspect, G ) {
 /*---------------------------------------------------------------------*/
 /*    number ...                                                       */
 /*---------------------------------------------------------------------*/
-function number(G) {
-   let num = new Num(G);
+function number( G ) {
+   let num = new Num( G );
    var numid = "num" + num.value;
    G.count++;
 
-   function prey(number) {
+   function prey( number ) {
       let prey = false;
 
       number.find( function( other ) {
@@ -154,26 +154,23 @@ function number(G) {
       return prey;
    }
 
-   let trap = TRAP Exit {
-      LOOP {
-	 AWAIT(NOW(killn) && NOW(numbers));
-	 EMIT numbers(num);
-	 EMIT killn(prey(VAL(numbers)));
-	 IF (VAL(killn).indexOf(num) >= 0) {
-	    ATOM {
+   let trap = hiphop {
+      exit: loop {
+	 await now( killn ) && now( numbers );
+	 emit numbers( num );
+	 emit killn( prey( val( numbers) ) );
+	 
+	 if( val( killn ).indexOf( num ) >= 0 ) {
+	    hop {
 	       num.dead = true;
 	       G.mach.getElementById( "numbers" ).removeChild( trap );
 	    }
-	    EXIT Exit;
-	 } ELSE {
-	    IF (num.prey && VAL(killn).indexOf(num.prey) >= 0) {
-	       ATOM {
-		  num.init();
-	       }
+	    break exit;
+	 } else {
+	    if( num.prey && val( killn ).indexOf( num.prey ) >= 0 ) {
+	       hop { num.init() }
 	    }
-	    ATOM {
-	       num.move();
-	    }
+	    hop { num.move() }
 	 }
       }
    }
@@ -186,31 +183,24 @@ function number(G) {
 /*    prims ...                                                        */
 /*---------------------------------------------------------------------*/
 function prims( G ) {
-
-   function reinit() {
-      return [];
-   }
-
-   const reduce = function(acc, n) {
-      if (n)
-	 acc.push(n);
+   
+   function reduce( acc, n ) {
+      if( n ) acc.push( n );
       return acc;
    }
 
-   return MODULE (INOUT go,
-		  INOUT killn COMBINE (reduce),
-		  INOUT numbers COMBINE (reduce)) {
-      FORK numbers {
-	 LOOP {
-	    ATOM {
-	       G.ctx.clearRect( 0, 0, G.width, G.height )
-	    }
-	    EMIT killn([]);
-	    EMIT numbers([]);
-	    PAUSE;
+   return hipohp module ( inout go,
+		  inout killn combine reduce,
+		  inout numbers combine reduce ) {
+      fork "numbers" {
+	 loop {
+	    hop { G.ctx.clearRect( 0, 0, G.width, G.height ) }
+	    emit killn( [] );
+	    emit numbers( [] );
+	    yield;
 	 }
-      } PAR {
-	 ${number(G)}
+      } par {
+	 ${ number( G ) }
       }
    }
 }
@@ -219,8 +209,7 @@ function prims( G ) {
 /*    addNumber ...                                                    */
 /*---------------------------------------------------------------------*/
 function addNumber( G ) {
-   G.mach.getElementById( "numbers" )
-      .appendChild( number(G) );
+   G.mach.getElementById( "numbers" ).appendChild( number( G ) );
 }
    
 /*---------------------------------------------------------------------*/
@@ -228,15 +217,12 @@ function addNumber( G ) {
 /*---------------------------------------------------------------------*/
 exports.addNumber = function( num ) {
    while( num-- >  0 ) {
-      addNumber(  G );
+      addNumber( G );
    }
 }
 
 exports.resume = function() {
-   G.timer = setInterval( function() {
-      G.mach.react();
-         
-   }, G.speed  );
+   G.timer = setInterval( () => G.mach.react(), G.speed );
 }
    
 exports.pause = function() {
@@ -259,7 +245,6 @@ exports.setSpeed = function( speed ) {
 
 exports.start = function( g, speed ) {
    G = g;
-   hh = require( "hiphop" );
 
    G.ctx = G.getContext( "2d" );
    G.predatorColor = "#00a";
@@ -269,6 +254,6 @@ exports.start = function( g, speed ) {
    G.count = 2;
 
    exports.setSpeed( speed );
-   G.mach = new hh.ReactiveMachine(prims(G));
+   G.mach = new hh.ReactiveMachine( prims( G ) );
    exports.resume();
 }

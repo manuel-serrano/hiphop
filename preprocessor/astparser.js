@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Aug  1 13:00:15 2018 (serrano)                */
+/*    Last change :  Wed Aug  1 13:46:26 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -14,6 +14,9 @@ const hopc = require( hop.hopc );
 const ast = require( hopc.ast );
 const astutils = require( "./astutils.js" );
 const parser = new hopc.Parser();
+
+const hhname = "%hh";
+const hhmodule = "hiphop";
 
 /*---------------------------------------------------------------------*/
 /*    location ...                                                     */
@@ -78,10 +81,27 @@ function isIdToken( parser, token, id ) {
 function hhref( loc, name ) {
    return astutils.J2SAccess(
       loc,
-      astutils.J2SRef( loc, "hh" ),
+      astutils.J2SRef( loc, hhname ),
       astutils.J2SString( loc, name ) );
 }
 
+/*---------------------------------------------------------------------*/
+/*    hhwrap ...                                                       */
+/*---------------------------------------------------------------------*/
+function hhwrap( token, expr ) {
+   const loc = token.location;
+   const req = astutils.J2SCall( loc, astutils.J2SRef( loc, "require" ),
+				 [ astutils.J2SUndefined( loc ) ],
+				 [ astutils.J2SString( loc, hhmodule ) ] );
+   const fun = astutils.J2SFun(
+      loc, "hhwrap", [ astutils.J2SDecl( loc, hhname, "param" ) ],
+      astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, expr ) ] ) );
+
+   return astutils.J2SCall( loc, fun,
+			    [ astutils.J2SUndefined( loc ) ],
+			    [ req ] );
+}
+   
 /*---------------------------------------------------------------------*/
 /*    parseHHAccessors ...                                             */
 /*    -------------------------------------------------------------    */
@@ -1337,9 +1357,9 @@ function parseHiphop( token, declaration ) {
 
    if( next.type === this.ID && next.value == "module" ) {
       this.consumeAny();
-      return parseModule.call( this, next, declaration );
+      return hhwrap( token, parseModule.call( this, next, declaration ) );
    } else {
-      return parseStmt.call( this, token, declaration  );
+      return hhwrap( token, parseStmt.call( this, token, declaration  ) );
    }
 }
 

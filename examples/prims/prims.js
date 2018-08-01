@@ -1,10 +1,10 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/prims/prims.js                       */
+/*    serrano/prgm/project/hiphop/0.2.x/examples/prims/prims.js        */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Oct 16 08:45:43 2012                          */
-/*    Last change :  Mon Jan 18 14:57:06 2016 (serrano)                */
-/*    Copyright   :  2012-16 Manuel Serrano                            */
+/*    Last change :  Wed Aug  1 13:33:32 2018 (serrano)                */
+/*    Copyright   :  2012-18 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prims number aka the Darwin Sieve                                */
 /*    -------------------------------------------------------------    */
@@ -12,8 +12,6 @@
 /*      http://localhost:8080/hop/prims?width=300&height=300           */
 /*=====================================================================*/
 "use hopscript";
-
-require("hiphop");
 
 /*---------------------------------------------------------------------*/
 /*    prims ...                                                        */
@@ -31,12 +29,10 @@ service prims( o ) {
      <head css=${require.resolve( "./prims.hss" )}>
        <script src="hiphop" lang="hopscript"/>
        <script src="./client.js" lang="hiphop"/>
-       ~{ var pc;
-	  window.onload = function() {
-	     pc = require("./client.js", "hiphop");
-	     pc.start( ${canvas}, ${speed} );
-	  }
-	}
+       <script defer>
+	 const pc = require( "./client.js", "hiphop" );
+	 pc.start( ${canvas}, ${speed} );
+       </script>
      </head>
      <body>
        ${canvas}
@@ -52,7 +48,7 @@ service prims( o ) {
 	 </div>
 	 <input type=range style=${`width: ${width}px`}
 		min=0 max=100 value=${speed}
-		onchange=~{pc.setSpeed( this.value)}/>
+		onchange=~{pc.setSpeed( this.value )}/>
        </div>
      </body>
    </html>

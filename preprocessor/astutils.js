@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Tue Jul 31 15:13:10 2018 (serrano)                */
+/*    Last change :  Wed Aug  1 13:51:56 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -28,7 +28,7 @@ function J2SNull( loc ) {
 function J2SUndefined( loc ) {
    return new ast.J2SUndefined( loc, false, false, false,
 				"undefined" /* type */,
-				undefined /* hint */, false /* range */ );
+				null /* hint */, false /* range */ );
 }
 
 /*---------------------------------------------------------------------*/
@@ -201,7 +201,7 @@ function J2SReturn( loc, expr ) {
 /*---------------------------------------------------------------------*/
 /*    J2SDecl ...                                                      */
 /*---------------------------------------------------------------------*/
-function J2SDecl( loc, id ) {
+function J2SDecl( loc, id, binder = "var" ) {
    return new ast.J2SDecl( loc, undefined, undefined, undefined,
 			   id, false /* _scmid */, -1 /* key */,
 			   true /* writable */, true /* immutable */,
@@ -210,7 +210,7 @@ function J2SDecl( loc, id ) {
 			   false /* useinfun */, null /* usage */,
 			   "any" /* utype */, "any" /* itype */,
 			   "any" /* vtype */, null /* hint */,
-			   undefined /* range */, "var" /* binder */ );
+			   undefined /* range */, binder /* binder */ );
 }
 
 /*---------------------------------------------------------------------*/
