@@ -6,7 +6,7 @@ hiphop module prg( in A, T, V ) {
    let S;
 
    loop {
-      abort now( A ) {
+      abort( now( A ) ) {
 	 emit S();
 	 if( now( S ) ) emit T();
 	 yield;

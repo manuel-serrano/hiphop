@@ -30,7 +30,7 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	 
 	 WATCH_AND_SET_WATCH_MODE: loop {
 	    // watch mode
-	    abort now( UL ) {
+	    abort( now( UL ) ) {
 	       fork {
 		  await now( LL );
 		  break WATCH_AND_SET_WATCH_MODE;
@@ -44,7 +44,7 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	    
 	    // set watch-mode
 	    emit ENTER_SET_WATCH_MODE_COMMAND();
-	    abort now( UL ) {
+	    abort( now( UL ) ) {
 	       fork {
 		  loop {
 		     await now( LL );
@@ -62,7 +62,7 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	 
 	 // stopwatch mode
 	 emit STOPWATCH_MODE_COMMAND();
-	 abort now( LL ) {
+	 abort( now( LL ) ) {
 	    fork {
 	       loop {
 		  await now( LR );
@@ -80,7 +80,7 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	 emit ALARM_MODE_COMMAND();
 	 ALARM_AND_SET_ALARM_MODE: loop {
 	    // alarm mode
-	    abort now( UL ) {
+	    abort( now( UL ) ) {
 	       fork {
 		  fork {
 		     await now( LL );
@@ -101,7 +101,7 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	    
 	    // set-alarm mode
 	    emit ENTER_SET_ALARM_MODE_COMMAND();
-	    abort now( UL ) {
+	    abort( now( UL ) ) {
 	       fork {
 		  loop {
 		     await now( LL );

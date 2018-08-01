@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Jul 31 13:58:37 2018 (serrano)                */
+/*    Last change :  Wed Aug  1 13:00:15 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -461,10 +461,11 @@ function parseModule( token, declaration ) {
 	 astutils.J2SString( loc, name ) );
 
       const inits = [ dir, id ];
+      let accessors = [];
       
       if( this.peekToken().type === this.EGAL ) {
 	 this.consumeAny();
-	 const { expr, accessors } = parseHHExpression.call( this );
+	 const { expr, accessors: axs } = parseHHExpression.call( this );
 
 	 const func = astutils.J2SFun(
 	    loc, "initfunc", [],
@@ -476,6 +477,7 @@ function parseModule( token, declaration ) {
 	    astutils.J2SString( loc, "init_func" ),
 	    func );
 
+	 accessors = axs;
 	 inits.push( initfunc );
       }
 	 
@@ -491,7 +493,8 @@ function parseModule( token, declaration ) {
       }
 
       const attrs = astutils.J2SObjInit( loc, inits );
-      return astutils.J2SCall( loc, hhref( loc, "SIGNAL" ), null, [ attrs ] );
+      return astutils.J2SCall( loc, hhref( loc, "SIGNAL" ), null,
+			       [ attrs ].concat( accessors ) );
    }
 
    function parseSiglist() {
@@ -816,10 +819,15 @@ function parseIf( token ) {
 
 /*---------------------------------------------------------------------*/
 /*    parseAbortWeakabort ...                                          */
+/*    stmt ::= ...                                                     */
+/*       | ABORT( delay ) block                                        */
+/*       | WEAKABORT( delay ) block                                    */
 /*---------------------------------------------------------------------*/
 function parseAbortWeakabort( token, command ) {
    const loc = token.location;
+   this.consumeToken( this.LPAREN );
    const { inits, accessors } = parseDelay.call( this, loc, "WEAKABORT", "apply" );
+   this.consumeToken( this.RPAREN );
    const stmts = parseHHBlock.call( this );
    
    return astutils.J2SCall(
@@ -832,18 +840,12 @@ function parseAbortWeakabort( token, command ) {
 /*---------------------------------------------------------------------*/
 /*    parseAbort ...                                                   */
 /*    -------------------------------------------------------------    */
-/*    stmt ::= ...                                                     */
-/*       | ABORT delay block                                           */
-/*---------------------------------------------------------------------*/
 function parseAbort( token ) {
    return parseAbortWeakabort.call( this, token, "ABORT" );
 }
    
 /*---------------------------------------------------------------------*/
 /*    parseWeakabort ...                                               */
-/*    -------------------------------------------------------------    */
-/*    stmt ::= ...                                                     */
-/*       | WEAKABORT delay block                                       */
 /*---------------------------------------------------------------------*/
 function parseWeakabort( token ) {
    return parseAbortWeakabort.call( this, token, "WEAKABORT" );
@@ -1156,7 +1158,7 @@ function parseLocal_not_used( token ) {
 function parseLet( token ) {
    const loc = token.location;
 
-   function signal( loc, name, direction, init = false ) {
+   function signal( loc, name, direction, init, accessors ) {
       const id = astutils.J2SDataPropertyInit(
 	 loc,
 	 astutils.J2SString( loc, "name" ),
@@ -1178,7 +1180,8 @@ function parseLet( token ) {
       }
       
       const attrs = astutils.J2SObjInit( loc, inits );
-      return astutils.J2SCall( loc, hhref( loc, "SIGNAL" ), null, [ attrs ] );
+      return astutils.J2SCall( loc, hhref( loc, "SIGNAL" ), null,
+			       [ attrs ].concat( accessors ) );
    }
 
    function parseSiglist() {
@@ -1190,9 +1193,9 @@ function parseLet( token ) {
 	 if( this.peekToken().type === this.EGAL ) {
 	    this.consumeAny();
 	    const { expr, accessors } = parseHHExpression.call( this );
-	    args.push( signal( t.location, t.value, "INOUT", expr ) );
+	    args.push( signal( t.location, t.value, "INOUT", expr, accessors ) );
 	 } else {
-	    args.push( signal( t.location, t.value, "INOUT" ) );
+	    args.push( signal( t.location, t.value, "INOUT", false, [] ) );
 	 }
 	 
 	 switch( this.peekToken().type ) {

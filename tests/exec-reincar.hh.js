@@ -7,7 +7,7 @@ var glob = 5;
 hiphop module prg( in R, O, OT, in T ) {
    for( now( R ) ) {
       fork {
-	 abort now( R ) {
+	 abort( now( R ) ) {
 	    async T {
 	       console.log( "Oi." );
 	       setTimeout( function( self ) {

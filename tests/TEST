@@ -14,12 +14,48 @@ output_hop=/tmp/TEST-HOPJS.out
 verb=
 debug=
 
+report_ok() {
+  echo -en "\x1B[33m\x1B[1mok\x1B[0m"
+  success=$(($success+1))
+	
+  if [ "$verb " != " " ]; then
+    echo ""
+    cat $output_hop
+  fi
+}
+
+report_failure() {
+  echo -en "\x1B[32m\x1B[1mfailure\x1B[0m"
+  failure=$(($failure+1))
+
+  if [ "$debug " != " " ]; then
+    echo ""
+    cat $output_hop
+    exit 1
+  fi
+} 
+
+report_missing() {
+  i=$((i + 1))
+  
+  echo -n "$i. $1 ... "
+  grep "^$1" BLACKLIST 2> /dev/null > /dev/null
+
+  if [ $? = 0 ]; then
+    echo -e "\x1B[34m\x1B[1mblacklist\x1B[0m."
+    blacklist=$(($blacklist+1))
+  else
+    echo -e "\x1B[31m\x1B[1mmissing\x1B[0m."
+    missing=$(($missing+1))
+  fi
+}
+
 run_test() {
   i=$((i + 1))
   file=$1
   suf=$2
 
-    echo -n "$i. $file$suf ... "
+    echo -n "$i. $file$suf.js ... "
 
     if [ -f $file.in ]; then
 	cat <<EOF > $batchfile
@@ -60,24 +96,20 @@ EOF
 
     diff_out=$(diff $output_hop $file.out)
 
-    if [ $status != "0" -o "$diff_out" != "" ]
-    then
-	echo -en "\x1B[32m\x1B[1mfailure\x1B[0m"
-	failure=$(($failure+1))
-
-	if [ "$debug " != " " ]; then
-	  echo ""
-	  cat $output_hop
-	  exit 1
-	fi
+    if [ "$status" != "0" ]; then
+      if [ -f $dir/$file.err ]; then
+	report_ok
+      else
+	report_failure
+      fi
+    elif [ "$diff_out" != "" ]; then
+      if [ -f $dir/$file.err ]; then
+	report_ok
+      else
+	report_failure
+      fi
     else
-	echo -en "\x1B[33m\x1B[1mok\x1B[0m"
-	success=$(($success+1))
-	
-	if [ "$verb " != " " ]; then
-	  echo ""
-	  cat $output_hop
-	fi
+      report_ok
     fi
 
     echo ".";
@@ -88,10 +120,11 @@ init_stats() {
     success=0
     failure=0
     missing=0
+    blacklist=0
 }
 
 print_stats() {
-    echo -e "\x1B[1m$space*** $success success   $failure failure   $missing missing ***\x1B[0m"
+    echo -e "\x1B[1m$space*** $success success   $failure failure   $missing missing   $blacklist blacklist ***\x1B[0m"
 }
 
 if [ "$(dirname $0)" != "." ]
@@ -139,16 +172,12 @@ else
     if [ -f $file.js ]; then
       run_test $file
     else
-      echo -n "$i. $file ... "
-      echo -e "\x1B[31m\x1B[1mmissing\x1B[0m"
-      missing=$(($missing+1))
+      report_missing $file.js
     fi
     if [ -f $file.hh.js ]; then
       run_test $file .hh
     else
-      echo -n "$i. $file.hh ... "
-      echo -e "\x1B[31m\x1B[1mmissing\x1B[0m"
-      missing=$(($missing+1))
+      report_missing $file.hh.js
     fi
   done
 fi

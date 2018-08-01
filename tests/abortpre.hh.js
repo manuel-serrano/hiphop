@@ -4,7 +4,7 @@ var hh = require( "hiphop" );
 
 hiphop module prg( O, S ) {
    loop {
-      abort pre( S ) {
+      abort( pre( S ) ) {
 	 emit S();
 	 yield;
 	 emit O();

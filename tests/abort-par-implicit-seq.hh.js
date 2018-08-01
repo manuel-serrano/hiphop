@@ -6,7 +6,7 @@ hiphop module prg( in I, out O ) {
    let L;
 
    fork {
-      abort now( L ) {
+      abort( now( L ) ) {
 	 loop {
 	    emit O();
 	    yield;
