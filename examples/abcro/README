@@ -1,8 +1,0 @@
-Run
-	hop ./abcro.js
-
-App
-	http://localhost:8080/hop/abcro
-
-Debugger
-	http://localhost:8080/hop/abcroDebug

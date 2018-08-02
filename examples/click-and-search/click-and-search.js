@@ -10,7 +10,7 @@ service clickAndSearch() {
      ~{
 	window.onload = () => {
 	   var hh = require("hiphop", "hopscript");
-	   var m = require("./main-hh.js", "hiphop")(searchWiki, translate);
+	   var m = require("./click-and-search-hh.js", "hiphop")(searchWiki, translate);
 
 	   function searchWiki(wordId) {
 	      var word = document.getElementById(wordId).innerHTML;
@@ -42,7 +42,9 @@ service clickAndSearch() {
 	   }
 
 	   m.addEventListener("trans", function(evt) {
-	      document.getElementById('trans').innerHTML = evt.signalValue;
+	      if( evt.signalValue.resolve ) {
+		 document.getElementById('trans').innerHTML = evt.signalValue.val;
+	      }
 	   });
 
 	   m.addEventListener("green", function(evt) {
@@ -67,8 +69,10 @@ service clickAndSearch() {
 	   });
 
 	   m.addEventListener("wiki", function(evt) {
-	      var trans = document.getElementById("trans");
-	      wiki.innerHTML = "<div>" + evt.signalValue + "</div>";
+	      if( evt.signalValue.resolve ) {
+		 var trans = document.getElementById("trans");
+		 wiki.innerHTML = "<div>" + evt.signalValue.val + "</div>";
+	      }
 	   });
 
 	   var pre = document.getElementById("txt");
