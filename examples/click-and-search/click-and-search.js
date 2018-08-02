@@ -6,41 +6,40 @@ service clickAndSearch() {
    return <html>
      <head css=${clickAndSearch.resource("./style.css")}>
        <script src="hiphop" lang="hopscript"></script>
-       <script src="./main-hh.js" lang="hiphop"></script>
-     ~{
-	window.onload = () => {
-	   var hh = require("hiphop", "hopscript");
-	   var m = require("./click-and-search-hh.js", "hiphop")(searchWiki, translate);
+       <script src="./click-and-search-hh.js" lang="hiphop"></script>
+       <script defer>
+	 const hh = require( "hiphop", "hopscript" );
+	 const m = require( "./click-and-search-hh.js", "hiphop" )(searchWiki, translate);
 
-	   function searchWiki(wordId) {
-	      var word = document.getElementById(wordId).innerHTML;
-	      return new Promise(res => {
-		 try {
-		    ${wiki}(word).post(r => res(r))
-		 } catch (e) {
-		    console.log('bug req cli');
-		 }
-	      });
-	   }
-
-	   function translate(wordId) {
-	      var word = document.getElementById(wordId).innerHTML;
-	      var req = new XMLHttpRequest();
-	      var svc = "http://mymemory.translated.net/api/get?langpair=en|fr&q=" + word;
-	      return new Promise(res => {
-		 try {
-		    req.onreadystatechange = () => {
-	   	       if (req.readyState == 4 && req.status == 200)
-	   		  res(JSON.parse(req.responseText).responseData.translatedText);
-		    };
-		    req.open("GET", svc, true);
-		    req.send();
-		 } catch (e) {
-		    ocnsole.log('bug req cli trans');
-		 }
-	      });
-	   }
-
+	 function searchWiki(wordId) {
+	    var word = document.getElementById(wordId).innerHTML;
+	    return new Promise(res => {
+	       try {
+		  ${wiki}(word).post(r => res(r))
+	       } catch (e) {
+		  console.log('bug req cli');
+	       }
+	    });
+	 }
+	 
+         function translate(wordId) {
+	    var word = document.getElementById(wordId).innerHTML;
+	    var req = new XMLHttpRequest();
+	    var svc = "http://mymemory.translated.net/api/get?langpair=en|fr&q=" + word;
+	    return new Promise(res => {
+	       try {
+		  req.onreadystatechange = () => {
+	   	     if (req.readyState == 4 && req.status == 200)
+	   		res(JSON.parse(req.responseText).responseData.translatedText);
+		  };
+		  req.open("GET", svc, true);
+		  req.send();
+	       } catch (e) {
+		  ocnsole.log('bug req cli trans');
+	       }
+	    });
+	 }
+	 
 	   m.addEventListener("trans", function(evt) {
 	      if( evt.signalValue.resolve ) {
 		 document.getElementById('trans').innerHTML = evt.signalValue.val;
@@ -75,8 +74,16 @@ service clickAndSearch() {
 	      }
 	   });
 
-	   var pre = document.getElementById("txt");
-	   var file = ${getFile.resource("strcmp-manpage")}
+	   window.onload = function() {
+	      var pre = document.getElementById("txt");
+	      var file = ${getFile.resource("strcmp-manpage")};
+	      pre.onclick = function() {
+		 s = window.getSelection();
+		 var node = s.anchorNode.parentNode;
+		 if (node.id == "txt")
+		    return;
+		 m.inputAndReact("word", node.id);
+	      };
 	   ${getFile}(file).post(function(txt) {
 	      let output = "";
 	      let i = 0;
@@ -94,15 +101,8 @@ service clickAndSearch() {
 	      pre.innerHTML = output;
 	   });
 
-	   pre.onclick = function() {
-	      s = window.getSelection();
-	      var node = s.anchorNode.parentNode;
-	      if (node.id == "txt")
-		 return;
-	      m.inputAndReact("word", node.id);
-	   };
-	}
-     }
+	   }
+       </script>
      </head>
      <body>
        <div id="popup">

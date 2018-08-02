@@ -1,5 +1,5 @@
 Run
-	hop ./main.js
+	hop ./click-and-search.js
 
 App
 	http://localhost:8080/hop/clickAndSearch

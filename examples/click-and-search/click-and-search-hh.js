@@ -2,12 +2,12 @@ const hh = require("hiphop");
 
 module.exports = function( searchWiki, translate ) {
    return new hh.ReactiveMachine(
-      module( in word, out green, out red, out black, out wiki, out trans ) {
+      hiphop module( in word, out green, out red, out black, out wiki, out trans ) {
 	 every( immediate( now( word ) ) ) {
 	    emit black( preval( word ) );
 	    emit red( val( word ) );
 	    fork {
-	       async wikit {
+	       async wiki {
 		  hh.Promise( this, searchWiki( val( word ) ) );
 	       }
 	    } par {
