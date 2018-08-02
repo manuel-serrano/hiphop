@@ -24,7 +24,7 @@ hiphop module prg( in IN combine (a, b) => b, OUT1="1|", OUT2="2|" ) {
 	    if ( val( IN ) == "LONGWAIT") timeout = timeout * 3;
 
 	    console.log( "   exec started", timeout, val( IN ) );
-	    setTimeout( function( self,v ) {
+	    setTimeout( function( self, v ) {
 	       console.log( "   exec returns", timeout, v );
 	       self.notify( v + "--|" + timeout );
 	    }, timeout, this, val( IN ) );

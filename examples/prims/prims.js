@@ -3,10 +3,10 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Oct 16 08:45:43 2012                          */
-/*    Last change :  Wed Aug  1 13:33:32 2018 (serrano)                */
+/*    Last change :  Thu Aug  2 00:53:09 2018 (serrano)                */
 /*    Copyright   :  2012-18 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
-/*    Prims number aka the Darwin Sieve                                */
+/*    Prim numbers aka the Darwin Sieve                                */
 /*    -------------------------------------------------------------    */
 /*    run with:                                                        */
 /*      http://localhost:8080/hop/prims?width=300&height=300           */
@@ -22,7 +22,7 @@ service prims( o ) {
    let count = ~~o.count || 1;
    let width = ~~o.width || 400;
    let height = ~~o.height || 400;
-   let speed = ~~o.speed || 200;
+   let speed = ~~o.speed || 20;
    let canvas = <canvas width=${width} height=${height}/>;
 
    return <html>
@@ -31,7 +31,7 @@ service prims( o ) {
        <script src="./client.js" lang="hiphop"/>
        <script defer>
 	 const pc = require( "./client.js", "hiphop" );
-	 pc.start( ${canvas}, ${speed} );
+	 window.onload = () => pc.start( ${canvas}, ${speed} );
        </script>
      </head>
      <body>

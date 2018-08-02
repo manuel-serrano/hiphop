@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Aug  1 13:46:26 2018 (serrano)                */
+/*    Last change :  Thu Aug  2 00:50:25 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -13,9 +13,10 @@
 const hopc = require( hop.hopc );
 const ast = require( hopc.ast );
 const astutils = require( "./astutils.js" );
+const error = require( "../lib/error.js" );
 const parser = new hopc.Parser();
 
-const hhname = "%hh";
+const hhname = "__hh_module";
 const hhmodule = "hiphop";
 
 /*---------------------------------------------------------------------*/
@@ -55,8 +56,8 @@ function tokenLocation( token ) {
 /*    tokenValueError ...                                              */
 /*---------------------------------------------------------------------*/
 function tokenValueError( token ) {
-   return new SyntaxError( "unexpected token `" + token.value + "'",
-			   tokenLocation( token ) );
+   return error.SyntaxError( "unexpected token `" + token.value + "'",
+			     tokenLocation( token ) );
 }
 
 
@@ -64,8 +65,8 @@ function tokenValueError( token ) {
 /*    tokenTypeError ...                                               */
 /*---------------------------------------------------------------------*/
 function tokenTypeError( token ) {
-   return new SyntaxError( "unexpected token `" + token.type + "'",
-			   tokenLocation( token ) );
+   return error.SyntaxError( "unexpected token `" + token.type + "'",
+			     tokenLocation( token ) );
 }
 
 /*---------------------------------------------------------------------*/
@@ -86,9 +87,28 @@ function hhref( loc, name ) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    hhwrap ...                                                       */
+/*    hhwrapDecl ...                                                   */
+/*    -------------------------------------------------------------    */
+/*    Generate:                                                        */
+/*      STMT -> __hh_module = require( "hiphop" ); STMT                */
 /*---------------------------------------------------------------------*/
-function hhwrap( token, expr ) {
+function hhwrapDecl( token, stmt ) {
+   const loc = token.location;
+   const req = astutils.J2SCall( loc, astutils.J2SRef( loc, "require" ),
+				 [ astutils.J2SUndefined( loc ) ],
+				 [ astutils.J2SString( loc, hhmodule ) ] );
+   const decl = astutils.J2SDeclInit( loc, hhname, req );
+
+   return astutils.J2SVarDecls( stmt.loc, [ decl ].concat( stmt.decls ) );
+}
+
+/*---------------------------------------------------------------------*/
+/*    hhwrapExpr ...                                                   */
+/*    -------------------------------------------------------------    */
+/*    Generate:                                                        */
+/*      EXPR -> ((__hh_module => EXPR)require( "hiphop" ))             */
+/*---------------------------------------------------------------------*/
+function hhwrapExpr( token, expr ) {
    const loc = token.location;
    const req = astutils.J2SCall( loc, astutils.J2SRef( loc, "require" ),
 				 [ astutils.J2SUndefined( loc ) ],
@@ -357,8 +377,8 @@ function parseDelay( loc, tag, action = "apply", id = false ) {
 	 const imm = this.consumeAny();
 	 immediate = true;
 	 if( isIdToken( this, this.peekToken(), "count" ) ) {
-	    throw new SyntaxError( tag + ": can't use immediate with count expression.",
-				   tokenLocation( imm ) );
+	    throw error.SyntaxError( tag + ": can't use immediate with count expression.",
+				     tokenLocation( imm ) );
 	 }
       }
 
@@ -909,8 +929,8 @@ function parseSuspend( token ) {
 	       this, this.consumeAny().location, "SUSPEND", "fromApply" );
       const tot = this.consumeAny();
       if( !isIdToken( this, tot, "to" ) ) {
-	 throw new SyntaxError( "SUSPEND: unexpected token `" + tot.value + "'",
-				tokenLocation( tot ) );
+	 throw error.SyntaxError( "SUSPEND: unexpected token `" + tot.value + "'",
+				  tokenLocation( tot ) );
       }
 
       const { inits: to, accessors: ato } =
@@ -1002,6 +1022,13 @@ function parseExec( token ) {
    
    if( this.peekToken().type === this.ID ) {
       const id = this.consumeAny();
+
+      // check for reserved exec keywords
+      if( "res susp kill".indexOf( id ) >= 0 ) {
+	 throw error.SyntaxError( "EXEC: reserved identifier `" + id.value + "'",
+				  tokenLocation( id ) );
+      }
+      
       inits.push( astutils.J2SDataPropertyInit(
 	 loc, astutils.J2SString( loc, id.value ),
 	 astutils.J2SString( loc, "" ) ) );
@@ -1057,7 +1084,7 @@ function parseRun( token ) {
    const { expr: call, accessors } = parseHHExpression.call( this );
 
    if( !(typeof call == "J2SCall" ) ) {
-      throw new SyntaxError( "RUN: bad form", tokenLocation( token ) );
+      throw error.SyntaxError( "RUN: bad form", tokenLocation( token ) );
    } else {
       const module = call.fun;
       const args = call.args;
@@ -1077,9 +1104,9 @@ function parseRun( token ) {
 		  loc, astutils.J2SString( loc, a.lhs.id ),
 		  astutils.J2SString( loc, a.rhs.id ) ) );
 	    } else {
-	       throw new SyntaxError( "RUN: bad argument",
-				      { filename: a.loc.cdr.car,
-					pos: a.loc.cdr.cdr.car } );
+	       throw error.SyntaxError( "RUN: bad argument",
+					{ filename: a.loc.cdr.car,
+					  pos: a.loc.cdr.cdr.car } );
 	    }
 	 } );
       }
@@ -1357,9 +1384,15 @@ function parseHiphop( token, declaration ) {
 
    if( next.type === this.ID && next.value == "module" ) {
       this.consumeAny();
-      return hhwrap( token, parseModule.call( this, next, declaration ) );
+      const mod = parseModule.call( this, next, declaration );
+
+      if( mod instanceof ast.J2SVarDecls ) {
+	 return hhwrapDecl( token, mod );
+      } else {
+	 return hhwrapExpr( token, mod );
+      }
    } else {
-      return hhwrap( token, parseStmt.call( this, token, declaration  ) );
+      return hhwrapExpr( token, parseStmt.call( this, token, declaration  ) );
    }
 }
 

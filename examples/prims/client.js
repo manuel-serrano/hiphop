@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Jan 16 07:20:47 2016                          */
-/*    Last change :  Wed Aug  1 14:33:25 2018 (serrano)                */
+/*    Last change :  Wed Aug  1 15:57:32 2018 (serrano)                */
 /*    Copyright   :  2016-18 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prims client part                                                */
@@ -189,7 +189,7 @@ function prims( G ) {
       return acc;
    }
 
-   return hipohp module ( inout go,
+   return hiphop module ( inout go,
 		  inout killn combine reduce,
 		  inout numbers combine reduce ) {
       fork "numbers" {
