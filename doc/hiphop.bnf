@@ -1,0 +1,28 @@
+<Expression> --> ... | <HHExprStmt>
+
+<HHExprStatement> --> hiphop <HHStatement>
+
+<HHStatement> --> <HHHop>
+  | <HHModule>
+  | <HHHalt>
+  | <HHFork>
+  | <HHEmit>
+  | <HHSustain>
+  | <HHAbort>
+  | <HHWeakabort>
+  | <HHSuspend>
+  | <HHLoop>
+  | <HHAsync>
+  | <HHRun>
+  | <HHWhile>
+  | <HHDo>
+  | <HHIf>
+  | <HHBreak>
+  | <HHYield>
+  | <HHAwait>
+  | <HHBlock>
+
+<HHHop> --> hop { <Statement> }
+
+<HHModule> --> module [ <Identifier> ] ( <FormaSignalListop> )
+

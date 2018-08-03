@@ -8,7 +8,7 @@ function sum( arg1, arg2 ) {
 
 hiphop module prg( O ) {
    loop {
-      let S = 1;
+      signal S = 1;
 
       emit S( preval( S ) + 1 );
       emit O( val( S ) );

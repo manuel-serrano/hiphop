@@ -1,9 +1,9 @@
 "use hopscript"
 
-var hh = require( "hiphop" )
+const hh = require( "hiphop" );
 
 hiphop module prg( S1_and_S2, S1_and_not_S2, not_S1_and_S2, not_S1_and_not_S2 ) {
-   let S1, S2;
+   signal S1, S2;
 
    loop {
       T1: fork {

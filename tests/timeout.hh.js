@@ -4,7 +4,7 @@ const hh = require( "hiphop" );
 
 hiphop module prg( X=1, Y, Z ) {
    T: {
-      let __internal=-1;
+      signal __internal=-1;
 
       loop {
 	 if( preval( __internal ) === -1 ) {

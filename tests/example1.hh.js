@@ -5,7 +5,7 @@ var hh = require( "hiphop" );
 hiphop module prg( T ) {
    yield;
    {
-      let S;
+      signal S;
 
       emit S();
 

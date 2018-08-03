@@ -9,19 +9,20 @@ function plus( a, b ) {
 hiphop module prg( S, I, J ) {
    loop {
       fork {
-	 let M = 5;
+	 signal M = 5;
 
 	 emit J( val( M ) );
 	 yield;
 	 emit M( 5 );
       } par {
-	 let N;
+	 signal N;
 
 	 if( now( N ) ) emit I();
 	 yield;
 	 emit N();
       } par {
-	 let L;
+	 signal L;
+	 
 	 emit L( 4 );
 	 yield;
 	 emit S( plus( val( L ), 5 ) );

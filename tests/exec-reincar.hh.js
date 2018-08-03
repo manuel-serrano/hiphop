@@ -5,7 +5,7 @@ const hh = require( "hiphop" );
 var glob = 5;
 
 hiphop module prg( in R, O, OT, in T ) {
-   for( now( R ) ) {
+   do {
       fork {
 	 abort( now( R ) ) {
 	    async T {
@@ -20,7 +20,7 @@ hiphop module prg( in R, O, OT, in T ) {
       } par {
 	 emit O();
       }
-   }
+   } while( now( R ) )
 }
 
 var machine = new hh.ReactiveMachine( prg, "exec" );

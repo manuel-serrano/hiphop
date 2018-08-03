@@ -3,7 +3,8 @@
 var hh = require( "hiphop" );
 
 hiphop module prg( J ) {
-   let I;
+   signal I;
+   
    fork {
       if( now( I ) ) emit J();
    } par {

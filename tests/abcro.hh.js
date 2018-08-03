@@ -4,7 +4,7 @@
 var hh = require("hiphop");
 
 hiphop module prg( in A, in B, in C, in R, out O ) {
-   for( now( R ) ) {
+   do {
       fork {
 	 await now( A );
       } par {
@@ -13,6 +13,6 @@ hiphop module prg( in A, in B, in C, in R, out O ) {
 	 await now( C );
       }
       emit O();
-   }
+   } while( now( R ) )
 }
 exports.prg = new hh.ReactiveMachine( prg, "ABCRO" );

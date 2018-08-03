@@ -3,7 +3,7 @@ const hh = require( "hiphop" );
 const m = new hh.ReactiveMachine(
    hiphop module( out S ) {
       loop {
-	 let L = 2;
+	 signal L = 2;
 
 	 emit S( val( L ) );
 	 yield;

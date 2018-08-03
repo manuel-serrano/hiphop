@@ -45,8 +45,8 @@ function svcSearch2( src, dst ) {
 
 const machine = new hh.ReactiveMachine(
    hiphop module( SRC, DST, AIRLINESWITHDIRECT ) {
-      for( now( SRC ) || now( DST ) ) {
-	 let AIRLINESFOUND;
+      do {
+	 signal AIRLINESFOUND;
 
 	 weakabort( now( AIRLINESFOUND ) ) {
 	    fork {
@@ -57,11 +57,11 @@ const machine = new hh.ReactiveMachine(
 	 }
 
 	 {
-	    let TEMP = {};
+	    signal TEMP = {};
 
 	    ${ <pm.parallelmap apply=${function() {return this.value.AIRLINESFOUND}} AIRLINE>
                ${ hiphop {
-		  let BADSEATS;
+		  signal BADSEATS;
 		  async BADSEATS { svcSeatGuru.call( this, val( AIRLINE ) ) }
 		  emit TEMP( (function( t, airline, badseats ) {
       	             t[ airline ] = badseats;
@@ -71,7 +71,7 @@ const machine = new hh.ReactiveMachine(
 	       </pm.parallelmap> }
 	    emit AIRLINESWITHDIRECT( val( TEMP ) );
 	 }
-      }
+      } while( now( SRC ) || now( DST ) )
    },
    { tracePropagation:false } );
 

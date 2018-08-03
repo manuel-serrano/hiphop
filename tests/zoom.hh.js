@@ -9,7 +9,7 @@ function zoom_in_cb() {
 hiphop module prg( ZOOM_LOCK_TOOGLE, ZOOM_IN ) {
    loop {
       abort( now( ZOOM_LOCK_TOOGLE ) ) {
-	 every( now( ZOOM_IN ) ) {
+	 while( now( ZOOM_IN ) ) {
 	    hop { zoom_in_cb() };
 	 }
       }

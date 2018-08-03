@@ -5,7 +5,7 @@ var hh = require("hiphop");
 try {
    const prg = hiphop module( O ) {
       loop {
-	 let L;
+	 signal L;
 
 	 emit L( "foo bar" );
 	 emit O( val( L ) );

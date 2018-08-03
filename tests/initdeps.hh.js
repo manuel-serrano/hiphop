@@ -6,8 +6,8 @@ hiphop module prg( B = 5, A = val( B ) ) {
    emit A();
    yield;
    {
-      let Y = val( B );
-      let X = val( Y );
+      signal Y = val( B );
+      signal X = val( Y );
 
       fork {
 	 emit X();

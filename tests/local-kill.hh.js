@@ -6,7 +6,7 @@ const mach = new hh.ReactiveMachine(
    hiphop module( A ) {
       T: fork {
 	 loop {
-	    let FOO;
+	    signal FOO;
 
 	    async {
 	       setTimeout( this.notifyAndReact, 100 );

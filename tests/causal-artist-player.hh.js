@@ -5,7 +5,7 @@ const hh = require( "hiphop" );
 function prg2() {
    return hiphop module( artist, playlist ) {
       found: loop {
-	 let candidateArtist, candidatePlaylist;
+	 signal candidateArtist, candidatePlaylist;
 	 async candidateArtist {
 	    setTimeout( () => this.notifyAndReact( "leartiste" ), 90 );
 	 }
@@ -26,11 +26,11 @@ hiphop module prg( artist, playlist, exit ) {
       fork {
 	 run prg2()( artist=artist, playlist=playlist );
       } par {
-	 every( now( artist ) ) {
+	 while( now( artist ) ) {
 	    hop { console.log( "***ARTIST***", val( artist ) ) };
 	 }
       } par {
-	 every( now( playlist ) ) {
+	 while( now( playlist ) ) {
 	    hop { console.log( "***PLAYLIST***", val( playlist ) ) };
 	 }
       }

@@ -4,9 +4,9 @@ const hh = require( "hiphop" );
 const fs = require( "fs" );
 
 function make_atom(i) {
-   return hiphop for( now( G0 ) ) {
+   return hiphop do {
       hop { console.log( "branch", i ) };
-   }
+   } while( now( G0 ) )
 }
 
 function make_atom2(i) {
@@ -19,14 +19,14 @@ function make_atom2(i) {
 
 function make_atom3(i) {
    return hiphop {
-      every( immediate( now( G0 ) ) ) {
+      while( immediate( now( G0 ) ) ) {
 	 hop { console.log( "branch", i ) }
       }
    }
 }
 
 hiphop module prg() {
-   let G0;
+   signal G0;
 
    fork "par" {
       loop {
