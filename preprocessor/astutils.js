@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Fri Aug  3 13:14:35 2018 (serrano)                */
+/*    Last change :  Fri Aug  3 13:49:37 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -204,13 +204,16 @@ function J2SReturn( loc, expr ) {
 function J2SDecl( loc, id, binder = "var" ) {
    return new ast.J2SDecl( loc, undefined, undefined, undefined,
 			   id, false /* _scmid */, -1 /* key */,
-			   true /* writable */, true /* immutable */,
-			   true /* ronly */, "local" /* scope */,
+			   binder != "const" /* writable */,
+			   binder != "const" /* immutable */,
+			   binder == "const" /* ronly */,
+			   "local" /* scope */,
 			   0 /* usecnt */, false /* useinloop */,
 			   false /* useinfun */, null /* usage */,
 			   "any" /* utype */, "any" /* itype */,
 			   "any" /* vtype */, null /* hint */,
-			   undefined /* range */, binder /* binder */ );
+			   undefined /* range */,
+			   binder == "const" ? "let" : binder /* binder */ );
 }
 
 /*---------------------------------------------------------------------*/
