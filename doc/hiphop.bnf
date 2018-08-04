@@ -4,6 +4,7 @@
 
 <HHStatement> --> <HHHop>
   | <HHModule>
+  | <HHBlock>
   | <HHHalt>
   | <HHFork>
   | <HHEmit>
@@ -14,15 +15,42 @@
   | <HHLoop>
   | <HHAsync>
   | <HHRun>
-  | <HHWhile>
+  | <HHEvery>
   | <HHDo>
   | <HHIf>
   | <HHBreak>
   | <HHYield>
   | <HHAwait>
-  | <HHBlock>
+  | <HHExpression> ; 
 
 <HHHop> --> hop { <Statement> }
 
-<HHModule> --> module [ <Identifier> ] ( <FormaSignalListop> )
+<HHBlock> --> {}
+  | <HHStatement>
+  | <HHStatement> ... <HHStatement>
 
+<HHModule> --> module [ <Identifier> ] ( <FormaSignalList> )
+
+<FormaSignalList> --> | <Signal> ... <Signal>
+
+<Signal> --> <Direction> <Identifier> <Combine>
+  | <Direction> <Identifier> = <HHExpression> <Combine>
+
+<Direction> --> | in | out | inout
+
+<Combine> --> | combine <Expression>
+
+<HHExpression> --> <Expression>
+  | now( <Identifier> )
+  | pre( <Identifier> )
+  | val( <Identifier> )
+  | preval( <Identifier> )
+
+<HHDelay> --> <HHExpression>
+  | count( <HHExpression>, <HHExpression> )
+  | immediate <HHExpression>
+
+<HHalt> --> halt
+
+<HHFork> --> fork <HHBlock> [ par <HHBlock> ... par <HHBlock> ]
+  

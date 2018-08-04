@@ -10,7 +10,7 @@ hiphop module prg( in A, in B, in R, out O ) {
 	 await now( B );
       }
       emit O();
-   } while( now( R ) )
+   } every( now( R ) )
 }
 
 exports.prg = new hh.ReactiveMachine( prg, "ABRO" );

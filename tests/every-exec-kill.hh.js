@@ -3,7 +3,7 @@
 const hh = require( "hiphop" );
 const mach = new hh.ReactiveMachine(
    hiphop module( S ) {
-      while( now( S ) ) {
+      every( now( S ) ) {
 	 hop { console.log( "every" ) };
 	 async {
 	    console.log("start", this.id );

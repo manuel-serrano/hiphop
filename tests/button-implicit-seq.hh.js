@@ -118,7 +118,7 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	 }
       }
    } par {
-      while( now( UR ) ) {
+      every( now( UR ) ) {
 	 emit STOP_ALARM_BEEP_COMMAND();
       }
    }

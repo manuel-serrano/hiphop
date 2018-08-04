@@ -20,7 +20,7 @@ hiphop module prg( in R, O, OT, in T ) {
       } par {
 	 emit O();
       }
-   } while( now( R ) )
+   } every( now( R ) )
 }
 
 var machine = new hh.ReactiveMachine( prg, "exec" );

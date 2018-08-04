@@ -71,7 +71,7 @@ const machine = new hh.ReactiveMachine(
 	       </pm.parallelmap> }
 	    emit AIRLINESWITHDIRECT( val( TEMP ) );
 	 }
-      } while( now( SRC ) || now( DST ) )
+      } every( now( SRC ) || now( DST ) )
    },
    { tracePropagation:false } );
 

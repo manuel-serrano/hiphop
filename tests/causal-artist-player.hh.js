@@ -26,11 +26,11 @@ hiphop module prg( artist, playlist, exit ) {
       fork {
 	 run prg2()( artist=artist, playlist=playlist );
       } par {
-	 while( now( artist ) ) {
+	 every( now( artist ) ) {
 	    hop { console.log( "***ARTIST***", val( artist ) ) };
 	 }
       } par {
-	 while( now( playlist ) ) {
+	 every( now( playlist ) ) {
 	    hop { console.log( "***PLAYLIST***", val( playlist ) ) };
 	 }
       }

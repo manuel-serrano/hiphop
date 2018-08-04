@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sat Aug  4 02:05:55 2018 (serrano)                */
+/*    Last change :  Sat Aug  4 02:45:30 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1003,7 +1003,7 @@ function parseLoop( token ) {
 /*    parseEvery ...                                                   */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | while ( delay ) block                                       */
+/*       | every ( delay ) block                                       */
 /*---------------------------------------------------------------------*/
 function parseEvery( token ) {
    const loc = token.location;
@@ -1025,13 +1025,16 @@ function parseEvery( token ) {
 /*    parseLoopeach ...                                                */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | do block while ( delay )                                    */
+/*       | do block every ( delay )                                    */
 /*---------------------------------------------------------------------*/
 function parseLoopeach( token, action, tag ) {
    const loc = token.location;
    const stmts = parseHHBlock.call( this );
+
+   const tok = this.consumeToken( this.ID );
    
-   this.consumeToken( this.while );
+   if( tok.value != "every" ) tokenValueError( tok );
+      
    this.consumeToken( this.LPAREN );
    const { inits, accessors } = parseDelay.call( this, loc, "do" );
    this.consumeToken( this.RPAREN );
@@ -1426,6 +1429,9 @@ function parseStmt( token, declaration ) {
 	       return parseSuspend.call( this, next );
 	    case "loop":
 	       return parseLoop.call( this, next );
+	    case "every":
+	       return parseEvery.call( this, next );
+	 
 /* 	    case "loopeach":                                           */
 /* 	       return parseLoopeach.call( this, next );                */
 /* 	    case "local":                                              */
@@ -1442,9 +1448,6 @@ function parseStmt( token, declaration ) {
 		  throw tokenValueError( next );
 	       }
 	 }
-	 
-      case this.while:
-	 return parseEvery.call( this, next );
 	 
       case this.do:
 	 return parseLoopeach.call( this, next );

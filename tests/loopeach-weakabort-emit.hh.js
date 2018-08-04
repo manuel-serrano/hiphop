@@ -12,7 +12,7 @@ const machine = new hh.ReactiveMachine(
 	    }
 	 }
 	 hop { console.log( "weakabort terminated 1." ); }
-      } while( now( A ) )
+      } every( now( A ) )
    } );
 
 machine.react();
@@ -30,7 +30,7 @@ const machine2 = new hh.ReactiveMachine(
 	    }
 	 }
 	 hop { console.log( "weakabort terminated 2." ); }
-      } while( now( A ) )
+      } every( now( A ) )
    } );
 
 machine2.react();
@@ -50,7 +50,7 @@ const machine3 = new hh.ReactiveMachine(
 	    emit B();
 	 }
 	 hop { console.log( "weakabort terminated 3." ); }
-      } while( now( A ) )
+      } every( now( A ) )
    } );
 
 machine3.react();

@@ -5,7 +5,7 @@ const hh = require( "hiphop" );
 hiphop module prg( in X, Y, Z ) {
    await now( X );
 
-   while( count( val( X ) + 5, true ) ) {
+   every( count( val( X ) + 5, true ) ) {
       emit Y();
    }
    emit Z();
