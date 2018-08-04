@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Aug  3 13:42:05 2018 (serrano)                */
+/*    Last change :  Sat Aug  4 02:05:55 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1248,22 +1248,23 @@ function parseLet( token, binder ) {
 
       while( true ) {
 	 const t = this.consumeToken( this.ID );
+	 const iloc = t.location;
 
 	 if( this.peekToken().type === this.EGAL ) {
 	    this.consumeAny();
 	    const { expr, axs: accessors } = parseHHExpression.call( this );
 	    const ret = astutils.J2SReturn( loc, expr );
-	    const block = astutils.J2SBlock( loc, loc, ret );
+	    const block = astutils.J2SBlock( loc, loc, [ ret ] );
 	    const appl = astutils.J2SDataPropertyInit(
 	       loc, 
 	       astutils.J2SString( loc, "apply" ),
 	       astutils.J2SFun( loc, "atomfun", [], block ) );
 	    const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), appl ] );
-	    const init = astutils.J2SCall( loc,
+	    const init = astutils.J2SCall( iloc,
 					   hhref( loc, "ATOM" ), null,
 					   [ attrs ].concat( accessors ) );
 	    decls.push(
-	       astutils.J2SDeclInit( t.location, t.value, expr, binder ) );
+	       astutils.J2SDeclInit( iloc, t.value, expr, binder ) );
 	 } else {
 	    decls.push( astutils.J2SDecl( loc, t.value, binder ) );
 	 }
@@ -1271,7 +1272,7 @@ function parseLet( token, binder ) {
 	 switch( this.peekToken().type ) {
 	    case this.SEMICOLON:
 	       this.consumeAny();
-	       return { decls: decls, accessors: accessors };
+	       return decls;
 	       
 	    case this.COMMA:
 	       this.consumeAny();
@@ -1283,11 +1284,16 @@ function parseLet( token, binder ) {
       }
    }
 
-   const attrs = astutils.J2SObjInit( loc, [ locInit( loc ) ] );
    const decls = parseDecls.call( this );
    const stmts = parseHHBlock.call( this, false );
-
-   return astutils.J2SVarDecls( loc, [ decls ].concat( stmts ) );
+   const stmt = stmts.length == 1 ? stmts[ 0 ] : astutils.J2SCall( loc, hhref( loc, "SEQUENCE" ), null, stmts );
+   const ret = astutils.J2SReturn( loc, stmt );
+   const vdecls = astutils.J2SVarDecls( loc, decls );
+   const block = astutils.J2SBlock( loc, loc, [ vdecls, ret ] );
+   const fun = astutils.J2SFun( loc, "letfun", [], block );
+				
+   return astutils.J2SCall( loc, fun, [ astutils.J2SUndefined( loc ) ], [] );
+   return 
 }
 
 /*---------------------------------------------------------------------*/
