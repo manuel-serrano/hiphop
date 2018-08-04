@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sat Aug  4 02:45:30 2018 (serrano)                */
+/*    Last change :  Sat Aug  4 13:52:13 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1142,9 +1142,19 @@ function parseRun( token ) {
 		  loc, astutils.J2SString( loc, a.lhs.id ),
 		  astutils.J2SString( loc, a.rhs.id ) ) );
 	    } else {
-	       throw error.SyntaxError( "RUN: bad argument",
-					{ filename: a.loc.cdr.car,
-					  pos: a.loc.cdr.cdr.car } );
+	       let eloc;
+	       
+	       try {
+		  eloc = {
+		     filename: a.loc.cdr.car,
+		     pos: a.loc.cdr.cdr.car
+		  }
+	       } catch( _ ) {
+		  eloc = tokenLocation( token );
+	       }
+
+	       throw error.SyntaxError( "RUN: bad argument", eloc );
+					
 	    }
 	 } );
       }

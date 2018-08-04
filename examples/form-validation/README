@@ -1,8 +1,0 @@
-Run
-	hop ./form-validation.js
-
-App
-	http://localhost:8080/hop/validation
-
-Node
-	form-validation-baseline.js is a pure JS implementation used a reference.

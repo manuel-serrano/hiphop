@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Thu Aug  2 01:01:22 2018                          */
-/*    Last change :  Thu Aug  2 15:03:34 2018 (serrano)                */
+/*    Last change :  Sat Aug  4 13:28:26 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    translator demo, client and hiphop parts.                        */
@@ -65,7 +65,7 @@ function execColor( langPair ) {
       await immediate( now( text ) );
       
       async result {
-	 hh.Promise( this, translate( langPair, val( text ) ) );
+	 this.notifyAndReact( translate( langPair, val( text ) ) );
       }
 
       if( val( result ).resolve ) {

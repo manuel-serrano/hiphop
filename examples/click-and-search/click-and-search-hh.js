@@ -8,11 +8,11 @@ module.exports = function( searchWiki, translate ) {
 	    emit red( val( word ) );
 	    fork {
 	       async wiki {
-		  hh.Promise( this, searchWiki( val( word ) ) );
+		  this.notifyAndReact( searchWiki( val( word ) ) );
 	       }
 	    } par {
 	       async trans {
-		  hh.Promise( this, translate( val( word ) ) );
+		  this.notifyAndReact( translate( val( word ) ) );
 	       }
 	    }
 	    

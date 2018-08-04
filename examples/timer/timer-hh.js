@@ -1,47 +1,70 @@
+/*=====================================================================*/
+/*    serrano/prgm/project/hiphop/0.2.x/examples/timer/timer-hh.js     */
+/*    -------------------------------------------------------------    */
+/*    Author      :  Manuel Serrano                                    */
+/*    Creation    :  Sat Aug  4 13:43:31 2018                          */
+/*    Last change :                                                    */
+/*    Copyright   :  2018 Manuel Serrano                               */
+/*    -------------------------------------------------------------    */
+/*    HipHop part of the Timer example.                                */
+/*=====================================================================*/
+
+/*---------------------------------------------------------------------*/
+/*    imports                                                          */
+/*---------------------------------------------------------------------*/
 const hh = require("hiphop");
 
-function timeoutMod(nms) {
-   return MODULE() {
-      EXEC setTimeout(DONEREACT, nms) ONRES setTimeout(DONEREACT, nms)
-   }
-}
-
-const basicTimer = MODULE(IN duration(0), OUT elapsed) {
-   EMIT elapsed(0);
-   LOOP {
-      IF (VAL(elapsed) < VAL(duration)) {
-	 RUN(timeoutMod(100));
-	 EMIT elapsed(PREVAL(elapsed) + 0.1);
-      } ELSE {
-	 PAUSE;
+/*---------------------------------------------------------------------*/
+/*    timeoutMod ...                                                   */
+/*---------------------------------------------------------------------*/
+function timeoutMod( nms ) {
+   return hiphop module() {
+      async {
+	 const self = this;
+	 setTimeout( function() { self.terminateExecAndReact() }, nms );
+      } resume {
+	 const self = this;
+	 setTimeout( function() { self.terminateExecAndReact() }, nms );
       }
    }
 }
 
-const timer = MODULE(IN duration(0), IN reset, OUT elapsed) {
-   LOOPEACH(NOW(reset)) {
-      RUN(basicTimer);
+hiphop module basicTimer( in duration=0, out elapsed ) {
+   emit elapsed( 0 );
+   loop {
+      if( val( elapsed ) < val( duration ) ) {
+	 run timeoutMod( 100 )();
+	 emit elapsed( preval( elapsed ) + 0.1 );
+      } else {
+	 yield;
+      }
    }
 }
 
-const suspendableTimer = MODULE(IN reset, IN suspend,
-			      OUT elapsed(0), OUT suspendColor,
-			      INOUT duration) {
-   LOOPEACH(NOW(reset)) {
-      FORK {
-	 SUSPEND TOGGLE(NOW(suspend)) {
-	    RUN(timer);
+hiphop module timer( in duration=0, in reset, out elapsed ) {
+   do {
+      run basicTimer();
+   } every( now(reset ) );
+}
+
+hiphop module suspendableTimer( in reset, in suspend,
+				out elapsed=0, out suspendcolor,
+				inout duration ) {
+   do {
+      fork {
+	 suspend toggle now( suspend ) {
+	    run timer();
 	 }
-      } PAR {
-	 EMIT suspendColor("transparent");
-	 LOOP {
-	    AWAIT(NOW(suspend));
-	    EMIT suspendColor("orange");
-	    AWAIT(NOW(suspend));
-	    EMIT suspendColor("transparent");
+      } par {
+	 emit suspendcolor( "transparent" );
+	 loop {
+	    await now( suspend );
+	    emit suspendcolor( "orange" );
+	    await now( suspend );
+	    emit suspendcolor( "transparent" );
 	 }
       }
-   }
+   } every( now( reset ) )
 }
 
 module.exports = new hh.ReactiveMachine(suspendableTimer);
