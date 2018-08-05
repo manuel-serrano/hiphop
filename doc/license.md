@@ -2,8 +2,9 @@ ${ var doc = require( "hopdoc" ) }
 ${ var config = require( hop.config ) }
 ${ var xml = require( config.docDir + "/xml.js" ) }
 ${ var cfg = require( "./doc.json" ) }
+${ var pkg = require( "../package.json" ) }
 
-    HipHop.js, a JavaScript reactive extension.
+    ${pkg.title}, a JavaScript reactive extension.
        
     Copyright (c) ${xml.copyrightYears( 2015 )} INRIA
                                                                       

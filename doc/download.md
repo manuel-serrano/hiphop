@@ -3,6 +3,7 @@ ${ var config = require( hop.config ) }
 ${ var xml = require( config.docDir + "/xml.js" ) }
 ${ var cfg = require( "./doc.json" ) }
 ${ var dockerurl = cfg.urlbase + "docker.tgz" }
+${ const pkg = require( "../package.json" ) }
 
 ## License ##
 
@@ -20,7 +21,7 @@ This is the file you should download if you want to get HipHop.js
        class="success"
        title="Stable"
        icon="glyphicon-download"
-       href=${cfg.urlbase + "hiphopjs-" + cfg.version + ".tar.gz"}/>
+       href=${cfg.urlbase + "hiphopjs-" + pkg.version + ".tar.gz"}/>
   </div>
 </div>}
 

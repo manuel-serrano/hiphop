@@ -30,9 +30,9 @@
   | <HHStatement>
   | <HHStatement> ... <HHStatement>
 
-<HHModule> --> module [ <Identifier> ] ( <FormaSignalList> )
+<HHModule> --> module [ <Identifier> ] ( <FormalSignalList> )
 
-<FormaSignalList> --> | <Signal> ... <Signal>
+<FormalSignalList> --> | <Signal> ... <Signal>
 
 <Signal> --> <Direction> <Identifier> <Combine>
   | <Direction> <Identifier> = <HHExpression> <Combine>

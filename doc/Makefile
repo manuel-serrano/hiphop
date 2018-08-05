@@ -3,7 +3,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Mon Nov 16 10:15:32 2015                          */
-#*    Copyright   :  2015 Manuel Serrano                               */
+#*    Copyright   :  2015-18 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Build the documentation                                          */
 #*=====================================================================*/
@@ -13,7 +13,7 @@ DOCJS=`$(HOP) --no-server --evaljs 'console.log( require( hop.config ).docDir + 
 #*---------------------------------------------------------------------*/
 #*    Targets                                                          */
 #*---------------------------------------------------------------------*/
-TARGETS=index.html idx.html language-map.html api.html debug.html download.html
+TARGETS=index.html idx.html 00-syntax.html language-map.html api.html debug.html download.html
 
 all: $(TARGETS) lib hss
 
@@ -67,6 +67,11 @@ idx.html: idx.json
 	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "compile-chapter" $< > $@ \
           || ($(RM) $@; exit 1)
+
+00-syntax.html: hiphop.bnf
+
+doc.json: doc.json.in
+	cp $< $@
 
 #*---------------------------------------------------------------------*/
 #*    clean                                                            */
