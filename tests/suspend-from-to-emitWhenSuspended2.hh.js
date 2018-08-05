@@ -5,7 +5,7 @@ const hh = require( "hiphop" );
 const m = new hh.ReactiveMachine(
    hiphop module( S, R, E ) {
       loop {
-	 suspend from immediate now( S ) to immediate now( R ) emitwhensuspended E {
+	 suspend( from immediate now( S ) to immediate now( R ) emit E ) {
 	    hop { console.log( "not suspended!" ) }
 	 }
 	 yield;

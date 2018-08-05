@@ -8,7 +8,7 @@ var glob = 5;
 
 hiphop module prg( in RESS, in S, O, OT, in T ) {
    fork {
-      suspend now( S ) {
+      suspend( now( S ) ) {
 	 async T {
 	    console.log( "Oi." );
 	    setTimeout( function( self ) {

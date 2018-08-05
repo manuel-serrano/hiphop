@@ -4,7 +4,7 @@ const hh = require( "hiphop" );
 
 hiphop module prg( I, O ) {
    yield;
-   suspend from now( I ) to now( O ) {
+   suspend( from now( I ) to now( O ) ) {
       loop {
 	 hop { console.log( "ploup!" ) }
 	 yield;

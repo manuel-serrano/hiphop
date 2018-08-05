@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sat Aug  4 13:52:13 2018 (serrano)                */
+/*    Last change :  Sat Aug  4 14:20:24 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -827,7 +827,7 @@ function parseSustain( token ) {
 /*    parseAwait ...                                                   */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | await delay                                                 */
+/*       | AWAIT delay                                                 */
 /*---------------------------------------------------------------------*/
 function parseAwait( token ) {
    const loc = token.location;
@@ -908,9 +908,9 @@ function parseWeakabort( token ) {
 /*    parseSuspend ...                                                 */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | SUSPEND delay { stmt }                                      */
-/*       | SUSPEND from delay to delay [emit] { stmt }                 */
-/*       | SUSPEND toggle delay [emit] { stmt }                        */
+/*       | SUSPEND( delay ) { stmt }                                   */
+/*       | SUSPEND( from delay to delay [emit <Identifier>]) { stmt }  */
+/*       | SUSPEND( toggle delay [emit <Identifier>]) { stmt }         */
 /*                                                                     */
 /*    (MS: I am not sure about the delay arguments. It looks like      */
 /*    to me that immediate would be meaning less here.)                */
@@ -918,7 +918,7 @@ function parseWeakabort( token ) {
 function parseSuspend( token ) {
 
    function parseEmitwhensuspended( inits ) {
-      if( isIdToken( this, this.peekToken(), "emitwhensuspended" ) ) {
+      if( isIdToken( this, this.peekToken(), "emit" ) ) {
 	 const loc = this.consumeAny().location
 	 const id = this.consumeToken( this.ID );
 
@@ -931,6 +931,8 @@ function parseSuspend( token ) {
    }
 
    const loc = token.location;
+
+   this.consumeToken( this.LPAREN );
    let delay;
    let inits = [ locInit( loc ) ];
    let accessors = [];
@@ -974,6 +976,7 @@ function parseSuspend( token ) {
       inits = inits.concat( is );
       accessors = aexpr;
    }
+   this.consumeToken( this.RPAREN );
    const stmts = parseHHBlock.call( this );
 
    const attrs = astutils.J2SObjInit( loc, inits );
