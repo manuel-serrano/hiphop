@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sat Aug  4 14:20:24 2018 (serrano)                */
+/*    Last change :  Tue Aug  7 07:39:50 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -856,7 +856,6 @@ function parseIf( token ) {
    this.consumeToken( this.RPAREN );
    
    const then = parseStmt.call( this, this.peekToken(), false );
-//   const then = astutils.J2SBlock( loc, loc, parseHHBlock.call( this ) );
 
    const args = [ attrs ].concat( accessors );
    args.push( then );
@@ -864,7 +863,6 @@ function parseIf( token ) {
    if( this.peekToken().type == this.ELSE ) {
       const loce = this.consumeAny().location;
       args.push( parseStmt.call( this, this.peekToken(), false ) );
-//      args.push( astutils.J2SBlock( loce, loce, parseHHBlock.call( this ) ) );
    }
 
    return astutils.J2SCall( loc, hhref( loc, "IF" ), null, args );
@@ -1169,38 +1167,6 @@ function parseRun( token ) {
    }
 }
 
-/*    function parseSigList( inits ) {                                 */
-/*       let lbrace = this.consumeToken( this.LPAREN );                */
-/*                                                                     */
-/*       if( this.peekToken().type === this.RPAREN ) {                 */
-/* 	 this.consumeAny();                                            */
-/* 	 return                                                        */
-/*       } else {                                                      */
-/* 	 while( true ) {                                               */
-/* 	    const id = this.consumeToken( this.ID ).value;             */
-/* 	    let alias = ""                                             */
-/* 	                                                               */
-/* 	    if( this.peekToken().type === this.EGAL ) {                */
-/* 	       consumeAny();                                           */
-/* 	       alias = this.consumeToken( thisID ).value;              */
-/* 	    }                                                          */
-/* 	                                                               */
-/* 	    inits.push( astutils.J2SDataPropertyInit(                  */
-/* 	       loc, astutils.J2SString( loc, id ),                     */
-/* 	       astutils.J2SString( loc, alias ) ) );                   */
-/*                                                                     */
-/* 	    if( this.peekToken().type === this.RPAREN ) {              */
-/* 	       this.consumeAny();                                      */
-/* 	       return;                                                 */
-/* 	    } else {                                                   */
-/* 	       this.consumeToken( this.COMMA );                        */
-/* 	    }                                                          */
-/* 	 }                                                             */
-/*       }                                                             */
-/*    }                                                                */
-/* }                                                                   */
-   
-
 /*---------------------------------------------------------------------*/
 /*    parseLocal ...                                                   */
 /*---------------------------------------------------------------------*/
@@ -1444,7 +1410,6 @@ function parseStmt( token, declaration ) {
 	       return parseLoop.call( this, next );
 	    case "every":
 	       return parseEvery.call( this, next );
-	 
 /* 	    case "loopeach":                                           */
 /* 	       return parseLoopeach.call( this, next );                */
 /* 	    case "local":                                              */
