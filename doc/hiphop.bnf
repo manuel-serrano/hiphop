@@ -67,10 +67,10 @@
 <HHWeakabort> --> weakabort( <HHDelay ) <HHBlock>
 
 <HHSuspend> --> suspend( <HHDelay> ) <HHBlock>
-  | suspend( from <HHDelay> to from <HHDelay> ) <HHBlock>
-  | suspend( from <HHDelay> to from <HHDelay> emit <Identifier> ) <HHBlock>
-  | suspend( toogle <HHDelay> ) <HHBlock>
-  | suspend( toogle <HHDelay> emit <Identifier> ) <HHBlock>
+  | suspend( from <HHDelay> to <HHDelay> ) <HHBlock>
+  | suspend( from <HHDelay> to <HHDelay> emit <Identifier> ) <HHBlock>
+  | suspend( toggle <HHDelay> ) <HHBlock>
+  | suspend( toggle <HHDelay> emit <Identifier> ) <HHBlock>
 
 <HHLoop> --> loop <HHBlock>
 

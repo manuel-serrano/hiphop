@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Fri Aug  3 13:49:37 2018 (serrano)                */
+/*    Last change :  Mon Aug 13 18:47:35 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -147,7 +147,8 @@ function J2SFun( loc, name, params, body ) {
 			  false /* need_bind_exit_return */, false /* vararg */,
 			  name /* name */, false /* generator */,
 			  true /* optimize */, false /* thisp */,
-			  params, 3 /* constrsize */, false /* src */,
+			  false /* argumentsp */, params, 
+			  3 /* constrsize */, false /* src */,
 			  false /* _method */, false /* ismethodof */, body );
 }
 
@@ -163,8 +164,9 @@ function J2SMethod( loc, name, params, body, self ) {
 			  false /* need_bind_exit_return */, false /* vararg */,
 			  name /* name */, false /* generator */,
 			  true /* optimize */, self /* thisp */,
-			  params, 3 /* constrsize */, false /* src */,
-			  false /* _method */, false /* ismethodof */, body );
+			  false /* argumentsp */, params, 3 /* constrsize */,
+			  false /* src */, false /* _method */,
+			  false /* ismethodof */, body );
 }
 
 /*---------------------------------------------------------------------*/
