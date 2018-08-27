@@ -1,12 +1,13 @@
 #!/bin/bash
 
-if [ -z "$HOPBIN" ]; then
-    HOPBIN=hop
+if [ -z "$HOP" ]; then
+  hop=hop
+else   
+  hop=$HOP
 fi
 
 space="     "
 dir=$(pwd)
-hop="/usr/local/bin/$HOPBIN"
 hop_opt="--no-server --no-sofile -q"
 CC=/usr/bin/gcc
 batchfile=/tmp/batch.js

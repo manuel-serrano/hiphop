@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Mon Aug 13 18:47:35 2018 (serrano)                */
+/*    Last change :  Mon Aug 27 11:06:38 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -63,7 +63,9 @@ function J2SBool( loc, bool ) {
 /*---------------------------------------------------------------------*/
 function J2SRef( loc, id ) {
    return new ast.J2SUnresolvedRef( loc, undefined, undefined, undefined,
-				    "any", null, undefined, false, id );
+				    "any" /* type */, null /* hint */,
+				    undefined /* range */, false /* cache */,
+				    id );
 }
 
 /*---------------------------------------------------------------------*/
@@ -73,8 +75,7 @@ function J2SHopRef( loc, id ) {
    return new ast.J2SHopRef( loc, undefined, undefined, undefined,
 			     "any" /* type */, null /* hint */,
 			     undefined /* range */, id,
-			     "any" /* itype */, "any" /* rtype */,
-			     "any" /* vtype */, false /* module */ );
+			     "any" /* rtype */, false /* module */ );
 }
 
 /*---------------------------------------------------------------------*/
@@ -82,7 +83,8 @@ function J2SHopRef( loc, id ) {
 /*---------------------------------------------------------------------*/
 function J2SThis( loc, decl ) {
    return new ast.J2SThis( loc, undefined, undefined, undefined,
-			   "any", null, undefined, false, decl );
+			   "any" /* type */, null /* hint */,
+			   undefined /* range */, decl /* decl */ );
 }
 
 /*---------------------------------------------------------------------*/
@@ -142,14 +144,15 @@ function J2SFun( loc, name, params, body ) {
    return new ast.J2SFun( loc, undefined, undefined, undefined,
 			  "unknown" /* type */, null /* hint */,
 			  undefined /* range */, "unknown" /* rtype */,
-			  "this" /* idthis */, false /* idgen */,
-			  "normal" /* mode */, false /* decl */,
-			  false /* need_bind_exit_return */, false /* vararg */,
-			  name /* name */, false /* generator */,
-			  true /* optimize */, false /* thisp */,
-			  false /* argumentsp */, params, 
-			  3 /* constrsize */, false /* src */,
-			  false /* _method */, false /* ismethodof */, body );
+			  undefined /* rrange */, "this" /* idthis */,
+			  false /* idgen */, "normal" /* mode */,
+			  false /* decl */, false /* need_bind_exit_return */,
+			  false /* vararg */, name /* name */,
+			  false /* generator */, true /* optimize */,
+			  false /* thisp */, false /* argumentsp */,
+			  params, 3 /* constrsize */, false /* src */,
+			  false /* _method */, false /* ismethodof */,
+			  body );
 }
 
 /*---------------------------------------------------------------------*/
@@ -159,14 +162,15 @@ function J2SMethod( loc, name, params, body, self ) {
    return new ast.J2SFun( loc, undefined, undefined, undefined,
 			  "unknown" /* type */, null /* hint */,
 			  undefined /* range */, "unknown" /* rtype */,
-			  "this" /* idthis */, false /* idgen */,
-			  "normal" /* mode */, false /* decl */,
-			  false /* need_bind_exit_return */, false /* vararg */,
-			  name /* name */, false /* generator */,
-			  true /* optimize */, self /* thisp */,
-			  false /* argumentsp */, params, 3 /* constrsize */,
-			  false /* src */, false /* _method */,
-			  false /* ismethodof */, body );
+			  undefined /* rrange */, "this" /* idthis */,
+			  false /* idgen */, "normal" /* mode */,
+			  false /* decl */, false /* need_bind_exit_return */,
+			  false /* vararg */, name /* name */,
+			  false /* generator */, true /* optimize */,
+			  self /* thisp */, false /* argumentsp */,
+			  params, 3 /* constrsize */, false /* src */,
+			  false /* _method */, false /* ismethodof */,
+			  body );
 }
 
 /*---------------------------------------------------------------------*/
@@ -212,10 +216,10 @@ function J2SDecl( loc, id, binder = "var" ) {
 			   "local" /* scope */,
 			   0 /* usecnt */, false /* useinloop */,
 			   false /* useinfun */, null /* usage */,
+			   binder == "const" ? "let" : binder /* binder */,
 			   "any" /* utype */, "any" /* itype */,
-			   "any" /* vtype */, null /* hint */,
-			   undefined /* range */,
-			   binder == "const" ? "let" : binder /* binder */ );
+			   "any" /* vtype */, undefined /* irange */,
+			    undefined /* vrange */, null /* hint */ );
 }
 
 /*---------------------------------------------------------------------*/
@@ -228,10 +232,10 @@ function J2SDeclInit( loc, id, val, binder = "let" ) {
 			       true /* ronly */, "local" /* scope */,
 			       0 /* usecnt */, false /* useinloop */,
 			       false /* useinfun */, null /* usage */,
-			       "any" /* utype */, "any" /* itype */,
-			       "any" /* vtype */, null /* hint */,
-			       undefined /* range */, binder /* binder */,
-			       val );
+			       binder /* binder */, "any" /* utype */,
+			       "any" /* itype */, "any" /* vtype */,
+			       undefined /* irange */, undefined /* vrange */,
+			       null /* hint */, val );
 }
 
 /*---------------------------------------------------------------------*/
