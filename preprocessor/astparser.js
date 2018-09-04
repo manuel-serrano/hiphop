@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Aug  7 07:39:50 2018 (serrano)                */
+/*    Last change :  Tue Sep  4 09:13:50 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1268,7 +1268,8 @@ function parseLet( token, binder ) {
 
    const decls = parseDecls.call( this );
    const stmts = parseHHBlock.call( this, false );
-   const stmt = stmts.length == 1 ? stmts[ 0 ] : astutils.J2SCall( loc, hhref( loc, "SEQUENCE" ), null, stmts );
+   const attrs = astutils.J2SObjInit( loc, [ locInit( loc ) ] );
+   const stmt = stmts.length === 1 ? stmts[ 0 ] : astutils.J2SCall( loc, hhref( loc, "SEQUENCE" ), null, [ attrs ].concat( stmts ) );
    const ret = astutils.J2SReturn( loc, stmt );
    const vdecls = astutils.J2SVarDecls( loc, decls );
    const block = astutils.J2SBlock( loc, loc, [ vdecls, ret ] );
@@ -1482,4 +1483,5 @@ function parseHiphop( token, declaration ) {
 /*---------------------------------------------------------------------*/
 parser.addPlugin( "hiphop", parseHiphop );
 
+exports.plugin = parseHiphop;
 exports.parse = parser.parse.bind( parser );

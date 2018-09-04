@@ -6,9 +6,6 @@ function foo( evt ) {
    console.log( "foo called by", evt.signalName, "with value", evt.signalValue );
 }
 
-var inSig = {accessibility: hh.IN};
-var outSig = {accessibility: hh.OUT};
-
 hiphop module prg( in I, out O ) {
    await now( I );
    emit O( val( I ) );
