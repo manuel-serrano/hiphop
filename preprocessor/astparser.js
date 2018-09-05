@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Sep  4 09:13:50 2018 (serrano)                */
+/*    Last change :  Wed Sep  5 09:10:38 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1028,7 +1028,7 @@ function parseEvery( token ) {
 /*    stmt ::= ...                                                     */
 /*       | do block every ( delay )                                    */
 /*---------------------------------------------------------------------*/
-function parseLoopeach( token, action, tag ) {
+function parseLoopeach( token ) {
    const loc = token.location;
    const stmts = parseHHBlock.call( this );
 
@@ -1225,7 +1225,7 @@ function parseLocal_not_used( token ) {
 function parseLet( token, binder ) {
    const loc = token.location;
 
-   function parseDecls( accessors ) {
+   function parseDecls() {
       let decls = [];
 
       while( true ) {
@@ -1483,5 +1483,5 @@ function parseHiphop( token, declaration ) {
 /*---------------------------------------------------------------------*/
 parser.addPlugin( "hiphop", parseHiphop );
 
-exports.plugin = parseHiphop;
+exports.parser = parser;
 exports.parse = parser.parse.bind( parser );
