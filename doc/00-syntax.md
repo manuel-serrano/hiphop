@@ -5,8 +5,15 @@ ${ var ROOT = path.dirname( module.filename ) }
 HipHop Syntax
 =============
 
-HipHop is a DSL embedded in the HopScript language. It extends its syntax
-with one single expression rule:
+HipHop is a DSL embedded in the HopScript language. HipHop module
+_must_ contain the following header declaration:
+
+```hopscript
+"use hiphop"
+```
+
+The HipHop syntax extends the JavaScript syntax with one single
+expression rule:
 
 ```ebnf
   hiphop <HHstatement>
@@ -18,7 +25,7 @@ Its complete formal syntax is given in Section [Formal Syntax](./00-syntax.html#
 
 ${ <span class="label label-info">abro.js</span> }
 
-```hopscript
+```hiphop
 ${ doc.include( ROOT + "/../tests/abro.hh.js" ) }
 ```
 
@@ -36,7 +43,7 @@ A module with one input signal `I`, and one input/output signal `O`.
 
 ${ <span class="label label-info">every1.js</span> }
 
-```hopscript
+```hiphop
 ${ doc.include( ROOT + "/../tests/every1.hh.js" ) }
 ```
 
@@ -47,7 +54,7 @@ and a combine function.
 
 ${ <span class="label label-info">value1.js</span> }
 
-```hopscript
+```hiphop
 ${ doc.include( ROOT + "/../tests/value1.hh.js" ) }
 ```
 
@@ -73,7 +80,7 @@ instructions.
 Example:
 ${ <span class="label label-info">await-valued.hh.js</span> }
 
-```hopscript
+```hiphop
 ${ doc.include( ROOT + "/../tests/await-valued.hh.js" ) }
 ```
 
@@ -93,7 +100,7 @@ Example:
 
 ${ <span class="label label-info">await-count2.hh.js</span> }
 
-```hopscript
+```hiphop
 ${ doc.include( ROOT + "/../tests/await-count2.hh.js" ) }
 ```
 

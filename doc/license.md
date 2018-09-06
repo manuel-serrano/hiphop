@@ -4,7 +4,7 @@ ${ var xml = require( config.docDir + "/xml.js" ) }
 ${ var cfg = require( "./doc.json" ) }
 ${ var pkg = require( "../package.json" ) }
 
-    ${pkg.title}, a JavaScript reactive extension.
+    HipHop.js, a JavaScript reactive extension.
        
     Copyright (c) ${xml.copyrightYears( 2015 )} INRIA
                                                                       
