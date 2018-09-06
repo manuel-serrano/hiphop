@@ -3,8 +3,8 @@ ${ var doc = require("hopdoc") }
 Hiphop.js: a reactive extension for Hop.js and JavaScript
 ---------------------------------------------------------
 
-__Hiphop.js__ is a [Hop.js](http://hop-dev.inria.fr) library witch
-allow orchestrate web applications.
+__Hiphop.js__ is a [Hop.js](http://hop-dev.inria.fr) DLS for
+orchestrating web applications.
 
 ## How to use it?
 
