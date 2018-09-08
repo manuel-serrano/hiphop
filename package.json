@@ -15,6 +15,7 @@
       "lib/debugger-common.js",
       "lib/signal.js",
       "lib/inheritance.js",
+      "lib/queue.js",
       "ulib/timelib.js",
       "ulib/waitnsignals.js",
       "ulib/parallelmap.js"
