@@ -1,3 +1,4 @@
+"use hiphop"
 "use hopscript"
 
 function plus( x, y ) { return x+y };

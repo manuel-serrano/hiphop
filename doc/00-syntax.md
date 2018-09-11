@@ -113,6 +113,16 @@ Await and Emit
   | await immediate <HHDelay>
 <HHEmit> --> emit <Identifier>()
   | emit <Identifier>( <HHExpression> )
+<HHSustain> --> sustain <Identifier>()
+  | sustain <Identifier>( <HHExpression> )
+```
+
+A permant signal:
+
+${ <span class="label label-info">sustain1.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../tests/sustain1.hh.js" ) }
 ```
 
 Loops
@@ -124,10 +134,76 @@ HipHop provides several sort of loops.
 <HHLoop> --> loop <HHBlock>
 <HHEvery> --> every( <HHDelay> ) <HHBlock>
 <HHDo> --> do <HHBlock> every( <HHDelay> )
-<HHSustain> --> sustain <Identifier>()
-  | sustain <Identifier>( <HHExpression> )
-
 ```
+
+Example:
+
+A simple loop:
+
+${ <span class="label label-info">sync1.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../tests/sync1.hh.js" ) }
+```
+
+A loop executed each time an event is present:
+
+${ <span class="label label-info">every1.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../tests/every1.hh.js" ) }
+```
+
+
+
+A loop always executing its body and repeating the loop for each
+signal:
+
+${ <span class="label label-info">abcro.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../tests/abcro.hh.js" ) }
+```
+
+
+Async
+=====
+
+Async forms implement long lasting background Hop actions.
+They are defined as:
+
+```ebnf
+<HHAsync> --> async [ <Identifier> ] HHBLock <HHAsyncKill> <HHAsyncSuspend>  <HHAsyncResume>
+<HHAsyncKill> --> | kill <HHBlock>
+<HHAsyncSuspend> --> | suspend <HHBlock>
+<HHAsyncResume> --> | resume <HHBlock>
+```
+
+Example:
+
+${ <span class="label label-info">exec2.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../tests/exec2.hh.js" ) }
+```
+
+An `async` block using a JavaScript promise to resume the
+HipHop computation.
+
+${ <span class="label label-info">exec3.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../tests/exec3.hh.js" ) }
+```
+
+Async blocks with `kill` handlers:
+
+${ <span class="label label-info">local-kill.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../tests/local-kill.hh.js" ) }
+```
+
 
 Formal Syntax
 =============

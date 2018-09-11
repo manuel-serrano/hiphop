@@ -28,8 +28,8 @@
 <HHHop> --> hop { <Statement> }
 
 <HHBlock> --> {}
-  | <HHStatement>
-  | <HHStatement> ... <HHStatement>
+  | { <HHStatement> }
+  | { <HHStatement> ... <HHStatement> }
 
 <HHModule> --> module [ <Identifier> ] ( <FormaSignalList> )
 
@@ -74,7 +74,7 @@
 
 <HHLoop> --> loop <HHBlock>
 
-<HHAsync> --> async <HHAsync> <HHAsyncKill> <HHAsyncSuspend>  <HHAsyncResume>
+<HHAsync> --> async [ <Identifier> ] HHBLock <HHAsyncKill> <HHAsyncSuspend>  <HHAsyncResume>
 
 <HHAsyncKill> --> | kill <HHBlock>
 
