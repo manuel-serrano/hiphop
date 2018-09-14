@@ -5,17 +5,6 @@
     pull requests are welcome. Send them to
        https://github.com/manuel-serrano/hiphop.git
 
-    Hop comes with three different license versions, which should be
-    specified when configuring Hop and that come with three different
-    permission of use:
-    
-     - free: no restriction of any kind.
-     - academic: reserved exclusively to academic use (research and teaching).
-     - commercial: no restriction but needs the Inria approval first.
-     
-    The optimizing compiler is only availabe with academic and commercial
-    versions.
-    
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by 
     the Free Software Foundation; either version 2 of the License, or 
