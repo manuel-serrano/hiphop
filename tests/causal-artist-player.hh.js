@@ -12,9 +12,9 @@ function prg2() {
 	 async candidatePlaylist {
 	    setTimeout( () => this.notifyAndReact( "laplaylist" ), 50 );
 	 }
-	 if( val( candidatePlaylist ) ) {
-	    emit playlist( val( candidatePlaylist ) );
-	    emit artist( val( candidateArtist ) );
+	 if( nowval( candidatePlaylist ) ) {
+	    emit playlist( nowval( candidatePlaylist ) );
+	    emit artist( nowval( candidateArtist ) );
 	    break found;
 	 }
       }
@@ -27,11 +27,11 @@ hiphop module prg( artist, playlist, exit ) {
 	 run prg2()( artist=artist, playlist=playlist );
       } par {
 	 every( now( artist ) ) {
-	    hop { console.log( "***ARTIST***", val( artist ) ) };
+	    hop { console.log( "***ARTIST***", nowval( artist ) ) };
 	 }
       } par {
 	 every( now( playlist ) ) {
-	    hop { console.log( "***PLAYLIST***", val( playlist ) ) };
+	    hop { console.log( "***PLAYLIST***", nowval( playlist ) ) };
 	 }
       }
    }

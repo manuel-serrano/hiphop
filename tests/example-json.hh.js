@@ -51,7 +51,7 @@ hiphop module prg( in I, in TIN, Time=WatchTime ) {
       emit Time( IncrementTimeInPlace( preval( Time ) ) );
       yield;
       await now( TIN );
-      emit Time( updateFromOutside( val( TIN ) ) )
+      emit Time( updateFromOutside( nowval( TIN ) ) )
       yield;
    }
 }

@@ -5,7 +5,7 @@ const hh = require( "hiphop" );
 hiphop module prg( A, B, C ) {
    fork {
       loop {
-	 if( val( B ) > 3 ) emit A();
+	 if( nowval( B ) > 3 ) emit A();
 	 yield;
       }
    } par {

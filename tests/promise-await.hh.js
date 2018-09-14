@@ -7,7 +7,7 @@ const m = new hh.ReactiveMachine(
    hiphop module( I, O ) {
       await immediate now( I );
       ${ <tl.timeout value=1000/> }
-      emit O( val( I ) );
+      emit O( nowval( I ) );
    } );
 
 async function foo() {

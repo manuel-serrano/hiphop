@@ -1,3 +1,4 @@
+"use hiphop"
 "use strict"
 
 var hh = require("hiphop");
@@ -8,7 +9,7 @@ try {
 	 signal L;
 
 	 emit L( "foo bar" );
-	 emit O( val( L ) );
+	 emit O( nowval( L ) );
       }
    }
 

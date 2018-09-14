@@ -1,13 +1,14 @@
 /*=====================================================================*/
-/*    .../hiphop/0.2.x/examples/translator/translator-hh.js            */
+/*    .../hiphop/hiphop/examples/translator/translator-hh.js           */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Thu Aug  2 01:01:22 2018                          */
-/*    Last change :  Sat Aug  4 13:28:26 2018 (serrano)                */
+/*    Last change :  Fri Sep 14 08:30:18 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    translator demo, client and hiphop parts.                        */
 /*=====================================================================*/
+"use hiphop";
 "use hopscript";
 
 /*---------------------------------------------------------------------*/
@@ -65,11 +66,11 @@ function execColor( langPair ) {
       await immediate( now( text ) );
       
       async result {
-	 this.notifyAndReact( translate( langPair, val( text ) ) );
+	 this.notifyAndReact( translate( langPair, nowval( text ) ) );
       }
 
-      if( val( result ).resolve ) {
-	 emit trans( val( result ).val );
+      if( nowval( result ).resolve ) {
+	 emit trans( nowval( result ).val );
 	 emit color( "green" );
       } else {
 	 emit color( "orange" );

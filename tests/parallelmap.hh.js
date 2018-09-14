@@ -1,3 +1,4 @@
+"use hiphop"
 "use hopscript"
 
 const hh = require( "hiphop" );
@@ -47,12 +48,12 @@ const machine = new hh.ReactiveMachine(
    hiphop module( SRC, DST, AIRLINESWITHDIRECT ) {
       do {
 	 signal AIRLINESFOUND;
-
+	 
 	 weakabort( now( AIRLINESFOUND ) ) {
 	    fork {
-	       async AIRLINESFOUND { svcSearch1.call( this, val( SRC ), val( DST ) ) }
+	       async AIRLINESFOUND { svcSearch1.call( this, nowval( SRC ), nowval( DST ) ) }
 	    } par {
-	       async AIRLINESFOUND { svcSearch2.call( this, val( SRC ), val( DST ) ) }
+	       async AIRLINESFOUND { svcSearch2.call( this, nowval( SRC ), nowval( DST ) ) }
 	    }
 	 }
 
@@ -62,14 +63,14 @@ const machine = new hh.ReactiveMachine(
 	    ${ <pm.parallelmap apply=${function() {return this.value.AIRLINESFOUND}} AIRLINE>
                ${ hiphop {
 		  signal BADSEATS;
-		  async BADSEATS { svcSeatGuru.call( this, val( AIRLINE ) ) }
+		  async BADSEATS { svcSeatGuru.call( this, nowval( AIRLINE ) ) }
 		  emit TEMP( (function( t, airline, badseats ) {
       	             t[ airline ] = badseats;
       	             return t;
-		  })( preval( TEMP ), val( AIRLINE ), val( BADSEATS ) ) );
+		  })( preval( TEMP ), nowval( AIRLINE ), nowval( BADSEATS ) ) );
 	       } }
 	       </pm.parallelmap> }
-	    emit AIRLINESWITHDIRECT( val( TEMP ) );
+	    emit AIRLINESWITHDIRECT( nowval( TEMP ) );
 	 }
       } every( now( SRC ) || now( DST ) )
    },
@@ -79,10 +80,5 @@ machine.addEventListener(
    "AIRLINESWITHDIRECT",
    evt => console.log( evt.signalName, evt.signalValue ) );
 
-machine.input( "SRC", "Nice" );
-machine.input( "DST", "Paris" );
-machine.react();
-
-machine.input( "SRC", "Montpellier" );
-machine.input( "DST", "Dublin" );
-machine.react();
+machine.react( { SRC: "Nice", DST: "Paris" } );
+machine.react( { SRC: "Montpellier", DST: "Dublin" } );

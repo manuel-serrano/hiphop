@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/0.2.x/preprocessor/astparser.js      */
+/*    serrano/prgm/project/hiphop/hiphop/preprocessor/astparser.js     */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Sep  5 09:10:38 2018 (serrano)                */
+/*    Last change :  Fri Sep 14 07:54:56 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -129,7 +129,7 @@ function hhwrapExpr( token, expr ) {
 /*       | jsexpr                                                      */
 /*       | now( ident )                                                */
 /*       | pre( ident )                                                */
-/*       | val( ident )                                                */
+/*       | nowval( ident )                                             */
 /*       | preval( ident )                                             */
 /*---------------------------------------------------------------------*/
 function parseHHAccessors( parser, iscnt = false ) {
@@ -150,7 +150,7 @@ function parseHHAccessors( parser, iscnt = false ) {
       switch( token.value ) {
 	 case "now": break;
 	 case "pre": pre = true; access = "prePresent"; break;
-	 case "val": val = true; access = "value"; break;
+	 case "nowval": val = true; access = "value"; break;
 	 case "preval": pre = true, val = true; access = "preValue"; break;
       }
 
@@ -190,13 +190,13 @@ function parseHHAccessors( parser, iscnt = false ) {
    
    this.addPlugin( "now", hhparser );
    this.addPlugin( "pre", hhparser );
-   this.addPlugin( "val", hhparser );
+   this.addPlugin( "nowval", hhparser );
    this.addPlugin( "preval", hhparser );
    try {
       return parser.call( this, accessors );
    } finally {
       this.removePlugin( "preval" );
-      this.removePlugin( "val" );
+      this.removePlugin( "nowval" );
       this.removePlugin( "pre" );
       this.removePlugin( "now" );
    }
@@ -225,7 +225,7 @@ function parseHHThisBlock() {
       switch( token.value ) {
 	 case "now": break;
 	 case "pre": pre = true; access = "prePresent"; break;
-	 case "val": val = true; access = "value"; break;
+	 case "nowval": val = true; access = "value"; break;
 	 case "preval": pre = true, val = true; access = "preValue"; break;
       }
 
@@ -261,14 +261,14 @@ function parseHHThisBlock() {
    
    this.addPlugin( "now", hhparser );
    this.addPlugin( "pre", hhparser );
-   this.addPlugin( "val", hhparser );
+   this.addPlugin( "nowval", hhparser );
    this.addPlugin( "preval", hhparser );
    try {
       const { self, block } = this.parseThisBlock();
       return { self: self, block: block, accessors: accessors };
    } finally {
       this.removePlugin( "preval" );
-      this.removePlugin( "val" );
+      this.removePlugin( "nowval" );
       this.removePlugin( "pre" );
       this.removePlugin( "now" );
    }

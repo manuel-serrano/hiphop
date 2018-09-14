@@ -1,3 +1,4 @@
+"use hiphop"
 "use hopscript"
 
 const hh = require( "hiphop" );
@@ -8,7 +9,7 @@ hiphop module prg() {
 
       yield;
       emit L();
-      if( !val( L ) ) hop { console.log( "L:", val( L ) ) }
+      if( !nowval( L ) ) hop { console.log( "L:", nowval( L ) ) }
    }
 }
 

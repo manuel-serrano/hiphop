@@ -1,3 +1,4 @@
+"use hiphop"
 "use hopscript"
 
 const hh = require( "hiphop" );
@@ -21,25 +22,25 @@ hiphop module prg( in IN combine (a, b) => b, OUT1="1|", OUT2="2|" ) {
 	 async OUT1 {
 	    let timeout = 100;
 
-	    if ( val( IN ) == "LONGWAIT") timeout = timeout * 3;
+	    if ( nowval( IN ) == "LONGWAIT") timeout = timeout * 3;
 
-	    console.log( "   exec started", timeout, val( IN ) );
+	    console.log( "   exec started", timeout, nowval( IN ) );
 	    setTimeout( function( self, v ) {
 	       console.log( "   exec returns", timeout, v );
 	       self.notify( v + "--|" + timeout );
-	    }, timeout, this, val( IN ) );
+	    }, timeout, this, nowval( IN ) );
 	 }
       } par {
 	 async OUT2 {
 	    let timeout = 200;
 
-	    if( val( IN ) == "LONGWAIT" ) timeout = timeout * 3;
+	    if( nowval( IN ) == "LONGWAIT" ) timeout = timeout * 3;
 
 	    console.log( "   exec started", timeout, this.value.IN );
 	    setTimeout( function( self, v ) {
 	       console.log( "   exec returns", timeout, v );
 	       self.notify( v + "--|" + timeout );
-	    }, timeout, this, val( IN ) );
+	    }, timeout, this, nowval( IN ) );
 	 }
       } par {
 	 await now( IN );

@@ -5,7 +5,7 @@ const m = new hh.ReactiveMachine(
       loop {
 	 signal L = 2;
 
-	 emit S( val( L ) );
+	 emit S( nowval( L ) );
 	 yield;
       }
    } );

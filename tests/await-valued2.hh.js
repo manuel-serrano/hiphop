@@ -18,7 +18,7 @@ function foo3( evt ) {
 hiphop module prg( in I, out O ) {
    loop {
       await now( I );
-      emit O( val( I ) );
+      emit O( nowval( I ) );
    }
 }
 

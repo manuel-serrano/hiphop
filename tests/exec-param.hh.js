@@ -1,3 +1,4 @@
+"use hiphop"
 "use hopscript"
 
 const hh = require( "hiphop" );
@@ -5,7 +6,7 @@ const hh = require( "hiphop" );
 hiphop module prg( in IN combine (x, y) => x + y ) {
    emit IN( ${5} );
    async {
-      console.log( "receive " + val( IN ) );
+      console.log( "receive " + nowval( IN ) );
       this.notify();
    }
 }

@@ -1,3 +1,4 @@
+"use hiphop"
 "use hopscript"
 
 const hh = require("hiphop")
@@ -11,19 +12,19 @@ hiphop module prg( A combine (x, y) => x + y ) {
    } par {
       loop {
 	 emit A( 1 );
-	 hop { console.log( val( A ) ) }
+	 hop { console.log( nowval( A ) ) }
 	 yield;
       }
    } par {
       loop {
 	 emit A( 2 );
-	 hop { console.log( val( A ) ) }
+	 hop { console.log( nowval( A ) ) }
 	 yield;
       }
    }
 }
 
-let machine = new hh.ReactiveMachine(prg, "error2");
+let machine = new hh.ReactiveMachine( prg, "error2" );
 
 machine.debug_emitted_func = console.log;
 machine.react()

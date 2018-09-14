@@ -1,3 +1,4 @@
+"use hiphop"
 "use hopscript"
 
 /* check if semantics of suspends / resume is correct when a task is over */
@@ -21,13 +22,13 @@ hiphop module prg( in RESS, in S, O, OT, in T ) {
 	    console.log( "resumed.");
 	 }
       }
-      emit OT( val( T ) );
+      emit OT( nowval( T ) );
    } par {
       emit O();
    }
 
    await now( RESS );
-   emit OT( val( T ) );
+   emit OT( nowval( T ) );
 }
 
 var machine = new hh.ReactiveMachine( prg, "exec" );

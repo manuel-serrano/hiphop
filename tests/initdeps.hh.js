@@ -2,18 +2,18 @@
 
 const hh = require("hiphop");
 
-hiphop module prg( B = 5, A = val( B ) ) {
+hiphop module prg( B = 5, A = nowval( B ) ) {
    emit A();
    yield;
    {
-      signal Y = val( B );
-      signal X = val( Y );
+      signal Y = nowval( B );
+      signal X = nowval( Y );
 
       fork {
 	 emit X();
       }
 
-      emit A( val( X ) );
+      emit A( nowval( X ) );
    }
 }
 

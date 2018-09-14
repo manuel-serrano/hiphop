@@ -1,3 +1,4 @@
+"use hiphop"
 "use hopscript"
 
 const hh = require( "hiphop" );
@@ -16,7 +17,7 @@ hiphop module prg( in R, O, OT, in T ) {
 		 }, 1000, this);
 	    }
 	 }
-	 emit OT( val( T ));
+	 emit OT( nowval( T ));
       } par {
 	 emit O();
       }

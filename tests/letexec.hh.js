@@ -1,3 +1,4 @@
+"use hiphop"
 "use hopscript"
 
 const hh = require( "hiphop" );
@@ -7,7 +8,7 @@ const m = new hh.ReactiveMachine(
       signal S = 5;
       
       async {
-	 console.log( val( S ), val( G ) );
+	 console.log( nowval( S ), nowval( G ) );
       }
    } )
 

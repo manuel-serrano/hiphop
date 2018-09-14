@@ -1,3 +1,4 @@
+"use hiphop"
 "use hopscript"
 
 const hh = require( "hiphop" );
@@ -8,9 +9,9 @@ hiphop module prg( X=1, Y, Z ) {
 
       loop {
 	 if( preval( __internal ) === -1 ) {
-	    emit __internal( val( X ) + 5 );
+	    emit __internal( nowval( X ) + 5 );
 	 }
-	 if( val( __internal ) === 0 ) {
+	 if( nowval( __internal ) === 0 ) {
 	    break T;
 	 }
 	 async {

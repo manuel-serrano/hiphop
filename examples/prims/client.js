@@ -1,13 +1,14 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/0.2.x/examples/prims/client.js       */
+/*    serrano/prgm/project/hiphop/hiphop/examples/prims/client.js      */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Jan 16 07:20:47 2016                          */
-/*    Last change :  Wed Aug  1 15:57:32 2018 (serrano)                */
+/*    Last change :  Fri Sep 14 08:29:12 2018 (serrano)                */
 /*    Copyright   :  2016-18 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prims client part                                                */
 /*=====================================================================*/
+"use hiphop";
 "use hopscript";
 
 /*---------------------------------------------------------------------*/
@@ -158,16 +159,16 @@ function number( G ) {
       exit: loop {
 	 await now( killn ) && now( numbers );
 	 emit numbers( num );
-	 emit killn( prey( val( numbers) ) );
+	 emit killn( prey( nowval( numbers) ) );
 	 
-	 if( val( killn ).indexOf( num ) >= 0 ) {
+	 if( nowval( killn ).indexOf( num ) >= 0 ) {
 	    hop {
 	       num.dead = true;
 	       G.mach.getElementById( "numbers" ).removeChild( trap );
 	    }
 	    break exit;
 	 } else {
-	    if( num.prey && val( killn ).indexOf( num.prey ) >= 0 ) {
+	    if( num.prey && nowval( killn ).indexOf( num.prey ) >= 0 ) {
 	       hop { num.init() }
 	    }
 	    hop { num.move() }

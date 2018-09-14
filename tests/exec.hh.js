@@ -11,7 +11,7 @@ hiphop module prg( in T, O, OT ) {
 	    self.notify(5);
 	 }, 3000, this );
       }
-      emit OT( val( T ) );
+      emit OT( nowval( T ) );
    } par {
       emit O();
    }

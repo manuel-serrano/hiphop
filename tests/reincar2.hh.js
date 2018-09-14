@@ -11,7 +11,7 @@ hiphop module prg( S, I, J ) {
       fork {
 	 signal M=5;
 	 
-	 emit J( val( M ) );
+	 emit J( nowval( M ) );
 	 yield;
 	 emit M( 5 );
       } par {
@@ -25,7 +25,7 @@ hiphop module prg( S, I, J ) {
 	 
 	 emit L( 4 );
 	 yield;
-	 emit S( plus( val( L ), 5 ) );
+	 emit S( plus( nowval( L ), 5 ) );
       }
    }
 }

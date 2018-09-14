@@ -70,7 +70,7 @@ expressions extend the JavaScript syntax with the following constructs.
 <HHExpression> --> <Expression>
   | now( <Identifier> )
   | pre( <Identifier> )
-  | val( <Identifier> )
+  | nowval( <Identifier> )
   | preval( <Identifier> )
 ```
 

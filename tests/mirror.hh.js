@@ -14,9 +14,9 @@ function bar( evt ) {
 hiphop module prg( in I1, in I2, in I3, in I4, O1, O2, O3, O4 ) {
    loop {
       if( now( I1 ) ) emit O1();
-      if( now( I2 ) ) emit O2( val( I2 ) );
-      if( now( I3 ) ) emit O3( val( I3 ) );
-      if( now( I4 ) ) emit O4( val( I4 ) );
+      if( now( I2 ) ) emit O2( nowval( I2 ) );
+      if( now( I3 ) ) emit O3( nowval( I3 ) );
+      if( now( I4 ) ) emit O4( nowval( I4 ) );
       yield;
    }
 }

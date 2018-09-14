@@ -26,7 +26,7 @@ hiphop module prg( in I1, in I2, O1, O11, O2 ) {
 	 emit O11();
       }
       if( now( I2 ) ) {
-	 emit O2( val( I2 ) );
+	 emit O2( nowval( I2 ) );
       }
       yield;
    }

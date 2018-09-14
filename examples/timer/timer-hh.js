@@ -1,13 +1,15 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/0.2.x/examples/timer/timer-hh.js     */
+/*    .../prgm/project/hiphop/hiphop/examples/timer/timer-hh.js        */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :                                                    */
+/*    Last change :  Fri Sep 14 08:29:57 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop part of the Timer example.                                */
 /*=====================================================================*/
+"use hiphop"
+"use hopscript"
 
 /*---------------------------------------------------------------------*/
 /*    imports                                                          */
@@ -32,7 +34,7 @@ function timeoutMod( nms ) {
 hiphop module basicTimer( in duration=0, out elapsed ) {
    emit elapsed( 0 );
    loop {
-      if( val( elapsed ) < val( duration ) ) {
+      if( nowval( elapsed ) < nowval( duration ) ) {
 	 run timeoutMod( 100 )();
 	 emit elapsed( preval( elapsed ) + 0.1 );
       } else {

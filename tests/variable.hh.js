@@ -1,3 +1,4 @@
+"use hiphop"
 "use hopscript"
 
 var hh = require( "hiphop" );
@@ -6,7 +7,7 @@ hiphop module prg( in sig ) {
    let v = 1;
 
    every( now( sig ) ) {
-      if( val( sig ) > v ) hop { v = val( sig ) + 1 };
+      if( nowval( sig ) > v ) hop { v = nowval( sig ) + 1 };
 
       hop { console.log( "v=", v ) }
       yield;

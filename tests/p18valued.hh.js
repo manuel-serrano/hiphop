@@ -1,3 +1,4 @@
+"use hiphop"
 "use hopscript"
 
 var hh = require( "hiphop" );
@@ -28,14 +29,14 @@ hiphop module prg( S1_and_S2, S1_and_not_S2, not_S1_and_S2, not_S1_and_not_S2 ) 
 		     loop {
 			if( now( S1 ) ) {
 			   if( now( S2 ) ) {
-			      emit S1_and_S2( sum( val( S1 ), val( S2 ) ) );
+			      emit S1_and_S2( sum( nowval( S1 ), nowval( S2 ) ) );
 			   } else {
-			      emit S1_and_not_S2( sum( val( S1 ), val( S2 ) ) );
+			      emit S1_and_not_S2( sum( nowval( S1 ), nowval( S2 ) ) );
 			   }
 			} else if( now( S2 ) ) {
-			   emit not_S1_and_S2( sum( val( S1 ), val( S2 ) ) );
+			   emit not_S1_and_S2( sum( nowval( S1 ), nowval( S2 ) ) );
 			} else {
-			   emit not_S1_and_not_S2( sum( val( S1 ), val( S2 ) ) );
+			   emit not_S1_and_not_S2( sum( nowval( S1 ), nowval( S2 ) ) );
 			}
 			yield;
 		     }

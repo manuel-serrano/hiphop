@@ -7,7 +7,7 @@ hiphop module prg( J ) {
 
    fork {
       if( now( I ) ) {
-	 emit J( val( I ) );
+	 emit J( nowval( I ) );
       }
    } par {
       emit I( 5 );
