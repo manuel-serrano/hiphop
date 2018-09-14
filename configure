@@ -1,0 +1,25 @@
+#!/bin/bash
+#*=====================================================================*/
+#*    serrano/prgm/project/hiphop/hiphop/configue                      */
+#*    -------------------------------------------------------------    */
+#*    Author      :  Manuel Serrano                                    */
+#*    Creation    :  Fri Sep 14 08:27:50 2018                          */
+#*    Last change :  Fri Sep 14 08:45:19 2018 (serrano)                */
+#*    Copyright   :  2018 Manuel Serrano                               */
+#*    -------------------------------------------------------------    */
+#*    HipHop configuration                                             */
+#*=====================================================================*/
+
+hop=hop
+
+hopversion=`$hop --configure --version`
+hopminorversion=`$hop --configure --minor-version`
+
+# docker/Dockerfile.in
+docker=docker/Dockerfile
+rm -f $docker 2> /dev/null
+cat $docker.in \
+  | sed -e "s|@HOPVERSION@|$hopversion|" \
+	-e "s|@HOPMINORVERSION@|$hopminorversion|" \
+	-e "s|@BIGLOOVERSION@|$bglversion|" \
+   	>> $docker
