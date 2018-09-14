@@ -190,3 +190,5 @@ if [ "$debug " = " " ]; then
 fi
 
 rm $output_hop
+
+exit $failure

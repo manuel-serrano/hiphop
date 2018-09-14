@@ -44,7 +44,7 @@ ENV HOME /home/hop
 
 STOPSIGNAL SIGINT
 
-RUN git clone http://redrock.inria.fr:8888/home/serrano/prgm/project/hiphop/hiphop.git \
+RUN git clone https://github.com/manuel-serrano/hiphop.git \
     && (cd hiphop; git checkout master; cd doc; make ) \
     && (cp -r hiphop/doc /usr/local/share/doc/hiphop) \
     && mv hiphop /usr/local/lib/hop/@HOPVERSION@/node_modules
