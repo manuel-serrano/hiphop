@@ -39,7 +39,7 @@ index.html: _index.md
 #*---------------------------------------------------------------------*/
 #*    idx.json ...                                                     */
 #*---------------------------------------------------------------------*/
-idx.json: debug.html api.html
+idx.json: debug.html 00-syntax.html api.html
 	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "html-to-idx" . $^ > $@ \
           || ($(RM) $@; exit 1)

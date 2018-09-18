@@ -1,5 +1,5 @@
-"use strict"
-"use hopscript"
+"use hiphop";
+"use hopscript";
 
 const hh = require( "hiphop" );
 

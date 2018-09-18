@@ -32,13 +32,13 @@ ${ doc.include( ROOT + "/../tests/abro.hh.js" ) }
 HipHop Module
 =============
 
-### module [ident]( ... ) ###
-[:@glyphicon glyphicon-tag keyword]
-
 ```ebnf
 <HHModule> --> module [ <Identifier> ] ( <FormalSignalList> )
 
 ```
+
+### module [ident]( ... ) ###
+[:@glyphicon glyphicon-tag syntax]
 
 ### Example using simple signals ###
 
@@ -120,6 +120,39 @@ Await and Emit
   | sustain <Identifier>( <HHExpression> )
 ```
 
+### await [immediate] delay
+[:@glyphicon glyphicon-tag syntax]
+
+Await for the condition to be true. The form `await expr` is equivalent to
+`{ yield; await immediate expr}`. This is `await` always yields before 
+the condition can be satisfied. Examples:
+
+${ <span class="label label-info">await-seq.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../tests/await-seq.hh.js" ) }
+```
+
+Await for the event `I` to be present in three distinctive instants.
+
+${ <span class="label label-info">await-count.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../tests/await-count.hh.js" ) }
+```
+
+### emit ident( ... ) ###
+[:@glyphicon glyphicon-tag syntax]
+
+The form `emit` is emits a signal when executed.
+
+
+### sustain ident( ... ) ###
+[:@glyphicon glyphicon-tag syntax]
+
+The `sustain` is equivlant to `emit` but it keeps emiting its signal
+at each instant.
+
 A permant signal:
 
 ${ <span class="label label-info">sustain1.hh.js</span> }
@@ -139,9 +172,12 @@ HipHop provides several sort of loops.
 <HHDo> --> do <HHBlock> every( <HHDelay> )
 ```
 
-Example:
+### loop ###
+[:@glyphicon glyphicon-tag syntax]
 
-A simple loop:
+Implements an infinite loop
+
+Example of a simple loop:
 
 ${ <span class="label label-info">sync1.hh.js</span> }
 
