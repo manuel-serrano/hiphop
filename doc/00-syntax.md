@@ -32,6 +32,9 @@ ${ doc.include( ROOT + "/../tests/abro.hh.js" ) }
 HipHop Module
 =============
 
+### module [ident]( ... ) ###
+[:@glyphicon glyphicon-tag keyword]
+
 ```ebnf
 <HHModule> --> module [ <Identifier> ] ( <FormalSignalList> )
 
