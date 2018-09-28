@@ -1,3 +1,5 @@
+"use hiphop";
+
 const hh = require("hiphop");
 
 module.exports = function( searchWiki, translate ) {
@@ -5,18 +7,18 @@ module.exports = function( searchWiki, translate ) {
       hiphop module( in word, out green, out red, out black, out wiki, out trans ) {
 	 every( immediate( now( word ) ) ) {
 	    emit black( preval( word ) );
-	    emit red( val( word ) );
+	    emit red( nowval( word ) );
 	    fork {
 	       async wiki {
-		  this.notifyAndReact( searchWiki( val( word ) ) );
+		  this.notifyAndReact( searchWiki( nowval( word ) ) );
 	       }
 	    } par {
 	       async trans {
-		  this.notifyAndReact( translate( val( word ) ) );
+		  this.notifyAndReact( translate( nowval( word ) ) );
 	       }
 	    }
 	    
-	    emit green( val( word ) );
+	    emit green( nowval( word ) );
 	 }
       },
       { debuggerName: 'debug', sweep: false }

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Thu Aug  2 01:01:22 2018                          */
-/*    Last change :  Fri Sep 14 08:30:18 2018 (serrano)                */
+/*    Last change :  Fri Sep 28 16:42:27 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    translator demo, client and hiphop parts.                        */
@@ -60,9 +60,9 @@ function translate( langPair, text ) {
 /*---------------------------------------------------------------------*/
 function execColor( langPair ) {
    return hiphop module( in text, out color, out trans, out error ) {
-      let result;
+      signal result;
+      
       emit color( "red" );
-
       await immediate( now( text ) );
       
       async result {
@@ -86,7 +86,7 @@ hiphop module trans( in text,
 		     out transNe, out colorNe,
 		     out transEs, out colorEs,
 		     out transSe, out colorSe ) {
-   for( now( text ) ) {
+   every( now( text ) ) {
       fork {
 	 run execColor( "fr|en" )( color=colorEn, trans=transEn );
       } par {

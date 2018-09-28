@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/0.2.x/preprocessor/astutils.js       */
+/*    serrano/prgm/project/hiphop/hiphop/preprocessor/astutils.js      */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Mon Aug 27 11:06:38 2018 (serrano)                */
+/*    Last change :  Fri Sep 28 14:07:25 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -61,7 +61,16 @@ function J2SBool( loc, bool ) {
 /*---------------------------------------------------------------------*/
 /*    J2SRef ...                                                       */
 /*---------------------------------------------------------------------*/
-function J2SRef( loc, id ) {
+function J2SRef( loc, decl ) {
+   return new ast.J2SRef( loc, undefined, undefined, undefined,
+			  "any" /* type */, null /* hint */,
+			  undefined /* range */, decl );
+}
+
+/*---------------------------------------------------------------------*/
+/*    J2SUnresolvedRef ...                                             */
+/*---------------------------------------------------------------------*/
+function J2SUnresolvedRef( loc, id ) {
    return new ast.J2SUnresolvedRef( loc, undefined, undefined, undefined,
 				    "any" /* type */, null /* hint */,
 				    undefined /* range */, false /* cache */,
@@ -256,6 +265,16 @@ function J2SArray( loc, exprs ) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    J2SAssig ...                                                     */
+/*---------------------------------------------------------------------*/
+function J2SAssig( loc, lhs, rhs ) {
+   return new ast.J2SAssig( loc, undefined, undefined, undefined,
+			    "any" /* type */, null /* hint */,
+			    undefined /* range */,
+			    lhs, rhs );
+}
+
+/*---------------------------------------------------------------------*/
 /*    exports                                                          */
 /*---------------------------------------------------------------------*/
 exports.J2SNull = J2SNull;
@@ -264,6 +283,7 @@ exports.J2SString = J2SString;
 exports.J2SNumber = J2SNumber;
 exports.J2SBool = J2SBool;
 exports.J2SRef = J2SRef;
+exports.J2SUnresolvedRef = J2SUnresolvedRef;
 exports.J2SHopRef = J2SHopRef;
 exports.J2SThis = J2SThis;
 exports.J2SAccess = J2SAccess;
@@ -281,3 +301,4 @@ exports.J2SDecl = J2SDecl;
 exports.J2SDeclInit = J2SDeclInit;
 exports.J2SVarDecls = J2SVarDecls;
 exports.J2SArray = J2SArray;
+exports.J2SAssig = J2SAssig;

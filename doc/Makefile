@@ -13,7 +13,11 @@ DOCJS=`$(HOP) --no-server --evaljs 'console.log( require( hop.config ).docDir + 
 #*---------------------------------------------------------------------*/
 #*    Targets                                                          */
 #*---------------------------------------------------------------------*/
-TARGETS=index.html idx.html 00-syntax.html language-map.html api.html debug.html download.html
+COMMON_TARGETS=index.html idx.html 00-syntax.html api.html debug.html download.html lang.html
+
+LANG_TARGETS=00-syntax.html
+
+TARGETS=$(COMMON_TARGETS) $(LANG_TARGETS)
 
 all: $(TARGETS) lib hss
 
@@ -26,6 +30,7 @@ hss:
 #*---------------------------------------------------------------------*/
 #*    Suffixes                                                         */
 #*---------------------------------------------------------------------*/
+.SUFFIXES:
 .SUFFIXES: .md .html .json
 
 #*---------------------------------------------------------------------*/
@@ -55,7 +60,7 @@ idx.html: idx.json
 #*---------------------------------------------------------------------*/
 #*    .md -> .html                                                     */
 #*---------------------------------------------------------------------*/
-%.html: %.md language-map.js
+%.html: %.md 
 	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "compile-section" $< > $@ \
           || ($(RM) $@; exit 1)
@@ -83,3 +88,8 @@ clean:
 
 cleanall: clean
 	#$(RM) doc.json
+
+#*---------------------------------------------------------------------*/
+#*    dependencies                                                     */
+#*---------------------------------------------------------------------*/
+lang.html: _lang.md

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Fri Sep 14 08:29:57 2018 (serrano)                */
+/*    Last change :  Fri Sep 28 16:47:25 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop part of the Timer example.                                */
@@ -54,7 +54,7 @@ hiphop module suspendableTimer( in reset, in suspend,
 				inout duration ) {
    do {
       fork {
-	 suspend toggle now( suspend ) {
+	 suspend( toggle now( suspend ) ) {
 	    run timer();
 	 }
       } par {

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Sep 14 07:54:56 2018 (serrano)                */
+/*    Last change :  Fri Sep 28 13:13:52 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -82,7 +82,7 @@ function isIdToken( parser, token, id ) {
 function hhref( loc, name ) {
    return astutils.J2SAccess(
       loc,
-      astutils.J2SRef( loc, hhname ),
+      astutils.J2SUnresolvedRef( loc, hhname ),
       astutils.J2SString( loc, name ) );
 }
 
@@ -94,7 +94,7 @@ function hhref( loc, name ) {
 /*---------------------------------------------------------------------*/
 function hhwrapDecl( token, stmt ) {
    const loc = token.location;
-   const req = astutils.J2SCall( loc, astutils.J2SRef( loc, "require" ),
+   const req = astutils.J2SCall( loc, astutils.J2SUnresolvedRef( loc, "require" ),
 				 [ astutils.J2SUndefined( loc ) ],
 				 [ astutils.J2SString( loc, hhmodule ) ] );
    const decl = astutils.J2SDeclInit( loc, hhname, req, "var" );
@@ -110,7 +110,7 @@ function hhwrapDecl( token, stmt ) {
 /*---------------------------------------------------------------------*/
 function hhwrapExpr( token, expr ) {
    const loc = token.location;
-   const req = astutils.J2SCall( loc, astutils.J2SRef( loc, "require" ),
+   const req = astutils.J2SCall( loc, astutils.J2SUnresolvedRef( loc, "require" ),
 				 [ astutils.J2SUndefined( loc ) ],
 				 [ astutils.J2SString( loc, hhmodule ) ] );
    const fun = astutils.J2SFun(
@@ -1168,55 +1168,6 @@ function parseRun( token ) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseLocal ...                                                   */
-/*---------------------------------------------------------------------*/
-function parseLocal_not_used( token ) {
-   const loc = token.location;
-
-   function signal( loc, name, direction ) {
-      const id = astutils.J2SDataPropertyInit(
-	 loc,
-	 astutils.J2SString( loc, "name" ),
-	 astutils.J2SString( loc, name ) );
-      const attrs = astutils.J2SObjInit( loc, [ id ] );
-      
-      return astutils.J2SCall( loc, hhref( loc, "SIGNAL" ), null, [ attrs ] );
-   }
-
-   function parseSiglist() {
-
-      let lbrace = this.consumeToken( this.LPAREN );
-      let args = [];
-
-      while( true ) {
-	 if( this.peekToken().type === this.RPAREN ) {
-	    this.consumeAny();
-	    return args;
-	 } else {
-	    const t = this.consumeToken( this.ID );
-	    
-	    args.push( signal( t.location, t.value, "INOUT" ) );
-
-	    if( this.peekToken().type === this.RPAREN ) {
-	       this.consumeAny();
-	       return args;
-	    } else {
-	       this.consumeToken( this.COMMA );
-	    }
-	 }
-      }
-   }
-   
-   const attrs = astutils.J2SObjInit( loc, [ locInit( loc ) ] );
-   const args = parseSiglist.call( this );
-   const stmts = parseHHBlock.call( this );
-
-   return astutils.J2SCall( loc, hhref( loc, "LOCAL" ), 
-			    null,
-			    [ attrs ].concat( args, stmts ) );
-}
-
-/*---------------------------------------------------------------------*/
 /*    parseLet ...                                                     */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
@@ -1227,6 +1178,7 @@ function parseLet( token, binder ) {
 
    function parseDecls() {
       let decls = [];
+      let inits = [];
 
       while( true ) {
 	 const t = this.consumeToken( this.ID );
@@ -1234,8 +1186,10 @@ function parseLet( token, binder ) {
 
 	 if( this.peekToken().type === this.EGAL ) {
 	    this.consumeAny();
-	    const { expr, axs: accessors } = parseHHExpression.call( this );
-	    const ret = astutils.J2SReturn( loc, expr );
+	    const { expr, accessors: axs } = parseHHExpression.call( this );
+	    const decl = astutils.J2SDecl( iloc, t.value );
+	    const assig = astutils.J2SAssig( iloc, astutils.J2SRef( loc, decl ), expr );
+	    const ret = astutils.J2SReturn( loc, assig );
 	    const block = astutils.J2SBlock( loc, loc, [ ret ] );
 	    const appl = astutils.J2SDataPropertyInit(
 	       loc, 
@@ -1244,9 +1198,10 @@ function parseLet( token, binder ) {
 	    const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), appl ] );
 	    const init = astutils.J2SCall( iloc,
 					   hhref( loc, "ATOM" ), null,
-					   [ attrs ].concat( accessors ) );
-	    decls.push(
-	       astutils.J2SDeclInit( iloc, t.value, expr, binder ) );
+					   [ attrs ].concat( axs ) );
+	    inits.push( init );
+	    decls.push( decl );
+	       
 	 } else {
 	    decls.push( astutils.J2SDecl( loc, t.value, binder ) );
 	 }
@@ -1254,7 +1209,7 @@ function parseLet( token, binder ) {
 	 switch( this.peekToken().type ) {
 	    case this.SEMICOLON:
 	       this.consumeAny();
-	       return decls;
+	       return { decls, inits };
 	       
 	    case this.COMMA:
 	       this.consumeAny();
@@ -1266,8 +1221,8 @@ function parseLet( token, binder ) {
       }
    }
 
-   const decls = parseDecls.call( this );
-   const stmts = parseHHBlock.call( this, false );
+   const { decls, inits } = parseDecls.call( this );
+   const stmts = inits.concat( parseHHBlock.call( this, false ) );
    const attrs = astutils.J2SObjInit( loc, [ locInit( loc ) ] );
    const stmt = stmts.length === 1 ? stmts[ 0 ] : astutils.J2SCall( loc, hhref( loc, "SEQUENCE" ), null, [ attrs ].concat( stmts ) );
    const ret = astutils.J2SReturn( loc, stmt );
@@ -1276,7 +1231,6 @@ function parseLet( token, binder ) {
    const fun = astutils.J2SFun( loc, "letfun", [], block );
 				
    return astutils.J2SCall( loc, fun, [ astutils.J2SUndefined( loc ) ], [] );
-   return 
 }
 
 /*---------------------------------------------------------------------*/
