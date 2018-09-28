@@ -4,13 +4,13 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Tue Sep 18 14:44:24 2018 (serrano)                */
+#*    Last change :  Fri Sep 28 17:07:54 2018 (serrano)                */
 #*    Copyright   :  2018 Manuel Serrano                               */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
 #*=====================================================================*/
 
-bigloo=bigloo
+bigloo=bigloo4.3c
 hop=hop
 
 bglversion=`bigloo -revision`
