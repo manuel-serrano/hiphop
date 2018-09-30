@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sun Sep 30 15:56:05 2018 (serrano)                */
+/*    Last change :  Sun Sep 30 19:34:34 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1130,7 +1130,11 @@ function parseExec( token ) {
 function parseRun( token ) {
    const loc = token.location;
    const next = this.peekToken();
-   let inits = [ locInit( loc ) ];
+   const tag = astutils.J2SDataPropertyInit(
+      loc,
+      astutils.J2SString( loc, "%tag" ),
+      astutils.J2SString( loc, "run" ) );
+   let inits = [ locInit( loc ), tag ];
    
    const { expr: call, accessors } = parseHHExpression.call( this );
 
@@ -1309,7 +1313,11 @@ function parseSignal( token ) {
       }
    }
 
-   const attrs = astutils.J2SObjInit( loc, [ locInit( loc ) ] );
+   const tag = astutils.J2SDataPropertyInit(
+      loc,
+      astutils.J2SString( loc, "%tag" ),
+      astutils.J2SString( loc, "signal" ) );
+   const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), tag ] );
    const args = parseSiglist.call( this );
    const stmts = parseHHBlock.call( this, false );
 
