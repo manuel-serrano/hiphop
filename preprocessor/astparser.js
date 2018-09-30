@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Sep 28 13:13:52 2018 (serrano)                */
+/*    Last change :  Sun Sep 30 15:56:05 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -628,7 +628,11 @@ function parseAtom( token ) {
       loc, 
       astutils.J2SString( loc, "apply" ),
       astutils.J2SFun( loc, "atomfun", [], block ) );
-   const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), appl ] );
+   const tag = astutils.J2SDataPropertyInit(
+	 loc,
+	 astutils.J2SString( loc, "%tag" ),
+	 astutils.J2SString( loc,  "hop" ) );
+   const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), tag, appl ] );
    
    return astutils.J2SCall( loc, hhref( loc, "ATOM" ), null,
 			    [ attrs ].concat( accessors ) );
@@ -761,7 +765,11 @@ function parseEmitSustain( token, command ) {
    function parseSignalEmit( loc ) {
       const id = this.consumeToken( this.ID );
       const locid = id.location;
-      let inits = [ locInit( locid ), astutils.J2SDataPropertyInit(
+      const tag = astutils.J2SDataPropertyInit(
+	 loc,
+	 astutils.J2SString( loc, "%tag" ),
+	 astutils.J2SString( loc, command.toLowerCase() ) );
+      let inits = [ locInit( locid ), tag, astutils.J2SDataPropertyInit(
 	 locid,
 	 astutils.J2SString( locid, id.value ),
 	 astutils.J2SString( locid, id.value ) ) ];
@@ -831,12 +839,16 @@ function parseSustain( token ) {
 /*---------------------------------------------------------------------*/
 function parseAwait( token ) {
    const loc = token.location;
+   const tag = astutils.J2SDataPropertyInit(
+      loc,
+      astutils.J2SString( loc, "%tag" ),
+      astutils.J2SString( loc, "await" ) );
    const { inits, accessors } = parseDelay.call( this, loc, "AWAIT", "apply" );
 
    return astutils.J2SCall(
       loc, hhref( loc, "AWAIT" ),
       null,
-      [ astutils.J2SObjInit( loc, [ locInit( loc ) ].concat( inits ) ) ]
+      [ astutils.J2SObjInit( loc, [ locInit( loc ), tag ].concat( inits ) ) ]
 	 .concat( accessors ) );
 }
 

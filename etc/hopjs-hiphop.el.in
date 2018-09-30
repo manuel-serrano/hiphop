@@ -4,7 +4,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Thu Sep 27 14:11:55 2018 (serrano)                */
+;*    Last change :  Sun Sep 30 14:34:35 2018 (serrano)                */
 ;*    Copyright   :  2018 Manuel Serrano                               */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
@@ -33,9 +33,9 @@ Set this to nil if you don't want a modeline indicator."
 ;; font lock
 (defcustom hiphop-font-lock-keywords
   (list
-   (cons "\\(?:hiphop\\|hop\\)\\>" 'font-lock-face-hopjs0)
+   (cons "\\(?:hiphop\\|hop\\)\\>" 'font-lock-face-hopjs12)
    (cons "\\(?:fork\\|par\\)\\>" 'font-lock-keyword-face)
-   (cons "\\(?:loop\\|every\\|while\\|do\\|module\\|run\\|signal\\)\\>" 'font-lock-keyword-face)
+   (cons "\\(?:loop\\|every\\|while\\|do\\|abort\\|module\\|run\\|signal\\)\\>" 'font-lock-keyword-face)
    (cons "\\(?:now\\|pre\\|nowval\\|preval\\)\\>" 'font-lock-face-hopjs8)
    (list (concat "\\s-*\\(?:module\\)\\s-+\\(" js--name-re "\\)") 1 'font-lock-function-name-face))
   "*The HipHop font-lock specification"
