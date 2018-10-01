@@ -12,7 +12,7 @@ hiphop module m1( S, U, W, Z ) {
 }
 
 hiphop module run2( in S, in U, A, B ) {
-   run m1( W = A, Z = B );
+   run m1( S, U, W = A, Z = B );
 } 
 
 exports.prg = new hh.ReactiveMachine( run2, "run2" );

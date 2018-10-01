@@ -15,7 +15,7 @@ var m1 = <hh.module S U W Z>
 
 var inSig={accessibility: hh.IN}
 var run2 = <hh.module S=${inSig} U=${inSig} A B>
-  <hh.run module=${m1} W=A Z=B/>
+  <hh.run module=${m1} S U W=A Z=B/>
 </hh.module>;
 
 exports.prg = new hh.ReactiveMachine(run2, "run2");

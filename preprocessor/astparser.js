@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Mon Oct  1 02:15:04 2018 (serrano)                */
+/*    Last change :  Mon Oct  1 09:52:38 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -708,9 +708,13 @@ function parseHalt( token ) {
 /*    stmt ::= ...                                                     */
 /*       | SEQUENCE block                                              */
 /*---------------------------------------------------------------------*/
-function parseSequence( token, consume ) {
+function parseSequence( token, tagname, consume ) {
    const loc = token.location;
-   const attrs = astutils.J2SObjInit( loc, [ locInit( loc ) ] );
+   const tag = astutils.J2SDataPropertyInit(
+	 loc,
+	 astutils.J2SString( loc, "%tag" ),
+	 astutils.J2SString( loc, tagname ) );
+   const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), tag ] );
    const body = parseHHBlock.call( this, consume );
 
    return astutils.J2SCall( loc, hhref( loc, "SEQUENCE" ), 
@@ -726,6 +730,10 @@ function parseSequence( token, consume ) {
 /*---------------------------------------------------------------------*/
 function parseFork( token ) {
    const loc = token.location;
+   const tag = astutils.J2SDataPropertyInit(
+	 loc,
+	 astutils.J2SString( loc, "%tag" ),
+	 astutils.J2SString( loc, "fork" ) );
    let id;
    let attrs;
    let body = [];
@@ -740,18 +748,18 @@ function parseFork( token ) {
 	    locid,
 	    astutils.J2SString( locid, "id" ),
 	    astutils.J2SString( locid, id.value ) ),
-	   locInit( loc ) ] );
+	   locInit( loc ), tag ] );
    } else {
-      attrs = astutils.J2SObjInit( loc, [ locInit( loc ) ] );
+      attrs = astutils.J2SObjInit( loc, [ locInit( loc ), tag ] );
    }
 
    body.push( astutils.J2SCall( loc, hhref( loc, "SEQUENCE" ),
 				null,
-				[ astutils.J2SObjInit( loc, [ locInit( loc ) ] ) ]
+				[ astutils.J2SObjInit( loc, [ locInit( loc ), tag ] ) ]
 				.concat( parseHHBlock.call( this ) ) ) );
 
    while( isIdToken( this, this.peekToken(), "par" ) ) {
-      body.push( parseSequence.call( this, this.consumeAny(), true ) );
+      body.push( parseSequence.call( this, this.consumeAny(), "par", true ) );
    }
 
    return astutils.J2SCall( loc, hhref( loc, "FORK" ), 
@@ -1089,14 +1097,19 @@ function parseLoopeach( token ) {
 /*---------------------------------------------------------------------*/
 function parseExec( token ) {
    const loc = token.location;
-   let inits = [ locInit( loc ) ];
+   const tag = astutils.J2SDataPropertyInit(
+      loc,
+      astutils.J2SString( loc, "%tag" ),
+      astutils.J2SString( loc, "async" ) );
+   let inits = [ locInit( loc ), tag ];
    
    if( this.peekToken().type === this.ID ) {
       const id = this.consumeAny();
 
       // check for reserved exec keywords
       if( "res susp kill".indexOf( id ) >= 0 ) {
-	 throw error.SyntaxError( "EXEC: reserved identifier `" + id.value + "'",
+	 throw error.SyntaxError( "async: reserved identifier `" 
+				  + id.value + "'",
 				  tokenLocation( id ) );
       }
       
@@ -1445,7 +1458,7 @@ function parseStmt( token, declaration ) {
 	 }
 
       case this.LBRACE:
-	 return parseSequence.call( this, next, false );
+	 return parseSequence.call( this, next, "sequence", false );
 
       default:
 	 throw tokenTypeError( this.consumeAny() );

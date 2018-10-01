@@ -11,7 +11,7 @@ var m1 = <hh.module S U W Z>
 
 var run2 = <hh.module S U A B>
   <hh.parallel id="par">
-    <hh.run module=${m1} W=A Z=B/>
+    <hh.run module=${m1} S U W=A Z=B/>
     <hh.halt/>
   </hh.parallel>
 </hh.module>;
