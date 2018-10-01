@@ -27,7 +27,7 @@ console.log( "m.inputAndReact(S)" );
 m.inputAndReact( "S" )
 
 //m.react();
-m.getElementById( "par" ).appendChild( hiphop run m1( Z=A ) );
+m.getElementById( "par" ).appendChild( hiphop run m1( S, U, Z=A ) );
 
 console.log( "==================== ADD RUN PARALLEL ==================" );
 
