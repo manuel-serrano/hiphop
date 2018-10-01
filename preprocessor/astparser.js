@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sun Sep 30 19:34:34 2018 (serrano)                */
+/*    Last change :  Mon Oct  1 02:15:04 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -575,6 +575,10 @@ function parseModule( token, declaration ) {
    const loc = token.location;
    let id;
    let attrs;
+   const tag = astutils.J2SDataPropertyInit(
+      loc,
+      astutils.J2SString( loc, "%tag" ),
+      astutils.J2SString( loc, "module" ) );
 
    if( this.peekToken().type === this.ID ) {
       id = this.consumeAny();
@@ -586,11 +590,11 @@ function parseModule( token, declaration ) {
 	    locid,
 	    astutils.J2SString( locid, "id" ),
 	    astutils.J2SString( locid, id.value ) ),
-	   locInit( loc ) ] );
+	   locInit( loc ), tag ] );
    } else if( declaration ) {
       tokenTypeError( this.consumeAny() );
    } else {
-      attrs = astutils.J2SObjInit( loc, [ locInit( loc ) ] );
+      attrs = astutils.J2SObjInit( loc, [ locInit( loc ), tag ] );
    }
 
    const args = parseSiglist.call( this );
@@ -888,14 +892,18 @@ function parseIf( token ) {
 /*---------------------------------------------------------------------*/
 function parseAbortWeakabort( token, command ) {
    const loc = token.location;
+   const tag = astutils.J2SDataPropertyInit(
+      loc,
+      astutils.J2SString( loc, "%tag" ),
+      astutils.J2SString( loc, command.toLowerCase() ) );
    this.consumeToken( this.LPAREN );
-   const { inits, accessors } = parseDelay.call( this, loc, "WEAKABORT", "apply" );
+   const { inits, accessors } = parseDelay.call( this, loc, tag, "apply" );
    this.consumeToken( this.RPAREN );
    const stmts = parseHHBlock.call( this );
    
    return astutils.J2SCall(
       loc, hhref( loc, command ), null,
-      [ astutils.J2SObjInit( loc, [ locInit( loc ) ].concat( inits ) ) ]
+      [ astutils.J2SObjInit( loc, [ locInit( loc ), tag ].concat( inits ) ) ]
 	 .concat( accessors )
 	 .concat( stmts ) );
 }
@@ -941,6 +949,10 @@ function parseSuspend( token ) {
    }
 
    const loc = token.location;
+   const tag = astutils.J2SDataPropertyInit(
+      loc,
+      astutils.J2SString( loc, "%tag" ),
+      astutils.J2SString( loc, "suspend" ) );
 
    this.consumeToken( this.LPAREN );
    let delay;
@@ -989,7 +1001,7 @@ function parseSuspend( token ) {
    this.consumeToken( this.RPAREN );
    const stmts = parseHHBlock.call( this );
 
-   const attrs = astutils.J2SObjInit( loc, inits );
+   const attrs = astutils.J2SObjInit( loc, inits, tag );
    return astutils.J2SCall(
       loc, hhref( loc, "SUSPEND" ), null,
       [ attrs ].concat( accessors, stmts ) );
@@ -1020,6 +1032,10 @@ function parseLoop( token ) {
 /*---------------------------------------------------------------------*/
 function parseEvery( token ) {
    const loc = token.location;
+   const tag = astutils.J2SDataPropertyInit(
+      loc,
+      astutils.J2SString( loc, "%tag" ),
+      astutils.J2SString( loc, "every" ) );
 
    this.consumeToken( this.LPAREN );
    const { inits, accessors } = parseDelay.call( this, loc, "while" );
@@ -1027,7 +1043,7 @@ function parseEvery( token ) {
 
    const stmts = parseHHBlock.call( this );
    const attrs = astutils.J2SObjInit(
-      loc, [ locInit( loc ) ].concat( inits ) );
+      loc, [ locInit( loc ), tag ].concat( inits ) );
    
    return astutils.J2SCall( loc, hhref( loc, "EVERY" ), 
 			    null,
@@ -1042,6 +1058,10 @@ function parseEvery( token ) {
 /*---------------------------------------------------------------------*/
 function parseLoopeach( token ) {
    const loc = token.location;
+   const tag = astutils.J2SDataPropertyInit(
+      loc,
+      astutils.J2SString( loc, "%tag" ),
+      astutils.J2SString( loc, "do/every" ) );
    const stmts = parseHHBlock.call( this );
 
    const tok = this.consumeToken( this.ID );
@@ -1053,7 +1073,7 @@ function parseLoopeach( token ) {
    this.consumeToken( this.RPAREN );
 
    const attrs = astutils.J2SObjInit(
-      loc, [ locInit( loc ) ].concat( inits ) );
+      loc, [ locInit( loc ),tag ].concat( inits ) );
    
    return astutils.J2SCall( loc, hhref( loc, "LOOPEACH" ), 
 			    null,

@@ -4,7 +4,7 @@ const hh = require("hiphop");
 const lang = require("../lib/lang.js");
 
 const TIMEOUT = function(attrs) {
-   let sig = lang.get_signal_name_list(attrs, lang.format_loc(attrs))[0];
+   let sig = lang.get_signame_list(attrs, lang.format_loc(attrs))[0];
    let exec;
    let timeoutIdMap = {};
 
