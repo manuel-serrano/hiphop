@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Mon Oct  1 09:52:38 2018 (serrano)                */
+/*    Last change :  Tue Oct  2 08:03:44 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -45,6 +45,16 @@ function locInit( loc ) {
       location( loc ) );
 }
 
+/*---------------------------------------------------------------------*/
+/*    tagInit ...                                                      */
+/*---------------------------------------------------------------------*/
+function tagInit( tag, loc ) {
+   return astutils.J2SDataPropertyInit(
+      loc,
+      astutils.J2SString( loc, "%tag" ),
+      astutils.J2SString( loc, tag ) );
+}
+   
 /*---------------------------------------------------------------------*/
 /*    tokenLocation ...                                                */
 /*---------------------------------------------------------------------*/
@@ -430,7 +440,7 @@ function parseHHBlock( consume = true ) {
 	 case this.RBRACE: {
 	    const nothing = this.consumeAny();
 	    if( nodes.length == 0 ) {
-	       return [ parseEmpty( nothing, "NOTHING" ) ];
+	       return [ parseEmpty( nothing, "NOTHING", "nothing" ) ];
 	    } else {
 	       return nodes;
 	    }
@@ -575,10 +585,7 @@ function parseModule( token, declaration ) {
    const loc = token.location;
    let id;
    let attrs;
-   const tag = astutils.J2SDataPropertyInit(
-      loc,
-      astutils.J2SString( loc, "%tag" ),
-      astutils.J2SString( loc, "module" ) );
+   const tag = tagInit( "module", loc );
 
    if( this.peekToken().type === this.ID ) {
       id = this.consumeAny();
@@ -632,10 +639,7 @@ function parseAtom( token ) {
       loc, 
       astutils.J2SString( loc, "apply" ),
       astutils.J2SFun( loc, "atomfun", [], block ) );
-   const tag = astutils.J2SDataPropertyInit(
-	 loc,
-	 astutils.J2SString( loc, "%tag" ),
-	 astutils.J2SString( loc,  "hop" ) );
+   const tag = tagInit( "hop", loc );
    const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), tag, appl ] );
    
    return astutils.J2SCall( loc, hhref( loc, "ATOM" ), null,
@@ -645,9 +649,9 @@ function parseAtom( token ) {
 /*---------------------------------------------------------------------*/
 /*    parseEmpty ...                                                   */
 /*---------------------------------------------------------------------*/
-function parseEmpty( token, fun ) {
+function parseEmpty( token, fun, tag ) {
    const loc = token.location;
-   const attrs = astutils.J2SObjInit( loc, [ locInit( loc ) ] );
+   const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), tagInit( tag, loc ) ] );
    
    return astutils.J2SCall( loc, hhref( loc, fun ), null, [ attrs ] );
 }
@@ -659,7 +663,7 @@ function parseEmpty( token, fun ) {
 /*       | NOTHING                                                     */
 /*---------------------------------------------------------------------*/
 function parseNothing( token ) {
-   return parseEmpty( token, "NOTHING" );
+   return parseEmpty( token, "NOTHING", "nothing" );
 }
 
 /*---------------------------------------------------------------------*/
@@ -669,7 +673,7 @@ function parseNothing( token ) {
 /*       | yield                                                       */
 /*---------------------------------------------------------------------*/
 function parsePause( token ) {
-   return parseEmpty( token, "PAUSE" );
+   return parseEmpty( token, "PAUSE", "yield" );
 }
 
 /*---------------------------------------------------------------------*/
@@ -687,7 +691,7 @@ function parseExit( token ) {
 	 loc,
 	 astutils.J2SString( loc, id.value ),
 	 astutils.J2SString( loc, id.value ) ),
-	locInit( loc ) ] );
+	locInit( loc ), tagInit( "break", loc ) ] );
    
    return astutils.J2SCall( loc, hhref( loc, "EXIT" ), null, [ attrs ] );
 }
@@ -699,7 +703,7 @@ function parseExit( token ) {
 /*       | exit                                                        */
 /*---------------------------------------------------------------------*/
 function parseHalt( token ) {
-   return parseEmpty( token, "HALT" );
+   return parseEmpty( token, "HALT", "exit" );
 }
 
 /*---------------------------------------------------------------------*/
@@ -710,10 +714,7 @@ function parseHalt( token ) {
 /*---------------------------------------------------------------------*/
 function parseSequence( token, tagname, consume ) {
    const loc = token.location;
-   const tag = astutils.J2SDataPropertyInit(
-	 loc,
-	 astutils.J2SString( loc, "%tag" ),
-	 astutils.J2SString( loc, tagname ) );
+   const tag = tagInit( tagname, loc );
    const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), tag ] );
    const body = parseHHBlock.call( this, consume );
 
@@ -730,10 +731,7 @@ function parseSequence( token, tagname, consume ) {
 /*---------------------------------------------------------------------*/
 function parseFork( token ) {
    const loc = token.location;
-   const tag = astutils.J2SDataPropertyInit(
-	 loc,
-	 astutils.J2SString( loc, "%tag" ),
-	 astutils.J2SString( loc, "fork" ) );
+   const tag = tagInit( "fork", loc );
    let id;
    let attrs;
    let body = [];
@@ -777,10 +775,7 @@ function parseEmitSustain( token, command ) {
    function parseSignalEmit( loc ) {
       const id = this.consumeToken( this.ID );
       const locid = id.location;
-      const tag = astutils.J2SDataPropertyInit(
-	 loc,
-	 astutils.J2SString( loc, "%tag" ),
-	 astutils.J2SString( loc, command.toLowerCase() ) );
+      const tag = tagInit( command.toLowerCase(), loc );
       let inits = [ locInit( locid ), tag, astutils.J2SDataPropertyInit(
 	 locid,
 	 astutils.J2SString( locid, id.value ),
@@ -851,10 +846,7 @@ function parseSustain( token ) {
 /*---------------------------------------------------------------------*/
 function parseAwait( token ) {
    const loc = token.location;
-   const tag = astutils.J2SDataPropertyInit(
-      loc,
-      astutils.J2SString( loc, "%tag" ),
-      astutils.J2SString( loc, "await" ) );
+   const tag = tagInit( "await", loc );
    const { inits, accessors } = parseDelay.call( this, loc, "AWAIT", "apply" );
 
    return astutils.J2SCall(
@@ -872,11 +864,11 @@ function parseAwait( token ) {
 /*---------------------------------------------------------------------*/
 function parseIf( token ) {
    const loc = token.location;
-   const inits = locInit( loc );
 
    this.consumeToken( this.LPAREN );
    const { init, accessors } = parseValueApply.call( this, loc );
-   const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), init ] );
+   const attrs = astutils.J2SObjInit( 
+      loc, [ locInit( loc ), tagInit( "if", loc ),init ] );
    this.consumeToken( this.RPAREN );
    
    const then = parseStmt.call( this, this.peekToken(), false );
@@ -900,10 +892,7 @@ function parseIf( token ) {
 /*---------------------------------------------------------------------*/
 function parseAbortWeakabort( token, command ) {
    const loc = token.location;
-   const tag = astutils.J2SDataPropertyInit(
-      loc,
-      astutils.J2SString( loc, "%tag" ),
-      astutils.J2SString( loc, command.toLowerCase() ) );
+   const tag = tagInit( command.toLowerCase(), loc );
    this.consumeToken( this.LPAREN );
    const { inits, accessors } = parseDelay.call( this, loc, tag, "apply" );
    this.consumeToken( this.RPAREN );
@@ -957,10 +946,7 @@ function parseSuspend( token ) {
    }
 
    const loc = token.location;
-   const tag = astutils.J2SDataPropertyInit(
-      loc,
-      astutils.J2SString( loc, "%tag" ),
-      astutils.J2SString( loc, "suspend" ) );
+   const tag = tagInit( "suspend", loc );
 
    this.consumeToken( this.LPAREN );
    let delay;
@@ -1040,10 +1026,7 @@ function parseLoop( token ) {
 /*---------------------------------------------------------------------*/
 function parseEvery( token ) {
    const loc = token.location;
-   const tag = astutils.J2SDataPropertyInit(
-      loc,
-      astutils.J2SString( loc, "%tag" ),
-      astutils.J2SString( loc, "every" ) );
+   const tag = tagInit( "every", loc );
 
    this.consumeToken( this.LPAREN );
    const { inits, accessors } = parseDelay.call( this, loc, "while" );
@@ -1066,10 +1049,7 @@ function parseEvery( token ) {
 /*---------------------------------------------------------------------*/
 function parseLoopeach( token ) {
    const loc = token.location;
-   const tag = astutils.J2SDataPropertyInit(
-      loc,
-      astutils.J2SString( loc, "%tag" ),
-      astutils.J2SString( loc, "do/every" ) );
+   const tag = tagInit( "do/every", loc );
    const stmts = parseHHBlock.call( this );
 
    const tok = this.consumeToken( this.ID );
@@ -1097,10 +1077,7 @@ function parseLoopeach( token ) {
 /*---------------------------------------------------------------------*/
 function parseExec( token ) {
    const loc = token.location;
-   const tag = astutils.J2SDataPropertyInit(
-      loc,
-      astutils.J2SString( loc, "%tag" ),
-      astutils.J2SString( loc, "async" ) );
+   const tag = tagInit( "async", loc );
    let inits = [ locInit( loc ), tag ];
    
    if( this.peekToken().type === this.ID ) {
@@ -1163,10 +1140,7 @@ function parseExec( token ) {
 function parseRun( token ) {
    const loc = token.location;
    const next = this.peekToken();
-   const tag = astutils.J2SDataPropertyInit(
-      loc,
-      astutils.J2SString( loc, "%tag" ),
-      astutils.J2SString( loc, "run" ) );
+   const tag = tagInit( "run", loc );
    let inits = [ locInit( loc ), tag ];
    
    const { expr: call, accessors } = parseHHExpression.call( this );
@@ -1346,10 +1320,7 @@ function parseSignal( token ) {
       }
    }
 
-   const tag = astutils.J2SDataPropertyInit(
-      loc,
-      astutils.J2SString( loc, "%tag" ),
-      astutils.J2SString( loc, "signal" ) );
+   const tag = tagInit( "signal", loc );
    const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), tag ] );
    const args = parseSiglist.call( this );
    const stmts = parseHHBlock.call( this, false );
@@ -1372,7 +1343,7 @@ function parseTrap( token ) {
 	 loc,
 	 astutils.J2SString( loc, token.value ),
 	 astutils.J2SString( loc, token.value ) ),
-	locInit( loc ) ] );
+	locInit( loc ), tagInit( token.value, loc ) ] );
    
    return astutils.J2SCall( loc, hhref( loc, "TRAP" ), 
 			    null,
