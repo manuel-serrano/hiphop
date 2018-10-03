@@ -3,7 +3,7 @@
 
 var hh = require( "hiphop" );
 
-hiphop module m1( S, U, W, Z ) {
+hiphop module sub( S, U, W, Z ) {
    fork {
       if( now( S ) ) emit W();
    } par {
@@ -11,8 +11,8 @@ hiphop module m1( S, U, W, Z ) {
    }
 }
 
-hiphop module run2( in S, in U, A, B ) {
-   run m1( S, U, W = A, Z = B );
+hiphop module main( in S, in U, A, B ) {
+   run sub( S, U, W = A, Z = B );
 } 
 
 exports.prg = new hh.ReactiveMachine( run2, "run2" );

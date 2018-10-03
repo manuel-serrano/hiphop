@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Oct  2 08:03:44 2018 (serrano)                */
+/*    Last change :  Wed Oct  3 06:50:09 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -77,6 +77,14 @@ function tokenValueError( token ) {
 function tokenTypeError( token ) {
    return error.SyntaxError( "unexpected token `" + token.type + "'",
 			     tokenLocation( token ) );
+}
+
+/*---------------------------------------------------------------------*/
+/*    tokenReferenceError ...                                          */
+/*---------------------------------------------------------------------*/
+function tokenReferenceError( token ) {
+   error.ReferenceError( "unbound interface `" + token.value + "'",
+			 tokenLocation( token ) );
 }
 
 /*---------------------------------------------------------------------*/
@@ -215,7 +223,7 @@ function parseHHAccessors( parser, iscnt = false ) {
 /*---------------------------------------------------------------------*/
 /*    parseHHThisBlock ...                                             */
 /*    -------------------------------------------------------------    */
-/*    Parse JS block with augmented expression as in parseHHAccessors. */
+/*    Parse JS block with augmented expressions as in parseHHAccessors */
 /*---------------------------------------------------------------------*/
 function parseHHThisBlock() {
    
@@ -300,9 +308,23 @@ function parseHHExpression() {
 }
 
 /*---------------------------------------------------------------------*/
+/*    parseHHRunExpression ...                                         */
+/*---------------------------------------------------------------------*/
+function parseHHRunExpression() {
+   try {
+      const hhdotsparser = function( token ) { console.log( "GLOP" ); }
+      
+      this.addPlugin( "...", hhdotsparser );
+      return parseHHExpression.call( this );
+   } finally {
+      this.removePlugin( "..." );
+   }
+}
+
+/*---------------------------------------------------------------------*/
 /*    parseHHCondExpression ...                                        */
 /*---------------------------------------------------------------------*/
-function parseHHCondExpression( iscnt ) {
+function parseHHCondExpression( iscnt, isrun ) {
    return parseHHAccessors.call(
       this,
       accessors => {
@@ -353,10 +375,10 @@ function parseDelay( loc, tag, action = "apply", id = false ) {
       const loccnt = this.consumeAny();
       this.consumeToken( this.LPAREN );
       const { expr: count, accessors: cntaccessors } =
-	    parseHHCondExpression.call( this, true );
+	    parseHHCondExpression.call( this, true, false );
       this.consumeToken( this.COMMA );
       const { expr, accessors } =
-	    parseHHCondExpression.call( this, false );
+	    parseHHCondExpression.call( this, false, false );
 
       this.consumeToken( this.RPAREN );
 
@@ -470,7 +492,6 @@ function parseHHBlock( consume = true ) {
    }
 }
    
-
 /*---------------------------------------------------------------------*/
 /*    parseModule ...                                                  */
 /*    -------------------------------------------------------------    */
@@ -481,7 +502,108 @@ function parseHHBlock( consume = true ) {
 /*    combine ::= combine expr                                         */
 /*---------------------------------------------------------------------*/
 function parseModule( token, declaration ) {
+   const loc = token.location;
+   let id;
+   let attrs;
+   const tag = tagInit( "module", loc );
+
+   if( this.peekToken().type === this.ID ) {
+      id = this.consumeAny();
+      const locid = id.location;
+
+      attrs = astutils.J2SObjInit(
+	 locid,
+	 [ astutils.J2SDataPropertyInit(
+	    locid,
+	    astutils.J2SString( locid, "id" ),
+	    astutils.J2SString( locid, id.value ) ),
+	   locInit( loc ), tag ] );
+   } else if( declaration ) {
+      throw tokenTypeError( this.consumeAny() );
+   } else {
+      attrs = astutils.J2SObjInit( loc, [ locInit( loc ), tag ] );
+   }
+
+   let args = parseModuleSiglist.call( this );
    
+   if( this.peekToken().type === this.ID 
+       && this.peekToken().value === "implements" ) {
+      this.consumeAny();
+      args = parseInterfaceIntflist.call( this );
+   }
+   
+   const stmts = parseHHBlock.call( this );
+   const mod = astutils.J2SCall( loc, hhref( loc, "MODULE" ), 
+				 null,
+				 [ attrs ].concat( args, stmts ) );
+
+   if( declaration ) {
+      return astutils.J2SVarDecls(
+	 loc, [ astutils.J2SDeclInit( loc, id.value, mod ) ] );
+   } else {
+      return mod;
+   }
+}
+
+/*---------------------------------------------------------------------*/
+/*    interfaces ...                                                   */
+/*    -------------------------------------------------------------    */
+/*    An object containing all the defined interfaces.                 */
+/*---------------------------------------------------------------------*/
+let interfaces = {};
+
+/*---------------------------------------------------------------------*/
+/*    parseInterface ...                                               */
+/*    -------------------------------------------------------------    */
+/*    stmt ::= ...                                                     */
+/*       | interface ident ( signal, ... ) [extends interface, ...]    */
+/*---------------------------------------------------------------------*/
+function parseInterface( token ) {
+   const loc = token.location;
+   let id = this.consumeToken( this.ID );
+
+   if( id.value in interfaces ) {
+      return error.ReferenceError( "illegal interface duplicate declaration `" + 
+				   id.value + "'",
+				   tokenLocation( id ) );
+   }
+   
+   let args = parseModuleSiglist.call( this );
+   
+   if( this.peekToken().type === this.extends ) {
+      this.consumeAny();
+      
+      args = args.concat( parseInterfaceIntflist.call( this ) );
+   }
+   
+   interfaces[ id ] = args;
+   return astutils.J2SUndefined( loc );
+}
+
+/*---------------------------------------------------------------------*/
+/*    parseInterfaceIntflist ...                                       */
+/*---------------------------------------------------------------------*/
+function parseInterfaceIntflist() {
+   let args = [];
+   
+   do {
+      const m = this.consumeToken( this.ID );
+      
+      if( m.value in interfaces ) {
+	 throw tokenReferenceError( m );
+      } else {
+	 args = args.concat( interfaces[ m.value ] );
+      }
+   } while( this.peekToken.type === this.COMMA )
+   
+   return args;
+}
+   
+/*---------------------------------------------------------------------*/
+/*    parseModuleSiglist ...                                           */
+/*---------------------------------------------------------------------*/
+function parseModuleSiglist() {
+
    function parseSignalModule( token ) {
       const loc = token.location;
       let name, direction;
@@ -511,7 +633,7 @@ function parseModule( token, declaration ) {
 
 	 }
       } else {
-	 tokenTypeError( token )
+	 throw tokenTypeError( token )
       }
       
       const dir = astutils.J2SDataPropertyInit(
@@ -560,61 +682,23 @@ function parseModule( token, declaration ) {
 			       [ attrs ].concat( accessors ) );
    }
 
-   function parseSiglist() {
+   let lbrace = this.consumeToken( this.LPAREN );
+   let args = [];
 
-      let lbrace = this.consumeToken( this.LPAREN );
-      let args = [];
-
-      while( true ) {
+   while( true ) {
+      if( this.peekToken().type === this.RPAREN ) {
+	 this.consumeAny();
+	 return args;
+      } else {
+	 args.push( parseSignalModule.call( this, this.consumeAny() ) );
+	 
 	 if( this.peekToken().type === this.RPAREN ) {
 	    this.consumeAny();
 	    return args;
 	 } else {
-	    args.push( parseSignalModule.call( this, this.consumeAny() ) );
-	    
-	    if( this.peekToken().type === this.RPAREN ) {
-	       this.consumeAny();
-	       return args;
-	    } else {
-	       this.consumeToken( this.COMMA );
-	    }
+	    this.consumeToken( this.COMMA );
 	 }
       }
-   }
-   
-   const loc = token.location;
-   let id;
-   let attrs;
-   const tag = tagInit( "module", loc );
-
-   if( this.peekToken().type === this.ID ) {
-      id = this.consumeAny();
-      const locid = id.location;
-
-      attrs = astutils.J2SObjInit(
-	 locid,
-	 [ astutils.J2SDataPropertyInit(
-	    locid,
-	    astutils.J2SString( locid, "id" ),
-	    astutils.J2SString( locid, id.value ) ),
-	   locInit( loc ), tag ] );
-   } else if( declaration ) {
-      tokenTypeError( this.consumeAny() );
-   } else {
-      attrs = astutils.J2SObjInit( loc, [ locInit( loc ), tag ] );
-   }
-
-   const args = parseSiglist.call( this );
-   const stmts = parseHHBlock.call( this );
-   const mod = astutils.J2SCall( loc, hhref( loc, "MODULE" ), 
-				 null,
-				 [ attrs ].concat( args, stmts ) );
-
-   if( declaration ) {
-      return astutils.J2SVarDecls(
-	 loc, [ astutils.J2SDeclInit( loc, id.value, mod ) ] );
-   } else {
-      return mod;
    }
 }
 
@@ -1054,7 +1138,7 @@ function parseLoopeach( token ) {
 
    const tok = this.consumeToken( this.ID );
    
-   if( tok.value != "every" ) tokenValueError( tok );
+   if( tok.value != "every" ) throw tokenValueError( tok );
       
    this.consumeToken( this.LPAREN );
    const { inits, accessors } = parseDelay.call( this, loc, "do" );
@@ -1143,7 +1227,7 @@ function parseRun( token ) {
    const tag = tagInit( "run", loc );
    let inits = [ locInit( loc ), tag ];
    
-   const { expr: call, accessors } = parseHHExpression.call( this );
+   const { expr: call, accessors } = parseHHRunExpression.call( this );
 
    if( !(typeof call == "J2SCall" ) ) {
       throw error.SyntaxError( "RUN: bad form", tokenLocation( token ) );
@@ -1239,7 +1323,7 @@ function parseLet( token, binder ) {
 	       break;
 	       
 	    default:
-	       tokenTypeError( this.consumeAny() );
+	       throw tokenTypeError( this.consumeAny() );
 	 }
       }
    }
@@ -1315,7 +1399,7 @@ function parseSignal( token ) {
 	       break;
 	       
 	    default:
-	       tokenTypeError( this.consumeAny() );
+	       throw tokenTypeError( this.consumeAny() );
 	 }
       }
    }
@@ -1451,6 +1535,9 @@ function parseHiphop( token, declaration ) {
       } else {
 	 return hhwrapExpr( token, mod );
       }
+   } else if( next.type === this.ID && next.value == "interface" ) {
+      this.consumeAny();
+      return parseInterface.call( this, next );
    } else {
       return hhwrapExpr( token, parseStmt.call( this, token, declaration  ) );
    }
