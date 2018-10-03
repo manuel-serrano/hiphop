@@ -1,0 +1,122 @@
+<Expression> --> ... | <HHExprStatement>>
+
+<HHExprStatement> --> hiphop <HHStatement>
+
+<HHStatement> --> <HHHop>
+  | <HHModule>
+  | <HHInterface>
+  | <HHBlock>
+  | <HHLet>
+  | <HHSignal>
+  | <HHHalt>
+  | <HHFork>
+  | <HHEmit>
+  | <HHSustain>
+  | <HHAbort>
+  | <HHWeakabort>
+  | <HHSuspend>
+  | <HHLoop>
+  | <HHAsync>
+  | <HHRun>
+  | <HHEvery>
+  | <HHDo>
+  | <HHIf>
+  | <HHTrap>
+  | <HHBreak>
+  | <HHYield>
+  | <HHAwait>
+  | <HHDollarExpression>
+  | <HHExpression> ; 
+
+<HHHop> --> hop { <Statement> }
+
+<HHBlock> --> {}
+  | { <HHStatement> }
+  | { <HHStatement> ... <HHStatement> }
+
+<HHModule> --> module [ <Identifier> ] [implements <IntfList>] ( <FormalSignalList> ) <HHBlock>
+
+<HHInterface> --> interface [ <Identifier> ] [extends <IntfList>]
+
+<IntfList> --> <Intf>, ... <Intf>
+
+<Intf> --> <Identifier> | <HHDollarExpression>
+
+<FormalSignalList> --> | <GlobalSignal>, ... <GlobalSignal>
+
+<GlobalSignal> --> <Direction> <Signal>
+
+<Signal> --> <Identifier> <Combine>
+  | <Direction> <Identifier> = <HHExpression> <Combine>
+
+<Direction> --> | in | out | inout
+
+<Combine> --> | combine <Expression>
+
+<HHExpression> --> <Expression>
+  | now( <Identifier> )
+  | pre( <Identifier> )
+  | val( <Identifier> )
+  | preval( <Identifier> )
+
+<HHDelay> --> <HHExpression>
+  | count( <HHExpression>, <HHExpression> )
+  | immediate <HHExpression>
+
+<HHLet> --> let <Declaration> ... <Declaration>
+
+<Declaration> --> <Identifier> | <Identifier> = <Expression>
+
+<HHSignal> --> signal <Signal>
+
+<HHalt> --> halt
+
+<HHFork> --> fork <HHBlock> [ par <HHBlock> ... par <HHBlock> ]
+
+<HHEmit> --> emit <Identifier>()
+  | emit <Identifier>( <HHExpression> )
+
+<HHSustain> --> sustain <Identifier>()
+  | sustain <Identifier>( <HHExpression> )
+
+<HHAbort> --> abort( <HHDelay ) <HHBlock>
+
+<HHWeakabort> --> weakabort( <HHDelay ) <HHBlock>
+
+<HHSuspend> --> suspend( <HHDelay> ) <HHBlock>
+  | suspend( from <HHDelay> to <HHDelay> ) <HHBlock>
+  | suspend( from <HHDelay> to <HHDelay> emit <Identifier> ) <HHBlock>
+  | suspend( toggle <HHDelay> ) <HHBlock>
+  | suspend( toggle <HHDelay> emit <Identifier> ) <HHBlock>
+
+<HHLoop> --> loop <HHBlock>
+
+<HHAsync> --> async [ <Identifier> ] HHBLock <HHAsyncKill> <HHAsyncSuspend>  <HHAsyncResume>
+
+<HHAsyncKill> --> | kill <HHBlock>
+
+<HHAsyncSuspend> --> | suspend <HHBlock>
+
+<HHAsyncResume> --> | resume <HHBlock>
+
+<HHRun> --> <HHExpression>( <HHSigRun )
+
+<HHSigRun> --> <Identifier> | <Identifier> = <Identifier>
+
+<HHEvery> --> every( <HHDelay> ) <HHBlock>
+
+<HHDo> --> do <HHBlock> every( <HHDelay> )
+
+<HHIf> --> if( <HHExpression> ) <HHStatement>
+  | if( <HHExpression> ) <HHStatement> else <HHStatement>
+
+<HHTrap> --> <HHLabel> : <HHStatement>
+
+<HHbreak> --> break <HHLabel>
+
+<HHYield> --> yield
+
+<HHAwait> --> await <HHDelay>
+  | await immediate <HHDelay>
+
+<HHDollarExpression> --> ${ <Expression> }

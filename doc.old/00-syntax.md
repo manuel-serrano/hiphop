@@ -87,6 +87,123 @@ ${ <span class="label label-info">await-valued.hh.js</span> }
 ${ doc.include( ROOT + "/../tests/await-valued.hh.js" ) }
 ```
 
+Delays
+======
+
+Delays ... They are defined as:
+
+
+```ebnf
+<HHDelay> --> <HHExpression>
+  | count( <HHExpression>, <HHExpression> )
+  | immediate <HHExpression>
+```
+
+Example:
+
+${ <span class="label label-info">await-count2.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../tests/await-count2.hh.js" ) }
+```
+
+
+Await and Emit
+==============
+
+```ebnf
+<HHAwait> --> await <HHDelay>
+  | await immediate <HHDelay>
+<HHEmit> --> emit <Identifier>()
+  | emit <Identifier>( <HHExpression> )
+<HHSustain> --> sustain <Identifier>()
+  | sustain <Identifier>( <HHExpression> )
+```
+
+### await [immediate] delay
+[:@glyphicon glyphicon-tag syntax]
+
+Await for the condition to be true. The form `await expr` is equivalent to
+`{ yield; await immediate expr}`. This is `await` always yields before 
+the condition can be satisfied. Examples:
+
+${ <span class="label label-info">await-seq.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../tests/await-seq.hh.js" ) }
+```
+
+Await for the event `I` to be present in three distinctive instants.
+
+${ <span class="label label-info">await-count.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../tests/await-count.hh.js" ) }
+```
+
+### emit ident( ... ) ###
+[:@glyphicon glyphicon-tag syntax]
+
+The form `emit` is emits a signal when executed.
+
+
+### sustain ident( ... ) ###
+[:@glyphicon glyphicon-tag syntax]
+
+The `sustain` is equivlant to `emit` but it keeps emiting its signal
+at each instant.
+
+A permant signal:
+
+${ <span class="label label-info">sustain1.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../tests/sustain1.hh.js" ) }
+```
+
+Loops
+=====
+
+HipHop provides several sort of loops.
+
+```ebnf
+<HHLoop> --> loop <HHBlock>
+<HHEvery> --> every( <HHDelay> ) <HHBlock>
+<HHDo> --> do <HHBlock> every( <HHDelay> )
+```
+
+### loop ###
+[:@glyphicon glyphicon-tag syntax]
+
+Implements an infinite loop
+
+Example of a simple loop:
+
+${ <span class="label label-info">sync1.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../tests/sync1.hh.js" ) }
+```
+
+A loop executed each time an event is present:
+
+${ <span class="label label-info">every1.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../tests/every1.hh.js" ) }
+```
+
+
+
+A loop always executing its body and repeating the loop for each
+signal:
+
+${ <span class="label label-info">abcro.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../tests/abcro.hh.js" ) }
+```
+
 
 Async
 =====

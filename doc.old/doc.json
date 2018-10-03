@@ -1,0 +1,14 @@
+{
+   "version": "0.2.0",
+   "title": "Hiphop.js",
+   "logo": "logo.svg",
+   "github": "https://github.com/colinvidal/hiphop"
+   "urlbase": "https://www-sop.inria.fr/members/Colin.Vidal/hiphop/",
+   "chapters": [ { "name": "Home", "icon": "glyphicon-home", "href": "index.html" },
+		 { "name": "Download", "icon": "glyphicon-cloud-download", "href": "download.html" },
+		 { "name": "Lang", "icon": "glyphicon-blackboard", "href": "lang.html", "json": "lang/lang.json" },
+		 { "name": "API", "icon": "glyphicon-book", "href": "api.html" },
+		 { "name": "Debug", "icon": "glyphicon-wrench", "href": "debug.html" },
+		 { "name": "Index", "icon": "glyphicon-list", "href": "idx.html" }
+	       ]
+}

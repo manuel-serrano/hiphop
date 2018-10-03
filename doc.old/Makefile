@@ -13,10 +13,9 @@ DOCJS=`$(HOP) --no-server --evaljs 'console.log( require( hop.config ).docDir + 
 #*---------------------------------------------------------------------*/
 #*    Targets                                                          */
 #*---------------------------------------------------------------------*/
-COMMON_TARGETS=index.html idx.html api.html debug.html download.html lang.html \
-   syntax.html
+COMMON_TARGETS=index.html idx.html 00-syntax.html api.html debug.html download.html
 
-LANG_TARGETS=module.html signal.html loop.html async.html
+LANG_TARGETS=lang.html 00-syntax.html
 
 TARGETS=$(COMMON_TARGETS) $(LANG_TARGETS)
 
@@ -29,11 +28,6 @@ hss:
 	cp -r `$(HOP) --no-server --evaljs 'console.log( require( hop.config ).docDir + "/hss" )'` .
 
 #*---------------------------------------------------------------------*/
-#*    Search path                                                      */
-#*---------------------------------------------------------------------*/
-VPATH=lang syntax
-
-#*---------------------------------------------------------------------*/
 #*    Suffixes                                                         */
 #*---------------------------------------------------------------------*/
 .SUFFIXES:
@@ -42,7 +36,7 @@ VPATH=lang syntax
 #*---------------------------------------------------------------------*/
 #*    doc                                                              */
 #*---------------------------------------------------------------------*/
-index.html: _index.md abro-gui.hh.js
+index.html: _index.md
 	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "compile-library" $< > $@ \
           || ($(RM) $@; exit 1)
@@ -50,7 +44,7 @@ index.html: _index.md abro-gui.hh.js
 #*---------------------------------------------------------------------*/
 #*    idx.json ...                                                     */
 #*---------------------------------------------------------------------*/
-idx.json: debug.html $(LANG_TARGETS) api.html
+idx.json: debug.html 00-syntax.html api.html
 	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "html-to-idx" . $^ > $@ \
           || ($(RM) $@; exit 1)
@@ -99,4 +93,3 @@ cleanall: clean
 #*    dependencies                                                     */
 #*---------------------------------------------------------------------*/
 lang.html: _lang.md
-syntax.html: syntax/hiphop.bnf
