@@ -9,10 +9,60 @@ ${ const pkg = require( "../package.json" ) }
 
 ${doc.include( "./license.md" )}
 
-## Source code ##
+## Docker installation ##
 
 ${<div class="row">
-  <div class="col-xs-9">
+  <div class="col-xs-8">
+The recommanded way to install and run Hop is to use
+<a href="https://docs.docker.com/install/">Docker</a>. The docker image
+is to be built in two steps. 
+  </div>
+  <div class="col-xs-4">
+    <xml.downloadButton
+       class="primary"
+       title="Stable"
+       icon="glyphicon-download"
+       href=${cfg.urlbase + "/hiphop-" + cfg.version + ".dockerfile"}/>
+  </div>
+</div>}
+
+ 1. Build the __Hop__ image following these
+ [instructions](http://hop-dev.inria.fr#/home/download.html).
+ 2. Build the __HipHop__ image by downloading the 
+`${"hop-" + cfg.version + ".dockerfile"}` script and by issuing the
+following docker command: `docker build -f hop-${cfg.version}.dockerfile -t hop .`
+
+${ <span class="label label-warning">Note:</span> } If you already
+have installed Hop or HipHop within docker, you might find useful to
+remove the old image first. This can be achieved with:
+
+```shell
+$ docker container prune
+$ docker rmi `docker images | grep hop | awk '{print $3}'`
+```
+
+### Running the image ###
+
+Once the docker is built, the image can be executed using the
+`hop.docker` that can be found
+[here](http://hop-dev.inria.fr#/home/download.html). This is
+recommended on Linux and MacOS. 
+
+The docker image can also be executed directly. Let's consider that
+`$HOME/myApp` is a directory containing your Hop.js application, and
+the file `main.js` the entry point, implementing Hop.js service
+`myService`.
+
+* `docker run -d -p 8080:8080 -v $HOME/myApp:/app hop /app/main.js`
+
+* Open your browser in the host system, and go to
+  `http://localhost:8080/hop/myService`.
+
+
+## Source code installation ##
+
+${<div class="row">
+  <div class="col-xs-8">
 This is the file you should download if you want to get HipHop.js
   stable version from the sources.
   </div>
@@ -21,7 +71,7 @@ This is the file you should download if you want to get HipHop.js
        class="success"
        title="Stable"
        icon="glyphicon-download"
-       href=${cfg.urlbase + "hiphopjs-" + pkg.version + ".tar.gz"}/>
+       href=${cfg.urlbase + "/hiphopjs-" + pkg.version + ".tar.gz"}/>
   </div>
 </div>}
 
@@ -39,24 +89,3 @@ Hop.js can be forked at
 
 ${<a href=${cfg.github}>${cfg.github}</a>}
 
-## Docker ##
-
-A Dockerfile that builds a functional Hop.js runtime with Hiphop.js
-installed is [availible](${dockerurl}).
-
-Docker installation procedure:
-
-* `wget ${dockerurl}`
-
-* `tar xf docker.tgz`
-
-* `cd docker; docker build -t hop .`
-
-Then, let's consider that `$HOME/myApp` is a directory containing your
-Hop.js application, and the file `main.js` the entry point,
-implementing Hop.js service `myService`.
-
-* `docker run -d -p 8080:8080 -v $HOME/myApp:/app hop /app/main.js`
-
-* Open your browser in the host system, and go to
-  `http://localhost:8080/hop/myService`.

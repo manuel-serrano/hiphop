@@ -1,8 +1,10 @@
 
-    HIPHOP, Web Orchestration - copyright (c) 2018 INRIA
+    HipHop.js, Synchronous Multitier JavaScript Reactive Programming
+    copyright (c) 2018 INRIA
                                                                      
     Bug descriptions, user reports, comments, suggestions and
     pull requests are welcome. Send them to
+    
        https://github.com/manuel-serrano/hiphop.git
 
     This program is free software; you can redistribute it and/or modify

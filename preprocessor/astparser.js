@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Oct  3 09:01:51 2018 (serrano)                */
+/*    Last change :  Wed Oct  3 18:09:25 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1313,6 +1313,15 @@ function parseRun( token ) {
 function parseLet( token, binder ) {
    const loc = token.location;
 
+   function parseLetInit( loc ) {
+      if( this.peekToken().type === this.EGAL ) {
+	 this.consumeAny();
+	 return parseHHExpression.call( this );
+      } else {
+	 return { expr: astutils.J2SUndefined( loc ), accessors: [] };
+      }
+   }
+   
    function parseDecls() {
       let decls = [];
       let inits = [];
@@ -1321,27 +1330,23 @@ function parseLet( token, binder ) {
 	 const t = this.consumeToken( this.ID );
 	 const iloc = t.location;
 
-	 if( this.peekToken().type === this.EGAL ) {
-	    this.consumeAny();
-	    const { expr, accessors: axs } = parseHHExpression.call( this );
-	    const decl = astutils.J2SDecl( iloc, t.value );
-	    const assig = astutils.J2SAssig( iloc, astutils.J2SRef( loc, decl ), expr );
-	    const ret = astutils.J2SReturn( loc, assig );
-	    const block = astutils.J2SBlock( loc, loc, [ ret ] );
-	    const appl = astutils.J2SDataPropertyInit(
-	       loc, 
-	       astutils.J2SString( loc, "apply" ),
-	       astutils.J2SFun( loc, "atomfun", [], block ) );
-	    const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), appl ] );
-	    const init = astutils.J2SCall( iloc,
-					   hhref( loc, "ATOM" ), null,
-					   [ attrs ].concat( axs ) );
-	    inits.push( init );
-	    decls.push( decl );
-	       
-	 } else {
-	    decls.push( astutils.J2SDecl( loc, t.value, binder ) );
-	 }
+	 const { expr, accessors: axs } = parseLetInit.call( this, iloc );
+	 
+	 const decl = astutils.J2SDecl( iloc, t.value );
+	 const assig = astutils.J2SAssig( iloc, astutils.J2SRef( loc, decl ), expr );
+	 const ret = astutils.J2SReturn( loc, assig );
+	 const block = astutils.J2SBlock( loc, loc, [ ret ] );
+	 const appl = astutils.J2SDataPropertyInit(
+	    loc, 
+	    astutils.J2SString( loc, "apply" ),
+	    astutils.J2SFun( loc, "atomfun", [], block ) );
+	 const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), appl ] );
+	 const init = astutils.J2SCall( iloc,
+					hhref( loc, "ATOM" ), null,
+					[ attrs ].concat( axs ) );
+	 
+	 inits.push( init );
+	 decls.push( decl );
 	 
 	 switch( this.peekToken().type ) {
 	    case this.SEMICOLON:

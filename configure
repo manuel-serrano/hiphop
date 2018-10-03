@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Fri Sep 28 17:07:54 2018 (serrano)                */
+#*    Last change :  Wed Oct  3 18:40:53 2018 (serrano)                */
 #*    Copyright   :  2018 Manuel Serrano                               */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -17,10 +17,10 @@ bglversion=`bigloo -revision`
 hopversion=`$hop --configure --version`
 hopminorversion=`$hop --configure --minor-version`
 
-version=0.2.0
+hiphopversion=0.2.0
 
 # docker/Dockerfile.in
-for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el; do
+for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el doc/doc.json; do
   rm -f $path 2> /dev/null
   cat $path.in \
     | sed -e "s|@HIPHOPVERSION@|$hiphopversion|g" \

@@ -1,12 +1,20 @@
-"use hopscript"
+"use hiphop";
+"use hopscript";
 
 const hh = require( "hiphop" );
-const tl = hh.timelib;
 
 const m = new hh.ReactiveMachine(
    hiphop module( I, O ) {
+      signal l;
       await immediate now( I );
-      ${ <tl.timeout value=1000/> }
+      fork {
+	 async l {
+	    const mach = this;
+	    setTimeout( () => mach.notifyAndReact(), 1000 );
+	 }
+      } par {
+	 await immediate now( l );
+      }
       emit O( nowval( I ) );
    } );
 

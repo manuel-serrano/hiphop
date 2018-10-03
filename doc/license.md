@@ -4,17 +4,14 @@ ${ var xml = require( config.docDir + "/xml.js" ) }
 ${ var cfg = require( "./doc.json" ) }
 ${ var pkg = require( "../package.json" ) }
 
-    HipHop.js, a JavaScript reactive extension.
+    HipHop.js, Synchronous Multitier JavaScript Reactive Programming
        
     Copyright (c) ${xml.copyrightYears( 2015 )} INRIA
                                                                       
-      Bug descriptions, user reports, comments or suggestions are      
-      welcome. Send them to                                           
-        hop@lists-sophia.inria.fr 
-    
-      or submit them to:
-        http://hop.inria.fr/
-                                                                      
+    Bug descriptions, user reports, comments, suggestions and
+    pull requests are welcome. Send them to
+       https://github.com/manuel-serrano/hiphop.git
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by 
     the Free Software Foundation; either version 2 of the License, or 

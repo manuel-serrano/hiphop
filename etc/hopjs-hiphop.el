@@ -1,10 +1,10 @@
 ;; -*- mode: lisp -*-
 ;*=====================================================================*/
-;*    serrano/prgm/project/hiphop/hiphop/etc/hopjs-hiphop.el           */
+;*    serrano/prgm/project/hiphop/hiphop/etc/hopjs-hiphop.el.in        */
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Tue Oct  2 12:54:36 2018 (serrano)                */
+;*    Last change :  Sun Sep 30 14:34:35 2018 (serrano)                */
 ;*    Copyright   :  2018 Manuel Serrano                               */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
@@ -21,7 +21,7 @@
 ;*---------------------------------------------------------------------*/
 ;*    constants ...                                                    */
 ;*---------------------------------------------------------------------*/
-(defconst hiphop-version "")
+(defconst hiphop-version "0.2.0")
 
 ;;;###autoload
 (defcustom hiphop-mode-line-string " HipHop"
@@ -36,7 +36,6 @@ Set this to nil if you don't want a modeline indicator."
    (cons "\\(?:hiphop\\|hop\\)\\>" 'font-lock-face-hopjs12)
    (cons "\\(?:fork\\|par\\)\\>" 'font-lock-keyword-face)
    (cons "\\(?:loop\\|every\\|while\\|do\\|abort\\|module\\|run\\|signal\\)\\>" 'font-lock-keyword-face)
-   (cons "\\(?:kill\\|resume\\|suspend\\)\\>" 'font-lock-keyword-face)
    (cons "\\(?:now\\|pre\\|nowval\\|preval\\)\\>" 'font-lock-face-hopjs8)
    (list (concat "\\s-*\\(?:module\\)\\s-+\\(" js--name-re "\\)") 1 'font-lock-function-name-face))
   "*The HipHop font-lock specification"
