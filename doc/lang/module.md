@@ -15,7 +15,7 @@ signal and trap scopes. That is:
   * trap labels are only visible inside a module .
 
 
-### module [ident]( arg, ... ) [implements intf, ...] { stmt, ... } ###
+### module [ident]( arg, ... ) [implements intf, ...] { ... } ###
 [:@glyphicon glyphicon-tag syntax]
 
 [Formal syntax](./syntax.html#HHModule)

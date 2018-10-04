@@ -13,7 +13,7 @@ HipHop provides several sort of loops.
 <HHDo> --> do <HHBlock> every( <HHDelay> )
 ```
 
-### loop ###
+### loop { ... } ###
 [:@glyphicon glyphicon-tag syntax]
 
 Implements an infinite loop

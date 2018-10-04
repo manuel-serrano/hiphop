@@ -71,7 +71,7 @@ This is the file you should download if you want to get HipHop.js
        class="success"
        title="Stable"
        icon="glyphicon-download"
-       href=${cfg.urlbase + "/hiphopjs-" + pkg.version + ".tar.gz"}/>
+       href=${cfg.urlbase + "/hiphop-" + pkg.version + ".tar.gz"}/>
   </div>
 </div>}
 
