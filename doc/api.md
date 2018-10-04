@@ -3,23 +3,25 @@ ${ var doc = require("hopdoc") }
 HipHop
 ======
 
-This module contains utilities for creating and running HipHop reactive
-machines. It also contains utilities for creating and updating HipHop
-programs.
+The `"hiphop"` module contains utilities for creating and running
+HipHop reactive machines.
 
 Use `require( "hiphop" )` to use it.
 
 
-Creating and Running HipHop reactive machines
----------------------------------------------
+Creating HipHop reactive machines
+---------------------------------
 
 ### new hiphop.ReactiveMachine( hhprgm, options ) ###
 [:server@glyphicon glyphicon-tag constructor]
 
 ```hopscript
 const hh = require( "hiphop" );
-const m = new hh.ReactiveMachine( require( "prgm.hh.js", "hiphop" ) );
+const m = new hh.ReactiveMachine( require( "prgm.hh.js" ) );
 ```
+
+Running HipHop reactive machines
+--------------------------------
 
 ### mach.react( sigset, sigset, ... ) ###
 [:@glyphicon glyphicon-tag tag]
@@ -35,7 +37,7 @@ proceeds as follows for each argument:
 
 Example:
 
-```
+```hopscript
 // proceed to one reaction
 m.react(); 
 
@@ -44,7 +46,29 @@ m.react();
 // ...
 m.react( { O: 24, P: 53 }, { O: 56 }, { O: 77 }, { P: 10 } );
 ```
-  
+
+### mach.input( sigset ) ###
+[:@glyphicon glyphicon-tag tag]
+
+The `input` function emits signal in the machine but does not
+triggers the reaction. For instance,
+
+```hopscript
+m.input( { O: 24 } );
+m.input( { P: 53 } )
+m.react();
+```
+
+Is equivalent to
+
+```hopscript
+m.react( { O: 24, P: 53 } )
+m.react();
+```
+
+Interacing with HipHop reactive machines
+----------------------------------------
+
 ### mach.addEventListener( signame, listener ) ###
 [:@glyphicon glyphicon-tag tag]
 
