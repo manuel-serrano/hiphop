@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Jan 16 07:20:47 2016                          */
-/*    Last change :  Thu Oct  4 07:30:04 2018 (serrano)                */
+/*    Last change :  Fri Oct  5 14:10:14 2018 (serrano)                */
 /*    Copyright   :  2016-18 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prims client part                                                */
@@ -65,8 +65,8 @@ Num.prototype.init = function() {
    this.prey = false;
    
    while( true ) {
-      let ndx = (Math.random() * 6) - 3;
-      let ndy = (Math.random() * 6) - 3;
+      let ndx = (Math.random() * 4) - 2;
+      let ndy = (Math.random() * 4) - 2;
 
       if( ndx != 0 || ndy != 0 ) {
 	 this.dx = ndx;

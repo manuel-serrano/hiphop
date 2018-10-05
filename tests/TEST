@@ -74,6 +74,7 @@ if (test.prg)
       process.exit(1);
    }
 EOF
+
 	if [ "$verb " != " " ]; then
 	  echo "$hop $hop_opt $batchfile < $file.in"
 	fi
@@ -147,7 +148,7 @@ while : ; do
       hop_opt+=" -g";;
 
     *)
-      break
+      break;;
   esac
 
   shift
