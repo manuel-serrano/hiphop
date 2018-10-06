@@ -11,4 +11,3 @@ hiphop module prg( in I, out O ) {
 }
 
 exports.prg = new hh.ReactiveMachine( prg, "await3" );
-

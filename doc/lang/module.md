@@ -15,7 +15,7 @@ signal and trap scopes. That is:
   * trap labels are only visible inside a module .
 
 
-### module [ident]( arg, ... ) [implements intf, ...] { ... } ###
+### module [ident]( arg, ... ) [implements [mirror] intf, ...] { ... } ###
 [:@glyphicon glyphicon-tag syntax]
 
 [Formal syntax](./syntax.html#HHModule)
@@ -54,6 +54,16 @@ module mod( inout U ) implements common { ; }
 
 The signals `S`, `T`, and `U` are all defined in `mod`.
 
+A module can also implements the _mirror_ of an interface. This is lets two
+modules, one emitted, the other receiving to be easily connected. The syntax
+is as follows:
+
+```hiphop
+interface intf( out T );
+
+module producer() implements intf { ; }
+module consumer() implements mirror intf { ; }
+```
 
 Running Modules
 ===============
@@ -155,4 +165,27 @@ ${ <span class="label label-info">interface.js</span> }
 ```hiphop
 ${ doc.include( ROOT + "/../../tests/interface.hh.js" ) }
 ```
+
+### Example of Mirrored Interfaces ###
+
+This example defines two modules connected with mirrored interfaces.
+
+${ <span class="label label-info">imirror.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../../tests/imirror.hh.js" ) }
+```
+
+### Example of Dynamically Generated Interfaces ###
+
+When interfaces are to be generated dynamically, the XML interface
+must be used.
+
+${ <span class="label label-info">imirrordyn.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../../tests/imirrordyn.hh.js" ) }
+```
+
+
 

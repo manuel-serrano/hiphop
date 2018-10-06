@@ -20,4 +20,3 @@ exports.prg = prg;
 m.react()
 m.inputAndReact( "sig", 0 );
 m.inputAndReact( "sig", 10 );
-

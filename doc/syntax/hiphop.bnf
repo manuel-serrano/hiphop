@@ -34,9 +34,11 @@
   | { <HHStatement> }
   | { <HHStatement> ... <HHStatement> }
 
-<HHModule> --> module [ <Identifier> ] [implements <IntfList>] ( <FormalSignalList> ) <HHBlock>
+<HHModule> --> module [ <Identifier> ] [implements <MirrorIntfList>] ( <FormalSignalList> ) <HHBlock>
 
 <HHInterface> --> interface [ <Identifier> ] [extends <IntfList>]
+
+<MirrorIntfList> --> [mirror] <Intf>, ... [mirror] <Intf>
 
 <IntfList> --> <Intf>, ... <Intf>
 
@@ -53,6 +55,9 @@
 
 <Combine> --> | combine <Expression>
 
+<HHAwait> --> await <HHDelay>
+  | await immediate <HHDelay>
+
 <HHExpression> --> <Expression>
   | now( <Identifier> )
   | pre( <Identifier> )
@@ -67,7 +72,7 @@
 
 <Declaration> --> <Identifier> | <Identifier> = <Expression>
 
-<HHSignal> --> signal <Signal>
+<HHSignal> --> signal <Signal> | signal [mirror] <Intf>
 
 <HHalt> --> halt
 
@@ -115,8 +120,5 @@
 <HHbreak> --> break <HHLabel>
 
 <HHYield> --> yield
-
-<HHAwait> --> await <HHDelay>
-  | await immediate <HHDelay>
 
 <HHDollarExpression> --> ${ <Expression> }

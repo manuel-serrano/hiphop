@@ -1,5 +1,5 @@
 "use hiphop";
-"use hopscript"
+"use hopscript";
 
 var hh = require( "hiphop" );
 

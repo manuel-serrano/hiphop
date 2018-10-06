@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Oct  3 18:09:25 2018 (serrano)                */
+/*    Last change :  Sat Oct  6 08:16:15 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -498,7 +498,8 @@ function parseHHBlock( consume = true ) {
 /*    parseModule ...                                                  */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | module [ident] ( signal, ... ) block                        */
+/*       | module [ident] ( signal, ... ) [implements intf, ...] block */
+/*    intf ::= [mirror] ident | [mirro] $dollar                        */
 /*    signal ::= [direction] ident [combine]                           */
 /*    direction ::= in | out | inout                                   */
 /*    combine ::= combine expr                                         */
@@ -551,7 +552,7 @@ function parseModule( token, declaration ) {
 /*    parseInterface ...                                               */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | interface ident ( signal, ... ) [extends interface, ...]    */
+/*       | interface ident ( signal, ... ) [extends intf, ...]         */
 /*---------------------------------------------------------------------*/
 function parseInterface( token, declaration ) {
    const loc = token.location;
@@ -602,20 +603,31 @@ function parseInterfaceIntflist() {
    let args = [];
    
    do {
+      let mirror = false;
+      
+      if( this.peekToken().type === this.ID 
+		 && this.peekToken().value === "mirror" ) {
+	 mirror = true;
+	 this.consumeAny();
+      } 
+      
       if( this.peekToken().type === this.DOLLAR ) {
-	 const expr = this.parseExpression();
-	 this.consumeToken( this.RBRACE );
-	 args.push( expr );
+	 const expr = this.parseDollarExpression();
+	 args.push( expr.node );
       } else {
 	 const token = this.consumeToken( this.ID );
 	 const loc = token.location;
-	 const tag = tagInit( "extends", loc );
+	 const tag = tagInit( "interface", loc );
 	 const attrs = astutils.J2SObjInit(
 	    loc,
 	    [ astutils.J2SDataPropertyInit(
 	       loc,
 	       astutils.J2SString( loc, "id" ),
 	       astutils.J2SString( loc, token.value ) ),
+	      astutils.J2SDataPropertyInit(
+		 loc,
+		 astutils.J2SString( loc, "mirror" ),
+		 astutils.J2SBool( loc, mirror ) ),
 	      locInit( loc ), tag ] );
 	 const intf = 
 	       astutils.J2SCall( loc, hhref( loc, "INTF" ), null, [ attrs ] );
@@ -1380,6 +1392,7 @@ function parseLet( token, binder ) {
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
 /*       | { signal id [= val], ; ... }                                */
+/*       | { signal implements intf, ; ... }                           */
 /*---------------------------------------------------------------------*/
 function parseSignal( token ) {
    const loc = token.location;
@@ -1415,15 +1428,18 @@ function parseSignal( token ) {
 
       while( true ) {
 	 const t = this.consumeToken( this.ID );
-
-	 if( this.peekToken().type === this.EGAL ) {
-	    this.consumeAny();
-	    const { expr, accessors } = parseHHExpression.call( this );
-	    args.push( signal( t.location, t.value, "INOUT", expr, accessors ) );
-	 } else {
-	    args.push( signal( t.location, t.value, "INOUT", false, [] ) );
-	 }
 	 
+	 if( t.value === "implements" ) {
+	    args = args.concat( parseInterfaceIntflist.call( this ) );
+	 } else {
+	    if( this.peekToken().type === this.EGAL ) {
+	       this.consumeAny();
+	       const { expr, accessors } = parseHHExpression.call( this );
+	       args.push( signal( t.location, t.value, "INOUT", expr, accessors ) );
+	    } else {
+	       args.push( signal( t.location, t.value, "INOUT", false, [] ) );
+	    }
+	 }
 	 switch( this.peekToken().type ) {
 	    case this.SEMICOLON:
 	       this.consumeAny();
