@@ -55,19 +55,19 @@ HipHop extend Hop expressions with
 extensions are only available within the syntactic context of an HipHop 
 expression:
 
-### let now( signal ) ###
+### now( signal ) ###
 [:@glyphicon glyphicon-tag syntax]
 
 A predicate that is true if and only if `signal` has been emitted
 during the reaction.
  
-### let pre( signal ) ###
+### pre( signal ) ###
 [:@glyphicon glyphicon-tag syntax]
 
 A predicate that is true if and only if `signal` has been emitted
 during the _previous_ reaction.
  
-### let nowval( signal ) ###
+### nowval( signal ) ###
 [:@glyphicon glyphicon-tag syntax]
 
 The current value of the signal. Note that values are not reset at
@@ -76,7 +76,7 @@ instante i1 + 1, getting the value at instant i1 + 1 will return the
 same value as instant i1, although `now( signal )` at instant i1 + 1
 will be falsel
  
-### let preval( signal ) ###
+### preval( signal ) ###
 [:@glyphicon glyphicon-tag syntax]
 
 The previous value of the signal.
@@ -137,6 +137,27 @@ is to be emitted several times within a single reaction it must be
 declared with a combinaison function that is a Hop function that
 __must__ be commutative and associative. It is up to the Hop program
 to check and satisfy this requirement.
+
+### sustain signal( [ value ] ) ###
+[:@glyphicon glyphicon-tag syntax]
+
+[Formal syntax](./syntax.html#HHSustain)
+
+Similar to `emit` but the emission is repeated at each instant. The
+statement  
+
+```hiphop
+sustain sig( expr )
+```
+
+is equivalent to
+
+```hiphop
+loop {
+   sustain sig( expr );
+   yield;
+}
+```
 
 
 Examples
