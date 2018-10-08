@@ -3,6 +3,10 @@
 const hh = require("hiphop");
 const pm = hh.parallelmap;
 
+function setTimeout( proc, count ) { 
+   proc();
+}
+
 const simul_data = {
    "Air France": ["2A", "34F"],
    "Ryanair": ["12F", "9A", "32F"],

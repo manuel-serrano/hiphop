@@ -1,8 +1,12 @@
-"use hiphop"
-"use hopscript"
+"use hiphop";
+"use hopscript";
 
 const hh = require( "hiphop" );
 const pm = hh.parallelmap;
+
+function setTimeout( proc, count ) { 
+   proc();
+}
 
 const simul_data = {
    "Air France": [ "2A", "34F" ],

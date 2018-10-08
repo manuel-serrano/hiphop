@@ -1,12 +1,20 @@
 svcSearch1 0 Nice Paris returns
 svcSearch2 1 Nice Paris returns
+svcSeatGuru Air France returns
+svcSeatGuru Ryanair returns
+svcSeatGuru American Airlines returns
+svcSeatGuru British Airways returns
+AIRLINESWITHDIRECT { 'Air France': [ '2A', '34F' ],
+  Ryanair: [ '12F', '9A', '32F' ],
+  'American Airlines': [ '15C' ],
+  'British Airways': [ '2D', '14A' ] }
 svcSearch1 0 Montpellier Dublin returns
 svcSearch2 1 Montpellier Dublin returns
 svcSeatGuru Air France returns
 svcSeatGuru Ryanair returns
-svcSeatGuru British Airways returns
 svcSeatGuru American Airlines returns
+svcSeatGuru British Airways returns
 AIRLINESWITHDIRECT { 'Air France': [ '2A', '34F' ],
   Ryanair: [ '12F', '9A', '32F' ],
-  'British Airways': [ '2D', '14A' ],
-  'American Airlines': [ '15C' ] }
+  'American Airlines': [ '15C' ],
+  'British Airways': [ '2D', '14A' ] }
