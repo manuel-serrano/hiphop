@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sat Oct  6 08:16:15 2018 (serrano)                */
+/*    Last change :  Tue Oct  9 13:58:51 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -606,7 +606,7 @@ function parseInterfaceIntflist() {
       let mirror = false;
       
       if( this.peekToken().type === this.ID 
-		 && this.peekToken().value === "mirror" ) {
+	  && this.peekToken().value === "mirror" ) {
 	 mirror = true;
 	 this.consumeAny();
       } 
@@ -633,7 +633,7 @@ function parseInterfaceIntflist() {
 	       astutils.J2SCall( loc, hhref( loc, "INTF" ), null, [ attrs ] );
 	 args.push( intf );
       } 
-   } while( this.peekToken.type === this.COMMA )
+   } while( this.peekToken().type === this.COMMA ? (this.consumeAny(), true) : false )
    
    return args;
 }

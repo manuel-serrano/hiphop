@@ -70,16 +70,16 @@ during the _previous_ reaction.
 ### nowval( signal ) ###
 [:@glyphicon glyphicon-tag syntax]
 
-The current value of the signal. Note that values are not reset at
-each instant, so if a signal is emitted during instant i1 and not at
-instante i1 + 1, getting the value at instant i1 + 1 will return the
-same value as instant i1, although `now( signal )` at instant i1 + 1
-will be falsel
+The current value of the signal. Note that values are preserved from
+reaction to reaction so if a signal is emitted during reaction r1 and
+not at reaction i1 + 1, getting the value at reaction i1 + 1 will
+return the same value as reaction i1, although `now( signal )` at
+reaction i1 + 1 will be false.
  
 ### preval( signal ) ###
 [:@glyphicon glyphicon-tag syntax]
 
-The previous value of the signal.
+The value of the signal at the previous reaction.
 
 
 Test, Await, and Emit
