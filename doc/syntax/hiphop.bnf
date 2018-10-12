@@ -28,7 +28,7 @@
   | <HHDollarExpression>
   | <HHExpression> ; 
 
-<HHHop> --> hop { <Statement> }
+<HHHop> --> hop <HHStatement>
 
 <HHBlock> --> {}
   | { <HHStatement> }

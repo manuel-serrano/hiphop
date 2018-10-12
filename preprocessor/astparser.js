@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Oct  9 13:58:51 2018 (serrano)                */
+/*    Last change :  Fri Oct 12 07:31:48 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -745,19 +745,21 @@ function parseModuleSiglist() {
 /*    parseHop ...                                                     */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | hop block                                                   */
+/*       | hop statement                                               */
 /*---------------------------------------------------------------------*/
 function parseAtom( token ) {
    
-   function parseAtomBlock() {
+   function parseAtomBlock( loc ) {
       return parseHHAccessors.call( this, accessors => {
-	 const block = this.parseBlock();
+	 const stmt = this.parseStatement();
+	 const block = stmt instanceof ast.J2SBlock ? 
+	       stmt : astutils.J2SBlock( loc, loc, [ stmt ] );
 	 return { block: block, accessors: accessors };
       } );
    }
 
    const loc = token.location;
-   const { block, accessors } = parseAtomBlock.call( this );
+   const { block, accessors } = parseAtomBlock.call( this, loc );
    const appl = astutils.J2SDataPropertyInit(
       loc, 
       astutils.J2SString( loc, "apply" ),
