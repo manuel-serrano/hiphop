@@ -42,7 +42,7 @@
 
 <IntfList> --> <Intf>, ... <Intf>
 
-<Intf> --> <Identifier> | <HHDollarExpression>
+<Intf> --> <HHExpression>
 
 <FormalSignalList> --> | <GlobalSignal>, ... <GlobalSignal>
 

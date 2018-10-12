@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Oct 12 07:31:48 2018 (serrano)                */
+/*    Last change :  Fri Oct 12 08:06:54 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -498,7 +498,8 @@ function parseHHBlock( consume = true ) {
 /*    parseModule ...                                                  */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | module [ident] ( signal, ... ) [implements intf, ...] block */
+/*       | module [ident] ( signal, ... )                              */
+/*           [implements hhexpr, ...] block                            */
 /*    intf ::= [mirror] ident | [mirro] $dollar                        */
 /*    signal ::= [direction] ident [combine]                           */
 /*    direction ::= in | out | inout                                   */
@@ -552,14 +553,14 @@ function parseModule( token, declaration ) {
 /*    parseInterface ...                                               */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | interface ident ( signal, ... ) [extends intf, ...]         */
+/*       | interface ident ( signal, ... ) [extends hhexpr, ...]       */
 /*---------------------------------------------------------------------*/
 function parseInterface( token, declaration ) {
    const loc = token.location;
    const tag = tagInit( "interface", loc );
    let id;
    let attrs;
-   
+
    if( this.peekToken().type === this.ID ) {
       id = this.consumeAny();
       const locid = id.location;
@@ -601,7 +602,7 @@ function parseInterface( token, declaration ) {
 /*---------------------------------------------------------------------*/
 function parseInterfaceIntflist() {
    let args = [];
-   
+
    do {
       let mirror = false;
       
@@ -611,28 +612,30 @@ function parseInterfaceIntflist() {
 	 this.consumeAny();
       } 
       
-      if( this.peekToken().type === this.DOLLAR ) {
-	 const expr = this.parseDollarExpression();
-	 args.push( expr.node );
-      } else {
-	 const token = this.consumeToken( this.ID );
-	 const loc = token.location;
-	 const tag = tagInit( "interface", loc );
-	 const attrs = astutils.J2SObjInit(
+      const token = this.peekToken()
+      const loc = token.location;
+      const tag = tagInit( "interface", loc );
+      const { expr: intf, accessors } = parseHHExpression.call( this );
+      
+      if( accessors.length !== 0 ) {
+	 throw error.SyntaxError( "illegal interface expression",
+				     tokenLocation( token ) );
+      }
+	 
+      const attrs = astutils.J2SObjInit(
+	 loc,
+	 [ astutils.J2SDataPropertyInit(
 	    loc,
-	    [ astutils.J2SDataPropertyInit(
-	       loc,
-	       astutils.J2SString( loc, "id" ),
-	       astutils.J2SString( loc, token.value ) ),
-	      astutils.J2SDataPropertyInit(
-		 loc,
-		 astutils.J2SString( loc, "mirror" ),
-		 astutils.J2SBool( loc, mirror ) ),
-	      locInit( loc ), tag ] );
-	 const intf = 
-	       astutils.J2SCall( loc, hhref( loc, "INTF" ), null, [ attrs ] );
-	 args.push( intf );
-      } 
+	    astutils.J2SString( loc, "value" ),
+	    intf ),
+	   astutils.J2SDataPropertyInit(
+	      loc,
+	      astutils.J2SString( loc, "mirror" ),
+	      astutils.J2SBool( loc, mirror ) ),
+	   locInit( loc ), tag ] );
+      const intf = 
+	    astutils.J2SCall( loc, hhref( loc, "INTF" ), null, [ attrs ] );
+      args.push( intf );
    } while( this.peekToken().type === this.COMMA ? (this.consumeAny(), true) : false )
    
    return args;
@@ -1584,7 +1587,7 @@ function parseHiphop( token, declaration ) {
 	 return hhwrapExpr( token, val );
       }
    }
-      
+   
    const next = this.peekToken();
 
    if( next.type === this.ID && next.value == "module" ) {
