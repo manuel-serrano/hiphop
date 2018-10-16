@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Oct 12 08:06:54 2018 (serrano)                */
+/*    Last change :  Tue Oct 16 15:11:15 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -754,19 +754,19 @@ function parseAtom( token ) {
    
    function parseAtomBlock( loc ) {
       return parseHHAccessors.call( this, accessors => {
-	 const stmt = this.parseStatement();
+	 const {self, stmt } = this.parseThisStatement();
 	 const block = stmt instanceof ast.J2SBlock ? 
 	       stmt : astutils.J2SBlock( loc, loc, [ stmt ] );
-	 return { block: block, accessors: accessors };
+	 return { block, self, accessors };
       } );
    }
 
    const loc = token.location;
-   const { block, accessors } = parseAtomBlock.call( this, loc );
+   const { block, self, accessors } = parseAtomBlock.call( this, loc );
    const appl = astutils.J2SDataPropertyInit(
       loc, 
       astutils.J2SString( loc, "apply" ),
-      astutils.J2SFun( loc, "atomfun", [], block ) );
+      astutils.J2SMethod( loc, "atomfun", [], block, self ) );
    const tag = tagInit( "hop", loc );
    const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), tag, appl ] );
    
