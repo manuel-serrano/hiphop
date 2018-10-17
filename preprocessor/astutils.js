@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Wed Oct  3 11:01:42 2018 (serrano)                */
+/*    Last change :  Wed Oct 17 09:21:46 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -12,6 +12,8 @@
 
 const hopc = require( hop.hopc );
 const ast = require( hopc.ast );
+
+let declKey = 10000;
 
 /*---------------------------------------------------------------------*/
 /*    J2SNull ...                                                      */
@@ -216,9 +218,9 @@ function J2SReturn( loc, expr ) {
 /*---------------------------------------------------------------------*/
 /*    J2SDecl ...                                                      */
 /*---------------------------------------------------------------------*/
-function J2SDecl( loc, id, binder = "var" ) {
+function J2SDecl( loc, id, binder = "var", _scmid = false ) {
    return new ast.J2SDecl( loc, undefined, undefined, undefined,
-			   id, false /* _scmid */, -1 /* key */,
+			   id, _scmid /* _scmid */, declKey++ /* key */,
 			   binder != "const" /* writable */,
 			   binder != "const" /* immutable */,
 			   binder == "const" /* ronly */,
@@ -236,7 +238,7 @@ function J2SDecl( loc, id, binder = "var" ) {
 /*---------------------------------------------------------------------*/
 function J2SDeclInit( loc, id, val, binder = "let" ) {
    return new ast.J2SDeclInit( loc, undefined, undefined, undefined,
-			       id, false /* _scmid */, -1 /* key */,
+			       id, false /* _scmid */, declKey++ /* key */,
 			       true /* writable */, true /* immutable */,
 			       true /* ronly */, "local" /* scope */,
 			       0 /* usecnt */, false /* useinloop */,

@@ -1,4 +1,5 @@
-"use hopscript"
+"use hiphop";
+"use hopscript";
 
 const hh = require( "hiphop" );
 const mach = new hh.ReactiveMachine(
