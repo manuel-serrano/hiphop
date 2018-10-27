@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Wed Oct 17 09:21:46 2018 (serrano)                */
+/*    Last change :  Fri Oct 26 13:52:57 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -222,7 +222,6 @@ function J2SDecl( loc, id, binder = "var", _scmid = false ) {
    return new ast.J2SDecl( loc, undefined, undefined, undefined,
 			   id, _scmid /* _scmid */, declKey++ /* key */,
 			   binder != "const" /* writable */,
-			   binder != "const" /* immutable */,
 			   binder == "const" /* ronly */,
 			   "local" /* scope */,
 			   0 /* usecnt */, false /* useinloop */,
@@ -230,7 +229,8 @@ function J2SDecl( loc, id, binder = "var", _scmid = false ) {
 			   binder == "const" ? "let" : binder /* binder */,
 			   "any" /* utype */, "any" /* itype */,
 			   "any" /* vtype */, undefined /* irange */,
-			    undefined /* vrange */, null /* hint */ );
+			   undefined /* vrange */, null /* hint */,
+			   null /* exports */ );
 }
 
 /*---------------------------------------------------------------------*/
@@ -239,14 +239,14 @@ function J2SDecl( loc, id, binder = "var", _scmid = false ) {
 function J2SDeclInit( loc, id, val, binder = "let" ) {
    return new ast.J2SDeclInit( loc, undefined, undefined, undefined,
 			       id, false /* _scmid */, declKey++ /* key */,
-			       true /* writable */, true /* immutable */,
+			       true /* writable */, 
 			       true /* ronly */, "local" /* scope */,
 			       0 /* usecnt */, false /* useinloop */,
 			       false /* useinfun */, null /* usage */,
 			       binder /* binder */, "any" /* utype */,
 			       "any" /* itype */, "any" /* vtype */,
 			       undefined /* irange */, undefined /* vrange */,
-			       null /* hint */, val );
+			       null /* hint */, null /* exports */, val );
 }
 
 /*---------------------------------------------------------------------*/
