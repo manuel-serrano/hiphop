@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/0.2.x/examples/prims/prims.js        */
+/*    serrano/prgm/project/hiphop/hiphop/examples/prims/prims.js       */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Oct 16 08:45:43 2012                          */
-/*    Last change :  Thu Aug  2 00:53:09 2018 (serrano)                */
+/*    Last change :  Sat Oct 27 09:33:16 2018 (serrano)                */
 /*    Copyright   :  2012-18 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prim numbers aka the Darwin Sieve                                */
@@ -20,7 +20,7 @@ service prims( o ) {
    if( !o ) o = {};
    
    let count = ~~o.count || 1;
-   let width = ~~o.width || 400;
+   let width = ~~o.width || 600;
    let height = ~~o.height || 400;
    let speed = ~~o.speed || 20;
    let canvas = <canvas width=${width} height=${height}/>;
@@ -46,9 +46,16 @@ service prims( o ) {
 	      </button>
 	   })}
 	 </div>
-	 <input type=range style=${`width: ${width}px`}
-		min=0 max=100 value=${speed}
-		onchange=~{pc.setSpeed( this.value )}/>
+         <table id="slide-label">
+           <tr>
+	     <td>slow</td>
+	     <td>
+	       <input type=range 
+                      min=0 max=100 value=${100 - speed}
+		      onchange=~{pc.setSpeed( 100 - this.value )}/>
+             </td>
+	     <td>fast</td></tr>
+	 </table>
        </div>
      </body>
    </html>

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Jan 16 07:20:47 2016                          */
-/*    Last change :  Fri Oct  5 14:10:14 2018 (serrano)                */
+/*    Last change :  Sat Oct 27 09:41:36 2018 (serrano)                */
 /*    Copyright   :  2016-18 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prims client part                                                */
@@ -24,7 +24,7 @@ function Num( G ) {
    this.G = G;
    this.value = G.count;
    this.color = G.predatorColor;
-   this.font = `${G.font} ${G.fontSize}px`;
+   this.font = `${G.fontSize}px ${G.font}`;
    this.eaten = 0;
    this.x = Math.random() *  G.width;
    this.y = Math.random() * G.height;
@@ -63,6 +63,7 @@ Num.prototype.move = function() {
 /*---------------------------------------------------------------------*/
 Num.prototype.init = function() {
    this.prey = false;
+   this.color = G.predatorColor;
    
    while( true ) {
       let ndx = (Math.random() * 4) - 2;
@@ -119,6 +120,7 @@ Num.prototype.computeMove = function( suspect, G ) {
 	 suspect.color = G.preyColor;
       }
 
+      self.color = G.chasingColor;
       return gotoPrey( self );
    }
 
@@ -248,10 +250,11 @@ exports.start = function( g, speed ) {
    G = g;
 
    G.ctx = G.getContext( "2d" );
-   G.predatorColor = "#00a";
-   G.preyColor = "#f00";
+   G.predatorColor = "#F86E00";
+   G.preyColor = "#efe";
+   G.chasingColor = "#f00";
    G.font = "sans";
-   G.fontSize = 10;
+   G.fontSize = 15;
    G.count = 2;
 
    exports.setSpeed( speed );

@@ -1,19 +1,39 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/prims/prims.hss                      */
+/*    serrano/prgm/project/hiphop/hiphop/examples/prims/prims.hss      */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Oct 16 09:18:19 2012                          */
-/*    Last change :  Sat Jan 16 07:47:52 2016 (serrano)                */
-/*    Copyright   :  2012-16 Manuel Serrano                            */
+/*    Last change :  Sat Oct 27 09:33:22 2018 (serrano)                */
+/*    Copyright   :  2012-18 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prims numbers style sheet                                        */
 /*=====================================================================*/
 
-/*---------------------------------------------------------------------*/
-/*    The module                                                       */
-/*---------------------------------------------------------------------*/
-
 canvas {
   border: 1px #ccc dashed;
-  background-color: #eee;
+  background-color: #222;
+}
+
+table#slide-label {
+  width: 100%;
+  font-size: 90%;
+  color: #777;
+}
+
+table#slide-label td:nth-child( 1 ) {
+  text-align: left;
+  width: 4ex;
+}
+
+table#slide-label td:nth-child( 2 ) {
+  text-align: center;
+}
+
+table#slide-label td input {
+  width: 100%;
+}
+
+table#slide-label td:nth-child( 3 ) {
+  text-align: right;
+  width: 4ex;
 }
