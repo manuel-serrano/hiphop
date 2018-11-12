@@ -3,6 +3,7 @@
 <HHExprStatement> --> hiphop <HHStatement>
 
 <HHStatement> --> <HHHop>
+  | <HHMachine>
   | <HHModule>
   | <HHInterface>
   | <HHBlock>
@@ -34,7 +35,11 @@
   | { <HHStatement> }
   | { <HHStatement> ... <HHStatement> }
 
-<HHModule> --> module [ <Identifier> ] [implements <MirrorIntfList>] ( <FormalSignalList> ) <HHBlock>
+<HHMachine> --> machine <HHMachineModule>
+
+<HHModule> --> module <HHMachineModule>
+
+<HHMachineModule> --> [ <Identifier> ] [implements <MirrorIntfList>] ( <FormalSignalList> ) <HHBlock>
 
 <HHInterface> --> interface [ <Identifier> ] [extends <IntfList>]
 

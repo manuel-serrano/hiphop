@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Oct 17 09:04:12 2018 (serrano)                */
+/*    Last change :  Sat Nov 10 23:55:04 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -152,25 +152,26 @@ function hhwrapExpr( token, expr ) {
 /*    -------------------------------------------------------------    */
 /*    hhexpr ::= ${ jsexpr }                                           */
 /*       | jsexpr                                                      */
-/*       | now( ident )                                                */
-/*       | pre( ident )                                                */
-/*       | nowval( ident )                                             */
-/*       | preval( ident )                                             */
+/*       | now.ident                                                   */
+/*       | pre.ident                                                   */
+/*       | nowval.ident                                                */
+/*       | preval.ident                                                */
 /*---------------------------------------------------------------------*/
 function parseHHAccessors( parser, iscnt = false ) {
    
    let accessors = [];
 
    const hhparser = function( token ) {
-      const loc = token.location
+      const loc = token.location;
       let pre = false, val = false, access = "present";
       
-      this.consumeToken( this.LPAREN );
+      //this.consumeToken( this.LPAREN );
+      this.consumeToken( this.DOT );
       
       const tid = this.consumeToken( this.ID );
       const locid = tid.location;
       
-      this.consumeToken( this.RPAREN );
+      //this.consumeToken( this.RPAREN );
 
       switch( token.value ) {
 	 case "now": break;
@@ -240,12 +241,13 @@ function parseHHThisBlock() {
       const loc = token.location
       let pre = false, val = false, access = "present";
       
-      this.consumeToken( this.LPAREN );
+      //this.consumeToken( this.LPAREN );
+      this.consumeToken( this.DOT );
       
       const tid = this.consumeToken( this.ID );
       const locid = tid.location;
       
-      this.consumeToken( this.RPAREN );
+      //this.consumeToken( this.RPAREN );
 
       switch( token.value ) {
 	 case "now": break;
@@ -499,21 +501,23 @@ function parseHHBlock( consume = true ) {
       }
    }
 }
-   
+
 /*---------------------------------------------------------------------*/
 /*    parseModule ...                                                  */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | module [ident] ( signal, ... )                              */
+/*       | MODULE [ident] ( signal, ... )                              */
+/*           [implements hhexpr, ...] block                            */
+/*       | MACHINE [ident] ( signal, ... )                             */
 /*           [implements hhexpr, ...] block                            */
 /*    intf ::= [mirror] ident | [mirro] $dollar                        */
 /*    signal ::= [direction] ident [combine]                           */
 /*    direction ::= in | out | inout                                   */
 /*    combine ::= combine expr                                         */
 /*---------------------------------------------------------------------*/
-function parseModule( token, declaration ) {
+function parseModule( token, declaration, ctor ) {
    const loc = token.location;
-   const tag = tagInit( "module", loc );
+   const tag = tagInit( ctor.toLowerCase(), loc );
    let id;
    let attrs;
 
@@ -543,7 +547,7 @@ function parseModule( token, declaration ) {
    }
    
    const stmts = parseHHBlock.call( this );
-   const mod = astutils.J2SCall( loc, hhref( loc, "MODULE" ), 
+   const mod = astutils.J2SCall( loc, hhref( loc, ctor ), 
 				 null,
 				 [ attrs ].concat( args, stmts ) );
 
@@ -1509,7 +1513,7 @@ function parseStmt( token, declaration ) {
 	    case "hop":
 	       return parseAtom.call( this, next );
 	    case "module":
-	       return parseModule.call( this, next, declaration );
+	      return parseModule.call( this, next, declaration, "MODULE" );
 /* 	    case "nothing":                                            */
 /* 	       return parseNothing.call( this, next );                 */
 /* 	    case "pause":                                              */
@@ -1597,9 +1601,12 @@ function parseHiphop( token, declaration ) {
    
    const next = this.peekToken();
 
-   if( next.type === this.ID && next.value == "module" ) {
+   if( next.type === this.ID && next.value == "machine" ) {
       this.consumeAny();
-      return wrapVarDecl( parseModule.call( this, next, declaration ) );
+      return wrapVarDecl( parseModule.call( this, next, declaration, "MACHINE" ) );
+   } else if( next.type === this.ID && next.value == "module" ) {
+      this.consumeAny();
+      return wrapVarDecl( parseModule.call( this, next, declaration, "MODULE" ) );
    } else if( next.type === this.ID && next.value == "interface" ) {
       this.consumeAny();
       return wrapVarDecl( parseInterface.call( this, next, declaration ) );

@@ -4,7 +4,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Sun Oct 28 07:05:08 2018 (serrano)                */
+;*    Last change :  Sun Nov 11 00:30:31 2018 (serrano)                */
 ;*    Copyright   :  2018 Manuel Serrano                               */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
@@ -35,10 +35,10 @@ Set this to nil if you don't want a modeline indicator."
   (list
    (cons "\\(?:hiphop\\|hop\\)\\>" 'font-lock-face-hopjs12)
    (cons "\\<\\(?:fork\\|par\\|in\\|out\\)\\>" 'font-lock-keyword-face)
-   (cons "\\(?:loop\\|every\\|while\\|do\\|abort\\|weakabort\\|run\\|signal\\|module\\|interface\\)\\>" 'font-lock-keyword-face)
+   (cons "\\(?:loop\\|every\\|while\\|do\\|abort\\|weakabort\\|run\\|signal\\|module\\|interface\\|machine\\)\\>" 'font-lock-keyword-face)
    (cons "\\<\\(?:async\\|kill\\|suspend\\|resume\\)\\>" 'font-lock-face-hopjs3)
    (cons "\\(?:now\\|pre\\|nowval\\|preval\\)\\>" 'font-lock-face-hopjs8)
-   (list (concat "\\s-*\\(?:module\\|interface\\)\\s-+\\(" js--name-re "\\)") 1 'font-lock-function-name-face))
+   (list (concat "\\s-*\\(?:machine\\|module\\|interface\\)\\s-+\\(" js--name-re "\\)") 1 'font-lock-function-name-face))
   "*The HipHop font-lock specification"
   :group 'hiphop)
 

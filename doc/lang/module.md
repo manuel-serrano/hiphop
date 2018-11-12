@@ -31,6 +31,19 @@ signal, and an input/output signal:
 module mod( in S, out T, inout U ) { ; }
 ```
 
+
+HipHop Machine
+==============
+
+This syntax is a shorten for declaring a module, creating a machine, and
+loading that module into the machine.
+
+### machine [ident]( arg, ... ) [implements [mirror] intf, ...] { ... } ###
+[:@glyphicon glyphicon-tag syntax]
+
+[Formal syntax](./syntax.html#HHMachine)
+
+
 HipHop Interface
 ================
 
