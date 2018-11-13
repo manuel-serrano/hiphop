@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sat Nov 10 23:55:04 2018 (serrano)                */
+/*    Last change :  Mon Nov 12 17:32:25 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -15,6 +15,7 @@ const ast = require( hopc.ast );
 const astutils = require( "./astutils.js" );
 const error = require( "../lib/error.js" );
 const parser = new hopc.Parser();
+const hhaccess = require( "./_hhaccess.hop" );
 
 const hhname = "__hh_module";
 const hhmodule = "hiphop";
@@ -98,7 +99,7 @@ function tokenReferenceError( token ) {
 /*    isIdToken ...                                                    */
 /*---------------------------------------------------------------------*/
 function isIdToken( parser, token, id ) {
-   return token.type === parser.ID && token.value == id;
+   return token.type === parser.ID && token.value === id;
 }
 
 /*---------------------------------------------------------------------*/
@@ -202,7 +203,7 @@ function parseHHAccessors( parser, iscnt = false ) {
       const sigaccess = astutils.J2SCall(
 	 loc, hhref( loc, "SIGACCESS" ), null, [ attrs ] );
 
-      // push the accessor dependencies list
+      // push the accessor in the dependencies list
       accessors.push( sigaccess );
 
       // return the actual expression
@@ -214,17 +215,17 @@ function parseHHAccessors( parser, iscnt = false ) {
 	 astutils.J2SString( locid, tid.value ) );
    }
    
-   this.addPlugin( "now", hhparser );
-   this.addPlugin( "pre", hhparser );
-   this.addPlugin( "nowval", hhparser );
-   this.addPlugin( "preval", hhparser );
+/*    this.addPlugin( "now", hhparser );                               */
+/*    this.addPlugin( "pre", hhparser );                               */
+/*    this.addPlugin( "nowval", hhparser );                            */
+/*    this.addPlugin( "preval", hhparser );                            */
    try {
       return parser.call( this, accessors );
    } finally {
-      this.removePlugin( "preval" );
-      this.removePlugin( "nowval" );
-      this.removePlugin( "pre" );
-      this.removePlugin( "now" );
+/*       this.removePlugin( "preval" );                                */
+/*       this.removePlugin( "nowval" );                                */
+/*       this.removePlugin( "pre" );                                   */
+/*       this.removePlugin( "now" );                                   */
    }
 }
 
@@ -234,7 +235,6 @@ function parseHHAccessors( parser, iscnt = false ) {
 /*    Parse JS block with augmented expressions as in parseHHAccessors */
 /*---------------------------------------------------------------------*/
 function parseHHThisBlock() {
-   
    let accessors = [];
 
    const hhparser = function( token ) {
@@ -286,17 +286,19 @@ function parseHHThisBlock() {
 	 astutils.J2SString( locid, tid.value ) );
    }
    
-   this.addPlugin( "now", hhparser );
-   this.addPlugin( "pre", hhparser );
-   this.addPlugin( "nowval", hhparser );
-   this.addPlugin( "preval", hhparser );
+/*    this.addPlugin( "now", hhparser );                               */
+/*    this.addPlugin( "pre", hhparser );                               */
+/*    this.addPlugin( "nowval", hhparser );                            */
+/*    this.addPlugin( "preval", hhparser );                            */
    try {
-      return { block: this.parseBlock(), accessors: accessors };
+      const block = hhaccess( this.parseBlock(), accessors );
+      console.log( "astparser.js b1=", typeof block );
+      return { block: block, accessors: accessors };
    } finally {
-      this.removePlugin( "preval" );
-      this.removePlugin( "nowval" );
-      this.removePlugin( "pre" );
-      this.removePlugin( "now" );
+/*       this.removePlugin( "preval" );                                */
+/*       this.removePlugin( "nowval" );                                */
+/*       this.removePlugin( "pre" );                                   */
+/*       this.removePlugin( "now" );                                   */
    }
 }
 
@@ -355,7 +357,7 @@ function parseHHCondExpression( iscnt, isrun ) {
 function parseValueApply( loc ) {
    const { expr: expr, accessors } = parseHHExpression.call( this );
    let init;
-   if( typeof expr == "J2SDollar" ) {
+   if( typeof expr === "J2SDollar" ) {
       init = astutils.J2SDataPropertyInit(
 	 loc,
 	 astutils.J2SString( loc, "value" ),
@@ -428,7 +430,7 @@ function parseDelay( loc, tag, action = "apply", id = false ) {
       const { expr, accessors } = parseHHExpression.call( this );
       let inits;
 
-      if( typeof expr == "J2SUnresolvedRef" ) {
+      if( typeof expr === "J2SUnresolvedRef" ) {
 	 inits = [
 	    astutils.J2SDataPropertyInit(
 	       loc, astutils.J2SString( loc, "immediate" ),
@@ -471,7 +473,7 @@ function parseHHBlock( consume = true ) {
 	    
 	 case this.RBRACE: {
 	    const nothing = this.consumeAny();
-	    if( nodes.length == 0 ) {
+	    if( nodes.length === 0 ) {
 	       return [ parseEmpty( nothing, "NOTHING", "nothing" ) ];
 	    } else {
 	       return nodes;
@@ -487,7 +489,7 @@ function parseHHBlock( consume = true ) {
 	    return nodes;
 
 	 case this.ID:
-	    if( this.peekToken().value == "signal" ) {
+	    if( this.peekToken().value === "signal" ) {
 	       nodes.push( parseSignal.call( this, this.consumeAny() ) );
 	       return nodes;
 	    } else {
@@ -503,7 +505,7 @@ function parseHHBlock( consume = true ) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseModule ...                                                  */
+/*    parseMachineModule ...                                           */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
 /*       | MODULE [ident] ( signal, ... )                              */
@@ -515,7 +517,7 @@ function parseHHBlock( consume = true ) {
 /*    direction ::= in | out | inout                                   */
 /*    combine ::= combine expr                                         */
 /*---------------------------------------------------------------------*/
-function parseModule( token, declaration, ctor ) {
+function parseMachineModule( token, declaration, ctor ) {
    const loc = token.location;
    const tag = tagInit( ctor.toLowerCase(), loc );
    let id;
@@ -947,7 +949,7 @@ function parseEmitSustain( token, command ) {
       nodes.push( parseSignalEmit.call( this, loc ) );
    }
 
-   if( nodes.length == 1 ) {
+   if( nodes.length === 1 ) {
       return nodes[ 0 ];
    } else {
       return astutils.J2SCall(
@@ -1014,7 +1016,7 @@ function parseIf( token ) {
    const args = [ attrs ].concat( accessors );
    args.push( then );
    
-   if( this.peekToken().type == this.ELSE ) {
+   if( this.peekToken().type === this.ELSE ) {
       const loce = this.consumeAny().location;
       args.push( parseStmt.call( this, this.peekToken(), false ) );
    }
@@ -1283,7 +1285,7 @@ function parseRun( token ) {
    
    const { expr: call, accessors } = parseHHRunExpression.call( this );
 
-   if( !(typeof call == "J2SCall" ) ) {
+   if( !(typeof call === "J2SCall" ) ) {
       throw error.SyntaxError( "RUN: bad form", tokenLocation( token ) );
    } else {
       const module = call.fun;
@@ -1291,7 +1293,7 @@ function parseRun( token ) {
       inits.push( astutils.J2SDataPropertyInit(
 	 loc, astutils.J2SString( loc, "module" ), module ) );
 
-      if( typeof args == "pair" ) {
+      if( typeof args === "pair" ) {
 	 args.forEach( a => {
 	    if( typeof a === "J2SUnresolvedRef" ) {
 	       inits.push( astutils.J2SDataPropertyInit(
@@ -1513,7 +1515,7 @@ function parseStmt( token, declaration ) {
 	    case "hop":
 	       return parseAtom.call( this, next );
 	    case "module":
-	      return parseModule.call( this, next, declaration, "MODULE" );
+	      return parseMachineModule.call( this, next, declaration, "MODULE" );
 /* 	    case "nothing":                                            */
 /* 	       return parseNothing.call( this, next );                 */
 /* 	    case "pause":                                              */
@@ -1601,13 +1603,13 @@ function parseHiphop( token, declaration ) {
    
    const next = this.peekToken();
 
-   if( next.type === this.ID && next.value == "machine" ) {
+   if( next.type === this.ID && next.value === "machine" ) {
       this.consumeAny();
-      return wrapVarDecl( parseModule.call( this, next, declaration, "MACHINE" ) );
-   } else if( next.type === this.ID && next.value == "module" ) {
+      return wrapVarDecl( parseMachineModule.call( this, next, declaration, "MACHINE" ) );
+   } else if( next.type === this.ID && next.value === "module" ) {
       this.consumeAny();
-      return wrapVarDecl( parseModule.call( this, next, declaration, "MODULE" ) );
-   } else if( next.type === this.ID && next.value == "interface" ) {
+      return wrapVarDecl( parseMachineModule.call( this, next, declaration, "MODULE" ) );
+   } else if( next.type === this.ID && next.value === "interface" ) {
       this.consumeAny();
       return wrapVarDecl( parseInterface.call( this, next, declaration ) );
    } else {
