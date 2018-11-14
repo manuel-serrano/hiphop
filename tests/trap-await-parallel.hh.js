@@ -4,11 +4,11 @@ const hh = require( "hiphop" );
 
 hiphop module prg( A, B ) {
    EXIT: fork {
-      await now( A );
+      await A.now;
       hop { console.log( "A" ) }
       break EXIT;
    } par {
-      await now( B );
+      await B.now;
       hop { console.log( "B" ) }
       break EXIT;
    }

@@ -9,7 +9,7 @@ try {
 	 signal L;
 
 	 emit L( "foo bar" );
-	 emit O( nowval( L ) );
+	 emit O( L.nowval );
       }
    }
 

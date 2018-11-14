@@ -5,7 +5,7 @@ const hh = require( "hiphop" );
 
 hiphop module prg( O ) {
    async O {
-      setTimeout( () => this.notifyAndReact( 5 ), 3000 );
+      setTimeout( () => this.notify( 5 ), 3000 );
    }
 }
 

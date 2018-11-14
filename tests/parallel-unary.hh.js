@@ -11,7 +11,7 @@ hiphop module prg( O ) {
 	 emit L();
       } par {
 	 fork {
-	    if( now( L ) ) emit O();
+	    if( L.now ) emit O();
 	 }
       }
 

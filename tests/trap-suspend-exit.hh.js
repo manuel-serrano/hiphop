@@ -3,7 +3,7 @@
 const hh = require( "hiphop" );
 
 hiphop module prg( in V_S_p ) {
-   T1: suspend( now( V_S_p ) ) {
+   T1: suspend( V_S_p.now ) {
       break T1;
    }
 }

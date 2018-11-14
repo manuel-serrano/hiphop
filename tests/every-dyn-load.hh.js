@@ -6,12 +6,12 @@ const fs = require( "fs" );
 function make_atom(i) {
    return hiphop do {
       hop { console.log( "branch", i ) };
-   } every( now( G0 ) )
+   } every( G0.now )
 }
 
 function make_atom2(i) {
    return hiphop loop {
-      await immediate( now( G0 ) );
+      await immediate( G0.now );
       hop { console.log( "branch", i ) };
       yield;
    }
@@ -19,7 +19,7 @@ function make_atom2(i) {
 
 function make_atom3(i) {
    return hiphop {
-      every( immediate( now( G0 ) ) ) {
+      every( immediate( G0.now ) ) {
 	 hop { console.log( "branch", i ) }
       }
    }

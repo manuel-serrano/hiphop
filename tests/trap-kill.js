@@ -8,11 +8,11 @@ const mach = new hh.ReactiveMachine(
        <hh.parallel>
 	 <hh.sequence>
 	   <hh.exec apply=${function() {
-	      setTimeout(this.notifyAndReact, 500) }}/>
+	      		       setTimeout(this.notify.bind( this ), 500) }}/>
 	   <hh.exit T/>
 	 </hh.sequence>
 	 <hh.exec apply=${function() {
-	    setTimeout(this.notifyAndReact, 1000)}}
+	    		     setTimeout(this.notify.bind( this ), 1000)}}
 		  kill=${function() {
 		     console.log("been killed");
 		  }}/>

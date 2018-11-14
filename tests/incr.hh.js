@@ -7,9 +7,9 @@ var hh = require( "hiphop" );
 
 hiphop module prg( in I, in R, O = 0 ) {
    loop {
-      abort( now( R ) ) {
-	 await now( I );
-	 emit O( plus( preval( O ), 1 ) );
+      abort( R.now ) {
+	 await I.now;
+	 emit O( plus( O.preval, 1 ) );
 	 yield;
       }
    }

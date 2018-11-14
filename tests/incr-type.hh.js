@@ -45,7 +45,7 @@ var hh = require( "hiphop" );
 
 hiphop module prg( in I, Time=WatchTime ) {
    loop {
-      emit Time( IncrementTimeInPlace( preval( Time ) ) );
+      emit Time( IncrementTimeInPlace( Time.preval ) );
       yield;
    }
 }

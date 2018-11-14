@@ -48,10 +48,10 @@ var inSig = {accessibility: hh.IN};
 
 hiphop module prg( in I, in TIN, Time=WatchTime ) {
    loop {
-      emit Time( IncrementTimeInPlace( preval( Time ) ) );
+      emit Time( IncrementTimeInPlace( Time.preval ) );
       yield;
-      await now( TIN );
-      emit Time( updateFromOutside( nowval( TIN ) ) )
+      await TIN.now;
+      emit Time( updateFromOutside( TIN.nowval ) )
       yield;
    }
 }

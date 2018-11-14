@@ -30,21 +30,21 @@ function svcSeatGuru( airline ) {
    }
    setTimeout( () => {
       console.log( "svcSeatGuru", airline, "returns" );
-      this.notifyAndReact( simul_data[ airline ] );
+      this.notify( simul_data[ airline ] );
    }, rand( airline ) );
 }
 
 function svcSearch1( src, dst ) {
    setTimeout( () => {
       console.log( "svcSearch1 0", src, dst, "returns" );
-      this.notifyAndReact(Object.keys( simul_data ) )
+      this.notify(Object.keys( simul_data ) )
    }, 0 );
 }
 
 function svcSearch2( src, dst ) {
    setTimeout( () => {
       console.log( "svcSearch2 1", src, dst, "returns" );
-      this.notifyAndReact(Object.keys(simul_data).reverse( ))
+      this.notify(Object.keys(simul_data).reverse( ))
    }, 1 );
 }
 
@@ -53,11 +53,11 @@ const machine = new hh.ReactiveMachine(
       do {
 	 signal AIRLINESFOUND;
 	 
-	 weakabort( now( AIRLINESFOUND ) ) {
+	 weakabort( AIRLINESFOUND.now ) {
 	    fork {
-	       async AIRLINESFOUND { svcSearch1.call( this, nowval( SRC ), nowval( DST ) ) }
+	       async AIRLINESFOUND { svcSearch1.call( this, SRC.nowval, DST.nowval ) }
 	    } par {
-	       async AIRLINESFOUND { svcSearch2.call( this, nowval( SRC ), nowval( DST ) ) }
+	       async AIRLINESFOUND { svcSearch2.call( this, SRC.nowval, DST.nowval ) }
 	    }
 	 }
 
@@ -67,16 +67,16 @@ const machine = new hh.ReactiveMachine(
 	    ${ <pm.parallelmap apply=${function() {return this.value.AIRLINESFOUND}} AIRLINE>
                ${ hiphop {
 		  signal BADSEATS;
-		  async BADSEATS { svcSeatGuru.call( this, nowval( AIRLINE ) ) }
+		  async BADSEATS { svcSeatGuru.call( this, AIRLINE.nowval ) }
 		  emit TEMP( (function( t, airline, badseats ) {
       	             t[ airline ] = badseats;
       	             return t;
-		  })( preval( TEMP ), nowval( AIRLINE ), nowval( BADSEATS ) ) );
+		  })( TEMP.preval, AIRLINE.nowval, BADSEATS.nowval ) );
 	       } }
 	       </pm.parallelmap> }
-	    emit AIRLINESWITHDIRECT( nowval( TEMP ) );
+	    emit AIRLINESWITHDIRECT( TEMP.nowval );
 	 }
-      } every( now( SRC ) || now( DST ) )
+      } every( SRC.now || DST.now )
    },
    { tracePropagation:false } );
 

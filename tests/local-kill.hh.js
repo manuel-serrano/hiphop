@@ -8,7 +8,7 @@ const mach = new hh.ReactiveMachine(
       T: fork {
 	 loop {
 	    async {
-	       setTimeout( this.notifyAndReact, 100 );
+	       setTimeout( this.notify.bind( this ), 100 );
 	    } kill {
 	       console.log( "killed" );
 	    }
@@ -17,7 +17,7 @@ const mach = new hh.ReactiveMachine(
 	 }
       } par {
 	 async {
-	    setTimeout( this.notifyAndReact, 10 );
+	    setTimeout( this.notify.bind( this ), 10 );
 	 }
 	 break T;
       }

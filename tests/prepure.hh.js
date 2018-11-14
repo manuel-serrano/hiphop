@@ -6,7 +6,7 @@ hiphop module prg( O1, O2 ) {
    loop {
       signal S;
 
-      if( pre( S ) ) {
+      if( S.pre ) {
 	 emit O1();
       } else {
 	 emit O2();

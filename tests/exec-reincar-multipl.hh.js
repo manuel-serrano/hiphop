@@ -16,34 +16,34 @@ function inputAndReact( val ) {
 
 hiphop module prg( in IN combine (a, b) => b, OUT1="1|", OUT2="2|" ) {
    loop {
-      await immediate now( IN );
+      await immediate IN.now;
       hop { console.log("   will trigger exec") }
       trap: fork {
 	 async OUT1 {
 	    let timeout = 100;
 
-	    if ( nowval( IN ) == "LONGWAIT") timeout = timeout * 3;
+	    if ( IN.nowval == "LONGWAIT") timeout = timeout * 3;
 
-	    console.log( "   exec started", timeout, nowval( IN ) );
+	    console.log( "   exec started", timeout, IN.nowval );
 	    setTimeout( function( self, v ) {
 	       console.log( "   exec returns", timeout, v );
-	       self.notify( v + "--|" + timeout );
-	    }, timeout, this, nowval( IN ) );
+	       self.notify( v + "--|" + timeout, false );
+	    }, timeout, this, IN.nowval );
 	 }
       } par {
 	 async OUT2 {
 	    let timeout = 200;
 
-	    if( nowval( IN ) == "LONGWAIT" ) timeout = timeout * 3;
+	    if( IN.nowval == "LONGWAIT" ) timeout = timeout * 3;
 
 	    console.log( "   exec started", timeout, this.value.IN );
 	    setTimeout( function( self, v ) {
 	       console.log( "   exec returns", timeout, v );
-	       self.notify( v + "--|" + timeout );
-	    }, timeout, this, nowval( IN ) );
+	       self.notify( v + "--|" + timeout, false );
+	    }, timeout, this, IN.nowval );
 	 }
       } par {
-	 await now( IN );
+	 await IN.now;
 	 hop { console.log("   will trap") }
 	 break trap;
       }

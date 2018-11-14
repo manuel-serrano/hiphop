@@ -6,7 +6,7 @@ const mach = new hh.ReactiveMachine(
       T1: fork {
 	 break T1;
       } par {
-	 suspend( now( L ) ) {
+	 suspend( L.now ) {
 	    yield;
 	 }
       }

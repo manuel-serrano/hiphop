@@ -5,12 +5,11 @@ const hh = require( "hiphop" );
 
 hiphop module setinterval( A ) {
    fork {
-      abort( count( 3, now( A ) ) ) {
-	 let tmt;
+      abort( count( 3, A.now ) ) {
 	 async A {
-	    tmt = setInterval( this.react, 100 );
+	    this.tmt = setInterval( this.react.bind( this ), 100 );
 	 } kill {
-	    clearInterval( tmt );
+	    clearInterval( this.tmt );
 	 }
       }
    }

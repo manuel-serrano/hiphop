@@ -4,11 +4,11 @@
 const hh = require( "hiphop" );
 const mach = new hh.ReactiveMachine(
    hiphop module( S ) {
-      every( now( S ) ) {
+      every( S.now ) {
 	 hop { console.log( "every" ) };
 	 async {
 	    console.log("start", this.id );
-	    setTimeout( this.notifyAndReact, 500 );
+	    setTimeout( this.notify.bind( this ), 500 );
 	 } kill {
 	    console.log( "killed", this.id );
 	 }

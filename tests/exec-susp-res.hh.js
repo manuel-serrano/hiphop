@@ -9,12 +9,12 @@ var glob = 5;
 
 hiphop module prg( in RESS, in S, O, OT, in T ) {
    fork {
-      suspend( now( S ) ) {
+      suspend( S.now ) {
 	 async T {
 	    console.log( "Oi." );
 	    setTimeout( function( self ) {
 		  console.log( "Oi timeout." );
-	       self.notify( glob++ );
+	       	  self.notify( glob++, false );
 	       }, 1000, this );
 	 } suspend {
 	    console.log( "suspended." );
@@ -22,13 +22,13 @@ hiphop module prg( in RESS, in S, O, OT, in T ) {
 	    console.log( "resumed.");
 	 }
       }
-      emit OT( nowval( T ) );
+      emit OT( T.nowval );
    } par {
       emit O();
    }
 
-   await now( RESS );
-   emit OT( nowval( T ) );
+   await RESS.now;
+   emit OT( T.nowval );
 }
 
 var machine = new hh.ReactiveMachine( prg, "exec" );

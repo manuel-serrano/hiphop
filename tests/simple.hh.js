@@ -3,7 +3,7 @@
 var hh = require( "hiphop" );
 
 hiphop module prg( OK, O, A, B, C, BBBB, NEVER, in STOP, in AIN ) {
-   abort( now( STOP ) ) {
+   abort( STOP.now ) {
       loop {
 	 JMP: {
 	    emit O();
@@ -15,10 +15,10 @@ hiphop module prg( OK, O, A, B, C, BBBB, NEVER, in STOP, in AIN ) {
 	 }
 	 emit O();
 
-	 if( now( O ) ) emit OK();
+	 if( O.now ) emit OK();
 	 yield;
 	 emit O();
-	 if( now( O ) ) emit OK();
+	 if( O.now ) emit OK();
 	 yield;
 
 	 fork {
@@ -34,10 +34,10 @@ hiphop module prg( OK, O, A, B, C, BBBB, NEVER, in STOP, in AIN ) {
    }
    emit NEVER();
    yield;
-   await now( STOP );
+   await STOP.now;
    emit B();
-   await now( AIN );
-   if( now( AIN ) ) {
+   await AIN.now;
+   if( AIN.now ) {
       emit C();
    }
 }
@@ -50,7 +50,7 @@ hiphop module prg2( O, V ) {
       yield;
       emit O();
 
-      if( now( O ) ) {
+      if( O.now ) {
 	 emit V();
       }
    }
@@ -67,13 +67,13 @@ hiphop module prg3( O ) {
 
 hiphop module prg4( OK, O ) {
    emit O();
-   if( now( O ) ) {
+   if( O.now ) {
       emit OK();
    }
 }
 
 hiphop module prg5( OK, O ) {
-   if( now( O ) ) {
+   if( O.now ) {
       emit OK();
    }
 }

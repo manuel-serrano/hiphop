@@ -9,19 +9,19 @@ const mach = new hh.ReactiveMachine(
 	 <hh.loop>
 	   <hh.local FOO>
 	     <hh.exec apply=${function() {
-	     	setTimeout(this.notifyAndReact, 100);
-	     }}
+	     			 setTimeout(this.notify.bind( this ), 100);
+	     		      }}
 	     	      kill=${function() {
-	     		 console.log("killed");
-		      }}/>
+	     		 	console.log("killed");
+		      	     }}/>
 	     <hh.atom apply=${() => console.log('tick 10s')}/>
 	   </hh.local>
 	 </hh.loop>
 
 	 <hh.sequence>
 	   <hh.exec apply=${function() {
-	      setTimeout(this.notifyAndReact, 10);
-	   }}/>
+	      		       setTimeout(this.notify.bind( this ), 10);
+	   		    }}/>
 	   <hh.exit T/>
 	 </hh.sequence>
        </hh.parallel>

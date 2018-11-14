@@ -5,12 +5,12 @@ const hh = require( "hiphop" );
 hiphop module prg( A, B, C ) {
    fork {
       loop {
-	 if( nowval( B ) > 3 ) emit A();
+	 if( B.nowval > 3 ) emit A();
 	 yield;
       }
    } par {
       loop {
-	 if( now( C ) ) {
+	 if( C.now ) {
 	    emit B( 4 );
 	 } else {
 	    emit B( 3 );

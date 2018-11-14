@@ -1,10 +1,11 @@
-"use hopscript"
+"use hiphop";
+"use hopscript";
 
 var hh = require( "hiphop" );
 
 hiphop module prg( O, S ) {
    loop {
-      abort( pre( S ) ) {
+      abort( S.pre ) {
 	 emit S();
 	 yield;
 	 emit O();

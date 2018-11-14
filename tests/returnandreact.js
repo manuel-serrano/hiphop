@@ -9,7 +9,7 @@ function foo(cb) {
 const m = new hh.ReactiveMachine(
       <hh.module S>
 	<hh.exec S apply=${function() {
-	   setTimeout(this.notifyAndReact, 100, 5);
+	   		      setTimeout(this.notify.bind( this ), 100, 5);
 	}}/>
       </hh.module>);
 

@@ -20,12 +20,12 @@ hiphop module prg( SEQ=1 combine plus,
 		   S,
 		   TOOGLE ) {
    loop {
-      emit SEQ( preval( SEQ ) + 1 );
+      emit SEQ( SEQ.preval + 1 );
       emit STATE1( true );
       emit STATE1( false );
       emit STATE2( true );
       emit STATE2( false );
-      if( pre( S ) ) {
+      if( S.pre ) {
 	 emit TOOGLE( true );
       } else {
 	 emit TOOGLE( false );

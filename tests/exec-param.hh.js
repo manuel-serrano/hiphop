@@ -6,8 +6,8 @@ const hh = require( "hiphop" );
 hiphop module prg( in IN combine (x, y) => x + y ) {
    emit IN( ${5} );
    async {
-      console.log( "receive " + nowval( IN ) );
-      this.notify();
+      console.log( "receive " + IN.nowval );
+      this.notify( undefined, false );
    }
 }
 

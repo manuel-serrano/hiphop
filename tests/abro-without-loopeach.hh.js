@@ -4,11 +4,11 @@ var hh = require("hiphop");
 
 hiphop module prg( in A, in B, in R, out O ) {
    loop {
-      abort( now( R ) ) {
+      abort( R.now ) {
 	 fork {
-	    await now( A );
+	    await A.now;
 	 } par {
-	    await now( B );
+	    await B.now;
 	 }
 	 emit O();
 	 halt;

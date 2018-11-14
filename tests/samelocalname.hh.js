@@ -4,21 +4,21 @@
 const hh = require( "hiphop" );
 
 hiphop module prg( in SAME=1 ) {
-   hop { console.log( "1:", nowval( SAME ) ) }
+   hop { console.log( "1:", SAME.nowval ) }
    emit SAME( 2 );
    {
       signal S1=5, SAME=10;
-      hop { console.log( "before2:", nowval( SAME ) ); }
-      hop { console.log( "before2bis:", nowval( SAME ) ); }
+      hop { console.log( "before2:", SAME.nowval ); }
+      hop { console.log( "before2bis:", SAME.nowval ); }
       {
 	 signal SAME=100;
-	 hop { console.log( "2:", nowval( SAME ) ); }
+	 hop { console.log( "2:", SAME.nowval ); }
       }
 
-      hop { console.log( "after2:", nowval( SAME ) ); }
+      hop { console.log( "after2:", SAME.nowval ); }
    }
 
-   hop { console.log( "3:", nowval( SAME ) ) }
+   hop { console.log( "3:", SAME.nowval ) }
 }
 
 var m = new hh.ReactiveMachine( prg );

@@ -4,14 +4,14 @@ var hh = require( "hiphop" );
 
 hiphop module m1( T, W, V, Z ) {
    fork {
-      if( now( T ) ) {
+      if( T.now ) {
 	 signal L;
 	 
 	 emit L();
 	 emit V();
       }
    } par {
-      if( now( W ) ) emit Z();
+      if( W.now ) emit Z();
    }
 }
 

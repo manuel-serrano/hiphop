@@ -5,7 +5,7 @@ const hh = require( "hiphop" );
 
 hiphop module prg( in I, J, K ) {
    loop {
-      abort( now( I ) ) {
+      abort( I.now ) {
 	 sustain J();
       }
       emit K();

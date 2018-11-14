@@ -9,7 +9,7 @@ hiphop module prg() {
 
       yield;
       emit L();
-      if( !nowval( L ) ) hop { console.log( "L:", nowval( L ) ) }
+      if( !L.nowval ) hop { console.log( "L:", L.nowval ) }
    }
 }
 

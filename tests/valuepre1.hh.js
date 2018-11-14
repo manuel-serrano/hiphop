@@ -6,8 +6,8 @@ var hh = require( "hiphop" );
 hiphop module prg( I, O=5, U ) {
    loop {
       emit I( ${3} );
-      emit O( nowval( I ) );
-      emit U( preval( O ) );
+      emit O( I.nowval );
+      emit U( O.preval );
       yield;
    }
 }

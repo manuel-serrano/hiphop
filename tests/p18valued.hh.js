@@ -14,7 +14,7 @@ hiphop module prg( S1_and_S2, S1_and_not_S2, not_S1_and_S2, not_S1_and_not_S2 ) 
 
 	 fork {
 	    yield;
-	    emit S1( preval( S1 ) );
+	    emit S1( S1.preval );
 	    break T1;
 	 } par {
 	    loop {
@@ -23,20 +23,20 @@ hiphop module prg( S1_and_S2, S1_and_not_S2, not_S1_and_S2, not_S1_and_not_S2 ) 
 		  
 		  fork {
 		     yield;
-		     emit S2( preval( S2 ) );
+		     emit S2( S2.preval );
 		     break T2;
 		  } par {
 		     loop {
-			if( now( S1 ) ) {
-			   if( now( S2 ) ) {
-			      emit S1_and_S2( sum( nowval( S1 ), nowval( S2 ) ) );
+			if( S1.now ) {
+			   if( S2.now ) {
+			      emit S1_and_S2( sum( S1.nowval, S2.nowval ) );
 			   } else {
-			      emit S1_and_not_S2( sum( nowval( S1 ), nowval( S2 ) ) );
+			      emit S1_and_not_S2( sum( S1.nowval, S2.nowval ) );
 			   }
-			} else if( now( S2 ) ) {
-			   emit not_S1_and_S2( sum( nowval( S1 ), nowval( S2 ) ) );
+			} else if( S2.now ) {
+			   emit not_S1_and_S2( sum( S1.nowval, S2.nowval ) );
 			} else {
-			   emit not_S1_and_not_S2( sum( nowval( S1 ), nowval( S2 ) ) );
+			   emit not_S1_and_not_S2( sum( S1.nowval, S2.nowval ) );
 			}
 			yield;
 		     }

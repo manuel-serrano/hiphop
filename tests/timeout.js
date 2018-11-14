@@ -18,7 +18,7 @@ const prg =
 
 	      <hh.exec apply=${function() {
 		 setTimeout(function(self) {
-		    self.notifyAndReact();
+		    self.notify();
 		 }, 500, this)
 	      }}/>
 

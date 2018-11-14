@@ -1,12 +1,14 @@
-"use hopscript"
+"use hiphop";
+"use hopscript";
+
 
 var hh = require( "hiphop" );
 
 hiphop module prg( in A, in B, out O ) {
    fork {
-      await now( A );
+      await A.now;
    } par {
-      await now( B );
+      await B.now;
    }
    emit O();
 }

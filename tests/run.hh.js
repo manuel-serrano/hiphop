@@ -5,9 +5,9 @@ var hh = require( "hiphop" );
 
 hiphop module sub( S, U, W, Z ) {
    fork {
-      if( now( S ) ) emit W();
+      if( S.now ) emit W();
    } par {
-      if( now( U ) ) emit Z();
+      if( U.now ) emit Z();
    }
 }
 

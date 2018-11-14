@@ -8,10 +8,10 @@ hiphop module prg( in T, O, OT ) {
 	 console.log( "Oi." );
 	 setTimeout( function( self ) {
 	    console.log( "Oi timeout." );
-	    self.notify(5);
+	    self.notify( 5, false );
 	 }, 3000, this );
       }
-      emit OT( nowval( T ) );
+      emit OT( T.nowval );
    } par {
       emit O();
    }

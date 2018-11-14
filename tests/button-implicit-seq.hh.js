@@ -30,13 +30,13 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	 
 	 WATCH_AND_SET_WATCH_MODE: loop {
 	    // watch mode
-	    abort( now( UL ) ) {
+	    abort( UL.now ) {
 	       fork {
-		  await now( LL );
+		  await LL.now;
 		  break WATCH_AND_SET_WATCH_MODE;
 	       } par {
 		  loop {
-		     await now( LR );
+		     await LR.now;
 		     emit TOGGLE_24H_MODE_COMMAND();
 		  }
 	       }
@@ -44,15 +44,15 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	    
 	    // set watch-mode
 	    emit ENTER_SET_WATCH_MODE_COMMAND();
-	    abort( now( UL ) ) {
+	    abort( UL.now ) {
 	       fork {
 		  loop {
-		     await now( LL );
+		     await LL.now;
 		     emit NEXT_WATCH_TIME_POSITION_COMMAND();
 		  }
 	       } par {
 		  loop {
-		     await now( LR );
+		     await LR.now;
 		     emit SET_WATCH_COMMAND();
 		  }
 	       }
@@ -62,15 +62,15 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	 
 	 // stopwatch mode
 	 emit STOPWATCH_MODE_COMMAND();
-	 abort( now( LL ) ) {
+	 abort( LL.now ) {
 	    fork {
 	       loop {
-		  await now( LR );
+		  await LR.now;
 		  emit START_STOP_COMMAND();
 	       }
 	    } par {
 	       loop {
-		  await now( UR );
+		  await UR.now;
 		  emit LAP_COMMAND();
 	       }
 	    }
@@ -80,20 +80,20 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	 emit ALARM_MODE_COMMAND();
 	 ALARM_AND_SET_ALARM_MODE: loop {
 	    // alarm mode
-	    abort( now( UL ) ) {
+	    abort( UL.now ) {
 	       fork {
 		  fork {
-		     await now( LL );
+		     await LL.now;
 		     break ALARM_AND_SET_ALARM_MODE;
 		  } par {
 		     loop {
-			await now( LR );
+			await LR.now;
 			emit TOGGLE_CHIME_COMMAND();
 		     }
 		  }
 	       } par {
 		  loop {
-		     await now( UR );
+		     await UR.now;
 		     emit TOGGLE_ALARM_COMMAND();
 		  }
 	       }
@@ -101,15 +101,15 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	    
 	    // set-alarm mode
 	    emit ENTER_SET_ALARM_MODE_COMMAND();
-	    abort( now( UL ) ) {
+	    abort( UL.now ) {
 	       fork {
 		  loop {
-		     await now( LL );
+		     await LL.now;
 		     emit NEXT_ALARM_TIME_POSITION_COMMAND();
 		  }
 	       } par {
 		  loop {
-		     await now( LR );
+		     await LR.now;
 		     emit SET_ALARM_COMMAND();
 		  }
 	       }
@@ -118,7 +118,7 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	 }
       }
    } par {
-      every( now( UR ) ) {
+      every( UR.now ) {
 	 emit STOP_ALARM_BEEP_COMMAND();
       }
    }

@@ -13,10 +13,10 @@ function bar( evt ) {
 
 hiphop module prg( in I1, in I2, in I3, in I4, O1, O2, O3, O4 ) {
    loop {
-      if( now( I1 ) ) emit O1();
-      if( now( I2 ) ) emit O2( nowval( I2 ) );
-      if( now( I3 ) ) emit O3( nowval( I3 ) );
-      if( now( I4 ) ) emit O4( nowval( I4 ) );
+      if( I1.now ) emit O1();
+      if( I2.now ) emit O2( I2.nowval );
+      if( I3.now ) emit O3( I3.nowval );
+      if( I4.now ) emit O4( I4.nowval );
       yield;
    }
 }

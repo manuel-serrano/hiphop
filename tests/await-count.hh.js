@@ -5,7 +5,7 @@ const hh = require( "hiphop" );
 
 hiphop module prg( in I, out O ) {
    loop {
-      await count( 3, now( I ) );
+      await count( 3, I.now );
       emit O();
    }
 }

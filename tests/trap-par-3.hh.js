@@ -16,14 +16,14 @@ hiphop module prg( S1_and_S2, S1_and_not_S2, not_S1_and_S2, not_S1_and_not_S2 ) 
 	    yield;
 	    break T2;
 	 } par {
-	    if( now( S1 ) ) {
-	       if( now( S2 ) ) {
+	    if( S1.now ) {
+	       if( S2.now ) {
 		  emit S1_and_S2();
 	       } else {
 		  emit S1_and_not_S2();
 	       }
 	    } else {
-	       if( now( S2 ) ) {
+	       if( S2.now ) {
 		  emit not_S1_and_S2();
 	       } else {
 		  emit not_S1_and_not_S2();

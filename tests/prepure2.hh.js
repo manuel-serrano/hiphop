@@ -1,4 +1,5 @@
-"use hopscript"
+"use hiphop";
+"use hopscript";
 
 var hh = require( "hiphop" );
 
@@ -6,7 +7,7 @@ hiphop module prg( O1, O2 ) {
    signal S;
    
    loop {
-      if( pre( S ) ) {
+      if( S.pre ) {
 	 emit O1();
       } else {
 	 emit O2();

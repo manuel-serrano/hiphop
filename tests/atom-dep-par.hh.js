@@ -12,13 +12,13 @@ hiphop module prg( A combine (x, y) => x + y ) {
    } par {
       loop {
 	 emit A( 1 );
-	 hop { console.log( nowval( A ) ) }
+	 hop { console.log( A.nowval ) }
 	 yield;
       }
    } par {
       loop {
 	 emit A( 2 );
-	 hop { console.log( nowval( A ) ) }
+	 hop { console.log( A.nowval ) }
 	 yield;
       }
    }

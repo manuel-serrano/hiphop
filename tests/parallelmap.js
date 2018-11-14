@@ -29,21 +29,21 @@ function svcSeatGuru() {
    }
    setTimeout(() => {
       console.log("svcSeatGuru", this.value.AIRLINE, "returns");
-      this.notifyAndReact(simul_data[this.value.AIRLINE]);
+      this.notify(simul_data[this.value.AIRLINE]);
    }, rand(this.value.AIRLINE));
 }
 
 function svcSearch1() {
    setTimeout(() => {
       console.log("svcSearch1 0", this.value.SRC, this.value.DST, "returns");
-      this.notifyAndReact(Object.keys(simul_data))
+      this.notify(Object.keys(simul_data))
    }, 0);
 }
 
 function svcSearch2() {
    setTimeout(() => {
       console.log("svcSearch2 1", this.value.SRC, this.value.DST, "returns");
-      this.notifyAndReact(Object.keys(simul_data).reverse())
+      this.notify(Object.keys(simul_data).reverse())
    }, 1);
 }
 

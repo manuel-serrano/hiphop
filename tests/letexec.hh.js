@@ -6,9 +6,9 @@ const hh = require( "hiphop" );
 const m = new hh.ReactiveMachine(
    hiphop module( G = 6 ) {
       signal S = 5;
-      
+
       async {
-	 console.log( nowval( S ), nowval( G ) );
+	 console.log( S.nowval, G.nowval );
       }
    } )
 

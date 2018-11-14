@@ -8,20 +8,20 @@ var glob = 5;
 hiphop module prg( in R, O, OT, in T ) {
    do {
       fork {
-	 abort( now( R ) ) {
+	 abort( R.now ) {
 	    async T {
 	       console.log( "Oi." );
 	       setTimeout( function( self ) {
 		  console.log( "Oi timeout." );
-		  self.notify( glob++ );
+		  self.notify( glob++ , false );
 		 }, 1000, this);
 	    }
 	 }
-	 emit OT( nowval( T ));
+	 emit OT( T.nowval);
       } par {
 	 emit O();
       }
-   } every( now( R ) )
+   } every( R.now )
 }
 
 var machine = new hh.ReactiveMachine( prg, "exec" );

@@ -1,4 +1,5 @@
-"use hopscript"
+"use hiphop";
+"use hopscript";
 
 const hh = require( "hiphop" );
 
@@ -8,12 +9,12 @@ function zoom_in_cb() {
 
 hiphop module prg( ZOOM_LOCK_TOOGLE, ZOOM_IN ) {
    loop {
-      abort( now( ZOOM_LOCK_TOOGLE ) ) {
-	 every( now( ZOOM_IN ) ) {
+      abort( ZOOM_LOCK_TOOGLE.now ) {
+	 every( ZOOM_IN.now ) {
 	    hop { zoom_in_cb() };
 	 }
       }
-      await now( ZOOM_LOCK_TOOGLE );
+      await ZOOM_LOCK_TOOGLE.now;
    }
 }
 

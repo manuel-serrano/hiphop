@@ -5,7 +5,7 @@ const hh = require("hiphop");
 const prg =
       <hh.module O>
 	<hh.exec O apply=${function() {
-	   this.notifyAndReact( new Promise( function( resolve, reject ) {
+	   this.notify( new Promise( function( resolve, reject ) {
 	      setTimeout( () => resolve( 5 ), 1000 );
 	   } ) );
 	}}/>

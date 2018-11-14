@@ -1,5 +1,6 @@
-"use strict"
-"use hopscript"
+"use hiphop";
+"use strict";
+"use hopscript";
 
 const hh = require( "hiphop" );
 
@@ -13,7 +14,7 @@ hiphop module prg( O ) {
       }
    } par {
       loop {
-	 await immediate now( L );
+	 await immediate L.now;
 	 emit O();
 	 yield;
       }

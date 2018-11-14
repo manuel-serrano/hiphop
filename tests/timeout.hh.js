@@ -8,18 +8,17 @@ hiphop module prg( X=1, Y, Z ) {
       signal __internal=-1;
 
       loop {
-	 if( preval( __internal ) === -1 ) {
-	    emit __internal( nowval( X ) + 5 );
+	 if( __internal.preval === -1 ) {
+	    emit __internal( X.nowval + 5 );
 	 }
-	 if( nowval( __internal ) === 0 ) {
+	 if( __internal.nowval === 0 ) {
 	    break T;
 	 }
 	 async {
-	    setTimeout( function( self ) {
-	       self.notifyAndReact(); }, 500, this );
+	    	  setTimeout( this.notify.bind( this ), 500 );
 	 }
 	 emit Y();
-	 emit __internal( preval( __internal ) - 1 );
+	 emit __internal( __internal.preval - 1 );
       }
    }
    emit Z();

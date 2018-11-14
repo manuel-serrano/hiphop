@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Mon Nov 12 17:32:25 2018 (serrano)                */
+/*    Last change :  Tue Nov 13 19:43:52 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -149,7 +149,7 @@ function hhwrapExpr( token, expr ) {
 }
    
 /*---------------------------------------------------------------------*/
-/*    parseHHAccessors ...                                             */
+/*    parseHHThisExpr ...                                              */
 /*    -------------------------------------------------------------    */
 /*    hhexpr ::= ${ jsexpr }                                           */
 /*       | jsexpr                                                      */
@@ -158,7 +158,7 @@ function hhwrapExpr( token, expr ) {
 /*       | nowval.ident                                                */
 /*       | preval.ident                                                */
 /*---------------------------------------------------------------------*/
-function parseHHAccessors( parser, iscnt = false ) {
+function parseHHThisExpr( parser, iscnt = false ) {
    
    let accessors = [];
 
@@ -220,7 +220,10 @@ function parseHHAccessors( parser, iscnt = false ) {
 /*    this.addPlugin( "nowval", hhparser );                            */
 /*    this.addPlugin( "preval", hhparser );                            */
    try {
-      return parser.call( this, accessors );
+      const { expr: e, accessors: axs } = parser.call( this, accessors );
+      const expr = hhaccess( e, iscnt, hhname, accessors );
+      return { expr: expr, accessors: accessors.concat( axs ) };
+/*       return parser.call( this, accessors );                        */
    } finally {
 /*       this.removePlugin( "preval" );                                */
 /*       this.removePlugin( "nowval" );                                */
@@ -232,7 +235,7 @@ function parseHHAccessors( parser, iscnt = false ) {
 /*---------------------------------------------------------------------*/
 /*    parseHHThisBlock ...                                             */
 /*    -------------------------------------------------------------    */
-/*    Parse JS block with augmented expressions as in parseHHAccessors */
+/*    Parse JS block with augmented expressions as in parseHHThisExpr  */
 /*---------------------------------------------------------------------*/
 function parseHHThisBlock() {
    let accessors = [];
@@ -291,8 +294,7 @@ function parseHHThisBlock() {
 /*    this.addPlugin( "nowval", hhparser );                            */
 /*    this.addPlugin( "preval", hhparser );                            */
    try {
-      const block = hhaccess( this.parseBlock(), accessors );
-      console.log( "astparser.js b1=", typeof block );
+      const block = hhaccess( this.parseBlock(), false, hhname, accessors );
       return { block: block, accessors: accessors };
    } finally {
 /*       this.removePlugin( "preval" );                                */
@@ -306,7 +308,7 @@ function parseHHThisBlock() {
 /*    parseHHExpression ...                                            */
 /*---------------------------------------------------------------------*/
 function parseHHExpression() {
-   return parseHHAccessors.call( this, accessors => {
+   return parseHHThisExpr.call( this, accessors => {
       if( this.peekToken().type === this.DOLLAR ) {
 	 const expr = this.parseDollarExpression();
 	 return { expr: expr, accessors: accessors };
@@ -337,7 +339,7 @@ function parseHHRunExpression() {
 /*    parseHHCondExpression ...                                        */
 /*---------------------------------------------------------------------*/
 function parseHHCondExpression( iscnt, isrun ) {
-   return parseHHAccessors.call(
+   return parseHHThisExpr.call(
       this,
       accessors => {
 	 if( this.peekToken().type === this.DOLLAR ) {
@@ -363,9 +365,10 @@ function parseValueApply( loc ) {
 	 astutils.J2SString( loc, "value" ),
 	 expr.node );
    } else {
-      const fun = astutils.J2SFun(
+      const fun = astutils.J2SMethod(
 	 loc, "iffun", [],
-	 astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, expr ) ] ) );
+	 astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, expr ) ] ),
+	 self( loc ) );
       init = astutils.J2SDataPropertyInit(
 	 loc,
 	 astutils.J2SString( loc, "apply" ),
@@ -394,12 +397,14 @@ function parseDelay( loc, tag, action = "apply", id = false ) {
 
       this.consumeToken( this.RPAREN );
 
-      const fun = astutils.J2SFun(
+      const fun = astutils.J2SMethod(
 	 loc, "delayfun", [], 
-	 astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, expr ) ] ) );
-      const cntfun = astutils.J2SFun(
+	 astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, expr ) ] ),
+         self( loc ) );
+      const cntfun = astutils.J2SMethod(
 	 loc, "cntfun", [], 
-	 astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, count ) ] ) );
+	 astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, count ) ] ),
+         self( loc ) );
       
       const inits = [
 	 astutils.J2SDataPropertyInit(
@@ -439,9 +444,10 @@ function parseDelay( loc, tag, action = "apply", id = false ) {
 	       loc, astutils.J2SString( loc, expr.id ),
 	       astutils.J2SString( loc, expr.id ) ) ];
       } else {
-	 const fun = astutils.J2SFun(
+	 const fun = astutils.J2SMethod(
 	    loc, "hhexprfun", [], 
-	    astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, expr ) ] ) );
+	    astutils.J2SBlock( loc, loc, [ astutils.J2SReturn( loc, expr ) ] ),
+            self( loc ) );
 	 
 	 inits = [
 	    astutils.J2SDataPropertyInit(
@@ -706,11 +712,12 @@ function parseModuleSiglist() {
 	 this.consumeAny();
 	 const { expr, accessors: axs } = parseHHExpression.call( this );
 
-	 const func = astutils.J2SFun(
+	 const func = astutils.J2SMethod(
 	    loc, "initfunc", [],
 	    astutils.J2SBlock(
 	       loc, loc,
-	       [ astutils.J2SReturn( loc, expr ) ] ) );
+	       [ astutils.J2SReturn( loc, expr ) ] ),
+            self( loc ) );
 	 const initfunc = astutils.J2SDataPropertyInit(
 	    loc,
 	    astutils.J2SString( loc, "init_func" ),
@@ -765,9 +772,11 @@ function parseModuleSiglist() {
 function parseAtom( token ) {
    
    function parseAtomBlock( loc ) {
-      return parseHHAccessors.call( this, accessors => {
+      return parseHHThisBlock.call( this, accessors => {
 	 const stmt = this.parseStatement();
-	 const block = stmt instanceof ast.J2SBlock ? 
+	 const block = 
+	    ((stmt instanceof ast.J2SBlock) 
+	    || typeof stmt === "J2SBlock" ) ? 
 	       stmt : astutils.J2SBlock( loc, loc, [ stmt ] );
 	 return { block, accessors };
       } );

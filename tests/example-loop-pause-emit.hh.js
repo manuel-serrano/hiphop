@@ -4,7 +4,7 @@ var hh = require( "hiphop" );
 
 hiphop module prg( in I, S ) {
    loop {
-      await now( I );
+      await I.now;
       yield;
       emit S();
    }

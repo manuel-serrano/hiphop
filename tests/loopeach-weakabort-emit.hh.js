@@ -5,14 +5,14 @@ const hh = require( "hiphop" );
 const machine = new hh.ReactiveMachine(
    hiphop module( A, B ) {
       do {
-	 weakabort( now( B ) ) {
+	 weakabort( B.now ) {
 	    fork {
 	       yield;
 	       emit B();
 	    }
 	 }
 	 hop { console.log( "weakabort terminated 1." ); }
-      } every( now( A ) )
+      } every( A.now )
    } );
 
 machine.react();
@@ -23,14 +23,14 @@ machine.react();
 const machine2 = new hh.ReactiveMachine(
    hiphop module( A, B ) {
       do {
-	 weakabort( now( B ) ) {
+	 weakabort( B.now ) {
 	    fork {
 	       yield;
 	       emit B();
 	    }
 	 }
 	 hop { console.log( "weakabort terminated 2." ); }
-      } every( now( A ) )
+      } every( A.now )
    } );
 
 machine2.react();
@@ -43,14 +43,14 @@ const machine3 = new hh.ReactiveMachine(
    hiphop module( A, B ) {
       do {
 	 T: fork {
-	    await now( B );
+	    await B.now;
 	    break T;
 	 } par {
 	    yield;
 	    emit B();
 	 }
 	 hop { console.log( "weakabort terminated 3." ); }
-      } every( now( A ) )
+      } every( A.now )
    } );
 
 machine3.react();

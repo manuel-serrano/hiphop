@@ -3,7 +3,7 @@
 var hh = require( "hiphop" );
 
 hiphop module m( in S, O, F, W, Z ) {
-   weakabort( now( S ) ) {
+   weakabort( S.now ) {
       loop {
 	 emit O();
 	 yield;

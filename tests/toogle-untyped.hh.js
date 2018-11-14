@@ -1,4 +1,5 @@
-"use hopscript"
+"use hiphop";
+"use hopscript";
 
 var hh = require( "hiphop" );
 
@@ -19,12 +20,12 @@ hiphop module prg( SEQ=1 combine plus,
 		   STATE2=false combine bool_and,
 		   S, TOOGLE ) {
    loop {
-      emit SEQ( preval( SEQ ) + 1 );
+      emit SEQ( SEQ.preval + 1 );
       emit STATE1( ${true} );
       emit STATE1( ${false} );
       emit STATE2( ${true} );
       emit STATE2( ${false} );
-      if( pre( S ) ) {
+      if( S.pre ) {
 	 emit TOOGLE( ${true} );
       } else {
 	 emit TOOGLE( ${false} );

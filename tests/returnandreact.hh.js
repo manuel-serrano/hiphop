@@ -9,7 +9,7 @@ function foo( cb ) {
 const m = new hh.ReactiveMachine(
    hiphop module( S ) {
       async S {
-	 setTimeout( this.notifyAndReact, 100, 5 );
+         setTimeout( this.notify.bind( this ), 100, 5 );
       }
    } );
 

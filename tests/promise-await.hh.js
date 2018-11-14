@@ -6,16 +6,16 @@ const hh = require( "hiphop" );
 const m = new hh.ReactiveMachine(
    hiphop module( I, O ) {
       signal l;
-      await immediate now( I );
+      await immediate I.now;
       fork {
 	 async l {
 	    const mach = this;
-	    setTimeout( () => mach.notifyAndReact(), 1000 );
+	    setTimeout( () => mach.notify(), 1000 );
 	 }
       } par {
-	 await immediate now( l );
+	 await immediate l.now;
       }
-      emit O( nowval( I ) );
+      emit O( I.nowval );
    } );
 
 async function foo() {

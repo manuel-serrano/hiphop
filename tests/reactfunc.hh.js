@@ -21,12 +21,12 @@ function bar2( evt ) {
 
 hiphop module prg( in I1, in I2, O1, O11, O2 ) {
    loop {
-      if( now( I1 ) ) {
+      if( I1.now ) {
 	 emit O1();
 	 emit O11();
       }
-      if( now( I2 ) ) {
-	 emit O2( nowval( I2 ) );
+      if( I2.now ) {
+	 emit O2( I2.nowval );
       }
       yield;
    }

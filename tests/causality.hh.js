@@ -4,7 +4,7 @@ var hh = require( "hiphop" );
 
 hiphop module example( I, O ) {
    loop {
-      if( now( O ) ) emit I();
+      if( O.now ) emit I();
       yield;
       emit O();
    }

@@ -1,4 +1,5 @@
-"use strict"
+"use hiphop";
+"use strict";
 
 var hh = require( "hiphop" );
 
@@ -9,7 +10,7 @@ hiphop module prg( T ) {
 
       emit S();
 
-      if( now( S ) ) emit T();
+      if( S.now ) emit T();
    }
 }
 

@@ -8,8 +8,8 @@ function foo( evt ) {
 }
 
 hiphop module prg( in I, out O ) {
-   await now( I );
-   emit O( nowval( I ) );
+   await I.now;
+   emit O( I.nowval );
 }
 
 var m = new hh.ReactiveMachine( prg, "awaitvalued" );

@@ -6,7 +6,7 @@ hiphop module prg( O ) {
    loop {
       signal S;
       
-      if( now( S ) ) emit O();
+      if( S.now ) emit O();
       yield;
       emit S();
    }

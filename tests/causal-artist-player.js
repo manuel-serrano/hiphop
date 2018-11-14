@@ -8,10 +8,10 @@ const prg2 = function() {
        <hh.loop>
 	 <hh.local candidateArtist candidatePlaylist>
 	   <hh.exec candidateArtist apply=${function() {
-	      setTimeout(() => this.notifyAndReact("leartiste"), 90);
+	      setTimeout(() => this.notify("leartiste"), 90);
 	   }}/>
 	   <hh.exec candidatePlaylist apply=${function() {
-	      setTimeout(() => this.notifyAndReact("laplaylist"), 50);
+	      setTimeout(() => this.notify("laplaylist"), 50);
 	   }}/>
 	   <hh.if apply=${function(){return this.value.candidatePlaylist}}>
 	     <hh.sequence>

@@ -1,4 +1,5 @@
-"use hopscript"
+"use hiphop";
+"use hopscript";
 
 var hh = require( "hiphop" );
 
@@ -6,14 +7,14 @@ hiphop module prg( in I, out O ) {
    signal L;
 
    fork {
-      abort( now( L ) ) {
+      abort( L.now ) {
 	 loop {
 	    emit O();
 	    yield;
 	 }
       }
    } par {
-      await now( I );
+      await I.now;
       emit L();
    }
 }
