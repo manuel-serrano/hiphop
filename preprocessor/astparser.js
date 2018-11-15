@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Nov 13 19:43:52 2018 (serrano)                */
+/*    Last change :  Wed Nov 14 19:18:23 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -900,18 +900,27 @@ function parseFork( token ) {
       attrs = astutils.J2SObjInit( loc, [ locInit( loc ), tag ] );
    }
 
-   body.push( astutils.J2SCall( loc, hhref( loc, "SEQUENCE" ),
-				null,
-				[ astutils.J2SObjInit( loc, [ locInit( loc ), tag ] ) ]
-				.concat( parseHHBlock.call( this ) ) ) );
+   if( this.peekToken().type === this.DOLLAR ) {
+      this.consumeToken( this.DOLLAR );
+      const expr = this.parseExpression();
+      this.consumeToken( this.RBRACE );
+      return astutils.J2SCall( loc, hhref( loc, "FORK" ), 
+			       null,
+			       [ attrs ].concat( expr ) );
+   } else {
+      body.push( astutils.J2SCall( loc, hhref( loc, "SEQUENCE" ),
+				   null,
+				   [ astutils.J2SObjInit( loc, [ locInit( loc ), tag ] ) ]
+   .concat( parseHHBlock.call( this ) ) ) );
 
-   while( isIdToken( this, this.peekToken(), "par" ) ) {
-      body.push( parseSequence.call( this, this.consumeAny(), "par", true ) );
+      while( isIdToken( this, this.peekToken(), "par" ) ) {
+      	 body.push( parseSequence.call( this, this.consumeAny(), "par", true ) );
+      }
+
+      return astutils.J2SCall( loc, hhref( loc, "FORK" ), 
+			       null,
+			       [ attrs ].concat( body ) );
    }
-
-   return astutils.J2SCall( loc, hhref( loc, "FORK" ), 
-			    null,
-			    [ attrs ].concat( body ) );
 }
 
 /*---------------------------------------------------------------------*/
