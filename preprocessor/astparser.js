@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Nov 14 19:18:23 2018 (serrano)                */
+/*    Last change :  Fri Nov 16 14:53:41 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -166,13 +166,12 @@ function parseHHThisExpr( parser, iscnt = false ) {
       const loc = token.location;
       let pre = false, val = false, access = "present";
       
-      //this.consumeToken( this.LPAREN );
-      this.consumeToken( this.DOT );
+      this.consumeToken( this.LPAREN );
       
       const tid = this.consumeToken( this.ID );
       const locid = tid.location;
       
-      //this.consumeToken( this.RPAREN );
+      this.consumeToken( this.RPAREN );
 
       switch( token.value ) {
 	 case "now": break;
@@ -215,20 +214,20 @@ function parseHHThisExpr( parser, iscnt = false ) {
 	 astutils.J2SString( locid, tid.value ) );
    }
    
-/*    this.addPlugin( "now", hhparser );                               */
-/*    this.addPlugin( "pre", hhparser );                               */
-/*    this.addPlugin( "nowval", hhparser );                            */
-/*    this.addPlugin( "preval", hhparser );                            */
+   this.addPlugin( "now", hhparser );
+   this.addPlugin( "pre", hhparser );
+   this.addPlugin( "nowval", hhparser );
+   this.addPlugin( "preval", hhparser );
    try {
       const { expr: e, accessors: axs } = parser.call( this, accessors );
       const expr = hhaccess( e, iscnt, hhname, accessors );
       return { expr: expr, accessors: accessors.concat( axs ) };
 /*       return parser.call( this, accessors );                        */
    } finally {
-/*       this.removePlugin( "preval" );                                */
-/*       this.removePlugin( "nowval" );                                */
-/*       this.removePlugin( "pre" );                                   */
-/*       this.removePlugin( "now" );                                   */
+      this.removePlugin( "preval" );
+      this.removePlugin( "nowval" );
+      this.removePlugin( "pre" );
+      this.removePlugin( "now" );
    }
 }
 
@@ -244,13 +243,12 @@ function parseHHThisBlock() {
       const loc = token.location
       let pre = false, val = false, access = "present";
       
-      //this.consumeToken( this.LPAREN );
-      this.consumeToken( this.DOT );
+      this.consumeToken( this.LPAREN );
       
       const tid = this.consumeToken( this.ID );
       const locid = tid.location;
       
-      //this.consumeToken( this.RPAREN );
+      this.consumeToken( this.RPAREN );
 
       switch( token.value ) {
 	 case "now": break;
@@ -289,18 +287,18 @@ function parseHHThisBlock() {
 	 astutils.J2SString( locid, tid.value ) );
    }
    
-/*    this.addPlugin( "now", hhparser );                               */
-/*    this.addPlugin( "pre", hhparser );                               */
-/*    this.addPlugin( "nowval", hhparser );                            */
-/*    this.addPlugin( "preval", hhparser );                            */
+   this.addPlugin( "now", hhparser );
+   this.addPlugin( "pre", hhparser );
+   this.addPlugin( "nowval", hhparser );
+   this.addPlugin( "preval", hhparser );
    try {
       const block = hhaccess( this.parseBlock(), false, hhname, accessors );
       return { block: block, accessors: accessors };
    } finally {
-/*       this.removePlugin( "preval" );                                */
-/*       this.removePlugin( "nowval" );                                */
-/*       this.removePlugin( "pre" );                                   */
-/*       this.removePlugin( "now" );                                   */
+      this.removePlugin( "preval" );
+      this.removePlugin( "nowval" );
+      this.removePlugin( "pre" );
+      this.removePlugin( "now" );
    }
 }
 
