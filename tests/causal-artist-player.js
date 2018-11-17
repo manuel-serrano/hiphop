@@ -13,12 +13,12 @@ const prg2 = function() {
 	   <hh.exec candidatePlaylist apply=${function() {
 	      setTimeout(() => this.notify("laplaylist"), 50);
 	   }}/>
-	   <hh.if apply=${function(){return this.value.candidatePlaylist}}>
+	   <hh.if apply=${function(){return this.candidatePlaylist.nowval}}>
 	     <hh.sequence>
 	       <hh.emit playlist apply=${function() {
-		  return this.value.candidatePlaylist}}/>
+		  return this.candidatePlaylist.nowval}}/>
 	       <hh.emit artist apply=${function() {
-		  return this.value.candidateArtist}}/>
+		  return this.candidateArtist.nowval}}/>
 	       <hh.exit found/>
 	     </hh.sequence>
 	   </hh.if>
@@ -35,12 +35,12 @@ const prg =
 	    <hh.run module=${prg2()} artist=artist playlist=playlist/>
 	    <hh.every artist>
 	      <hh.atom apply=${function() {
-		 console.log("***ARTIST***", this.value.artist)
+		 console.log("***ARTIST***", this.artist.nowval)
 	      }}/>
 	    </hh.every>
 	    <hh.every playlist>
 	      <hh.atom apply=${function() {
-		 console.log("***PLAYLIST***", this.value.playlist)
+		 console.log("***PLAYLIST***", this.playlist.nowval)
 	      }}/>
 	    </hh.every>
 	  </hh.parallel>

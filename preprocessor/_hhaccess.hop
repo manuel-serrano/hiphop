@@ -3,7 +3,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Nov 13 10:52:14 2018                          */
-;*    Last change :  Wed Nov 14 14:47:05 2018 (serrano)                */
+;*    Last change :  Sat Nov 17 16:53:04 2018 (serrano)                */
 ;*    Copyright   :  2018 Manuel Serrano                               */
 ;*    -------------------------------------------------------------    */
 ;*    Patching the AST built by the native parser                      */
@@ -54,15 +54,13 @@
 ;*---------------------------------------------------------------------*/
 (define (node->accessors node axs iscnt hhname accessors %this)
 
-   (define (hiphop-dummy-object loc)
+   (define (this-accessor loc field)
       (instantiate::J2SAccess
 	 (loc loc)
 	 (obj (instantiate::J2SUnresolvedRef
 		 (loc loc)
-		 (id (string->symbol (js-tostring hhname %this)))))
-	 (field (instantiate::J2SString
-		   (loc loc)
-		   (val "dummySignalContainer")))))
+		 (id 'this)))
+	 (field field)))
 
    (define (sigaccess loc name pre val cnt)
       (let ((attr (instantiate::J2SObjInit
@@ -113,41 +111,18 @@
 			      (val "SIGACCESS")))))
 	    (args (list attr)))))
    
-   (define (this-access loc id field)
-      (instantiate::J2SAccess
-	 (loc loc)
-	 (obj (instantiate::J2SAccess
-		 (loc loc)
-		 (obj (instantiate::J2SUnresolvedRef
-			 (loc loc)
-			 (id 'this)))
-		 (field (instantiate::J2SString
-			   (loc loc)
-			   (val field)))))
-	 (field (instantiate::J2SString
-		   (loc loc)
-		   (val (symbol->string id))))))
-
    (define (accessor loc obj field)
       (with-access::J2SUnresolvedRef obj (id)
 	 (with-access::J2SString field (val)
 	    (cond
 	       ((string=? val "now")
-		(let ((sa (sigaccess loc (symbol->string id) #f #f #f)))
-		   (js-array-push accessors sa %this)
-		   (this-access loc id "present")))
+		(sigaccess loc (symbol->string id) #f #f #f))
 	       ((string=? val "nowval")
-		(let ((sa (sigaccess loc (symbol->string id) #f #t #f)))
-		   (js-array-push accessors sa %this)
-		   (this-access loc id "value")))
+		(sigaccess loc (symbol->string id) #f #t #f))
 	       ((string=? val "pre")
-		(let ((sa (sigaccess loc (symbol->string id) #t #f #f)))
-		   (js-array-push accessors sa %this)
-		   (this-access loc id "prePresent")))
+		(sigaccess loc (symbol->string id) #t #f #f))
 	       ((string=? val "preval")
-		(let ((sa (sigaccess loc (symbol->string id) #t #t #f)))
-		   (js-array-push accessors sa %this)
-		   (this-access loc id "preValue")))
+		(sigaccess loc (symbol->string id) #t #t #f))
 	       (else
 		(error "hiphop" "illegal accessor" val))))))
 
@@ -155,29 +130,23 @@
       ;; for an access sig.{now,nowval,pre,preval}, this creates
       ;; a new variable named after sig and initialized with a dummy
       ;; empty and sealed object
-      (with-access::J2SAccess ax (loc obj)
+      (with-access::J2SAccess ax (loc obj field)
+	 (js-array-push accessors (accessor loc obj field) %this)
 	 (with-access::J2SUnresolvedRef obj (id)
 	    (instantiate::J2SDeclInit
 	       (loc loc)
 	       (id id)
 	       (writable #f)
 	       (vtype 'object)
-	       (val (hiphop-dummy-object loc))))))
+	       (val (instantiate::J2SAccess
+		       (loc loc)
+		       (obj (instantiate::J2SUnresolvedRef
+			       (loc loc)
+			       (id 'this)))
+		       (field (instantiate::J2SString
+				 (loc loc)
+				 (val (symbol->string id))))))))))
    
-   (define (access->access-decl ax::J2SAccess)
-      ;; for an access sig.{now,nowval,pre,preval}, this creates
-      ;; a new anonymous variable bound to the actual signal accessor
-      ;; that will be used to rewrite the ast
-      (with-access::J2SAccess ax (loc obj field %info)
-	 (let ((id (gensym 'hhaxs)))
-	    (set! %info (cons 'hh id))
-	    (instantiate::J2SDeclInit
-	       (loc loc)
-	       (id id)
-	       (writable #f)
-	       (vtype 'any)
-	       (val (accessor loc obj field))))))
-	 
    (with-access::J2SNode node (loc)
       (instantiate::J2SBlock
 	 (loc loc)
@@ -185,9 +154,8 @@
 	 (nodes (list
 		   (instantiate::J2SVarDecls
 		      (loc loc)
-		      (decls (append (map access->general-decl axs)
-				(map access->access-decl axs))))
-		   (hh-access! node))))))
+		      (decls (map access->general-decl axs)))
+		   node)))))
 
 ;*---------------------------------------------------------------------*/
 ;*    find-decl ...                                                    */
@@ -264,55 +232,6 @@
 	     (bdenv (if (isa? thisp J2SDecl) (cons thisp nenv) nenv))
 	     (nwenv (cons arguments (append decls params env))))
 	 (collect-accessor* body nwenv))))
-      
-;*---------------------------------------------------------------------*/
-;*    hh-access! ::obj ...                                             */
-;*---------------------------------------------------------------------*/
-(define-generic (hh-access! this::obj)
-   (if (pair? this)
-       (map! hh-access! this)
-       this))
-
-;*---------------------------------------------------------------------*/
-;*    hh-access! ::J2SNode ...                                         */
-;*---------------------------------------------------------------------*/
-(define-method (hh-access! this::J2SNode)
-   (let ((fields (class-all-fields (object-class this))))
-      (let loop ((i (-fx (vector-length fields) 1)))
-	 (if (=fx i -1)
-	     this
-	     (let* ((f (vector-ref fields i))
-		    (info (class-field-info f)))
-		(when (and (pair? info) (member "ast" info))
-		   ((class-field-mutator f)
-		    this (hh-access! ((class-field-accessor f) this))))
-		(loop (-fx i 1)))))))
-
-;*---------------------------------------------------------------------*/
-;*    hh-access! ::J2SAccess ...                                       */
-;*---------------------------------------------------------------------*/
-(define-method (hh-access! this::J2SAccess)
-   (with-access::J2SAccess this (%info loc)
-      (if (and (pair? %info) (eq? (car %info) 'hh))
-	  (instantiate::J2SUnresolvedRef
-	     (loc loc)
-	     (id (cdr %info)))
-	  (call-next-method))))
-
-;*---------------------------------------------------------------------*/
-;*    hh-access! ::J2SAssig ...                                        */
-;*---------------------------------------------------------------------*/
-(define-method (hh-access! this::J2SAssig)
-   (with-access::J2SAssig this (lhs rhs)
-      (set! rhs (hh-access! rhs))
-      (with-access::J2SNode lhs (%info)
-	 (if (and (isa? lhs J2SAccess) (pair? %info) (eq? (car %info) 'hh))
-	     (with-access::J2SAccess lhs (obj loc)
-		(with-access::J2SUnresolvedRef obj (id)
-		   (error/location "hiphop"
-		      "signal accessor is read-only" id loc)))
-	     (set! lhs (hh-access! lhs))))
-      this))
       
 ;*---------------------------------------------------------------------*/
 ;*    collect-let* ...                                                 */

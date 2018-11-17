@@ -8,11 +8,11 @@ const prg =
 	<hh.trap T>
 	  <hh.local __internal=${{initValue: -1}}>
 	    <hh.loop>
-	      <hh.if apply=${function() {return this.preValue.__internal == -1}}>
-		<hh.emit __internal apply=${function() {return this.value.X + 5}}/>
+	      <hh.if apply=${function() {return this.__internal.preval == -1}}>
+		<hh.emit __internal apply=${function() {return this.X.nowval + 5}}/>
 	      </hh.if>
 
-	      <hh.if apply=${function() {return this.value.__internal == 0}}>
+	      <hh.if apply=${function() {return this.__internal.nowval == 0}}>
 		<hh.exit T/>
 	      </hh.if>
 
@@ -23,7 +23,7 @@ const prg =
 	      }}/>
 
 	      <hh.emit Y/>
-	      <hh.emit __internal apply=${function() {return this.preValue.__internal - 1}}/>
+	      <hh.emit __internal apply=${function() {return this.__internal.preval - 1}}/>
 	    </hh.loop>
 	  </hh.local>
 	</hh.trap>

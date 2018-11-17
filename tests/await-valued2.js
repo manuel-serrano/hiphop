@@ -22,7 +22,7 @@ var prg = <hh.module I=${inSig} O=${outSig}>
   <hh.loop>
     <hh.sequence>
       <hh.await I />
-      <hh.emit O apply=${function() {return this.value.I}} />
+      <hh.emit O apply=${function() {return this.I.nowval}} />
     </hh.sequence>
   </hh.loop>
 </hh.module>;

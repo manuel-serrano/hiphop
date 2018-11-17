@@ -9,8 +9,8 @@ const prg =
 	  <hh.local L>
 	    <hh.pause/>
 	    <hh.emit L/>
-	    <hh.if apply=${function(){return ! this.value.L}}>
-	      <hh.atom apply=${function(){console.log("L:", this.value.L)}}/>
+	    <hh.if apply=${function(){return ! this.L.nowval}}>
+	      <hh.atom apply=${function(){console.log("L:", this.L.nowval)}}/>
 	    </hh.if>
 	  </hh.local>
 	</hh.loop>

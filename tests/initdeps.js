@@ -4,15 +4,15 @@ const hh = require("hiphop");
 
 const prg =
       <hh.module B=${{initApply: function() {return 5}}}
-		 A=${{initApply: function() {return this.value.B}}}>
+		 A=${{initApply: function() {return this.B.nowval}}}>
 	<hh.emit A/>
 	<hh.pause/>
-	<hh.local Y=${{initApply: function() {return this.value.B}}}>
-	  <hh.local X=${{initApply: function() {return this.value.Y}}}>
+	<hh.local Y=${{initApply: function() {return this.B.nowval}}}>
+	  <hh.local X=${{initApply: function() {return this.Y.nowval}}}>
             <hh.parallel>
 	      <hh.emit X/>
 	    </hh.parallel>
-	    <hh.emit A apply=${function() {return this.value.X}}/>
+	    <hh.emit A apply=${function() {return this.X.nowval}}/>
 	  </hh.local>
 	</hh.local>
       </hh.module>

@@ -12,7 +12,7 @@ var prg =
 	<hh.parallel>
 
 	  <hh.local M=${{initValue: 5}}>
-	    <hh.emit J apply=${function(){return this.value.M}}/>
+	    <hh.emit J apply=${function(){return this.M.nowval}}/>
 	    <hh.pause/>
 	    <hh.emit M value=${5} />
 	  </hh.local>
@@ -28,7 +28,7 @@ var prg =
 	  <hh.local L>
 	    <hh.emit L value=${4} />
 	    <hh.pause/>
-	    <hh.emit S apply=${function() {return plus(this.value.L, 5)}}/>
+	    <hh.emit S apply=${function() {return plus(this.L.nowval, 5)}}/>
 	  </hh.local>
 
 	</hh.parallel>

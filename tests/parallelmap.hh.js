@@ -64,7 +64,7 @@ const machine = new hh.ReactiveMachine(
 	 {
 	    signal TEMP = {};
 
-	    ${ <pm.parallelmap apply=${function() {return this.value.AIRLINESFOUND}} AIRLINE>
+	    ${ <pm.parallelmap apply=${function() {return this.AIRLINESFOUND.nowval}} AIRLINE>
                ${ hiphop {
 		  signal BADSEATS;
 		  async BADSEATS { svcSeatGuru.call( this, AIRLINE.nowval ) }

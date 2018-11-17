@@ -29,7 +29,7 @@ var prg = <hh.module I1=${inSig} I2=${inSig} O1 O11 O2>
 	</hh.sequence>
       </hh.if>
       <hh.if I2>
-	<hh.emit O2 apply=${function() {return this.value.I2}}/>
+	<hh.emit O2 apply=${function() {return this.I2.nowval}}/>
       </hh.if>
       <hh.pause/>
     </hh.sequence>

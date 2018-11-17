@@ -47,7 +47,7 @@ var prg =
     <hh.module I=${{accessibility: hh.IN}} Time=${{initValue: WatchTime}}>
       <hh.loop>
 	<hh.sequence>
-	  <hh.emit Time apply=${function() {return IncrementTimeInPlace(this.preValue.Time)}}/>
+	  <hh.emit Time apply=${function() {return IncrementTimeInPlace(this.Time.preval)}}/>
 	  <hh.pause/>
 	</hh.sequence>
       </hh.loop>

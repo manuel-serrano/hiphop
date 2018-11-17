@@ -43,7 +43,7 @@ const PARALLELMAP = (attrs) => {
 	let par = this.machine.getElementById(id);
 	for (let i = 0; i < par.children.length; i++)
 	   par.removeChild(par.children[i]);
-	this.value.__PARALLELMAP_LOCAL__.forEach(el => {
+	this.__PARALLELMAP_LOCAL__.nowval.forEach(el => {
 	   par.appendChild(mkChild(el));
 	});
 	this.machine.react();

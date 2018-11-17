@@ -13,7 +13,7 @@ var prg = <hh.module S1_and_S2 S1_and_not_S2 not_S1_and_S2 not_S1_and_not_S2>
 	<hh.parallel>
 	  <hh.sequence>
 	    <hh.pause/>
-            <hh.emit S1 apply=${function() {return this.preValue.S1}}/>
+            <hh.emit S1 apply=${function() {return this.S1.preval}}/>
 	    <hh.exit T1/>
 	  </hh.sequence>
 	  <hh.loop>
@@ -22,7 +22,7 @@ var prg = <hh.module S1_and_S2 S1_and_not_S2 not_S1_and_S2 not_S1_and_not_S2>
 		<hh.parallel>
 		  <hh.sequence>
 		    <hh.pause/>
-                    <hh.emit S2 apply=${function() {return this.preValue.S2}}/>
+                    <hh.emit S2 apply=${function() {return this.S2.preval}}/>
 		    <hh.exit T2/>
 		  </hh.sequence>
 		  <hh.loop>
@@ -30,15 +30,15 @@ var prg = <hh.module S1_and_S2 S1_and_not_S2 not_S1_and_S2 not_S1_and_not_S2>
 		      <hh.if S1>
 			<hh.if S2>
                           <hh.emit S1_and_S2
-			    apply=${function() {return sum(this.value.S1, this.value.S2)}}/>
+			    apply=${function() {return sum(this.S1.nowval, this.S2.nowval)}}/>
 			  <hh.emit S1_and_not_S2
-			    apply=${function() {return sum(this.value.S1, this.value.S2)}}/>
+			    apply=${function() {return sum(this.S1.nowval, this.S2.nowval)}}/>
 			</hh.if>
 			<hh.if S2>
 			  <hh.emit not_S1_and_S2
-			    apply=${function() {return sum(this.value.S1, this.value.S2)}}/>
+			    apply=${function() {return sum(this.S1.nowval, this.S2.nowval)}}/>
 			  <hh.emit not_S1_and_not_S2
-			    apply=${function() {return sum(this.value.S1, this.value.S2)}}/>
+			    apply=${function() {return sum(this.S1.nowval, this.S2.nowval)}}/>
 			</hh.if>
 		      </hh.if>
 		      <hh.pause/>

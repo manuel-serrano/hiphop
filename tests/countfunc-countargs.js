@@ -8,7 +8,7 @@ const prg =
 	<hh.await X/>
 	<hh.every apply=${() => true}
 		  countApply=${function() {
-		     return this.value.X + 5
+		     return this.X.nowval + 5
 		  }}>
 	  <hh.emit Y/>
 	</hh.every>

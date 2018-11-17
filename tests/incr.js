@@ -12,7 +12,7 @@ var prg =
 	<hh.abort R>
           <hh.sequence>
             <hh.await I/>
-            <hh.emit O apply=${function() {return plus(this.preValue.O, 1)}}/>
+            <hh.emit O apply=${function() {return plus(this.O.preval, 1)}}/>
             <hh.pause/>
           </hh.sequence>
 	</hh.abort>

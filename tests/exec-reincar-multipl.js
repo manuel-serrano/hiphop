@@ -26,27 +26,27 @@ const prg =
 		     apply=${function start_exec() {
 			let timeout = 100;
 
-			if (this.value.IN == "LONGWAIT")
+			if (this.IN.nowval == "LONGWAIT")
 			   timeout = timeout * 3;
 
-			console.log("   exec started", timeout, this.value.IN);
+			console.log("   exec started", timeout, this.IN.nowval);
 			setTimeout(function(self,v) {
 			   console.log("   exec returns", timeout, v);
 			   self.notify(v + "--|" + timeout, false);
-			}, timeout, this, this.value.IN);
+			}, timeout, this, this.IN.nowval);
 		     }}/>
 	    <hh.exec OUT2
 		     apply=${function start_exec() {
 			let timeout = 200;
 
-			if (this.value.IN == "LONGWAIT")
+			if (this.IN.nowval == "LONGWAIT")
 			   timeout = timeout * 3;
 
-			console.log("   exec started", timeout, this.value.IN);
+			console.log("   exec started", timeout, this.IN.nowval);
 			setTimeout(function(self, v) {
 			   console.log("   exec returns", timeout, v);
 			   self.notify(v + "--|" + timeout, false);
-			}, timeout, this, this.value.IN);
+			}, timeout, this, this.IN.nowval);
 		     }}/>
 	    <hh.sequence>
 	      <hh.await IN/>

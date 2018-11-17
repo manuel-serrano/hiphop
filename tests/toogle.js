@@ -19,7 +19,7 @@ var prg = <hh.module SEQ=${{initValue: 1, combine: plus}}
 		     STATE2=${{initValue: false, combine: bool_and}} S TOOGLE>
   <hh.loop>
     <hh.sequence>
-      <hh.emit SEQ apply=${function() {return this.preValue.SEQ + 1}}/>
+      <hh.emit SEQ apply=${function() {return this.SEQ.preval + 1}}/>
       <hh.emit STATE1 value=${true} />
       <hh.emit STATE1 value=${false} />
       <hh.emit STATE2 value=${true} />

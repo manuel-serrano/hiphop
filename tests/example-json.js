@@ -50,12 +50,12 @@ var prg =
     <hh.module I=${inSig} TIN=${inSig} Time=${{initValue: WatchTime}}>
       <hh.loop>
 	<hh.emit Time apply=${function() {
-	   return IncrementTimeInPlace(this.preValue.Time)
+	   return IncrementTimeInPlace(this.Time.preval)
 	}}/>
 	<hh.pause/>
 	<hh.await TIN/>
 	<hh.emit Time apply=${function() {
-	   return updateFromOutside(this.value.TIN)
+	   return updateFromOutside(this.TIN.nowval)
 	}}/>
 	<hh.pause/>
       </hh.loop>

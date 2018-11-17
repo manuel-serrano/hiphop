@@ -13,7 +13,7 @@ const prg =
 	  <hh.loop>
 	    <hh.emit A value=${1} />
 	    <hh.atom apply=${function() {
-	       console.log(this.value.A);
+	       console.log(this.A.nowval);
 	    }}/>
 	    <hh.pause/>
 	  </hh.loop>
@@ -21,7 +21,7 @@ const prg =
 	  <hh.loop>
 	    <hh.emit A value=${2} />
 	    <hh.atom apply=${function() {
-	       console.log(this.value.A);
+	       console.log(this.A.nowval);
 	    }}/>
 	    <hh.pause/>
 	  </hh.loop>

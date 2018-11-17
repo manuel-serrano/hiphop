@@ -7,7 +7,7 @@ const m = new hh.ReactiveMachine(
 	 <hh.local l=${{initApply:function(){return 2}}}>
 
 	   <hh.emit S apply=${function() {
-	      return this.value.l;
+	      return this.l.nowval;
 	   }}/>
 	   <hh.pause/>
 	 </hh.local>

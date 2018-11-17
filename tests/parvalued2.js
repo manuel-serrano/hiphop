@@ -7,7 +7,7 @@ var prg = <hh.module J>
     <hh.Parallel>
       <hh.emit I value=${5} />
       <hh.if I>
-	<hh.emit J apply=${function() {return this.value.I}} />
+	<hh.emit J apply=${function() {return this.I.nowval}} />
       </hh.if>
     </hh.Parallel>
   </hh.local>

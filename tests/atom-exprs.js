@@ -9,7 +9,7 @@ var prg =
 	  <hh.emit L value=${"foo bar"}/>
 	  <hh.pause/>
 	  <hh.atom apply=${function() {
-	     console.log("atom works! value of L is", this.value.L);
+	     console.log("atom works! value of L is", this.L.nowval);
 	  }}/>
 	</hh.local>
       </hh.loop>

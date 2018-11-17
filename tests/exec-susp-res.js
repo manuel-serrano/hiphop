@@ -20,12 +20,12 @@ const prg =
 	    }}
 	      susp=${function() {console.log("suspended.");}}
 	      res=${function() {console.log("resumed.");}}/>
-	    <hh.emit OT apply=${function() {return this.value.T}}/>
+	    <hh.emit OT apply=${function() {return this.T.nowval}}/>
 	  </hh.suspend>
 	  <hh.emit O/>
 	</hh.parallel>
 	<hh.await RESS />
-	<hh.emit OT apply=${function() {return this.value.T}}/>
+	<hh.emit OT apply=${function() {return this.T.nowval}}/>
       </hh.module>
 
 var machine = new hh.ReactiveMachine(prg, "exec");

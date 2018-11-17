@@ -28,28 +28,28 @@ function svcSeatGuru() {
       }
    }
    setTimeout(() => {
-      console.log("svcSeatGuru", this.value.AIRLINE, "returns");
-      this.notify(simul_data[this.value.AIRLINE]);
-   }, rand(this.value.AIRLINE));
+      console.log("svcSeatGuru", this.AIRLINE.nowval, "returns");
+      this.notify(simul_data[this.AIRLINE.nowval]);
+   }, rand(this.AIRLINE.nowval));
 }
 
 function svcSearch1() {
    setTimeout(() => {
-      console.log("svcSearch1 0", this.value.SRC, this.value.DST, "returns");
+      console.log("svcSearch1 0", this.SRC.nowval, this.DST.nowval, "returns");
       this.notify(Object.keys(simul_data))
    }, 0);
 }
 
 function svcSearch2() {
    setTimeout(() => {
-      console.log("svcSearch2 1", this.value.SRC, this.value.DST, "returns");
+      console.log("svcSearch2 1", this.SRC.nowval, this.DST.nowval, "returns");
       this.notify(Object.keys(simul_data).reverse())
    }, 1);
 }
 
 const machine = new hh.ReactiveMachine(
    <hh.module SRC DST AIRLINESWITHDIRECT>
-     <hh.loopeach apply=${function() { return this.present.SRC || this.present.DST }}>
+     <hh.loopeach apply=${function() { return this.SRC.now || this.DST.now }}>
        <hh.local AIRLINESFOUND>
 	 <hh.weakabort AIRLINESFOUND>
 	   <hh.parallel>
@@ -58,17 +58,17 @@ const machine = new hh.ReactiveMachine(
 	   </hh.parallel>
 	 </hh.weakabort>
 	 <hh.local TEMP=${{initValue: {}}}>
-	   <pm.parallelmap apply=${function() {return this.value.AIRLINESFOUND}} AIRLINE>
+	   <pm.parallelmap apply=${function() {return this.AIRLINESFOUND.nowval}} AIRLINE>
 	     <hh.local BADSEATS>
 	       <hh.exec BADSEATS apply=${svcSeatGuru}/>
 	       <hh.emit TEMP apply=${function() {
-      	          let t = this.preValue.TEMP;
-      	          t[this.value.AIRLINE] = this.value.BADSEATS;
+      	          let t = this.TEMP.preval;
+      	          t[this.AIRLINE.nowval] = this.BADSEATS.nowval;
       	          return t;
 	       }}/>
 	     </hh.local>
 	   </pm.parallelmap>
-	   <hh.emit AIRLINESWITHDIRECT apply=${function() { return this.value.TEMP }}/>
+	   <hh.emit AIRLINESWITHDIRECT apply=${function() { return this.TEMP.nowval }}/>
 	 </hh.local>
        </hh.local>
      </hh.loopeach>

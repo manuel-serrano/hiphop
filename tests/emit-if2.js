@@ -6,7 +6,7 @@ const prg =
       <hh.module A B C>
 	<hh.parallel>
 	  <hh.loop>
-	    <hh.emit A ifApply=${function(){return this.value.B > 3}}/>
+	    <hh.emit A ifApply=${function(){return this.B.nowval > 3}}/>
 	    <hh.pause/>
 	  </hh.loop>
 	  <hh.loop>

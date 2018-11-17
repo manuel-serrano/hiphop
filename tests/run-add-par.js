@@ -4,8 +4,8 @@ var hh = require("hiphop");
 
 var m1 = <hh.module S U W Z>
   <hh.parallel>
-    <hh.emit W ifApply=${function() {return this.present.S}}/>
-    <hh.emit Z ifApply=${function() {return this.present.U}}/>
+    <hh.emit W ifApply=${function() {return this.S.now}}/>
+    <hh.emit Z ifApply=${function() {return this.U.now}}/>
   </hh.parallel>
 </hh.module>;
 

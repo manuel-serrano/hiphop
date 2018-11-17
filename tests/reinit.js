@@ -12,7 +12,7 @@ const prg =
 	<hh.emit AUX value=${1}/>
 	<hh.pause/>
 	<hh.loop>
-	  <hh.emit O apply=${function() {return this.preValue.O + 1}}/>
+	  <hh.emit O apply=${function() {return this.O.preval + 1}}/>
 	  <hh.emit AUX/>
 	  <hh.pause/>
 	</hh.loop>

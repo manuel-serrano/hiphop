@@ -7,7 +7,7 @@ try {
      <hh.loop>
        <hh.local L>
 	 <hh.emit L value=${"foo bar"}/>
-	 <hh.emit O apply=${function() {return this.value.L}}/>
+	 <hh.emit O apply=${function() {return this.L.nowval}}/>
        </hh.local>
      </hh.loop>
    </hh.module>;

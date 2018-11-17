@@ -11,7 +11,7 @@ var outSig = {accessibility: hh.OUT};
 
 var prg = <hh.module I=${inSig} O=${outSig}>
     <hh.await I />
-    <hh.emit O apply=${function() {return this.value.I}}/>
+    <hh.emit O apply=${function() {return this.I.nowval}}/>
 </hh.module>;
 
 var m = new hh.ReactiveMachine(prg, "awaitvalued");

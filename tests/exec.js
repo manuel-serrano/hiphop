@@ -13,7 +13,7 @@ const prg =
 		  self.notify(5, false);
 	       }, 3000, this);
 	    }}/>
-	    <hh.emit OT apply=${function() {return this.value.T}}/>
+	    <hh.emit OT apply=${function() {return this.T.nowval}}/>
 	  </hh.sequence>
 	  <hh.emit O/>
 	</hh.parallel>
