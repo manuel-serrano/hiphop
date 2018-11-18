@@ -64,10 +64,10 @@
   | await immediate <HHDelay>
 
 <HHExpression> --> <Expression>
-  | now( <Identifier> )
-  | pre( <Identifier> )
-  | val( <Identifier> )
-  | preval( <Identifier> )
+  | <Identifier>.now
+  | <Identifier>.pre
+  | <Identifier>.nowval
+  | <Identifier>.preval
 
 <HHDelay> --> <HHExpression>
   | count( <HHExpression>, <HHExpression> )

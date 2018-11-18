@@ -48,38 +48,42 @@ for producing an emission value, or for running asynchronous  computation.
 Using Signals in Expressions
 ============================
 
-Signals presence (has a signal been emitted or not during the reaction)
-and signal values can be used in HipHop JavaScript expressions. For that,
-HipHop extend Hop expressions with 
-[four syntactic constructs](./syntax.html#HHExpression). Notice that these
-extensions are only available within the syntactic context of an HipHop 
-expression:
+Signals presence (has a signal been emitted or not during the
+reaction) and signal values can be used in HipHop JavaScript
+expressions. For that, HipHop analyses Hop expressions and detect
+signal accesses. It recognizes
+[four syntactic constructs](./syntax.html#HHExpression) that
+correspond to signal access. Notice that these detections are only
+executed within the syntactic context of an HipHop expression:
 
-### now( signal ) ###
+### signal.now ###
 [:@glyphicon glyphicon-tag syntax]
 
 A predicate that is true if and only if `signal` has been emitted
 during the reaction.
  
-### pre( signal ) ###
+### signal.pre ###
 [:@glyphicon glyphicon-tag syntax]
 
 A predicate that is true if and only if `signal` has been emitted
 during the _previous_ reaction.
  
-### nowval( signal ) ###
+### signal.nowval ###
 [:@glyphicon glyphicon-tag syntax]
 
 The current value of the signal. Note that values are preserved from
 reaction to reaction so if a signal is emitted during reaction r1 and
 not at reaction i1 + 1, getting the value at reaction i1 + 1 will
-return the same value as reaction i1, although `now( signal )` at
+return the same value as reaction i1, although `signal.now` at
 reaction i1 + 1 will be false.
  
-### preval( signal ) ###
+### signal.preval ###
 [:@glyphicon glyphicon-tag syntax]
 
-The value of the signal at the previous reaction.
+The previous value of the signal. The previous value corresponds to
+the value of the previous signal emission. Notice that the previous
+emission is not supposed to have happened during the previous
+reaction.
 
 
 Test, Await, and Emit
@@ -96,13 +100,13 @@ conditional construct. The value of a signal can be checked too. The
 API. For instance, the presence of a signal can be checked with:
 
 ```hiphop
-if( !now( SIG ) ) { hop { console.log( "signal not emitted in reaction" ) } }
+if( !SIG.now ) { hop { console.log( "signal not emitted in reaction" ) } }
 ```
 
 A particular value of a signal can be checked. For instance:
 
 ```hiphop
-if( nowval( SIG ) > 10 && nowval( SIG ) < 100 ) { hop { console.log( "signal in range" ) } }
+if( SIG.nowval > 10 && SIG.nowval < 100 ) { hop { console.log( "signal in range" ) } }
 ```
 
 ### await delay ###

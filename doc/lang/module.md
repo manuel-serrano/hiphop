@@ -35,7 +35,7 @@ module mod( in S, out T, inout U ) { ; }
 HipHop Machine
 ==============
 
-This syntax is a shorten for declaring a module, creating a machine, and
+This syntax is a shorthand for declaring a module, creating a machine, and
 loading that module into the machine.
 
 ### machine [ident]( arg, ... ) [implements [mirror] intf, ...] { ... } ###

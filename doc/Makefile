@@ -27,6 +27,7 @@ lib: $(TARGETS)
 
 hss:
 	cp -r `$(HOP) --no-server --evaljs 'console.log( require( hop.config ).docDir + "/hss" )'` .
+	cat hiphop.hss >> hss/doc.css
 
 #*---------------------------------------------------------------------*/
 #*    Search path                                                      */
@@ -100,3 +101,7 @@ cleanall: clean
 #*---------------------------------------------------------------------*/
 lang.html: _lang.md
 syntax.html: syntax/hiphop.bnf
+
+hss/doc.css: hss/doc.hss
+	cp $< $@
+

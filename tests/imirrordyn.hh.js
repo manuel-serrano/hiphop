@@ -9,12 +9,12 @@ const Intf = <hh.interface>
 </hh.interface>
 
 hiphop module M1() implements Intf {
-   if( now( I ) ) emit O();
+   if( I.now ) emit O();
 }
 
 hiphop module M2( out OK ) implements mirror Intf {
    emit I();
-   if( now( O ) ) emit OK();
+   if( O.now ) emit OK();
 }
 
 hiphop module Main( OK ) {
