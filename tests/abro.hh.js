@@ -1,14 +1,12 @@
 "use hiphop"
 "use hopscript"
 
-const hh = require( "hiphop" );
-
 hiphop module prg( in A, in B, in R, out O ) {
    do {
       fork {
-	 await A.now;
+	 await( A.now );
       } par {
-	 await B.now;
+	 await( B.now );
       }
       emit O();
    } every( R.now )

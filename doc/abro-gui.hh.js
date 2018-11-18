@@ -5,15 +5,15 @@ service abro() {
      <head>
        <script src="hiphop" lang="hopscript"/>
        <script defer>
-          hiphop module prg( in A, in B, in R, out O ) {
+          hiphop machine prg( in A, in B, in R, out O ) {
              do {
 		fork {
-		   await now( A );
+		   await( A.now );
 		} par {
-		   await now( B );
+		   await( B.now );
 		}
 		emit O();
-	     } every( now( R ) )
+	     } every( R.now )
 	  }
    
           prg.addEvenListener( "O", v => alert( "got O: " + v ) );

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Jan 16 07:20:47 2016                          */
-/*    Last change :  Sat Oct 27 09:41:36 2018 (serrano)                */
+/*    Last change :  Sun Nov 18 10:41:46 2018 (serrano)                */
 /*    Copyright   :  2016-18 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prims client part                                                */
@@ -24,7 +24,7 @@ function Num( G ) {
    this.G = G;
    this.value = G.count;
    this.color = G.predatorColor;
-   this.font = `${G.fontSize}px ${G.font}`;
+   this.font = `${G.fontWeight} ${G.fontSize}px ${G.font}`;
    this.eaten = 0;
    this.x = Math.random() *  G.width;
    this.y = Math.random() * G.height;
@@ -159,18 +159,18 @@ function number( G ) {
 
    let trap = hiphop {
       exit: loop {
-	 await now( killn ) && now( numbers );
+	 await( killn.now && numbers.now );
 	 emit numbers( num );
-	 emit killn( prey( nowval( numbers) ) );
+	 emit killn( prey( numbers.nowval ) );
 	 
-	 if( nowval( killn ).indexOf( num ) >= 0 ) {
+	 if( killn.nowval.indexOf( num ) >= 0 ) {
 	    hop {
 	       num.dead = true;
 	       G.mach.getElementById( "numbers" ).removeChild( trap );
 	    }
 	    break exit;
 	 } else {
-	    if( num.prey && nowval( killn ).indexOf( num.prey ) >= 0 ) {
+	    if( num.prey && killn.nowval.indexOf( num.prey ) >= 0 ) {
 	       hop { num.init() }
 	    }
 	    hop { num.move() }
@@ -180,7 +180,6 @@ function number( G ) {
 
    return trap;
 }
-
 
 /*---------------------------------------------------------------------*/
 /*    prims ...                                                        */
@@ -250,11 +249,12 @@ exports.start = function( g, speed ) {
    G = g;
 
    G.ctx = G.getContext( "2d" );
-   G.predatorColor = "#F86E00";
-   G.preyColor = "#efe";
-   G.chasingColor = "#f00";
+   G.predatorColor = "#0A0";
+   G.preyColor = "#00C";
+   G.chasingColor = "#C00";
    G.font = "sans";
    G.fontSize = 15;
+   G.fontWeight = "bold";
    G.count = 2;
 
    exports.setSpeed( speed );
