@@ -23,7 +23,7 @@ const m = new hh.ReactiveMachine( require( "prgm.hh.js" ) );
 Running HipHop reactive machines
 --------------------------------
 
-### mach.react( sigset, sigset, ... ) ###
+### mach.react( sigset ) ###
 [:@glyphicon glyphicon-tag tag]
 
 The `react` function machine reactions. If called with no argument,
@@ -35,6 +35,9 @@ proceeds as follows for each argument:
   * runs a reaction.
 
 
+The `react` function returns the machine itself.
+
+
 Example:
 
 ```hopscript
@@ -44,7 +47,10 @@ m.react();
 // proceed to 4 reactions, with first the signal O emitded with value 24,
 // P with value 53, then a second reaction with only o emitted with value 56,
 // ...
-m.react( { O: 24, P: 53 }, { O: 56 }, { O: 77 }, { P: 10 } );
+m.react( { O: 24, P: 53 } );
+m.react( { O: 56 } );
+m.react( { O: 77 } );
+m.react( { P: 10 } );
 ```
 
 ### mach.input( sigset ) ###
