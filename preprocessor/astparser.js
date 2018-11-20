@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Nov 16 14:53:41 2018 (serrano)                */
+/*    Last change :  Tue Nov 20 15:25:18 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -210,8 +210,8 @@ function parseHHThisExpr( parser, iscnt = false ) {
 	 locid,
 	 astutils.J2SAccess( locid,
 			     astutils.J2SHopRef( loc, "this" ),
-			     astutils.J2SString( loc, access ) ),
-	 astutils.J2SString( locid, tid.value ) );
+			     astutils.J2SString( loc, tid.value ) ),
+	 astutils.J2SString( locid, access ) );
    }
    
    this.addPlugin( "now", hhparser );
@@ -283,8 +283,8 @@ function parseHHThisBlock() {
 	 locid,
 	 astutils.J2SAccess( locid,
 			     astutils.J2SUnresolvedRef( loc, "this" ),
-			     astutils.J2SString( loc, access ) ),
-	 astutils.J2SString( locid, tid.value ) );
+			     astutils.J2SString( loc, tid.value ) ),
+	 astutils.J2SString( locid, access ) );
    }
    
    this.addPlugin( "now", hhparser );
@@ -770,14 +770,7 @@ function parseModuleSiglist() {
 function parseAtom( token ) {
    
    function parseAtomBlock( loc ) {
-      return parseHHThisBlock.call( this, accessors => {
-	 const stmt = this.parseStatement();
-	 const block = 
-	    ((stmt instanceof ast.J2SBlock) 
-	    || typeof stmt === "J2SBlock" ) ? 
-	       stmt : astutils.J2SBlock( loc, loc, [ stmt ] );
-	 return { block, accessors };
-      } );
+      return parseHHThisBlock.call( this );
    }
 
    const loc = token.location;

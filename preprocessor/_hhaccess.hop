@@ -3,7 +3,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Nov 13 10:52:14 2018                          */
-;*    Last change :  Sat Nov 17 16:53:04 2018 (serrano)                */
+;*    Last change :  Tue Nov 20 14:38:26 2018 (serrano)                */
 ;*    Copyright   :  2018 Manuel Serrano                               */
 ;*    -------------------------------------------------------------    */
 ;*    Patching the AST built by the native parser                      */
@@ -48,6 +48,11 @@
 		   (node->accessors node axs iscnt hhname accessors %this)))))
 	 2 'AstHipHopAccess)
       #f %this))
+
+;*---------------------------------------------------------------------*/
+;*    reserved ...                                                     */
+;*---------------------------------------------------------------------*/
+(define reserved '(Date))
 
 ;*---------------------------------------------------------------------*/
 ;*    node->accessors ...                                              */
@@ -205,10 +210,11 @@
 		  (not (find-decl obj env)))
 	     (with-access::J2SUnresolvedRef obj (id)
 		(with-access::J2SString field (val)
-		   (if (or (string=? val "now")
-			   (string=? val "nowval")
-			   (string=? val "pre")
-			   (string=? val "preval"))
+		   (if (and (or (string=? val "now")
+				(string=? val "nowval")
+				(string=? val "pre")
+				(string=? val "preval"))
+			    (not (memq id reserved)))
 		       (cons this (append axobj axfd))
 		       (append axobj axfd))))
 	     (append axobj axfd)))))
