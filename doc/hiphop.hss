@@ -1,0 +1,30 @@
+/*=====================================================================*/
+/*    serrano/prgm/project/hiphop/hiphop/doc/hss/hiphop.hss            */
+/*    -------------------------------------------------------------    */
+/*    Author      :  Manuel Serrano                                    */
+/*    Creation    :  Sun Nov 18 14:36:32 2018                          */
+/*    Last change :  Sun Nov 18 14:37:40 2018 (serrano)                */
+/*    Copyright   :  2018 Manuel Serrano                               */
+/*    -------------------------------------------------------------    */
+/*    HipHop specific fontification                                    */
+/*=====================================================================*/
+
+/*---------------------------------------------------------------------*/
+/*    HipHop specific ...                                              */
+/*---------------------------------------------------------------------*/
+.fontifier-prog span.hiphop,
+.fontifier-prog span.hop {
+  background-color: #777;
+  border-radius: 1px;
+  color: white;
+}
+
+.fontifier-prog span.module,
+.fontifier-prog span.interface,
+.fontifier-prog span.machine {
+  color: #6959cf;
+}
+
+.fontifier-prog span.await {
+  color: #E45840
+}
