@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Nov 20 15:25:18 2018 (serrano)                */
+/*    Last change :  Wed Nov 21 14:24:38 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -221,7 +221,7 @@ function parseHHThisExpr( parser, iscnt = false ) {
    try {
       const { expr: e, accessors: axs } = parser.call( this, accessors );
       const expr = hhaccess( e, iscnt, hhname, accessors );
-      return { expr: expr, accessors: accessors.concat( axs ) };
+      return { expr: expr, accessors: accessors };
 /*       return parser.call( this, accessors );                        */
    } finally {
       this.removePlugin( "preval" );

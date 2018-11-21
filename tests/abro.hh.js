@@ -1,6 +1,8 @@
 "use hiphop"
 "use hopscript"
 
+const hh = require( "hiphop" );
+
 hiphop module prg( in A, in B, in R, out O ) {
    do {
       fork {
