@@ -1,4 +1,4 @@
-<Expression> --> ... | <HHExprStatement>>
+<Expression> --> ... | <HHExprStatement>
 
 <HHExprStatement> --> hiphop <HHStatement>
 

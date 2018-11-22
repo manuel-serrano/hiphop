@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Jan 16 07:20:47 2016                          */
-/*    Last change :  Sun Nov 18 10:41:46 2018 (serrano)                */
+/*    Last change :  Thu Nov 22 10:15:26 2018 (serrano)                */
 /*    Copyright   :  2016-18 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prims client part                                                */
@@ -22,7 +22,7 @@ var G;
 /*---------------------------------------------------------------------*/
 function Num( G ) {
    this.G = G;
-   this.value = G.count;
+   this.value = G.count++;
    this.color = G.predatorColor;
    this.font = `${G.fontWeight} ${G.fontSize}px ${G.font}`;
    this.eaten = 0;
@@ -145,8 +145,6 @@ Num.prototype.computeMove = function( suspect, G ) {
 /*---------------------------------------------------------------------*/
 function number( G ) {
    let num = new Num( G );
-   var numid = "num" + num.value;
-   G.count++;
 
    function prey( number ) {
       let prey = false;
@@ -158,7 +156,7 @@ function number( G ) {
    }
 
    let trap = hiphop {
-      exit: loop {
+      loop {
 	 await( killn.now && numbers.now );
 	 emit numbers( num );
 	 emit killn( prey( numbers.nowval ) );
@@ -168,11 +166,7 @@ function number( G ) {
 	       num.dead = true;
 	       G.mach.getElementById( "numbers" ).removeChild( trap );
 	    }
-	    break exit;
 	 } else {
-	    if( num.prey && killn.nowval.indexOf( num.prey ) >= 0 ) {
-	       hop { num.init() }
-	    }
 	    hop { num.move() }
 	 }
       }
