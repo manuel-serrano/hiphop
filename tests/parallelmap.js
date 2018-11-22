@@ -75,8 +75,8 @@ const machine = new hh.ReactiveMachine(
    </hh.module>
    , {tracePropagation:false});
 
-machine.addEventListener("AIRLINESWITHDIRECT", evt => console.log(evt.signalName,
-								  evt.signalValue));
+machine.addEventListener("AIRLINESWITHDIRECT", evt => console.log(evt.type,
+								  evt.nowval));
 
 
 machine.input("SRC", "Nice");

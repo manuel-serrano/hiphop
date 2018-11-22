@@ -82,7 +82,7 @@ const machine = new hh.ReactiveMachine(
 
 machine.addEventListener(
    "AIRLINESWITHDIRECT",
-   evt => console.log( evt.signalName, evt.signalValue ) );
+   evt => console.log( evt.type, evt.nowval ) );
 
 machine.react( { SRC: "Nice", DST: "Paris" } );
 machine.react( { SRC: "Montpellier", DST: "Dublin" } );

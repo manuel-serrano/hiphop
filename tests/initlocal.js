@@ -15,6 +15,6 @@ const m = new hh.ReactiveMachine(
      </hh.loop>
    </hh.module>
 );
-m.addEventListener("S", function (evt) { console.log(evt); });
+m.addEventListener("S", function (evt) { console.log( { type: evt.type, nowval: evt.nowval } ); });
 m.react();
 m.react();

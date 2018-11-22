@@ -35,9 +35,9 @@ function IncrementTimeInPlace( t ) {
 }
 
 function print_time( evt ) {
-   console.log( evt.signalValue.hours
-		+ ":" + evt.signalValue.minutes
-		+ ":" + evt.signalValue.seconds );
+   console.log( evt.nowval.hours
+		+ ":" + evt.nowval.minutes
+		+ ":" + evt.nowval.seconds );
 }
 
 

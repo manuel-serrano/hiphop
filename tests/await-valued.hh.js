@@ -4,7 +4,7 @@
 var hh = require( "hiphop" );
 
 function foo( evt ) {
-   console.log( "foo called by", evt.signalName, "with value", evt.signalValue );
+   console.log( "foo called by", evt.type, "with value", evt.nowval );
 }
 
 hiphop module prg( in I, out O ) {

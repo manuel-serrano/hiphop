@@ -1,2 +1,2 @@
-{ signalName: 'S', signalValue: 2, stopPropagation: [Function] }
-{ signalName: 'S', signalValue: 2, stopPropagation: [Function] }
+{ type: 'S', nowval: 2 }
+{ type: 'S', nowval: 2 }

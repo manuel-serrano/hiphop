@@ -3,12 +3,12 @@
 var hh = require("hiphop");
 
 function foo(evt) {
-   console.log("hi from foo signal", evt.signalName, "is set!")
+   console.log("hi from foo signal", evt.type, "is set!")
 }
 
 function bar(evt) {
-   console.log("hi from bar signal", evt.signalName, "is set with value",
-	       evt.signalValue, "!")
+   console.log("hi from bar signal", evt.type, "is set with value",
+	       evt.nowval, "!")
 }
 
 var inSig={accessibility:hh.IN};

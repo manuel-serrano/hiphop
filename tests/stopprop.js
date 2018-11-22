@@ -13,16 +13,16 @@ var prg =
 var m = new hh.ReactiveMachine(prg, "foo");
 
 m.addEventListener("O", function(evt) {
-   console.log("first", evt);
+   console.log("first", evt.type);
 });
 
 m.addEventListener("O", function(evt) {
    evt.stopPropagation();
-   console.log("second", evt);
+   console.log("second", evt.type);
 });
 
 m.addEventListener("O", function(evt) {
-   console.log("third", evt);
+   console.log("third", evt.type);
 });
 
 exports.prg = m;

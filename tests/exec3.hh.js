@@ -14,7 +14,7 @@ hiphop module prg( O ) {
 var machine = new hh.ReactiveMachine( prg, "exec" );
 
 machine.addEventListener( "O", function( evt ) {
-   console.log( "O=" + evt.signalValue.val + " emitted!" );
+   console.log( "O=" + evt.nowval.val + " emitted!" );
 } );
 
 machine.react();
