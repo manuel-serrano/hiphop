@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Nov 21 14:24:38 2018 (serrano)                */
+/*    Last change :  Thu Nov 22 14:18:40 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1445,6 +1445,17 @@ function parseSignal( token ) {
 	 inits.push( initfunc );
       }
       
+      if( isIdToken( this, this.peekToken(), "combine" ) ) {
+	 const locc = this.consumeAny().location;
+	 const fun = this.parseCondExpression();
+
+	 const combine = astutils.J2SDataPropertyInit(
+	    loc,
+	    astutils.J2SString( loc, "combine_func" ),
+	    fun );
+	 inits.push( combine );
+      }
+
       const attrs = astutils.J2SObjInit( loc, inits );
       return astutils.J2SCall( loc, hhref( loc, "SIGNAL" ), null,
 			       [ attrs ].concat( accessors ) );
@@ -1462,9 +1473,9 @@ function parseSignal( token ) {
 	    if( this.peekToken().type === this.EGAL ) {
 	       this.consumeAny();
 	       const { expr, accessors } = parseHHExpression.call( this );
-	       args.push( signal( t.location, t.value, "INOUT", expr, accessors ) );
+	       args.push( signal.call( this, t.location, t.value, "INOUT", expr, accessors ) );
 	    } else {
-	       args.push( signal( t.location, t.value, "INOUT", false, [] ) );
+	       args.push( signal.call( this, t.location, t.value, "INOUT", false, [] ) );
 	    }
 	 }
 	 switch( this.peekToken().type ) {

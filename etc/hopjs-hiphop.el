@@ -1,10 +1,10 @@
 ;; -*- mode: lisp -*-
 ;*=====================================================================*/
-;*    serrano/prgm/project/hiphop/hiphop/etc/hopjs-hiphop.el.in        */
+;*    serrano/prgm/project/hiphop/hiphop/etc/hopjs-hiphop.el           */
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Sun Nov 11 00:30:31 2018 (serrano)                */
+;*    Last change :  Thu Nov 22 14:02:56 2018 (serrano)                */
 ;*    Copyright   :  2018 Manuel Serrano                               */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
@@ -79,8 +79,6 @@ Set this to nil if you don't want a modeline indicator."
       (setq font-lock-defaults '(hiphop-font-lock-keywords))))
   (font-lock-mode nil)
   (font-lock-mode t)
-  ;; the custom indentation
-;*   (hiphop-custom-indent)                                            */
   ;; we end with the hiphop hooks
   (run-hooks 'hiphop-mode-hook)
   t)
