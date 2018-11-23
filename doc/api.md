@@ -35,8 +35,7 @@ proceeds as follows for each argument:
   * runs a reaction.
 
 
-The `react` function returns the machine itself.
-
+The `react` function returns the machine itself. 
 
 Example:
 
@@ -51,6 +50,16 @@ m.react( { O: 24, P: 53 } );
 m.react( { O: 56 } );
 m.react( { O: 77 } );
 m.react( { P: 10 } );
+```
+
+After a reaction, each output signal of the main program module is
+bound in the machine as a JavaScript property. For instance, is a
+reaction emits the signal `O` with value `1` at the first reaction
+of the machine `m` and `O` with value `2` at the second reaction, checking 
+`m.O` after that reaction would return:
+
+```
+{ nowval: 2, preval: 1, now: true, pre: true }
 ```
 
 ### mach.input( sigset ) ###
@@ -80,10 +89,10 @@ Interacing with HipHop reactive machines
 
 Associate a listener to the machine event `signame`.
 
-Listener are invoked with one object with one or two fields:
+Listeners are invoked with one object with one or two fields:
 
-  * `signalName`: the name of the emitted output signal;
-  * `signalValue`: the value of the signal at the end of the reaction.
+  * `type`: the name of the emitted output signal;
+  * `nowval`: the value of the signal at the end of the reaction.
  This field exists only for valued signals. This field is immutable;
 
 
