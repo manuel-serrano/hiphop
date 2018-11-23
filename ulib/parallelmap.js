@@ -32,7 +32,7 @@ const PARALLELMAP = (attrs) => {
       }
    }
 
-   sigName = lang.get_signame_list(attrs, lang.format_loc(attrs))[0];
+   sigName = lang.getSignalNameList( "PARALLEMAP", attrs, lang.format_loc(attrs))[0];
    if (!sigName) {
       throw new error.SyntaxError("Signal name is missing.", loc);
    }
