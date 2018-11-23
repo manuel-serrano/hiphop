@@ -18,8 +18,8 @@ const prg =
 		  self.notify(glob++, false);
 	       }, 1000, this);
 	    }}
-	      susp=${function() {console.log("suspended.");}}
-	      res=${function() {console.log("resumed.");}}/>
+	      suspApply=${function() {console.log("suspended.");}}
+	      resApply=${function() {console.log("resumed.");}}/>
 	    <hh.emit OT apply=${function() {return this.T.nowval}}/>
 	  </hh.suspend>
 	  <hh.emit O/>

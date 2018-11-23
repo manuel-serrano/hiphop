@@ -13,7 +13,7 @@ const mach = new hh.ReactiveMachine(
 	 </hh.sequence>
 	 <hh.exec apply=${function() {
 	    		     setTimeout(this.notify.bind( this ), 1000)}}
-		  kill=${function() {
+		  killApply=${function() {
 		     console.log("been killed");
 		  }}/>
        </hh.parallel>

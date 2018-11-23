@@ -11,7 +11,7 @@ const mach = new hh.ReactiveMachine(
 	     <hh.exec apply=${function() {
 	     			 setTimeout(this.notify.bind( this ), 100);
 	     		      }}
-	     	      kill=${function() {
+	     	      killApply=${function() {
 	     		 	console.log("killed");
 		      	     }}/>
 	     <hh.atom apply=${() => console.log('tick 10s')}/>

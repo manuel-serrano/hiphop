@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Nov 23 11:17:15 2018 (serrano)                */
+/*    Last change :  Fri Nov 23 18:07:49 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1255,7 +1255,7 @@ function parseExec( token ) {
       this.consumeAny();
       const block = this.parseBlock();
       inits.push( astutils.J2SDataPropertyInit(
-	 loc, astutils.J2SString( loc, "kill" ),
+	 loc, astutils.J2SString( loc, "killApply" ),
 	 astutils.J2SMethod( loc, "execkill", [], block, self( loc ) ) ) );
    }
    
@@ -1263,7 +1263,7 @@ function parseExec( token ) {
       this.consumeAny();
       const block = this.parseBlock();
       inits.push( astutils.J2SDataPropertyInit(
-	 loc, astutils.J2SString( loc, "susp" ),
+	 loc, astutils.J2SString( loc, "suspApply" ),
 	 astutils.J2SMethod( loc, "execsusp", [], block, self( loc ) ) ) );
    }
    
@@ -1271,7 +1271,7 @@ function parseExec( token ) {
       this.consumeAny();
       const block = this.parseBlock();
       inits.push( astutils.J2SDataPropertyInit(
-	 loc, astutils.J2SString( loc, "res" ),
+	 loc, astutils.J2SString( loc, "resApply" ),
 	 astutils.J2SMethod( loc, "execresume", [], block, self( loc ) ) ) );
    }
    

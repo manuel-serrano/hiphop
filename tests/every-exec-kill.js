@@ -9,7 +9,7 @@ const mach = new hh.ReactiveMachine(
 	  console.log("start", this.id);
 	    setTimeout(this.notifyAndReact, 500);
 	 }}
-		  kill=${function() {
+		  killApply=${function() {
 		     console.log("killed", this.id);
 		  }}
 
