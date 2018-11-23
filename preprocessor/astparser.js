@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Nov 22 14:18:40 2018 (serrano)                */
+/*    Last change :  Fri Nov 23 11:17:15 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -164,7 +164,8 @@ function parseHHThisExpr( parser, iscnt = false ) {
 
    const hhparser = function( token ) {
       const loc = token.location;
-      let pre = false, val = false, access = "present";
+      const access = token.value;
+      let pre = false, val = false;
       
       this.consumeToken( this.LPAREN );
       
@@ -175,9 +176,9 @@ function parseHHThisExpr( parser, iscnt = false ) {
 
       switch( token.value ) {
 	 case "now": break;
-	 case "pre": pre = true; access = "prePresent"; break;
-	 case "nowval": val = true; access = "value"; break;
-	 case "preval": pre = true, val = true; access = "preValue"; break;
+	 case "pre": pre = true; break;
+	 case "nowval": val = true; break;
+	 case "preval": pre = true, val = true; break;
       }
 
       const signame = astutils.J2SDataPropertyInit(
@@ -240,8 +241,9 @@ function parseHHThisBlock() {
    let accessors = [];
 
    const hhparser = function( token ) {
-      const loc = token.location
-      let pre = false, val = false, access = "present";
+      const loc = token.location;
+      const access = token.value;
+      let pre = false, val = false;
       
       this.consumeToken( this.LPAREN );
       
@@ -252,9 +254,9 @@ function parseHHThisBlock() {
 
       switch( token.value ) {
 	 case "now": break;
-	 case "pre": pre = true; access = "prePresent"; break;
-	 case "nowval": val = true; access = "value"; break;
-	 case "preval": pre = true, val = true; access = "preValue"; break;
+	 case "pre": pre = true; break;
+	 case "nowval": val = true; break;
+	 case "preval": pre = true, val = true; break;
       }
 
       const signame = astutils.J2SDataPropertyInit(
