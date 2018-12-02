@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Nov 23 18:07:49 2018 (serrano)                */
+/*    Last change :  Sun Dec  2 06:42:25 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1538,22 +1538,14 @@ function parseStmt( token, declaration ) {
 	       return parseAtom.call( this, next );
 	    case "module":
 	      return parseMachineModule.call( this, next, declaration, "MODULE" );
-/* 	    case "nothing":                                            */
-/* 	       return parseNothing.call( this, next );                 */
-/* 	    case "pause":                                              */
-/* 	       return parsePause.call( this, next );                   */
 	    case "halt":
 	       return parseHalt.call( this, next );
-/* 	    case "sequence":                                           */
-/* 	       return parseSequence.call( this, next );                */
 	    case "fork":
 	       return parseFork.call( this, next );
 	    case "emit":
 	       return parseEmit.call( this, next );
 	    case "sustain":
 	       return parseSustain.call( this, next );
-/* 	    case "if":                                                 */
-/* 	       return parseIf.call( this, next );                      */
 	    case "abort":
 	       return parseAbort.call( this, next );
 	    case "weakabort":
@@ -1564,10 +1556,6 @@ function parseStmt( token, declaration ) {
 	       return parseLoop.call( this, next );
 	    case "every":
 	       return parseEvery.call( this, next );
-/* 	    case "loopeach":                                           */
-/* 	       return parseLoopeach.call( this, next );                */
-/* 	    case "local":                                              */
-/* 	       return parseLocal.call( this, next );                   */
 	    case "async":
 	       return parseExec.call( this, next );
 	    case "run":

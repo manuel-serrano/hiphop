@@ -3,7 +3,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Nov 13 10:52:14 2018                          */
-;*    Last change :  Tue Nov 20 14:38:26 2018 (serrano)                */
+;*    Last change :  Sun Dec  2 07:04:47 2018 (serrano)                */
 ;*    Copyright   :  2018 Manuel Serrano                               */
 ;*    -------------------------------------------------------------    */
 ;*    Patching the AST built by the native parser                      */
@@ -28,22 +28,23 @@
 	    (let* ((venv (collect-var* node))
 		   (lenv (collect-let* (list node)))
 		   (axs (collect-accessor* node (append venv lenv))))
-	       ;; axs is the list of nodes that must be rewritten, it
-	       ;; enables us to first compute the list of local variables
-	       ;; that must be bound to hold the signal values.
 	       (cond
 		  ((null? axs)
 		   node)
 		  ((isa? node J2SExpr)
 		   (with-access::J2SExpr node (loc)
-		      (instantiate::J2SBindExit
-			 (loc loc)
-			 (lbl #f)
-			 (stmt (node->accessors
-				  (instantiate::J2SReturn
+		      (let* ((ret (instantiate::J2SReturn
 				     (loc loc)
-				     (expr node))
-				  axs iscnt hhname accessors %this)))))
+				     (expr node)))
+			     (be (instantiate::J2SBindExit
+				    (loc loc)
+				    (lbl #f)
+				    (stmt (node->accessors
+					     ret
+					     axs iscnt hhname accessors %this)))))
+			 (with-access::J2SReturn ret (from)
+			    (set! from be)
+			    be))))
 		  (else
 		   (node->accessors node axs iscnt hhname accessors %this)))))
 	 2 'AstHipHopAccess)

@@ -75,7 +75,7 @@
 
 <HHLet> --> let <Declaration> ... <Declaration>
 
-<Declaration> --> <Identifier> | <Identifier> = <Expression>
+<Declaration> --> <Identifier> | <Identifier> = <HHExpression>
 
 <HHSignal> --> signal <Signal> | signal [mirror] <Intf>
 
