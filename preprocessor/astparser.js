@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sun Dec  2 06:42:25 2018 (serrano)                */
+/*    Last change :  Sun Dec 23 07:47:37 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -631,32 +631,32 @@ function parseInterfaceIntflist() {
       } 
       
       const token = this.peekToken()
-      const loc = token.location;
-      const tag = tagInit( "interface", loc );
-      const { expr: intf, accessors } = parseHHExpression.call( this );
-      
-      if( accessors.length !== 0 ) {
-	 throw error.SyntaxError( "illegal interface expression",
-				     tokenLocation( token ) );
-      }
+      	 const loc = token.location;
+      	 const tag = tagInit( "interface", loc );
+      	 const { expr: intf, accessors } = parseHHExpression.call( this );
+      	 
+      	 if( accessors.length !== 0 ) {
+	    throw error.SyntaxError( "illegal interface expression",
+	       tokenLocation( token ) );
+      	 }
 	 
-      const attrs = astutils.J2SObjInit(
-	 loc,
-	 [ astutils.J2SDataPropertyInit(
+      	 const attrs = astutils.J2SObjInit(
 	    loc,
-	    astutils.J2SString( loc, "value" ),
-	    intf ),
-	   astutils.J2SDataPropertyInit(
-	      loc,
-	      astutils.J2SString( loc, "mirror" ),
-	      astutils.J2SBool( loc, mirror ) ),
-	   locInit( loc ), tag ] );
-      const intf = 
+	    [ astutils.J2SDataPropertyInit(
+	    	 loc,
+	    	 astutils.J2SString( loc, "value" ),
+	    	 intf ),
+	      astutils.J2SDataPropertyInit(
+	      	 loc,
+	      	 astutils.J2SString( loc, "mirror" ),
+	      	 astutils.J2SBool( loc, mirror ) ),
+	      locInit( loc ), tag ] );
+      	 const intf = 
 	    astutils.J2SCall( loc, hhref( loc, "INTF" ), null, [ attrs ] );
-      args.push( intf );
+      	 args.push( intf );
    } while( this.peekToken().type === this.COMMA ? (this.consumeAny(), true) : false )
-   
-   return args;
+   	
+   	return args;
 }
    
 /*---------------------------------------------------------------------*/
@@ -1295,14 +1295,33 @@ function parseRun( token ) {
    let inits = [ locInit( loc ), tag ];
    
    const { expr: call, accessors } = parseHHRunExpression.call( this );
-
+   
    if( !(typeof call === "J2SCall" ) ) {
       throw error.SyntaxError( "RUN: bad form", tokenLocation( token ) );
    } else {
       const module = call.fun;
       const args = call.args;
-      inits.push( astutils.J2SDataPropertyInit(
-	 loc, astutils.J2SString( loc, "module" ), module ) );
+      
+      switch( typeof module ) {
+	 case "J2SDollar":
+      	    inits.push( astutils.J2SDataPropertyInit(
+	 		   loc, astutils.J2SString( loc, "module" ), 
+			   module.node ) );
+	    break;
+	    
+	 case "J2SUnresolvedRef":
+      	    inits.push( astutils.J2SDataPropertyInit(
+	 		   location( module.loc ), 
+			   astutils.J2SString( loc, "module" ), 
+			   astutils.J2SCall( loc, hhref( loc, "getModule" ),
+			      null, 
+			      [ astutils.J2SString( loc, module.id ),
+			      	location( module.loc ) ] ) ) );
+	    break;
+
+	 default:
+      	    throw error.SyntaxError( "RUN: bad module", tokenLocation( token ) );
+      }
 
       if( typeof args === "pair" ) {
 	 args.forEach( a => {

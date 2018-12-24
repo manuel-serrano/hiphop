@@ -101,7 +101,7 @@
 
 <HHLoop> --> loop <HHBlock>
 
-<HHAsync> --> async [ <Identifier> ] HHBLock <HHAsyncKill> <HHAsyncSuspend>  <HHAsyncResume>
+<HHAsync> --> async [ <Identifier> ] HHBLock <HHAsyncKill> <HHAsyncSuspend> <HHAsyncResume>
 
 <HHAsyncKill> --> | kill <HHBlock>
 
@@ -109,7 +109,9 @@
 
 <HHAsyncResume> --> | resume <HHBlock>
 
-<HHRun> --> <HHExpression>( <HHSigRun )
+<HHRun> --> <HHDollarIdent>( <HHSigRun )
+
+<HHDollarIdent> --> <HHDollarExpression> | <Identifier>
 
 <HHSigRun> --> <Identifier> | <Identifier> = <Identifier>
 

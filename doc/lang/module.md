@@ -88,7 +88,21 @@ via the run syntactif form.
 ### run module( arg, ... ) ###
 [:@glyphicon glyphicon-tag syntax]
 
-[Forma syntax](./syntax#HHRun). 
+[Formal syntax](./syntax#HHRun). 
+
+The module can either be:
+
+  1. `ident`, this identifier refers to a module declared under that name.
+ Its is an error to refer to an unbound module.
+  2. a dollar expression, which must evaluate to a module. If it fails to do
+ so, a `TypeError` is signal when the program is construct.
+ 
+${ <span class="label label-warning">Note:</span> } The module resolution
+always take place *before* the HipHop execution. That is, when a 
+module identifier is used, that identifier is searched before the execution,
+when a dollar expression is used, that expression is evaluated *before* the
+HipHop execution.
+
 
 The arguments can either be:
 
