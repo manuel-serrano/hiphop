@@ -47,7 +47,7 @@
 
 <IntfList> --> <Intf>, ... <Intf>
 
-<Intf> --> <HHExpression>
+<Intf> --> <HHDollarIdent>
 
 <FormalSignalList> --> | <GlobalSignal>, ... <GlobalSignal>
 
@@ -111,8 +111,6 @@
 
 <HHRun> --> <HHDollarIdent>( <HHSigRun )
 
-<HHDollarIdent> --> <HHDollarExpression> | <Identifier>
-
 <HHSigRun> --> <Identifier> | <Identifier> = <Identifier>
 
 <HHEvery> --> every( <HHDelay> ) <HHBlock>
@@ -129,3 +127,5 @@
 <HHYield> --> yield
 
 <HHDollarExpression> --> ${ <Expression> }
+
+<HHDollarIdent> --> <HHDollarExpression> | <Identifier>

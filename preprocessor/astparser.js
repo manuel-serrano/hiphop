@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sun Dec 23 07:47:37 2018 (serrano)                */
+/*    Last change :  Mon Dec 24 10:01:33 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -515,10 +515,10 @@ function parseHHBlock( consume = true ) {
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
 /*       | MODULE [ident] ( signal, ... )                              */
-/*           [implements hhexpr, ...] block                            */
+/*           [implements dollarexpr, ...] block                        */
 /*       | MACHINE [ident] ( signal, ... )                             */
-/*           [implements hhexpr, ...] block                            */
-/*    intf ::= [mirror] ident | [mirro] $dollar                        */
+/*           [implements dollarexpr, ...] block                        */
+/*    intf ::= [mirror] ident | [mirror] $dollar                       */
 /*    signal ::= [direction] ident [combine]                           */
 /*    direction ::= in | out | inout                                   */
 /*    combine ::= combine expr                                         */
@@ -571,7 +571,7 @@ function parseMachineModule( token, declaration, ctor ) {
 /*    parseInterface ...                                               */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | interface ident ( signal, ... ) [extends hhexpr, ...]       */
+/*       | interface [ident] ( signal, ... ) [extends dollarexpr, ...] */
 /*---------------------------------------------------------------------*/
 function parseInterface( token, declaration ) {
    const loc = token.location;
@@ -630,33 +630,45 @@ function parseInterfaceIntflist() {
 	 this.consumeAny();
       } 
       
-      const token = this.peekToken()
-      	 const loc = token.location;
-      	 const tag = tagInit( "interface", loc );
-      	 const { expr: intf, accessors } = parseHHExpression.call( this );
-      	 
-      	 if( accessors.length !== 0 ) {
-	    throw error.SyntaxError( "illegal interface expression",
-	       tokenLocation( token ) );
-      	 }
-	 
-      	 const attrs = astutils.J2SObjInit(
-	    loc,
-	    [ astutils.J2SDataPropertyInit(
-	    	 loc,
-	    	 astutils.J2SString( loc, "value" ),
-	    	 intf ),
-	      astutils.J2SDataPropertyInit(
-	      	 loc,
-	      	 astutils.J2SString( loc, "mirror" ),
-	      	 astutils.J2SBool( loc, mirror ) ),
-	      locInit( loc ), tag ] );
-      	 const intf = 
-	    astutils.J2SCall( loc, hhref( loc, "INTF" ), null, [ attrs ] );
-      	 args.push( intf );
+      const token = this.peekToken();
+      const loc = token.location;
+      const tag = tagInit( "interface", loc );
+      let expr;
+      
+      switch( token.type ) {
+	 case this.DOLLAR:
+	    expr = this.parseDollarExpression().node;
+	    break;
+	    
+	 case this.ID:
+	    this.consumeAny();
+	    expr = astutils.J2SCall( loc, hhref( loc, "getInterface" ),
+	       null, 
+	       [ astutils.J2SString( loc, token.value ),
+		 location( loc ) ] );
+	    break;
+	    
+	 default: 
+	    throw error.SyntaxError( "interface: bad interface", tokenLocation( token ) );
+      }
+      
+      const attrs = astutils.J2SObjInit(
+	 loc,
+	 [ astutils.J2SDataPropertyInit(
+	      loc,
+	      astutils.J2SString( loc, "value" ),
+	      expr ),
+	   astutils.J2SDataPropertyInit(
+	      loc,
+	      astutils.J2SString( loc, "mirror" ),
+	      astutils.J2SBool( loc, mirror ) ),
+	   locInit( loc ), tag ] );
+      const intf = 
+	 astutils.J2SCall( loc, hhref( loc, "INTF" ), null, [ attrs ] );
+      args.push( intf );
    } while( this.peekToken().type === this.COMMA ? (this.consumeAny(), true) : false )
-   	
-   	return args;
+   
+   return args;
 }
    
 /*---------------------------------------------------------------------*/
@@ -1285,7 +1297,8 @@ function parseExec( token ) {
 /*    parseRun ...                                                     */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | run hhexpr( sigalias, ... )                                 */
+/*       | run dollarexpr ( sigalias, ... )                            */
+/*    dollarexpr ::= $dollar | hhexpr                                  */
 /*    sigalias ::= ident | ident = ident                               */
 /*---------------------------------------------------------------------*/
 function parseRun( token ) {

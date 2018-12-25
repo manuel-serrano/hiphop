@@ -11,7 +11,7 @@ const m = new hh.ReactiveMachine(
       loop {
 	 hop { console.log( ">>> start" ) };
 	 if( 1 ) {
-	    run pauseModule();
+	    run ${pauseModule}();
 	 } else {
 	    yield;
 	 }
