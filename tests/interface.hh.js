@@ -12,7 +12,7 @@ hiphop module M2() implements I2 {
 }
 
 hiphop module M1( Z ) implements I1 {
-   run M2( D = Z, ... );
+   run M2( D as Z, ... );
 }
 
 const m = new hh.ReactiveMachine( M1 );

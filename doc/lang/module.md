@@ -5,21 +5,25 @@ ${ var ROOT = path.dirname( module.filename ) }
 HipHop Module
 =============
 
-Modules are the HipHop execution unit. A Module can be
+Modules are the HipHop execution units. Modules can be
 [loaded](./api.html) into a reactive machine or _ran_ by another
-module.  Modules are lexically scoped and each module introduces it own
+module. Modules are lexically scoped and each module introduces it own
 signal and trap scopes. That is:
 
   * a module can only use the signal
  it defines, either in its argument list or locally;
   * trap labels are only visible inside a module .
 
-
 ### module [ident]( arg, ... ) [implements [mirror] intf, ...] { ... } ###
 [:@glyphicon glyphicon-tag syntax]
 
 [Formal syntax](./syntax.html#HHModule)
 
+Modules parameters are either _signals_ or _variables_. Variables 
+are equivalent to variables declared with `var` or `let` forms. They
+denotes Hop values that can be used in any expressions of the module.
+They are passed to the module with the `run` form.
+  
 Modules body constist of HipHop
 [statements](./syntax.html#HHStatement). The arguments, which are
 signal declarations, constitute its interface. Module arguments are
@@ -28,7 +32,7 @@ signals. Here is an example of a module with an input, an output
 signal, and an input/output signal:
 
 ```hiphop
-module mod( in S, out T, inout U ) { ; }
+module mod( in S, out T, inout U, var x ) { ; }
 ```
 
 
@@ -107,15 +111,18 @@ HipHop execution.
 The arguments can either be:
 
   1. `ident`;
-  2. `ident=ident`;
-  1. `...`.
+  2. `ident as ident`;
+  3. `ident=expression`;
+  4. `...`.
 
 When a module is ran the signal of the callee must be _linked_ to the
 caller signals. The purpose of the arguments is to specify are to
-proceed to this linking. The first form links a caller signal and a callee
-signal whose names are both `ident`. The second form links the signals
-of two different names. The third form links all the caller modules
-that are defined at the `run` location whose name matches a callee signal.
+proceed to this linking and to pass values to variable arguments. The
+first form links a caller signal and a callee signal whose names are
+both `ident`. The second form links the signals of two different
+names. The third assigned the module variable parameter to
+`expression`. The fourth form links all the caller modules that are
+defined at the `run` location whose name matches a callee signal.
 
 
 Top level Definitions

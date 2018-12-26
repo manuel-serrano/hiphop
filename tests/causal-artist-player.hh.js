@@ -25,7 +25,7 @@ function prg2() {
 hiphop module prg( artist, playlist, exit ) {
    abort( exit.now ) {
       fork {
-	 run ${prg2()}( artist=artist, playlist=playlist );
+	 run ${prg2()}( artist as artist, ... );
       } par {
 	 every( artist.now ) {
 	    hop { console.log( "***ARTIST***", artist.nowval ) };

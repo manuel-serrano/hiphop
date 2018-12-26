@@ -20,8 +20,8 @@ hiphop module m2( in S, in U, A, B ) {
 
    emit L();
 
-   run m1( T=S, W=U, V=A, Z=B );
-   run m1( T=S, W=U, V=A, Z=B );
+   run m1( T as S, W as U, V as A, Z as B );
+   run m1( T as S, W as U, V as A, Z as B );
 }
 
 exports.prg = new hh.ReactiveMachine( m2, "run22" );

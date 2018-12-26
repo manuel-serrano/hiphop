@@ -39,7 +39,7 @@
 
 <HHModule> --> module <HHMachineModule>
 
-<HHMachineModule> --> [ <Identifier> ] [implements <MirrorIntfList>] ( <FormalSignalList> ) <HHBlock>
+<HHMachineModule> --> [ <Identifier> ] [implements <MirrorIntfList>] ( <FormalSignalVarList> ) <HHBlock>
 
 <HHInterface> --> interface [ <Identifier> ] [extends <IntfList>]
 
@@ -49,7 +49,9 @@
 
 <Intf> --> <HHDollarIdent>
 
-<FormalSignalList> --> | <GlobalSignal>, ... <GlobalSignal>
+<FormalSignalValList> --> | <GlobalSignalorVar>, ... <GlobalSignalorVar>
+
+<GlobalSignalorVar> --> <Direction> <Signal> | var <Identifier>
 
 <GlobalSignal> --> <Direction> <Signal>
 
@@ -111,7 +113,9 @@
 
 <HHRun> --> <HHDollarIdent>( <HHSigRun )
 
-<HHSigRun> --> <Identifier> | <Identifier> = <Identifier>
+<HHSigRun> --> <Identifier>
+  | <Identifier> as <Identifier>
+  | <Identifer> = <HHExpression> 
 
 <HHEvery> --> every( <HHDelay> ) <HHBlock>
 
