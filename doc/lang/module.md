@@ -110,10 +110,10 @@ HipHop execution.
 
 The arguments can either be:
 
-  1. `ident`;
-  2. `ident as ident`;
-  3. `ident=expression`;
-  4. `...`.
+  1. `ident`
+  2. `ident as ident`
+  3. `ident=expression`
+  4. `...`
 
 When a module is ran the signal of the callee must be _linked_ to the
 caller signals. The purpose of the arguments is to specify are to
@@ -209,6 +209,37 @@ ${ <span class="label label-info">imirror.hh.js</span> }
 ```hiphop
 ${ doc.include( ROOT + "/../../tests/imirror.hh.js" ) }
 ```
+
+### Generated Modules ###
+
+This example uses a module generator (the function `Timer`). HipHop modules are
+lexically scopped with regard to Hop environment so all the expressions they
+contain can refer to Hop variables bound in the environment. In this example,
+the function parameter `timeout` is used in the `async` form to set the
+timeout duration.
+
+The new modules are directly created when run, using the dollar-form
+in the main HipHop program. 
+
+${ <span class="label label-info">run3.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../../tests/run3.hh.js" ) }
+```
+
+### Modules Variables ###
+
+This example shows how to use module variable parameters. In that example,
+two instances of the smae module `mod` are executed in parallel construct,
+each invoking the module with a different variable paramter value. This
+example shows, that each instance "sees" its own copy of the parameter.
+
+${ <span class="label label-info">run4.hh.js</span> }
+
+```hiphop
+${ doc.include( ROOT + "/../../tests/run4.hh.js" ) }
+```
+
 
 ### Example of Dynamically Generated Interfaces ###
 
