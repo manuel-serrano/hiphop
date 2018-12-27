@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Dec 25 08:26:10 2018 (serrano)                */
+/*    Last change :  Thu Dec 27 07:32:56 2018 (serrano)                */
 /*    Copyright   :  2018 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -526,16 +526,6 @@ function parseHHBlock( consume = true ) {
 /*    combine ::= combine expr                                         */
 /*---------------------------------------------------------------------*/
 function parseMachineModule( token, declaration, ctor ) {
-   
-   function varDecl( tok ) {
-      const loc = tok.location;
-      const id = tok.value;
-      const val = astutils.J2SAccess(
-	 loc, hhref( loc, "runFrame" ),
-	 astutils.J2SString( loc, id ) );
-      return astutils.J2SDeclInit( loc, id, val );
-   }
-   
    const loc = token.location;
    const tag = tagInit( ctor.toLowerCase(), loc );
    let id;
@@ -571,7 +561,8 @@ function parseMachineModule( token, declaration, ctor ) {
    
    if( vars.length !== 0 ) {
       const decls = 
-	 vars.map( tok => astutils.J2SDecl( tok.location, tok.value, "param" ) );
+	 vars.map( tok => astutils.J2SDecl( tok.location, tok.value ) );
+      const framep = astutils.J2SDecl( loc, "__frame", "param" );
       const assigframe = astutils.J2SSeq(
 	 loc, 
 	 decls.map( d => astutils.J2SStmtExpr( 
@@ -579,32 +570,42 @@ function parseMachineModule( token, declaration, ctor ) {
 		       astutils.J2SAssig( loc, 
 			  astutils.J2SRef( loc, d ),
 		       	  astutils.J2SAccess( loc, 
-			     hhref( loc, "runFrame" ),
+			     astutils.J2SRef( loc, framep ), 
 			     astutils.J2SString( loc, d.id ) ) ) ) ) );
       const ablock = astutils.J2SBlock( loc, loc, [ assigframe ] );
       const appl = astutils.J2SDataPropertyInit( loc, 
 	 astutils.J2SString( loc, "apply" ),
-	 astutils.J2SMethod( loc, "atomfun", [], ablock, self( loc ) ) );
+	 astutils.J2SMethod( loc, "framefun", [ framep ], ablock, self( loc ) ) );
       const aattrs = astutils.J2SObjInit( 
-	 loc, [ locInit( loc ), tagInit( "hop", loc ), appl ] );
+	 loc, [ locInit( loc ), tagInit( "frame", loc ), appl ] );
+      const sattrs = astutils.J2SObjInit( 
+	 loc, [ locInit( loc ), tagInit( "frame", loc ) ] );
       const atom = astutils.J2SCall( loc, 
 	 hhref( loc, "ATOM" ), null, [ aattrs ] );
-      const seqattrs = astutils.J2SObjInit( loc, [ locInit( loc ) ] );
-      const seq = astutils.J2SCall( 
-	 loc, hhref( loc, "SEQUENCE" ), 
-	 null, [ seqattrs, atom ].concat( stmts ) );
       
-      const val = astutils.J2SCall( loc, hhref( loc, ctor ), 
+      const val = astutils.J2SCall( loc, hhref( loc, "SEQUENCE" ), 
       	 null,
-      	 [ attrs ].concat( sigs, [ seq ] ) );
+      	 [ sattrs, atom ].concat( stmts ) );
       
       const ret = astutils.J2SReturn( loc, val );
-      const block = astutils.J2SBlock( loc, loc, [ ret ] );
-      const fun = astutils.J2SFun( loc, "letfun", decls, block );
       
-      mod = astutils.J2SCall( 
-	 loc, fun, [ astutils.J2SUndefined( loc ) ], 
-	 vars.map( v => astutils.J2SUndefined( loc ) ) );
+      const cblock = astutils.J2SBlock( loc, loc, 
+	 [ astutils.J2SVarDecls( loc, decls ), ret ] );
+      const clone = astutils.J2SFun( loc, "letfun", [], cblock );
+      
+      const fattrs = astutils.J2SObjInit(
+	 loc,
+	 [ astutils.J2SDataPropertyInit(
+	      loc,
+	      astutils.J2SString( loc, "fun" ),
+	      clone ),
+	   locInit( loc ), tag ] );
+      const cfun = astutils.J2SCall( loc, hhref( loc, "FRAME" ), 
+	 null, [ fattrs ] );
+
+      mod = astutils.J2SCall( loc, hhref( loc, ctor ), 
+      	 null,
+      	 [ attrs ].concat( sigs, [ cfun ] ) );
    } else {
       mod = astutils.J2SCall( loc, hhref( loc, ctor ), 
       	 null,
@@ -1463,6 +1464,7 @@ function parseRun( token ) {
       
       if( this.peekToken().type === this.RPAREN ) {
 	 this.consumeAny();
+	    
 	 const attrs = astutils.J2SObjInit( loc, inits );
 	 const run = astutils.J2SCall( loc, hhref( loc, "RUN" ), null,
 	    [ attrs ].concat( axs ) );
@@ -1471,14 +1473,12 @@ function parseRun( token ) {
 	    return run;
 	 } else {
 	    const param = astutils.J2SDecl( loc, "__frame", "param" );
-	    const assigframe = 
-	       astutils.J2SStmtExpr( 
+	    const frame = astutils.J2SDataPropertyInit(
 	       loc, 
-	       astutils.J2SAssig( 
-	       	  loc, hhref( loc, "runFrame" ), 
-	       	  astutils.J2SRef( loc, param ) ) );
+	       astutils.J2SString( loc, "%frame" ),	
+	       astutils.J2SRef( loc, param ) );
 	    const ablock = astutils.J2SBlock( 
-	       loc, loc, exprs.concat( [ assigframe ] ) );
+	       loc, loc, exprs );
    	    const tag = tagInit( "hop", loc );
    	    const appl = astutils.J2SDataPropertyInit(
       	       loc, 
@@ -1498,6 +1498,8 @@ function parseRun( token ) {
       	    const block = astutils.J2SBlock( loc, loc, [ ret ] );
       	    const fun = astutils.J2SFun( loc, "runfun", [ param ], block );
 	    const arg = astutils.J2SObjInit( loc, finits );
+
+	    inits.push( frame );
 	    
       	    return astutils.J2SCall( 
 	       loc, fun, [ astutils.J2SUndefined( loc ) ], 
