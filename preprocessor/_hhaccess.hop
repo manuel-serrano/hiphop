@@ -3,8 +3,8 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Nov 13 10:52:14 2018                          */
-;*    Last change :  Sun Dec  2 07:04:47 2018 (serrano)                */
-;*    Copyright   :  2018 Manuel Serrano                               */
+;*    Last change :  Sat Jan 12 20:00:43 2019 (serrano)                */
+;*    Copyright   :  2018-19 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    Patching the AST built by the native parser                      */
 ;*=====================================================================*/
@@ -137,7 +137,7 @@
       ;; a new variable named after sig and initialized with a dummy
       ;; empty and sealed object
       (with-access::J2SAccess ax (loc obj field)
-	 (js-array-push accessors (accessor loc obj field) %this)
+	 (js-array-push accessors (accessor loc obj field) %this #f)
 	 (with-access::J2SUnresolvedRef obj (id)
 	    (instantiate::J2SDeclInit
 	       (loc loc)
