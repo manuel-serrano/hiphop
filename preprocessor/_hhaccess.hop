@@ -3,7 +3,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Nov 13 10:52:14 2018                          */
-;*    Last change :  Sat Jan 12 20:00:43 2019 (serrano)                */
+;*    Last change :  Tue Jan 15 12:28:54 2019 (serrano)                */
 ;*    Copyright   :  2018-19 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    Patching the AST built by the native parser                      */
@@ -47,7 +47,7 @@
 			    be))))
 		  (else
 		   (node->accessors node axs iscnt hhname accessors %this)))))
-	 2 'AstHipHopAccess)
+	 2 "AstHipHopAccess")
       #f %this))
 
 ;*---------------------------------------------------------------------*/
