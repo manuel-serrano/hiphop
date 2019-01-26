@@ -23,7 +23,6 @@ var BUTTON =
 	       ENTER_SET_ALARM_MODE_COMMAND=${sigOut}
 	       SET_ALARM_COMMAND=${sigOut}
 	       NEXT_ALARM_TIME_POSITION_COMMAND=${sigOut}
-	       EXIT_SET_WATCH_MODE_COMMAND=${sigOut}
 	       TOGGLE_ALARM_COMMAND=${sigOut}
 	       STOP_ALARM_BEEP_COMMAND=${sigOut}
 	       EXIT_SET_ALARM_MODE_COMMAND=${sigOut}>
