@@ -28,7 +28,7 @@ Run all the bodies in parallel. Complete when all bodies have completed.
 
 Example: 
 
-This example uses two nest `fork` constructs. The second is synchronized
+This example uses two nested `fork` constructs. The second is synchronized
 with the first as it waits for an event the first branch is to emit.
 
 ${ <span class="label label-info">parallel-unary.hh.js</span> }
