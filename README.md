@@ -3,7 +3,7 @@ HipHop: Reactive Web programming
 
 [![Travis](https://api.travis-ci.com/manuel-serrano/hiphop.svg)](https://travis-ci.com/manuel-serrano/hiphop/builds)
 
-__Hiphop.js__ is a [Hop.js](http://hop-dev.inria.fr) DLS for
+__Hiphop.js__ is a [Hop.js](http://hop-dev.inria.fr) DSL for
 orchestrating web applications.
 
 
