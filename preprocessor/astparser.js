@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sat Dec 29 17:24:54 2018 (serrano)                */
-/*    Copyright   :  2018 Manuel Serrano                               */
+/*    Last change :  Sun Feb  3 17:52:43 2019 (serrano)                */
+/*    Copyright   :  2018-19 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
 /*=====================================================================*/
@@ -1417,6 +1417,7 @@ function parseRun( token ) {
 	    
 	    switch( this.peekToken().type ) {
 	       case this.COMMA:
+	       case this.RPAREN:
 		  inits.push( astutils.J2SDataPropertyInit(
 				 a.location, astutils.J2SString( a.location, a.value ),
 				 astutils.J2SString( a.location, "" ) ) );
@@ -1453,8 +1454,8 @@ function parseRun( token ) {
 		  } else {
 		     const as = this.consumeToken( this.ID );
 	       	     inits.push( astutils.J2SDataPropertyInit(
-		  		    a.location, astutils.J2SString( a.location, a.value ),
-		  		    astutils.J2SString( as.location, as.value ) ) );
+		  		    a.location, astutils.J2SString( as.location, as.value ),
+		  		    astutils.J2SString( a.location, a.value ) ) );
 		  }
 	    }
 	    break;
