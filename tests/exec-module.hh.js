@@ -8,7 +8,7 @@ hiphop module M1( a ) {
 }
 
 hiphop machine m( a, b ) {
-   run M1( b as a );
+   run M1( a as b );
    yield;
    run M1( a );
 }
