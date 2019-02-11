@@ -16,7 +16,7 @@ service abro() {
 	     } every( R.now )
 	  }
    
-          prg.addEvenListener( "O", v => alert( "got O: " + v ) );
+          prg.addEventListener( "O", v => alert( "got O: " + v ) );
        </script>
      </head>
      <body>

@@ -13,7 +13,7 @@ How to use it?
 Pretty simple:
 
 * Install [Hop.js](http://hop-dev.inria.fr)
-* Download [Hiphop.js](https://www-sop.inria.fr/members/Colin.Vidal/hiphop/hiphopjs-0.0.1.tar.gz), and extract the tarball inside
+* Download [Hiphop.js](ftp://ftp-sop.inria.fr/indes/fp/HipHop), and extract the tarball inside
 `$HOME/.node\_modules/`
 
 You are now ready.
