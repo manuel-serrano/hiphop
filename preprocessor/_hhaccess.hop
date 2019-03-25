@@ -3,7 +3,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Nov 13 10:52:14 2018                          */
-;*    Last change :  Tue Jan 15 12:28:54 2019 (serrano)                */
+;*    Last change :  Mon Mar 25 18:36:26 2019 (serrano)                */
 ;*    Copyright   :  2018-19 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    Patching the AST built by the native parser                      */
@@ -121,6 +121,8 @@
       (with-access::J2SUnresolvedRef obj (id)
 	 (with-access::J2SString field (val)
 	    (cond
+	       ((string=? val "signame")
+		(sigaccess loc (symbol->string id) #f #f #f))
 	       ((string=? val "now")
 		(sigaccess loc (symbol->string id) #f #f #f))
 	       ((string=? val "nowval")
@@ -211,7 +213,8 @@
 		  (not (find-decl obj env)))
 	     (with-access::J2SUnresolvedRef obj (id)
 		(with-access::J2SString field (val)
-		   (if (and (or (string=? val "now")
+		   (if (and (or (string=? val "signame")
+				(string=? val "now")
 				(string=? val "nowval")
 				(string=? val "pre")
 				(string=? val "preval"))
