@@ -3,11 +3,13 @@
 
 const hh = require( "hiphop" );
 
-hiphop module setinterval( A ) {
+hiphop module setinterval( A, Tick ) {
    fork {
-      abort( count( 3, A.now ) ) {
+      abort( count( 3, Tick.now ) ) {
 	 async A {
-	    this.tmt = setInterval( this.react.bind( this ), 100 );
+	    function tick() { this.machine.react( Tick.signame ) };
+	    
+	    this.tmt = setInterval( tick, 100 );
 	 } kill {
 	    clearInterval( this.tmt );
 	 }

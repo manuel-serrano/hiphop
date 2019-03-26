@@ -64,14 +64,21 @@ Async JavaScript API
 JavaScript asynchronous blocks can use several functions to notify
 the reactive machine that their state have changed.
 
-### async.notify( value ) ###
+Inside the body of an `async` form, `this` is bound to the instance
+of the currently executing asynchronous block. The current machine
+executing that statement is retrieved with `this.machine`. 
+
+New reactions can be spawned from with a. `async` block. Example:
+
+```hiphop
+${ doc.include( ROOT + "/../../tests/setinterval.hh.js" ) }
+```
+
+### async.notify( value, [ react = true ] ) ###
 [:@glyphicon glyphicon-tag function]
 
 This function notifies the reactive machine that the `async` form has
 completed.
-
-### async.notifyAndReact( value ) ###
-[:@glyphicon glyphicon-tag function]
 
 This function notifies the reactive machine that the `async` form has
 completed and it emits the event that was associated with the form. How and 
@@ -86,7 +93,6 @@ considered:
  The property `val` is the value with which the Promise has resolved or
  rejected.
  
-
 Here is an example of an `async` block that uses a JavaScript Promise to
 resume the HipHop computation.
 
@@ -96,15 +102,21 @@ ${ <span class="label label-info">exec3.hh.js</span> }
 ${ doc.include( ROOT + "/../../tests/exec3.hh.js" ) }
 ```
 
-
-### async.react( value ) ###
-[:@glyphicon glyphicon-tag function]
-
-This function emits the event associated with the `async` form without
-notifying the completion of the call. It is to be used when an asynchronous
-needs to communicate several times with the machine, for instance for
-implementing a progress graphical component.
+The optional argument `react` controls whether a reaction should be 
+automatically triggered with the notification. If the `react` is `true`,
+a reaction to the machine is executed. The following asynchronous block:
 
 ```hiphop
-${ doc.include( ROOT + "/../../tests/setinterval.hh.js" ) }
+async {
+   this.notify( "complete" );
+}
+```
+
+is equivalent to:
+
+```hiphop
+async {
+   this.notify( "complete", false );
+   this.machine.react();
+}
 ```
