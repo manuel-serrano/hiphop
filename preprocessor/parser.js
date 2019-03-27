@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/hiphop/preprocessor/astparser.js     */
+/*    serrano/prgm/project/hiphop/hiphop/preprocessor/parser.js        */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Mon Feb 11 15:04:57 2019 (serrano)                */
+/*    Last change :  Wed Mar 27 11:38:32 2019 (serrano)                */
 /*    Copyright   :  2018-19 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1446,6 +1446,14 @@ function parseRun( token ) {
 		  axs = axs.concat( accessors );
 		  break;
 		  
+	       case this.LARROW:
+		  this.consumeAny();
+		  const as = this.consumeToken( this.ID );
+		  inits.push( astutils.J2SDataPropertyInit(
+				 a.location, astutils.J2SString( as.location, as.value ),
+				 astutils.J2SString( a.location, a.value ) ) );
+		  break;
+		  
 	       default:
 		  const as = this.consumeToken( this.ID );
 		  
@@ -1512,81 +1520,6 @@ function parseRun( token ) {
       } else {
 	 this.consumeToken( this.COMMA );
       }
-   }
-}
-
-function parseRunOLD( token ) {
-   const loc = token.location;
-   const next = this.peekToken();
-   const tag = tagInit( "run", loc );
-   let inits = [ locInit( loc ), tag ];
-   
-   const { expr: call, accessors } = parseHHRunExpression.call( this );
-   
-   if( !(typeof call === "J2SCall" ) ) {
-      throw error.SyntaxError( "RUN: bad form", tokenLocation( token ) );
-   } else {
-      const module = call.fun;
-      const args = call.args;
-      
-      switch( typeof module ) {
-	 case "J2SDollar":
-      	    inits.push( astutils.J2SDataPropertyInit(
-	 		   loc, astutils.J2SString( loc, "module" ), 
-			   module.node ) );
-	    break;
-	    
-	 case "J2SUnresolvedRef":
-      	    inits.push( astutils.J2SDataPropertyInit(
-	 		   location( module.loc ), 
-			   astutils.J2SString( loc, "module" ), 
-			   astutils.J2SCall( loc, hhref( loc, "getModule" ),
-			      null, 
-			      [ astutils.J2SString( loc, module.id ),
-			      	location( module.loc ) ] ) ) );
-	    break;
-
-	 default:
-      	    throw error.SyntaxError( "RUN: bad module", tokenLocation( token ) );
-      }
-
-      if( typeof args === "pair" ) {
-	 args.forEach( a => {
-	    if( typeof a === "J2SUnresolvedRef" ) {
-	       inits.push( astutils.J2SDataPropertyInit(
-		  a.loc, astutils.J2SString( a.loc, a.id ),
-		  astutils.J2SString( a.loc, "" ) ) );
-	    } else if( (typeof a === "J2SAssig") &&
-		       (typeof a.lhs === "J2SUnresolvedRef") &&
-		       (typeof a.rhs === "J2SUnresolvedRef") ) {
-	       inits.push( astutils.J2SDataPropertyInit(
-		  a.loc, astutils.J2SString( a.loc, a.lhs.id ),
-		  astutils.J2SString( a.loc, a.rhs.id ) ) );
-	    } else if( typeof a === "J2SLiteralValue" && a.val === undefined  ) {
-	       inits.push( astutils.J2SDataPropertyInit(
-		  a.loc, astutils.J2SString( a.loc, "autocomplete" ),
-		  astutils.J2SBool( a.loc, true ) ) );
-	    } else {
-	       let eloc;
-
-	       try {
-		  eloc = {
-		     filename: a.loc.cdr.car,
-		     pos: a.loc.cdr.cdr.car
-		  }
-	       } catch( _ ) {
-		  eloc = tokenLocation( token );
-	       }
-
-	       throw error.SyntaxError( "RUN: bad argument", eloc );
-	    }
-	 } );
-      }
-
-      const attrs = astutils.J2SObjInit( loc, inits );
-      
-      return astutils.J2SCall( loc, hhref( loc, "RUN" ), null,
-			       [ attrs ].concat( accessors ) );
    }
 }
 
