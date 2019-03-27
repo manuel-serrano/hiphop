@@ -117,6 +117,26 @@ is equivalent to:
 ```hiphop
 async {
    this.notify( "complete", false );
-   this.machine.react();
+   this.react();
 }
 ```
+
+### async.react( sigset ) ###
+[:@glyphicon glyphicon-tag function]
+
+Invokes the `react` method with `sigset` argument of the machine
+running the `async` block.
+
+Inside an `async` block, the expression:
+
+```hiphop
+this.react( sigset )
+```
+
+is equivalent to:
+
+```hiphop
+this.machine.react( sigset )
+```
+
+
