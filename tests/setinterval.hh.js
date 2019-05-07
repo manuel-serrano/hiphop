@@ -5,7 +5,7 @@ const hh = require( "hiphop" );
 
 hiphop module setinterval( A, Tick ) {
    fork {
-      abort( count( 3, Tick.now ) ) {
+      abort count( 3, Tick.now ) {
 	 async A {
 	    this.tmt = setInterval( () => this.react( Tick.signame ), 100 );
 	 } kill {

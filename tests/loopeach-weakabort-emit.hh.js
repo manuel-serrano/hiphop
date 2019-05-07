@@ -43,7 +43,7 @@ const machine3 = new hh.ReactiveMachine(
    hiphop module( A, B ) {
       do {
 	 T: fork {
-	    await B.now;
+	    await( B.now );
 	    break T;
 	 } par {
 	    yield;

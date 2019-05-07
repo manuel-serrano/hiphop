@@ -34,9 +34,9 @@ hiphop module prg( OK, O, A, B, C, BBBB, NEVER, in STOP, in AIN ) {
    }
    emit NEVER();
    yield;
-   await STOP.now;
+   await( STOP.now );
    emit B();
-   await AIN.now;
+   await( AIN.now );
    if( AIN.now ) {
       emit C();
    }

@@ -19,7 +19,7 @@ function make_atom2(i) {
 
 function make_atom3(i) {
    return hiphop {
-      every( immediate( G0.now ) ) {
+      every immediate( G0.now ) {
 	 hop { console.log( "branch", i ) }
       }
    }

@@ -14,7 +14,7 @@ hiphop module prg( in I, out O ) {
 	 }
       }
    } par {
-      await I.now;
+      await( I.now );
       emit L();
    }
 }

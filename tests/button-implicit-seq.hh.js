@@ -32,11 +32,11 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	    // watch mode
 	    abort( UL.now ) {
 	       fork {
-		  await LL.now;
+		  await( LL.now );
 		  break WATCH_AND_SET_WATCH_MODE;
 	       } par {
 		  loop {
-		     await LR.now;
+		     await( LR.now );
 		     emit TOGGLE_24H_MODE_COMMAND();
 		  }
 	       }
@@ -47,12 +47,12 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	    abort( UL.now ) {
 	       fork {
 		  loop {
-		     await LL.now;
+		     await( LL.now );
 		     emit NEXT_WATCH_TIME_POSITION_COMMAND();
 		  }
 	       } par {
 		  loop {
-		     await LR.now;
+		     await( LR.now );
 		     emit SET_WATCH_COMMAND();
 		  }
 	       }
@@ -65,12 +65,12 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	 abort( LL.now ) {
 	    fork {
 	       loop {
-		  await LR.now;
+		  await( LR.now );
 		  emit START_STOP_COMMAND();
 	       }
 	    } par {
 	       loop {
-		  await UR.now;
+		  await( UR.now );
 		  emit LAP_COMMAND();
 	       }
 	    }
@@ -83,17 +83,17 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	    abort( UL.now ) {
 	       fork {
 		  fork {
-		     await LL.now;
+		     await( LL.now );
 		     break ALARM_AND_SET_ALARM_MODE;
 		  } par {
 		     loop {
-			await LR.now;
+			await( LR.now );
 			emit TOGGLE_CHIME_COMMAND();
 		     }
 		  }
 	       } par {
 		  loop {
-		     await UR.now;
+		     await( UR.now );
 		     emit TOGGLE_ALARM_COMMAND();
 		  }
 	       }
@@ -104,12 +104,12 @@ hiphop module BUTTON( in UL, in UR, in LL, in LR,
 	    abort( UL.now ) {
 	       fork {
 		  loop {
-		     await LL.now;
+		     await( LL.now );
 		     emit NEXT_ALARM_TIME_POSITION_COMMAND();
 		  }
 	       } par {
 		  loop {
-		     await LR.now;
+		     await( LR.now );
 		     emit SET_ALARM_COMMAND();
 		  }
 	       }

@@ -14,7 +14,7 @@ hiphop module prg( ZOOM_LOCK_TOOGLE, ZOOM_IN ) {
 	    hop { zoom_in_cb() };
 	 }
       }
-      await ZOOM_LOCK_TOOGLE.now;
+      await( ZOOM_LOCK_TOOGLE.now );
    }
 }
 

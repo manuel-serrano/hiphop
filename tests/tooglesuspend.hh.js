@@ -4,12 +4,12 @@
 const hh = require( "hiphop" );
 
 hiphop machine mach( toogle ) {
-  suspend( toggle toogle.now ) {
-     loop {
-	hop { console.log( "plop" ); }
-	yield;
-     }
-  }
+   suspend toggle( toogle.now ) {
+      loop {
+	 hop { console.log( "plop" ); }
+	 yield;
+      }
+   }
 }
 
 mach.debug_emitted_func = console.log;

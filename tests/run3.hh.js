@@ -19,7 +19,7 @@ hiphop machine mach( O ) {
    fork {
       run ${Timer( gameTimeout )}( ... );
    } par {
-      await tmt.now;
+      await( tmt.now );
       emit O( tmt.nowval );
    }
 }

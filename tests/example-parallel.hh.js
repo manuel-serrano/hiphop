@@ -9,7 +9,7 @@ hiphop module prg( J ) {
    fork {
       emit I();
    } par {
-      await I.now;
+      await( I.now );
       emit J();
    }
 }

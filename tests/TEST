@@ -8,7 +8,7 @@ fi
 
 space="     "
 dir=$(pwd)
-hop_opt="--no-server --no-sofile -q"
+hop_opt="--no-server --no-sofile --sofile-policy none -q"
 CC=/usr/bin/gcc
 batchfile=/tmp/batch.js
 output_hop=/tmp/TEST-HOPJS.out
@@ -92,12 +92,13 @@ EOF
 	if [ "$verb " != " " ]; then
 	  echo "$hop $hop_opt $batchfile"
 	fi
+	
 	$hop $hop_opt $batchfile > $output_hop 2>&1
 	status=$?
     fi
 
     diff_out=$(diff $output_hop $file.out)
-
+    
     if [ "$status" != "0" ]; then
       if [ -f $dir/$file.err ]; then
 	report_ok

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Mar 27 11:38:32 2019 (serrano)                */
+/*    Last change :  Tue May  7 13:42:56 2019 (serrano)                */
 /*    Copyright   :  2018-19 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -319,22 +319,6 @@ function parseHHExpression() {
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseHHRunExpression ...                                         */
-/*---------------------------------------------------------------------*/
-function parseHHRunExpression() {
-   try {
-      const hhdotsparser = function( token ) { 
-	 return new astutils.J2SLiteralValue( token.location, undefined );
-      }
-      
-      this.addPlugin( "...", hhdotsparser );
-      return parseHHExpression.call( this );
-   } finally {
-      this.removePlugin( "..." );
-   }
-}
-
-/*---------------------------------------------------------------------*/
 /*    parseHHCondExpression ...                                        */
 /*---------------------------------------------------------------------*/
 function parseHHCondExpression( iscnt, isrun ) {
@@ -379,7 +363,7 @@ function parseValueApply( loc ) {
 /*---------------------------------------------------------------------*/
 /*    parseDelay ...                                                   */
 /*    -------------------------------------------------------------    */
-/*    delay ::= hhexpr                                                 */
+/*    delay ::= ( hhexpr )                                             */
 /*       | count( hhexpr, hhexpr )                                     */
 /*       | immediate( hhexpr )                                         */
 /*---------------------------------------------------------------------*/
@@ -424,14 +408,13 @@ function parseDelay( loc, tag, action = "apply", id = false ) {
 	 // immediate( hhexpr )
 	 const imm = this.consumeAny();
 	 immediate = true;
-	 if( isIdToken( this, this.peekToken(), "count" ) ) {
-	    throw error.SyntaxError( tag + ": can't use immediate with count expression.",
-				     tokenLocation( imm ) );
-	 }
       }
 
       // hhexpr
+      this.consumeToken( this.LPAREN );
       const { expr, accessors } = parseHHExpression.call( this );
+      this.consumeToken( this.RPAREN );
+      
       let inits;
 
       if( typeof expr === "J2SUnresolvedRef" ) {
@@ -1117,15 +1100,13 @@ function parseIf( token ) {
 /*---------------------------------------------------------------------*/
 /*    parseAbortWeakabort ...                                          */
 /*    stmt ::= ...                                                     */
-/*       | ABORT( delay ) block                                        */
-/*       | WEAKABORT( delay ) block                                    */
+/*       | ABORT delay block                                           */
+/*       | WEAKABORT delay block                                       */
 /*---------------------------------------------------------------------*/
 function parseAbortWeakabort( token, command ) {
    const loc = token.location;
    const tag = tagInit( command.toLowerCase(), loc );
-   this.consumeToken( this.LPAREN );
    const { inits, accessors } = parseDelay.call( this, loc, tag, "apply" );
-   this.consumeToken( this.RPAREN );
    const stmts = parseHHBlock.call( this );
    
    return astutils.J2SCall(
@@ -1153,9 +1134,9 @@ function parseWeakabort( token ) {
 /*    parseSuspend ...                                                 */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | SUSPEND( delay ) { stmt }                                   */
-/*       | SUSPEND( from delay to delay [emit <Identifier>]) { stmt }  */
-/*       | SUSPEND( toggle delay [emit <Identifier>]) { stmt }         */
+/*       | SUSPEND delay { stmt }                                      */
+/*       | SUSPEND from delay to delay [emit <Identifier>()] { stmt }  */
+/*       | SUSPEND toggle delay [emit <Identifier>()] { stmt }         */
 /*                                                                     */
 /*    (MS: I am not sure about the delay arguments. It looks like      */
 /*    to me that immediate would be meaning less here.)                */
@@ -1167,6 +1148,8 @@ function parseSuspend( token ) {
 	 const loc = this.consumeAny().location
 	 const id = this.consumeToken( this.ID );
 
+      	 this.consumeToken( this.LPAREN );
+      	 this.consumeToken( this.RPAREN );
 	 inits.push( 
 	    astutils.J2SDataPropertyInit(
 	       loc,
@@ -1178,7 +1161,6 @@ function parseSuspend( token ) {
    const loc = token.location;
    const tag = tagInit( "suspend", loc );
 
-   this.consumeToken( this.LPAREN );
    let delay;
    let inits = [ locInit( loc ) ];
    let accessors = [];
@@ -1222,7 +1204,6 @@ function parseSuspend( token ) {
       inits = inits.concat( is );
       accessors = aexpr;
    }
-   this.consumeToken( this.RPAREN );
    const stmts = parseHHBlock.call( this );
 
    const attrs = astutils.J2SObjInit( loc, inits, tag );
@@ -1252,15 +1233,13 @@ function parseLoop( token ) {
 /*    parseEvery ...                                                   */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | every ( delay ) block                                       */
+/*       | every  delay block                                          */
 /*---------------------------------------------------------------------*/
 function parseEvery( token ) {
    const loc = token.location;
    const tag = tagInit( "every", loc );
 
-   this.consumeToken( this.LPAREN );
    const { inits, accessors } = parseDelay.call( this, loc, "while" );
-   this.consumeToken( this.RPAREN );
 
    const stmts = parseHHBlock.call( this );
    const attrs = astutils.J2SObjInit(
@@ -1275,7 +1254,7 @@ function parseEvery( token ) {
 /*    parseLoopeach ...                                                */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | do block every ( delay )                                    */
+/*       | do block every delay                                        */
 /*---------------------------------------------------------------------*/
 function parseLoopeach( token ) {
    const loc = token.location;
@@ -1286,9 +1265,7 @@ function parseLoopeach( token ) {
    
    if( tok.value != "every" ) throw tokenValueError( tok );
       
-   this.consumeToken( this.LPAREN );
    const { inits, accessors } = parseDelay.call( this, loc, "do" );
-   this.consumeToken( this.RPAREN );
 
    const attrs = astutils.J2SObjInit(
       loc, [ locInit( loc ),tag ].concat( inits ) );
@@ -1314,7 +1291,7 @@ function parseExec( token ) {
       const id = this.consumeAny();
 
       // check for reserved exec keywords
-      if( "res susp kill".indexOf( id ) >= 0 ) {
+      if( "res susp kill".indexOf( id.value ) >= 0 ) {
 	 throw error.SyntaxError( "async: reserved identifier `" 
 				  + id.value + "'",
 				  tokenLocation( id ) );

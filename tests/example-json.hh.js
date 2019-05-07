@@ -50,7 +50,7 @@ hiphop module prg( in I, in TIN, Time=WatchTime ) {
    loop {
       emit Time( IncrementTimeInPlace( Time.preval ) );
       yield;
-      await TIN.now;
+      await( TIN.now );
       emit Time( updateFromOutside( TIN.nowval ) )
       yield;
    }

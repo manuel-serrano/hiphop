@@ -6,9 +6,9 @@ var hh = require( "hiphop" );
 
 hiphop module prg( in A, in B, out O ) {
    fork {
-      await A.now;
+      await( A.now );
    } par {
-      await B.now;
+      await( B.now );
    }
    emit O();
 }

@@ -3,7 +3,7 @@
 var hh = require( "hiphop" );
 
 hiphop module prg( in I, O ) {
-   every( count( 2, I.now ) ) {
+   every count( 2, I.now ) {
       emit O();
    }
 }

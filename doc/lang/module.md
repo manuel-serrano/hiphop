@@ -35,6 +35,11 @@ signal, and an input/output signal:
 module mod( in S, out T, inout U, var x ) { ; }
 ```
 
+#### module.precompile() ####
+
+Compiles a module. Compiling a module is optional and serves only the
+purpose of running preliminary checks such as signal names resolution.
+
 
 HipHop Machine
 ==============

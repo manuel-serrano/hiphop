@@ -63,7 +63,6 @@
 <Combine> --> | combine <Expression>
 
 <HHAwait> --> await <HHDelay>
-  | await immediate <HHDelay>
 
 <HHExpression> --> <Expression>
   | <Identifier>.now
@@ -72,9 +71,9 @@
   | <Identifier>.preval
   | <Identifier>.signame
 
-<HHDelay> --> <HHExpression>
+<HHDelay> --> ( <HHExpression> )
   | count( <HHExpression>, <HHExpression> )
-  | immediate <HHExpression>
+  | immediate( <HHExpression> )
 
 <HHLet> --> let <Declaration> ... <Declaration>
 
@@ -92,15 +91,15 @@
 <HHSustain> --> sustain <Identifier>()
   | sustain <Identifier>( <HHExpression> )
 
-<HHAbort> --> abort( <HHDelay ) <HHBlock>
+<HHAbort> --> abort <HHDelay <HHBlock>
 
-<HHWeakabort> --> weakabort( <HHDelay ) <HHBlock>
+<HHWeakabort> --> weakabort <HHDelay <HHBlock>
 
-<HHSuspend> --> suspend( <HHDelay> ) <HHBlock>
-  | suspend( from <HHDelay> to <HHDelay> ) <HHBlock>
-  | suspend( from <HHDelay> to <HHDelay> emit <Identifier> ) <HHBlock>
-  | suspend( toggle <HHDelay> ) <HHBlock>
-  | suspend( toggle <HHDelay> emit <Identifier> ) <HHBlock>
+<HHSuspend> --> suspend <HHDelay> <HHBlock>
+  | suspend from <HHDelay> to <HHDelay> <HHBlock>
+  | suspend from <HHDelay> to <HHDelay> emit <Identifier>() <HHBlock>
+  | suspend toggle <HHDelay> <HHBlock>
+  | suspend toggle <HHDelay> emit <Identifier>() <HHBlock>
 
 <HHLoop> --> loop <HHBlock>
 
@@ -118,9 +117,9 @@
   | <Identifier> as <Identifier>
   | <Identifer> = <HHExpression> 
 
-<HHEvery> --> every( <HHDelay> ) <HHBlock>
+<HHEvery> --> every <HHDelay> <HHBlock>
 
-<HHDo> --> do <HHBlock> every( <HHDelay> )
+<HHDo> --> do <HHBlock> every <HHDelay>
 
 <HHIf> --> if( <HHExpression> ) <HHStatement>
   | if( <HHExpression> ) <HHStatement> else <HHStatement>

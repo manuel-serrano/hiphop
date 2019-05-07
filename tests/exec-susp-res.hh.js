@@ -27,7 +27,7 @@ hiphop module prg( in RESS, in S, O, OT, in T ) {
       emit O();
    }
 
-   await RESS.now;
+   await( RESS.now );
    emit OT( T.nowval );
 }
 
