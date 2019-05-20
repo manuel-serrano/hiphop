@@ -1,0 +1,28 @@
+undefined> ;
+A.now=false A.pre=false A.nowval=_ A.preval=_
+B.now=false B.pre=false B.nowval=undefined B.preval=undefined
+--- Output:
+undefined> A(1) B(1);
+A.now=true A.pre=false A.nowval=1 A.preval=_
+B.now=true B.pre=false B.nowval=1 B.preval=undefined
+--- Output:
+undefined> A(2) B(2);
+A.now=true A.pre=true A.nowval=2 A.preval=1
+B.now=true B.pre=true B.nowval=2 B.preval=1
+--- Output:
+undefined> B(3);
+A.now=false A.pre=true A.nowval=2 A.preval=2
+B.now=true B.pre=true B.nowval=3 B.preval=2
+--- Output:
+undefined> B(4);
+A.now=false A.pre=false A.nowval=2 A.preval=2
+B.now=true B.pre=true B.nowval=4 B.preval=3
+--- Output:
+undefined> A(5);
+A.now=true A.pre=false A.nowval=5 A.preval=2
+B.now=false B.pre=true B.nowval=4 B.preval=4
+--- Output:
+undefined> A(6);
+A.now=true A.pre=true A.nowval=6 A.preval=5
+B.now=false B.pre=false B.nowval=4 B.preval=4
+--- Output:

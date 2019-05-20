@@ -17,6 +17,7 @@ a combination used to accumulate all the values must be specified when
 the signal is declared. The combination function is an arbitrary
 JavaScript but it _must_ be associative and commutative.
 
+
 Signal Declarations
 ===================
 
@@ -42,7 +43,6 @@ Along with signals, HipHop supports local Hop variables. They are
 local variable carrying Hop values. These variable can be used in all the
 Hop expressions HipHop might used, for instance, for computing a delay,
 for producing an emission value, or for running asynchronous  computation.
-
 
 
 Using Signals in Expressions
@@ -84,6 +84,25 @@ The previous value of the signal. The previous value corresponds to
 the value of the previous signal emission. Notice that the previous
 emission is not supposed to have happened during the previous
 reaction.
+
+The following example illustrates the various values of `now`, `pre`, `nowval`,
+and `preval` along instants.
+
+```hiphop
+${ doc.include( ROOT + "/../../tests/npnvpv.hh.js" ) }
+```
+
+When executed with the following input signals:
+
+```
+${ doc.include( ROOT + "/../../tests/npnvpv.in" ) }
+```
+
+It generates the following output:
+
+```
+${ doc.include( ROOT + "/../../tests/npnvpv.out" ) }
+```
 
 
 Test, Await, and Emit
