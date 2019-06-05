@@ -4,8 +4,8 @@
 const hh = require( "hiphop" );
 
 hiphop module prg( in SAME=1 ) {
-   hop { console.log( "1:", SAME.nowval ) }
    emit SAME( 2 );
+   hop { console.log( "1:", SAME.nowval ) }
    {
       signal S1=5, SAME=10;
       hop { console.log( "before2:", SAME.nowval ); }
