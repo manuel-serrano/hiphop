@@ -6,7 +6,7 @@ const prg = <hh.module O>
   <hh.loop>
     <hh.sequence>
       <hh.emit O value=5 />
-      <hh.emit O value=5 />
+      <hh.emit O value=6 />
       <hh.pause/>
     </hh.sequence>
   </hh.loop>
