@@ -4,7 +4,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Thu Jul 18 10:43:59 2019 (serrano)                */
+;*    Last change :  Thu Jul 18 10:58:50 2019 (serrano)                */
 ;*    Copyright   :  2018-19 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
@@ -158,8 +158,10 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
 ;*---------------------------------------------------------------------*/
 (defun hiphop-eow (l)
   (save-excursion
-    (goto-char l)
-    (forward-word 1)
+    (goto-char (1+ l))
+    (if (looking-at "{")
+	(forward-sexp 1)
+      (forward-word 1))
     (point)))
 
 ;*---------------------------------------------------------------------*/
@@ -185,7 +187,6 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
 	      (let ((c (aref v i)))
 		(while (< j (length c))
 		  (let ((locs (aref c j)))
-		    (message "causality file %s" locs)
 		    (let ((filename (assq 'filename locs))
 			  (locations (assq 'locations locs)))
 		  
@@ -195,11 +196,8 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
 			  (set-buffer buf)
 			  (let ((l 0))
 			    (while (< l (length locs))
-			      (message "causality file %s %s-%s"
-				       (cdr filename) (aref locs l)
-				       (hiphop-eow (aref locs l)))
 			      (put-text-properties
-			       (aref locs l) (hiphop-eow (aref locs l))
+			       (1+ (aref locs l)) (hiphop-eow (aref locs l))
 			       'face 'highlight)
 			      (setq l (+ l 1))))))))
 		  (setq j (+ j 1)))))
