@@ -4,8 +4,8 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Sun Nov 11 00:30:31 2018 (serrano)                */
-;*    Copyright   :  2018 Manuel Serrano                               */
+;*    Last change :  Thu Jul 18 07:11:11 2019 (serrano)                */
+;*    Copyright   :  2018-19 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
 ;*=====================================================================*/
@@ -96,6 +96,11 @@ Hooks:
 This runs `hiphop-mode-hook' after hiphop is enterend."
   (interactive "P")
   (let ((old-hiphop-mode hiphop-mode))
+    ;; key bindings
+    (define-key (current-local-map)
+      "\C-y\C-h" 'hiphop-show-causality-cycles)
+    (define-key (current-local-map)
+      "\C-yh" 'hiphop-clear-causality-cycles)
     ;; Mark the mode as on or off.
     (setq hiphop-mode
 	  (not (or (and (null arg) hiphop-mode)
@@ -106,6 +111,100 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
     ;; Force modeline redisplay.
     (set-buffer-modified-p (buffer-modified-p))))
 
+;*---------------------------------------------------------------------*/
+;*    hiphop-find-causality-log ...                                    */
+;*---------------------------------------------------------------------*/
+(defun hiphop-find-causality-log ()
+  (let ((dir default-directory)
+	(count 5)
+	(file nil))
+    (while (and (not file) (not (equal dir "//")) (> count 0))
+      (let ((nm (concat dir "hiphop.causality.json")))
+	(if (file-exists-p nm)
+	    (setq file nm)
+	  (progn
+	    (setq dir (expand-file-name (concat dir "../")))
+	    (setq count (1- count))))))
+    file))
+
+;*---------------------------------------------------------------------*/
+;*    hiphop-causality-overlays ...                                    */
+;*---------------------------------------------------------------------*/
+(defvar hiphop-causality-overlays '())
+
+;*---------------------------------------------------------------------*/
+;*    put-text-properties ...                                          */
+;*---------------------------------------------------------------------*/
+(defun put-text-properties (start end &rest props)
+  (let ((ov (make-overlay start end nil t nil))
+	(mod (buffer-modified-p)))
+    (setq hiphop-causality-overlays (cons ov hiphop-causality-overlays))
+    (while (consp props)
+      (overlay-put ov (car props) (cadr props))
+      (setq props (cddr props)))
+    (set-buffer-modified-p mod)))
+
+;*---------------------------------------------------------------------*/
+;*    hiphop-remove-causality-overlays ...                             */
+;*---------------------------------------------------------------------*/
+(defun hiphop-remove-causality-overlays ()
+  (let ((l hiphop-causality-overlays))
+    (while (consp l)
+      (delete-overlay (car l))
+      (setq l (cdr l)))))
+
+;*---------------------------------------------------------------------*/
+;*    hiphop-eow ...                                                   */
+;*---------------------------------------------------------------------*/
+(defun hiphop-eow (l)
+  (save-excursion
+    (goto-char l)
+    (forward-word 1)
+    (point)))
+
+;*---------------------------------------------------------------------*/
+;*    hiphop-clear-causality-cycles ...                                */
+;*---------------------------------------------------------------------*/
+(defun hiphop-clear-causality-cycles ()
+  (interactive)
+  (hiphop-remove-causality-overlays))
+
+;*---------------------------------------------------------------------*/
+;*    hiphop-show-causality-cycles ...                                 */
+;*---------------------------------------------------------------------*/
+(defun hiphop-show-causality-cycles ()
+  (interactive)
+  (hiphop-remove-causality-overlays)
+  (let ((json (hiphop-find-causality-log)))
+    (message "hiphop-show-causality-cycles [%s]" json)
+    (when json
+      (let ((v (json-read-file json)))
+	(let ((i 0))
+	  (while (< i (length v))
+	    (let ((j 0))
+	      (let ((c (aref v i)))
+		(while (< j (length c))
+		  (let ((locs (aref c j)))
+		    (message "causality file %s" locs)
+		    (let ((filename (assq 'filename locs))
+			  (locations (assq 'locations locs)))
+		  
+		      (when (and filename locations)
+			(let ((buf (find-buffer-visiting (cdr filename)))
+			      (locs (cdr locations)))
+			  (set-buffer buf)
+			  (let ((l 0))
+			    (while (< l (length locs))
+			      (message "causality file %s %s-%s"
+				       (cdr filename) (aref locs l)
+				       (hiphop-eow (aref locs l)))
+			      (put-text-properties
+			       (aref locs l) (hiphop-eow (aref locs l))
+			       'face 'highlight)
+			      (setq l (+ l 1))))))))
+		  (setq j (+ j 1)))))
+	    (setq i (+ i 1))))))))
+    
 ;*---------------------------------------------------------------------*/
 ;*    automode                                                         */
 ;*---------------------------------------------------------------------*/
