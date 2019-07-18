@@ -4,7 +4,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Thu Jul 18 10:50:37 2019 (serrano)                */
+;*    Last change :  Thu Jul 18 10:58:50 2019 (serrano)                */
 ;*    Copyright   :  2018-19 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
@@ -158,8 +158,10 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
 ;*---------------------------------------------------------------------*/
 (defun hiphop-eow (l)
   (save-excursion
-    (goto-char l)
-    (forward-word 1)
+    (goto-char (1+ l))
+    (if (looking-at "{")
+	(forward-sexp 1)
+      (forward-word 1))
     (point)))
 
 ;*---------------------------------------------------------------------*/
