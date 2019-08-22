@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Fri Dec 28 06:40:31 2018 (serrano)                */
-/*    Copyright   :  2018 Manuel Serrano                               */
+/*    Last change :  Fri Jul 19 13:51:24 2019 (serrano)                */
+/*    Copyright   :  2018-19 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
 /*=====================================================================*/
@@ -127,7 +127,8 @@ function J2SCall( loc, fun, thisarg, args ) {
 function J2SObjInit( loc, inits ) {
    return new ast.J2SObjInit( loc, undefined, undefined, undefined,
 			      "object" /* type */, null /* hint */,
-			      undefined /* range */, inits, false /* cmap */ );
+			      undefined /* range */, inits, false /* cmap */,
+ 			      false /* ronly */ );
 }
 
 /*---------------------------------------------------------------------*/
