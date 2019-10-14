@@ -4,20 +4,46 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Thu May  2 21:55:34 2019 (serrano)                */
+#*    Last change :  Mon Oct 14 09:55:14 2019 (serrano)                */
 #*    Copyright   :  2018-19 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
 #*=====================================================================*/
 
 bigloo=bigloo4.3f
+hopminrequired=3.2.0
+hopmaxrequired=3.2.0
 hop=hop
+
+hiphopversion=0.3.0
 
 bglversion=`$bigloo -revision`
 hopversion=`$hop --configure --version`
 hopminorversion=`$hop --configure --minor-version`
 
-hiphopversion=0.3.0
+# check hop required version
+if [ "$hopminrequired " != " " ]; then
+  $hop -q --no-server --eval "(exit (if (string>=? (hop-version) \"$hopminrequired\") 0 1))"
+fi  
+
+if [ $? != "0" ]; then
+  echo "*** ERROR:configure:hop. Aborting!" >&2
+  echo "Your version of Hop ($hopversion) is too old." >&2
+  echo "Version \"$hopminrequired\" or more recent is required." >&2
+  exit 1;
+fi
+
+if [ "$hopmaxrequired " != " " ]; then
+  $hop -q --no-server --eval "(exit (if (string<=? (hop-version) \"$hopmaxrequired\") 0 1))"
+fi  
+
+if [ $? != "0" ]; then
+  echo "*** ERROR:configure:hop. Aborting!" >&2
+  echo "Your version of Hop ($hopversion) is too recent." >&2
+  echo "Version \"$hopmaxrequired\" or older required." >&2
+  exit 1;
+fi
+
 
 # docker/Dockerfile.in
 for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el doc/doc.json; do
