@@ -28,7 +28,7 @@ fi
 
 if [ $? != "0" ]; then
   echo "*** ERROR:configure:hop. Aborting!" >&2
-  echo "Your version of Hop ($hopminversion) is too old." >&2
+  echo "Your version of Hop ($hopversion) is too old." >&2
   echo "Version \"$hopminrequired\" or more recent is required." >&2
   exit 1;
 fi
@@ -39,7 +39,7 @@ fi
 
 if [ $? != "0" ]; then
   echo "*** ERROR:configure:hop. Aborting!" >&2
-  echo "Your version of Hop ($hopmaxversion) is too recent." >&2
+  echo "Your version of Hop ($hopversion) is too recent." >&2
   echo "Version \"$hopmaxrequired\" or older required." >&2
   exit 1;
 fi
