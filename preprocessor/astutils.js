@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Fri Jul 19 13:51:24 2019 (serrano)                */
+/*    Last change :  Mon Oct 14 09:17:18 2019 (serrano)                */
 /*    Copyright   :  2018-19 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -19,276 +19,303 @@ let declKey = 10000;
 /*    J2SNull ...                                                      */
 /*---------------------------------------------------------------------*/
 function J2SNull( loc ) {
-   return new ast.J2SNull( loc, false, false, false,
-			   "null" /* type */,
-			   null /* hint */, false /* range */ );
+   return new ast.J2SNull( loc, 
+      // false, false, false,
+      "null" /* type */,
+      null /* hint */, false /* range */ );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SUndefined ...                                                 */
 /*---------------------------------------------------------------------*/
 function J2SUndefined( loc ) {
-   return new ast.J2SUndefined( loc, false, false, false,
-				"undefined" /* type */,
-				null /* hint */, false /* range */ );
+   return new ast.J2SUndefined( loc, 
+      // false, false, false,
+      "undefined" /* type */,
+      null /* hint */, false /* range */ );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SString ...                                                    */
 /*---------------------------------------------------------------------*/
 function J2SString( loc, str ) {
-   return new ast.J2SString( loc, false, false, false,
-			     "string" /* type */, null /* hint */,
-			     false /* range */, str, null /* escape */ );
+   return new ast.J2SString( loc, 
+      // false, false, false,
+      "string" /* type */, null /* hint */,
+      false /* range */, str, null /* escape */ );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SNumber ...                                                    */
 /*---------------------------------------------------------------------*/
 function J2SNumber( loc, num ) {
-   return new ast.J2SNumber( loc, false, false, false,
-			     "unknown" /* type */, null /* hint */,
-			     false /* range */, num );
+   return new ast.J2SNumber( loc, 
+      // false, false, false,
+      "unknown" /* type */, null /* hint */,
+      false /* range */, num );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SBool ...                                                      */
 /*---------------------------------------------------------------------*/
 function J2SBool( loc, bool ) {
-   return new ast.J2SBool( loc, false, false, false,
-			     "bool" /* type */, null /* hint */,
-			     false /* range */, bool );
+   return new ast.J2SBool( loc, 
+      // false, false, false,
+      "bool" /* type */, null /* hint */,
+      false /* range */, bool );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SRef ...                                                       */
 /*---------------------------------------------------------------------*/
 function J2SRef( loc, decl ) {
-   return new ast.J2SRef( loc, undefined, undefined, undefined,
-			  "any" /* type */, null /* hint */,
-			  undefined /* range */, decl );
+   return new ast.J2SRef( loc, 
+      // undefined, undefined, undefined,
+      "any" /* type */, null /* hint */,
+      undefined /* range */, decl );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SUnresolvedRef ...                                             */
 /*---------------------------------------------------------------------*/
 function J2SUnresolvedRef( loc, id ) {
-   return new ast.J2SUnresolvedRef( loc, undefined, undefined, undefined,
-				    "any" /* type */, null /* hint */,
-				    undefined /* range */, false /* cache */,
-				    id );
+   return new ast.J2SUnresolvedRef( loc, 
+      // undefined, undefined, undefined,
+      "any" /* type */, null /* hint */,
+      undefined /* range */, false /* cache */,
+      id );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SHopRef ...                                                    */
 /*---------------------------------------------------------------------*/
 function J2SHopRef( loc, id ) {
-   return new ast.J2SHopRef( loc, undefined, undefined, undefined,
-			     "any" /* type */, null /* hint */,
-			     undefined /* range */, id,
-			     "any" /* rtype */, false /* module */ );
+   return new ast.J2SHopRef( loc, 
+      // undefined, undefined, undefined,
+      "any" /* type */, null /* hint */,
+      undefined /* range */, id,
+      "any" /* rtype */, false /* module */ );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SThis ...                                                      */
 /*---------------------------------------------------------------------*/
 function J2SThis( loc, decl ) {
-   return new ast.J2SThis( loc, undefined, undefined, undefined,
-			   "any" /* type */, null /* hint */,
-			   undefined /* range */, decl /* decl */ );
+   return new ast.J2SThis( loc, 
+      // undefined, undefined, undefined,
+      "any" /* type */, null /* hint */,
+      undefined /* range */, decl /* decl */ );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SAccess ...                                                    */
 /*---------------------------------------------------------------------*/
 function J2SAccess( loc, obj, field ) {
-   return new ast.J2SAccess( loc, undefined, undefined, undefined,
-			     "any" /*type */, null /* hint */,
-			     false /* range */, false /* cache */,
-			     false /* cspecs */,
-			     obj, field );
+   return new ast.J2SAccess( loc, 
+      // undefined, undefined, undefined,
+      "any" /*type */, null /* hint */, false /* range */, 
+      // false /* cache */, false /* cspecs */,
+      obj, field );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SCall ...                                                      */
 /*---------------------------------------------------------------------*/
 function J2SCall( loc, fun, thisarg, args ) {
-   return new ast.J2SCall( loc, undefined, undefined, undefined,
-			   "any" /* type */, null /* hint */,
-			   undefined /* range */, -1 /* profid */,
-			   false /* cache */, false /* cspecs */,
-			   fun /* fun */, "direct" /* protocol */,
-			   thisarg, args );
+   return new ast.J2SCall( loc, 
+      // undefined, undefined, undefined,
+      "any" /* type */, null /* hint */,
+      undefined /* range */, -1 /* profid */,
+      fun /* fun */, "direct" /* protocol */,
+      thisarg, args );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SObjInit ...                                                   */
 /*---------------------------------------------------------------------*/
 function J2SObjInit( loc, inits ) {
-   return new ast.J2SObjInit( loc, undefined, undefined, undefined,
-			      "object" /* type */, null /* hint */,
-			      undefined /* range */, inits, false /* cmap */,
- 			      false /* ronly */ );
+   return new ast.J2SObjInit( loc, 
+      // undefined, undefined, undefined,
+      "object" /* type */, null /* hint */,
+      undefined /* range */, inits, false /* cmap */,
+      false /* ronly */ );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SDataPropertyInit ...                                          */
 /*---------------------------------------------------------------------*/
 function J2SDataPropertyInit( loc, name, val ) {
-   return new ast.J2SDataPropertyInit( loc, undefined, undefined, undefined,
-				       name, val );
+   return new ast.J2SDataPropertyInit( loc, 
+      // undefined, undefined, undefined,
+      name, val );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SPragma ...                                                    */
 /*---------------------------------------------------------------------*/
 function J2SPragma( loc, lang, vars, vals, expr ) {
-   return new ast.J2SPragma( loc, undefined, undefined, undefined,
-			     "any" /* type */, null /* hint */,
-			     undefined /* range */,
-			     lang, vars, vals, expr );
+   return new ast.J2SPragma( loc, 
+      // undefined, undefined, undefined,
+      "any" /* type */, null /* hint */,
+      undefined /* range */,
+      lang, vars, vals, expr );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SFun ...                                                       */
 /*---------------------------------------------------------------------*/
 function J2SFun( loc, name, params, body ) {
-   return new ast.J2SFun( loc, undefined, undefined, undefined,
-			  "unknown" /* type */, null /* hint */,
-			  undefined /* range */, "unknown" /* rtype */,
-			  undefined /* rrange */, "this" /* idthis */,
-			  false /* idgen */, "normal" /* mode */,
-			  false /* decl */, 
-			  false /* need_bind_exit_return */,
-			  false /* new-target */,
-			  false /* vararg */, name /* name */,
-			  false /* generator */, true /* optimize */,
-			  false /* thisp */, false /* argumentsp */,
-			  params, 3 /* constrsize */, false /* src */,
-			  false /* _method */, false /* ismethodof */,
-			  body );
+   return new ast.J2SFun( loc, 
+      // undefined, undefined, undefined,
+      "unknown" /* type */, null /* hint */,
+      undefined /* range */, "unknown" /* rtype */,
+      undefined /* rrange */, "this" /* idthis */,
+      false /* idgen */, "normal" /* mode */,
+      false /* decl */, 
+      false /* need_bind_exit_return */,
+      false /* new-target */,
+      false /* vararg */, name /* name */,
+      false /* generator */, true /* optimize */,
+      false /* thisp */, false /* argumentsp */,
+      params, 3 /* constrsize */, false /* src */,
+      false /* _method */, false /* ismethodof */,
+      body );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SMethod ...                                                    */
 /*---------------------------------------------------------------------*/
 function J2SMethod( loc, name, params, body, self ) {
-   return new ast.J2SFun( loc, undefined, undefined, undefined,
-			  "unknown" /* type */, null /* hint */,
-			  undefined /* range */, "unknown" /* rtype */,
-			  undefined /* rrange */, "this" /* idthis */,
-			  false /* idgen */, "normal" /* mode */,
-			  false /* decl */, 
-			  false /* need_bind_exit_return */, 
-			  false /* new-target */,
-			  false /* vararg */, name /* name */,
-			  false /* generator */, true /* optimize */,
-			  self /* thisp */, false /* argumentsp */,
-			  params, 3 /* constrsize */, false /* src */,
-			  false /* _method */, false /* ismethodof */,
-			  body );
+   return new ast.J2SFun( loc, 
+      // undefined, undefined, undefined,
+      "unknown" /* type */, null /* hint */,
+      undefined /* range */, "unknown" /* rtype */,
+      undefined /* rrange */, "this" /* idthis */,
+      false /* idgen */, "normal" /* mode */,
+      false /* decl */, 
+      false /* need_bind_exit_return */, 
+      false /* new-target */,
+      false /* vararg */, name /* name */,
+      false /* generator */, true /* optimize */,
+      self /* thisp */, false /* argumentsp */,
+      params, 3 /* constrsize */, false /* src */,
+      false /* _method */, false /* ismethodof */,
+      body );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SBlock ...                                                     */
 /*---------------------------------------------------------------------*/
 function J2SBlock( loc, endloc, nodes ) {
-   return new ast.J2SBlock( loc, undefined, undefined, undefined,
-			    nodes, endloc );
+   return new ast.J2SBlock( loc, 
+      // undefined, undefined, undefined,
+      nodes, endloc );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SStmtExpr ...                                                  */
 /*---------------------------------------------------------------------*/
 function J2SStmtExpr( loc, expr ) {
-   return new ast.J2SStmtExpr( loc, undefined, undefined, undefined, expr );
+   return new ast.J2SStmtExpr( loc, 
+      // undefined, undefined, undefined, 
+      expr );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SSeq ...                                                       */
 /*---------------------------------------------------------------------*/
 function J2SSeq( loc, nodes ) {
-   return new ast.J2SSeq( loc, undefined, undefined, undefined, nodes );
+   return new ast.J2SSeq( loc, 
+      // undefined, undefined, undefined, 
+      nodes );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SReturn ...                                                    */
 /*---------------------------------------------------------------------*/
 function J2SReturn( loc, expr ) {
-   return new ast.J2SReturn( loc, undefined, undefined, undefined,
-			     false /* exit */, true /* tail */,
-			     undefined /* from */, expr );
+   return new ast.J2SReturn( loc, 
+      // undefined, undefined, undefined,
+      false /* exit */, true /* tail */,
+      undefined /* from */, expr );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SDecl ...                                                      */
 /*---------------------------------------------------------------------*/
 function J2SDecl( loc, id, binder = "var", _scmid = false ) {
-   return new ast.J2SDecl( loc, undefined, undefined, undefined,
-			   id, _scmid /* _scmid */, declKey++ /* key */,
-			   binder != "const" /* writable */,
-			   binder == "const" /* ronly */,
-			   "local" /* scope */,
-			   0 /* usecnt */, false /* useinloop */,
-			   false /* useinfun */, null /* usage */,
-			   binder == "const" ? "let" : binder /* binder */,
-			   "any" /* utype */, "any" /* itype */,
-			   "any" /* vtype */, undefined /* irange */,
-			   undefined /* vrange */, null /* hint */,
-			   null /* exports */ );
+   return new ast.J2SDecl( loc, 
+      // undefined, undefined, undefined,
+      id, _scmid /* _scmid */, declKey++ /* key */,
+      binder != "const" /* writable */,
+      binder == "const" /* ronly */,
+      "local" /* scope */,
+      0 /* usecnt */, false /* useinloop */,
+      false /* useinfun */, null /* usage */,
+      binder == "const" ? "let" : binder /* binder */,
+      "any" /* utype */, "any" /* itype */,
+      "any" /* vtype */, undefined /* irange */,
+      undefined /* vrange */, null /* hint */,
+      null /* exports */ );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SDeclInit ...                                                  */
 /*---------------------------------------------------------------------*/
 function J2SDeclInit( loc, id, val, binder = "let" ) {
-   return new ast.J2SDeclInit( loc, undefined, undefined, undefined,
-			       id, false /* _scmid */, declKey++ /* key */,
-			       true /* writable */, 
-			       true /* ronly */, "local" /* scope */,
-			       0 /* usecnt */, false /* useinloop */,
-			       false /* useinfun */, null /* usage */,
-			       binder /* binder */, "any" /* utype */,
-			       "any" /* itype */, "any" /* vtype */,
-			       undefined /* irange */, undefined /* vrange */,
-			       null /* hint */, null /* exports */, val );
+   return new ast.J2SDeclInit( loc, 
+      // undefined, undefined, undefined,
+      id, false /* _scmid */, declKey++ /* key */,
+      true /* writable */, 
+      true /* ronly */, "local" /* scope */,
+      0 /* usecnt */, false /* useinloop */,
+      false /* useinfun */, null /* usage */,
+      binder /* binder */, "any" /* utype */,
+      "any" /* itype */, "any" /* vtype */,
+      undefined /* irange */, undefined /* vrange */,
+      null /* hint */, null /* exports */, val );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SVarDecls ...                                                  */
 /*---------------------------------------------------------------------*/
 function J2SVarDecls( loc, decls ) {
-   return new ast.J2SVarDecls( loc, undefined, undefined, undefined, decls );
+   return new ast.J2SVarDecls( loc, 
+      // undefined, undefined, undefined, 
+      decls );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SArray ...                                                     */
 /*---------------------------------------------------------------------*/
 function J2SArray( loc, exprs ) {
-   return new ast.J2SArray( loc, undefined, undefined, undefined,
-			    "array" /* type */, null /* hint */,
-			    undefined /* range */,
-			    exprs.length, exprs );
+   return new ast.J2SArray( loc, 
+      // undefined, undefined, undefined,
+      "array" /* type */, null /* hint */,
+      undefined /* range */,
+      exprs.length, exprs );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SAssig ...                                                     */
 /*---------------------------------------------------------------------*/
 function J2SAssig( loc, lhs, rhs ) {
-   return new ast.J2SAssig( loc, undefined, undefined, undefined,
-			    "any" /* type */, null /* hint */,
-			    undefined /* range */,
-			    lhs, rhs );
+   return new ast.J2SAssig( loc, 
+      // undefined, undefined, undefined,
+      "any" /* type */, null /* hint */,
+      undefined /* range */,
+      lhs, rhs );
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SLiteralValue ...                                              */
 /*---------------------------------------------------------------------*/
 function J2SLiteralValue( loc, val ) {
-   return new ast.J2SLiteralValue( loc, undefined, undefined, undefined,
-				   "any" /* type */, null /* hint */,
-				   undefined /* range */,
-				   val );
+   return new ast.J2SLiteralValue( loc, 
+      undefined, undefined, undefined,
+      "any" /* type */, null /* hint */,
+      undefined /* range */,
+      val );
 }
 
 /*---------------------------------------------------------------------*/

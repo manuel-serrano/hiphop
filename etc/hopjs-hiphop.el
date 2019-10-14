@@ -4,7 +4,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Thu Jul 18 07:11:11 2019 (serrano)                */
+;*    Last change :  Tue Oct  1 08:16:49 2019 (serrano)                */
 ;*    Copyright   :  2018-19 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
@@ -21,7 +21,7 @@
 ;*---------------------------------------------------------------------*/
 ;*    constants ...                                                    */
 ;*---------------------------------------------------------------------*/
-(defconst hiphop-version "0.3.0")
+(defconst hiphop-version "0.4.0")
 
 ;;;###autoload
 (defcustom hiphop-mode-line-string " HipHop"
@@ -98,9 +98,9 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
   (let ((old-hiphop-mode hiphop-mode))
     ;; key bindings
     (define-key (current-local-map)
-      "\C-y\C-h" 'hiphop-show-causality-cycles)
+      "\C-x\C-h" 'hiphop-show-causality-cycles)
     (define-key (current-local-map)
-      "\C-yh" 'hiphop-clear-causality-cycles)
+      "\C-xh" 'hiphop-clear-causality-cycles)
     ;; Mark the mode as on or off.
     (setq hiphop-mode
 	  (not (or (and (null arg) hiphop-mode)
