@@ -111,7 +111,7 @@
 
 <HHAsyncResume> --> | resume <HHBlock>
 
-<HHRun> --> <HHDollarIdent>( <HHSigRun )
+<HHRun> --> run <HHDollarIdent>( <HHSigRun )
 
 <HHSigRun> --> <Identifier>
   | <Identifier> as <Identifier>
