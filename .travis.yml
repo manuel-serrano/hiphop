@@ -41,7 +41,7 @@ before_script:
   - wget ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo-unstable.tar.gz -O /tmp/bigloo4.3g.tar.gz
   - pushd /tmp && tar xvfz /tmp/bigloo4.3g.tar.gz && popd
   - pushd /tmp/bigloo4.3g && ./configure --prefix=/usr --jvm=no && make && sudo make install && popd
-  - git clone https://github.com/manuel-serrano/hop
+  - (cd /tmp; git clone https://github.com/manuel-serrano/hop)
   - (cd hop; git checkout master)
   - pushd /tmp/hop && ./configure --prefix=/usr --disable-doc && make && sudo make install && popd
   - (sudo cp -r ../hiphop /usr/lib/hop/3.3.0/node_modules)
