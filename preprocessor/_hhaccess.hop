@@ -3,8 +3,8 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Nov 13 10:52:14 2018                          */
-;*    Last change :  Mon Apr 29 13:54:28 2019 (serrano)                */
-;*    Copyright   :  2018-19 Manuel Serrano                            */
+;*    Last change :  Wed Feb 26 12:13:02 2020 (serrano)                */
+;*    Copyright   :  2018-20 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    Patching the AST built by the native parser                      */
 ;*=====================================================================*/
@@ -47,7 +47,7 @@
 			    be))))
 		  (else
 		   (node->accessors node axs iscnt hhname accessors %this)))))
-	 2 "AstHipHopAccess")
+	 2 (js-name->jsstring "AstHipHopAccess"))
       #f %this))
 
 ;*---------------------------------------------------------------------*/
