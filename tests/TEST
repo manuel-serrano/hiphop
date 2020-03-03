@@ -98,7 +98,7 @@ EOF
     fi
 
     diff_out=$(diff $output_hop $file.out)
-    echo "$diff_out"
+    #echo "$diff_out"
     if [ "$status" != "0" ]; then
       if [ -f $dir/$file.err ]; then
 	report_ok
