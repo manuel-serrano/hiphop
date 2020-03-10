@@ -81,8 +81,8 @@ m.react( { O: 24, P: 53 } )
 m.react();
 ```
 
-Interacing with HipHop reactive machines
-----------------------------------------
+Interfacing with HipHop reactive machines
+-----------------------------------------
 
 ### mach.addEventListener( signame, listener ) ###
 [:@glyphicon glyphicon-tag tag]
@@ -113,6 +113,40 @@ ${ doc.include( "../tests/reactfunc.hh.js" ) }
 Remove the listener from the machine.
 
 
+Batch execution
+---------------
 
+### mach.batch() ###
+[:@glyphicon glyphicon-tag tag]
+
+The `batch` machine method executes the machine in batch mode against
+commands that are read from the standard input. Example
+
+${ <span class="label label-info">batch.js</span> }
+
+```hopscript
+"use hopscript"
+"use strict"
+
+const hh = require( "hiphop" );
+let Lisinopril = require( "./Lisinopril.hh.js", "hiphop" );
+
+try {
+   new hh.ReactiveMachine( Lisinopril, "Lisinopril" ).batch();
+} catch( e ) {
+   console.log( e.message );
+   process.exit( 1 );
+}
+```
+
+To run this program:
+
+```shell
+hop --no-server -g ./test.js &lt; Lisinopril.in
+```
+
+The syntax for the commands is the same as for Esterel. Their syntax
+has to be added to this documentation. (In the meantime, the `tests`
+directory contains many `.in` files that can be used as examples.).
 
 
