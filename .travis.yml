@@ -38,12 +38,12 @@ before_install:
   - sudo apt-get install -y libgmp10
   
 before_script:
-  - wget ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo-unstable.tar.gz -O /tmp/bigloo4.3h.tar.gz
-  - pushd /tmp && tar xvfz /tmp/bigloo4.3h.tar.gz && popd
-  - pushd /tmp/bigloo4.3h && ./configure --prefix=/usr --jvm=no && make && sudo make install && popd
-  - (cd /tmp; git clone https://github.com/manuel-serrano/hop)
-  - (cd hop; git checkout master)
-  - pushd /tmp/hop && ./configure --prefix=/usr --disable-doc && make && sudo make install && popd
+  - wget ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo.tar.gz -O /tmp/bigloo.tar.gz
+  - pushd /tmp && tar xvfz /tmp/bigloo.tar.gz && popd
+  - pushd /tmp/bigloo && ./configure --prefix=/usr --jvm=no && make && sudo make install && popd
+  - wget ftp://ftp-sop.inria.fr/indes/fp/Hop/hop-3.3.0.tar.gz -O /tmp/hop-3.3.0.tar.gz
+  - pushd /tmp && tar xvfz /tmp/hop-3.3.0.tar.gz && popd
+  - pushd /tmp/hop-3.3.0 && ./configure --prefix=/usr --disable-doc && make && sudo make install && popd
   - (sudo cp -r ../hiphop /usr/lib/hop/3.3.0/node_modules)
   - (sudo chmod a+rx -R /usr/lib/hop/3.3.0/node_modules/hiphop)
   

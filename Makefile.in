@@ -17,22 +17,22 @@
 #*---------------------------------------------------------------------*/
 #*    Weblet description                                               */
 #*---------------------------------------------------------------------*/
-HZ=hiphop
-HZVERSION=0.3.0
-DATE="14 April 2020"
+HZ=@HZ@
+HZVERSION=@VERSION@
+DATE="@DATE@"
 
 CATEGORY=programming
-LICENSE=gpl
+LICENSE=@LICENSE@
 
-HOPREPOSITORY=/home/serrano/prgm/distrib
-HOPLIBDIR=/usr/local/lib
-HOPVERSION=3.3.0
-HOPBUILDID=31cb45b06b3b659fe7e893068364dbf1
-HOPBUILDARCH=linux-x86_64
+HOPREPOSITORY=@HOPREPOSITORY@
+HOPLIBDIR=@HOPLIBDIR@
+HOPVERSION=@HOPVERSION@
+HOPBUILDID=@HOPBUILDID@
+HOPBUILDARCH=@HOPBUILDARCH@
 
-HOP = hop
-HOPC = /usr/local/lib/hop/3.3.0/node_modules/hopc/lib/so/3.3.0/31cb45b06b3b659fe7e893068364dbf1/linux-x86_64/hopc.so
-HFLAGS = -O2
+HOP = @HOP@
+HOPC = @HOPC@
+HFLAGS = @HFLAGS@
 
 HOPCOMPOPTS = -v2 --no-server --so-policy aot --so-target src -q
 

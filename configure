@@ -4,54 +4,161 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Mon Oct 14 09:09:59 2019 (serrano)                */
-#*    Copyright   :  2018-19 Manuel Serrano                            */
+#*    Last change :  Tue Apr 14 07:34:46 2020 (serrano)                */
+#*    Copyright   :  2018-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
 #*=====================================================================*/
 
-bigloo=bigloo4.3f
-hopminrequired=3.3.0
-hopmaxrequired=
+#*---------------------------------------------------------------------*/
+#*    configure parameters                                             */
+#*---------------------------------------------------------------------*/
+hz=hiphop
+version=`grep version package.json | awk '{ print $2 }' | sed 's/[",]//g'`
+license=`grep license package.json | awk '{ print $2 }' | sed 's/[",]//g'`
+date=`date +'%d %B %Y'`
+minor=
+
+license=gpl
+
+hoprepository=$HOME/prgm/distrib
+
+urlbase=http://hop.inria.fr/hiphop
+
+#*---------------------------------------------------------------------*/
+#*    compilers and options                                            */
+#*---------------------------------------------------------------------*/
 hop=hop
+hopc=hopc
+hflags=-O2
 
-hiphopversion=0.4.0
+# environment parsing
+if [ "$HFLAGS " != " " ]; then
+  hflags=$HFLAGS;
+fi
 
-bglversion=`$bigloo -revision`
+# Argument parsing
+while : ; do
+  case $1 in
+    "")
+      break;;
+
+    --prefix=*)
+      prefix="`echo $1 | sed 's/^[^=]*=//'`";
+      bindir=$prefix/bin;
+      libdir=$prefix/lib/hopsmtp;
+      mandir=$prefix/man/$mansec;
+      etcdir=$prefix/etc;
+      contribsdir=$prefix/share/hop/contribs
+      docdir=$prefix/share/doc/hop;;
+
+    --etcdir=*)
+      etcdir="`echo $1 | sed 's/^[^=]*=//'`";;
+
+    --bindir=*)
+      bindir="`echo $1 | sed 's/^[^=]*=//'`";;
+
+    --libdir=*)
+      libdir="`echo $1 | sed 's/^[^=]*=//'`";;
+
+    --mandir=*)
+      mandir="`echo $1 | sed 's/^[^=]*=//'`";;
+
+    --hopc=*)
+      hopc="`echo $1 | sed 's/^[^=]*=//'`";;
+
+    --hop=*)
+      hop="`echo $1 | sed 's/^[^=]*=//'`";;
+
+    --hflags=*)
+      hflags="`echo $1 | sed 's/^[^=]*=//'`";;
+
+    -*)
+      if [ $1 != "--help" ]; then
+        echo "*** Configure error, unknown option $1" >&2;
+        echo >&2;
+      fi
+      echo "Usage: configure [options]" >&2;
+      echo "" >&2;
+      echo "options:" >&2;
+      echo "   --help..................... this message" >&2;
+      echo "   --hop=path................. hop command" >&2;
+      echo "   --hopc=path................ hopc command" >&2;
+      echo "   --hflags=flags............. hopc flags" >&2;
+      echo "   --prefix=dir............... prefix to HOP install" >&2;
+      echo "   --etcdir=dir............... Hop etc directory" >&2;
+      echo "   --bindir=dir............... alternative Hop bin directory" >&2;
+      echo "   --libdir=dir............... alternative Hop lib directory" >&2;
+      echo "   --mandir=dir............... alternative Hop man directory" >&2;
+      echo "" >&2;
+      exit 255;
+  esac
+  shift
+done
+
+#*---------------------------------------------------------------------*/
+#*    sopath                                                           */
+#*---------------------------------------------------------------------*/
 hopversion=`$hop --configure --version`
-hopminorversion=`$hop --configure --minor-version`
+hoplibdir=`$hop --configure --libdir`
+hopbuildid=`$hop --configure --build-id`
+hopbuildarch=`$hop --configure --build-arch`
+hopsodirname=`$hop --configure --so-dirname`
+hopsodir="$hoplibdir/$hopversion/so/hop/$hopversion/$hopbuildid/$hopbuildarch"
 
-# check hop required version
-if [ "$hopminrequired " != " " ]; then
-  $hop -q --no-server --eval "(exit (if (string>=? (hop-version) \"$hopminrequired\") 0 1))"
-fi  
+#*---------------------------------------------------------------------*/
+#*    checking hop installation                                        */
+#*---------------------------------------------------------------------*/
+hopc=$hoplibdir/hop/$hopversion/node_modules/hopc/lib/so/$hopsodirname/hopc.so
 
-if [ $? != "0" ]; then
-  echo "*** ERROR:configure:hop. Aborting!" >&2
-  echo "Your version of Hop ($hopversion) is too old." >&2
-  echo "Version \"$hopminrequired\" or more recent is required." >&2
-  exit 1;
+if [ ! -f $hopc ]; then
+  echo "*** ERROR: Cannot find $hopc"
+  exit 1
 fi
-
-if [ "$hopmaxrequired " != " " ]; then
-  $hop -q --no-server --eval "(exit (if (string<=? (hop-version) \"$hopmaxrequired\") 0 1))"
-fi  
-
-if [ $? != "0" ]; then
-  echo "*** ERROR:configure:hop. Aborting!" >&2
-  echo "Your version of Hop ($hopversion) is too recent." >&2
-  echo "Version \"$hopmaxrequired\" or older required." >&2
-  exit 1;
-fi
-
 
 # docker/Dockerfile.in
-for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el doc/doc.json; do
+for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el doc/doc.json arch/debian/makedeb.sh Makefile lib/config.js; do
   rm -f $path 2> /dev/null
   cat $path.in \
-    | sed -e "s|@HIPHOPVERSION@|$hiphopversion|g" \
+    | sed -e "s|@HIPHOPVERSION@|$version|g" \
+	  -e "s|@VERSION@|$version|g" \
+	  -e "s|@MINOR@|$minor|g" \
 	  -e "s|@HOPVERSION@|$hopversion|g" \
 	  -e "s|@HOPMINORVERSION@|$hopminorversion|g" \
 	  -e "s|@BGLVERSION@|$bglversion|g" \
+	  -e "s|@HOPREPOSITORY@|$hoprepository|g" \
+	  -e "s|@LICENSE@|$license|g" \
+	  -e "s|@HZ@|$hz|g" \
+	  -e "s|@DATE@|$date|g" \
+	  -e "s|@URLBASE@|$urlbase|g" \
+          -e "s|@BUILDDIR@|$PWD|g" \
+          -e "s|@HOPLIBDIR@|$hoplibdir|g" \
+          -e "s|@HOPBUILDID@|$hopbuildid|g" \
+          -e "s|@HOPBUILDARCH@|$hopbuildarch|g" \
+          -e "s|@HOP@|$hop|g" \
+          -e "s|@HOPC@|$hopc|g" \
+          -e "s|@HFLAGS@|$hflags|g" \
+          -e "s|@SODIR@|$hopsodir|g" \
    	  >> $path
 done
+
+chmod a+rx arch/debian/makedeb.sh
+
+#*---------------------------------------------------------------------*/
+#*    Summary                                                          */
+#*---------------------------------------------------------------------*/
+
+# Generate the config.status file to please debian packages
+echo "configuration completed" > config.status
+
+echo "** Configuration summary **"
+echo 
+echo "Release:"
+echo "  hopsmtp release number................ $version"
+echo "  hop command........................... $hop"
+echo "  hopc command.......................... $hopc"
+echo "  hflags ............................... $hflags"
+echo "  etc directory......................... $etcdir"
+echo "  lib directory......................... $hoplibdir/hiphop"
+echo "  so directory.......................... $hopsodir"
+

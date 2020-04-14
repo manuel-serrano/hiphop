@@ -1,6 +1,6 @@
 "use hopscript"
 
-const hh = require("hiphop");
+const hh = require("../lib/hiphop.js");
 const lang = require("../lib/lang.js");
 const next_id = (() => {
    let lbl = "__PARALLELMAP_ID__";
