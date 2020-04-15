@@ -1,2 +1,3 @@
+Warning: causality cycle of length 4 detected, involving signals OUTER
 dans atom
 causality error

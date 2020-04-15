@@ -1,0 +1,2 @@
+Warning: causality cycle of length 8 detected, involving signals O,A
+TypeError: causality cycle of length 8 detected, involving signals A,O
