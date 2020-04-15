@@ -19,7 +19,7 @@
 #*---------------------------------------------------------------------*/
 HZ=hiphop
 HZVERSION=0.3.0
-DATE="14 April 2020"
+DATE="15 April 2020"
 
 CATEGORY=programming
 LICENSE=gpl
