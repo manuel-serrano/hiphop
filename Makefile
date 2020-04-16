@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Tue Apr 14 16:56:18 2020 (serrano)                */
+#*    Last change :  Thu Apr 16 12:19:24 2020 (serrano)                */
 #*    Copyright   :  2006-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -19,7 +19,7 @@
 #*---------------------------------------------------------------------*/
 HZ=hiphop
 HZVERSION=0.3.0
-DATE="15 April 2020"
+DATE="16 April 2020"
 
 CATEGORY=programming
 LICENSE=gpl
@@ -27,11 +27,11 @@ LICENSE=gpl
 HOPREPOSITORY=/home/serrano/prgm/distrib
 HOPLIBDIR=/usr/local/lib
 HOPVERSION=3.3.0
-HOPBUILDID=31cb45b06b3b659fe7e893068364dbf1
+HOPBUILDID=5adf856854ec1a4323b1883c900fe01b
 HOPBUILDARCH=linux-x86_64
 
 HOP = hop
-HOPC = /usr/local/lib/hop/3.3.0/node_modules/hopc/lib/so/3.3.0/31cb45b06b3b659fe7e893068364dbf1/linux-x86_64/hopc.so
+HOPC = /usr/local/lib/hop/3.3.0/node_modules/hopc/lib/so/3.3.0/5adf856854ec1a4323b1883c900fe01b/linux-x86_64/hopc.so
 HFLAGS = -O2
 
 HOPCOMPOPTS = -v2 --no-server --so-policy aot --so-target src -q
@@ -88,8 +88,9 @@ distclean: cleanall
 #*---------------------------------------------------------------------*/
 #*    hz                                                               */
 #*---------------------------------------------------------------------*/
-.PHONY: hz
+.PHONY: distrib hz
 
+distrib: hz
 hz: $(HOPREPOSITORY)/$(HZ)-$(HZVERSION).hz
 
 $(HOPREPOSITORY)/$(HZ)-$(HZVERSION).hz: \

@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Sat Dec 22 05:37:50 2007                          */
-#*    Last change :  Tue Apr 14 15:09:36 2020 (serrano)                */
+#*    Last change :  Thu Apr 16 12:15:54 2020 (serrano)                */
 #*    Copyright   :  2007-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    The Shell script to build the .deb for HipHop on Debian          */
@@ -17,6 +17,8 @@
 #*---------------------------------------------------------------------*/
 VERSION=0.3.0    # Hiphop major version e.g. VERSION=0.3.0
 MINOR=        # Hiphop minor release e.g. MINOR=-pre1
+
+SOFILEDIR=/usr/local/lib/3.3.0/so/hop/3.3.0/5adf856854ec1a4323b1883c900fe01b/linux-x86_64
 
 AUTHOR="Manuel.Serrano@inria.fr"
 LICENSE=gpl
@@ -131,6 +133,7 @@ for p in control rules postinst compat; do
             -e "s/@EXTRADEPEND@/$extradepend/g" \
             -e "s/@EXTRABUILDDEPEND@/$extrabuilddepend/g" \
             -e "s|@PREFIX@|$PREFIX|g" \
+	    -e "s|@SOFILEDIR@|$SOFILEDIR|" \
             -e "s/@BIGLOOVERSION@/$BIGLOOVERSION/g" > \
       $BUILDDIR/hiphop-$VERSION/debian/$p;
   else
