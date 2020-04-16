@@ -9,8 +9,8 @@ let prg =
       <hh.emit OUTER value=1/>
       <hh.emit O2 apply=${function() {return this.OUTER.nowval}}/>
     </hh.module>;
-let machine = new hh.ReactiveMachine(prg, "TEST");
 
+let machine = new hh.ReactiveMachine(prg, "TEST");
 try {
    machine.react();
 } catch( e ) {

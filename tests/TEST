@@ -8,7 +8,7 @@ fi
 
 space="     "
 dir=$(pwd)
-hop_opt="--no-server --no-sofile --sofile-policy none -q"
+hop_opt="--no-server --no-so --so-policy none -q"
 CC=/usr/bin/gcc
 batchfile=/tmp/batch.js
 output_hop=/tmp/TEST-HOPJS.out

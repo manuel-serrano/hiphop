@@ -1,11 +1,11 @@
 #!/bin/sh
 #*=====================================================================*/
-#*    serrano/prgm/project/bigloo/arch/debian/postinst.in              */
+#*    serrano/prgm/project/hiphop/hiphop/arch/debian/postinst.in       */
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Thu Jan 14 17:37:58 2010                          */
-#*    Last change :  Sun Jul 27 08:43:46 2014 (serrano)                */
-#*    Copyright   :  2010-14 Manuel Serrano                            */
+#*    Last change :  Thu Apr 16 12:14:59 2020 (serrano)                */
+#*    Copyright   :  2010-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Bigloo post debian installation for maemo                        */
 #*=====================================================================*/
@@ -16,3 +16,11 @@ if [ "$search" != "@BGLPREFIX@/lib/bigloo/$BIGLOOVERSION" ]; then
   echo "@BGLPREFIX@/lib/bigloo/$BIGLOOVERSION" >> /etc/ld.so.conf
   ldconfig
 fi
+
+#*---------------------------------------------------------------------*/
+#*    so files                                                         */
+#*    -------------------------------------------------------------    */
+#*    Touch so files to ensure that they are newer than the sources.   */
+#*---------------------------------------------------------------------*/
+find @SOFILEDIR@ -name '*.so' -exec /bin/touch {} \;
+
