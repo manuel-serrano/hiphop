@@ -4,15 +4,12 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Thu Apr 16 12:19:24 2020 (serrano)                */
+#*    Last change :  Thu Apr 23 17:17:44 2020 (serrano)                */
 #*    Copyright   :  2006-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
 #*=====================================================================*/
 ## run "make" to build the .hz file
-
--include @BGLPATH@/Makefile.config
--include @HOPPATH@/Makefile.hopconfig
 
 #*---------------------------------------------------------------------*/
 #*    Weblet description                                               */

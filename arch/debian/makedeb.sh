@@ -18,7 +18,7 @@
 VERSION=0.3.0    # Hiphop major version e.g. VERSION=0.3.0
 MINOR=        # Hiphop minor release e.g. MINOR=-pre1
 
-SOFILEDIR=/usr/local/lib/3.3.0/so/hop/3.3.0/0789b20931ecad27ea8ca35f25504db4/linux-x86_64
+SOFILEDIR=/usr/local/lib/hop/3.3.0/node_modules/hiphop-0.3.0
 
 AUTHOR="Manuel.Serrano@inria.fr"
 LICENSE=gpl

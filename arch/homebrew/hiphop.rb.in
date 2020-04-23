@@ -1,7 +1,7 @@
 class Hiphop < Formula
   desc "Reactive Web Programming Language"
   homepage "http://hop.inria.fr/hiphop"
-  url "ftp://ftp-sop.inria.fr/indes/fp/HipHop/hiphop-@RELEASE@.tar.gz"
+  url "ftp://ftp-sop.inria.fr/indes/fp/HipHop/hiphop-@RELEASE@.hz"
   version "@RELEASE@"
   sha256 "@SHA256@"
   revision 1

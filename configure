@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Thu Apr 16 15:05:49 2020 (serrano)                */
+#*    Last change :  Thu Apr 23 17:11:39 2020 (serrano)                */
 #*    Copyright   :  2018-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -104,7 +104,7 @@ hoplibdir=`$hop --configure --libdir`
 hopbuildid=`$hop --configure --build-id`
 hopbuildarch=`$hop --configure --build-arch`
 hopsodirname=`$hop --configure --so-dirname`
-hopsodir="$hoplibdir/$hopversion/so/hop/$hopversion/$hopbuildid/$hopbuildarch"
+hopsodir="$hoplibdir/hop/$hopversion/node_modules/$hz-$version"
 
 #*---------------------------------------------------------------------*/
 #*    checking hop installation                                        */
