@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Sat Dec 22 05:37:50 2007                          */
-#*    Last change :  Thu Apr 23 05:56:19 2020 (serrano)                */
+#*    Last change :  Thu Apr 23 14:26:52 2020 (serrano)                */
 #*    Copyright   :  2007-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    The Shell script to build the .deb for HipHop on Debian          */
@@ -62,10 +62,8 @@ while : ; do
       postinstall=no;;
     --no-sign)
       sign=--no-sign;;
-    --yes-or-no=no)
-      yesorno=no;;
-    --yes-or-no=yes)
-      yesorno=yes;;
+    --yes-or-no=*)
+      ;;
     *)
       HIPHOPCONFIGUREOPT="$1 $HIPHOPCONFIGUREOPT";;
 
