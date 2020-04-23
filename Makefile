@@ -19,7 +19,7 @@
 #*---------------------------------------------------------------------*/
 HZ=hiphop
 HZVERSION=0.3.0
-DATE="16 April 2020"
+DATE="23 April 2020"
 
 CATEGORY=programming
 LICENSE=gpl
@@ -27,11 +27,11 @@ LICENSE=gpl
 HOPREPOSITORY=/home/serrano/prgm/distrib
 HOPLIBDIR=/usr/local/lib
 HOPVERSION=3.3.0
-HOPBUILDID=5adf856854ec1a4323b1883c900fe01b
+HOPBUILDID=0789b20931ecad27ea8ca35f25504db4
 HOPBUILDARCH=linux-x86_64
 
 HOP = hop
-HOPC = /usr/local/lib/hop/3.3.0/node_modules/hopc/lib/so/3.3.0/5adf856854ec1a4323b1883c900fe01b/linux-x86_64/hopc.so
+HOPC = /usr/local/lib/hop/3.3.0/node_modules/hopc/lib/so/3.3.0/0789b20931ecad27ea8ca35f25504db4/linux-x86_64/hopc.so
 HFLAGS = -O2
 
 HOPCOMPOPTS = -v2 --no-server --so-policy aot --so-target src -q

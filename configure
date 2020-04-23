@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Tue Apr 14 07:34:46 2020 (serrano)                */
+#*    Last change :  Thu Apr 16 15:05:49 2020 (serrano)                */
 #*    Copyright   :  2018-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -46,7 +46,7 @@ while : ; do
     --prefix=*)
       prefix="`echo $1 | sed 's/^[^=]*=//'`";
       bindir=$prefix/bin;
-      libdir=$prefix/lib/hopsmtp;
+      libdir=$prefix/lib/hiphop;
       mandir=$prefix/man/$mansec;
       etcdir=$prefix/etc;
       contribsdir=$prefix/share/hop/contribs
@@ -117,7 +117,7 @@ if [ ! -f $hopc ]; then
 fi
 
 # docker/Dockerfile.in
-for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el doc/doc.json arch/debian/makedeb.sh Makefile lib/config.js; do
+for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el doc/doc.json arch/debian/makedeb.sh arch/homebrew/makebrew.sh Makefile lib/config.js; do
   rm -f $path 2> /dev/null
   cat $path.in \
     | sed -e "s|@HIPHOPVERSION@|$version|g" \
@@ -143,6 +143,7 @@ for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el doc/doc.json arch/
 done
 
 chmod a+rx arch/debian/makedeb.sh
+chmod a+rx arch/homebrew/makebrew.sh
 
 #*---------------------------------------------------------------------*/
 #*    Summary                                                          */
@@ -154,7 +155,7 @@ echo "configuration completed" > config.status
 echo "** Configuration summary **"
 echo 
 echo "Release:"
-echo "  hopsmtp release number................ $version"
+echo "  hiphop release number................. $version"
 echo "  hop command........................... $hop"
 echo "  hopc command.......................... $hopc"
 echo "  hflags ............................... $hflags"

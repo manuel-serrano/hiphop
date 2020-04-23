@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Sat Dec 22 05:37:50 2007                          */
-#*    Last change :  Thu Apr 16 12:15:54 2020 (serrano)                */
+#*    Last change :  Thu Apr 23 05:56:19 2020 (serrano)                */
 #*    Copyright   :  2007-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    The Shell script to build the .deb for HipHop on Debian          */
@@ -18,7 +18,7 @@
 VERSION=0.3.0    # Hiphop major version e.g. VERSION=0.3.0
 MINOR=        # Hiphop minor release e.g. MINOR=-pre1
 
-SOFILEDIR=/usr/local/lib/3.3.0/so/hop/3.3.0/5adf856854ec1a4323b1883c900fe01b/linux-x86_64
+SOFILEDIR=/usr/local/lib/3.3.0/so/hop/3.3.0/0789b20931ecad27ea8ca35f25504db4/linux-x86_64
 
 AUTHOR="Manuel.Serrano@inria.fr"
 LICENSE=gpl
@@ -62,6 +62,10 @@ while : ; do
       postinstall=no;;
     --no-sign)
       sign=--no-sign;;
+    --yes-or-no=no)
+      yesorno=no;;
+    --yes-or-no=yes)
+      yesorno=yes;;
     *)
       HIPHOPCONFIGUREOPT="$1 $HIPHOPCONFIGUREOPT";;
 
