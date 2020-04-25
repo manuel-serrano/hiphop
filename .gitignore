@@ -7,3 +7,9 @@ doc/hss
 Makefile
 config.status
 lib/config.js
+arch/homebrew/makebrew.sh
+lib/so
+preprocessor/so
+so
+ulib/so
+ChangeLog

@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Sat Dec 22 05:37:50 2007                          */
-#*    Last change :  Thu Apr 23 14:26:52 2020 (serrano)                */
+#*    Last change :  Fri Apr 24 12:12:56 2020 (serrano)                */
 #*    Copyright   :  2007-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    The Shell script to build the .deb for HipHop on Debian          */
@@ -80,15 +80,15 @@ mkdir -p $BUILDDIR
 #*---------------------------------------------------------------------*/
 #*    Untar the hiphop version                                         */
 #*---------------------------------------------------------------------*/
-if [ "$REPODIR " != " " -a -f $REPODIR/hiphop-$VERSION$MINOR.hz ]; then
-  tar xfz $REPODIR/hiphop-$VERSION$MINOR.hz -C $BUILDDIR || exit 1
-elif [ -f $HOPREPOSITORY/hiphop-$VERSION$MINOR.hz ]; then
-  tar xfz $HOPREPOSITORY/hiphop-$VERSION$MINOR.hz -C $BUILDDIR || exit 1
+if [ "$REPODIR " != " " -a -f $REPODIR/hiphop-$VERSION$MINOR.tar.gz ]; then
+  tar xfz $REPODIR/hiphop-$VERSION$MINOR.tar.gz -C $BUILDDIR || exit 1
+elif [ -f $HOPREPOSITORY/hiphop-$VERSION$MINOR.tar.gz ]; then
+  tar xfz $HOPREPOSITORY/hiphop-$VERSION$MINOR.tar.gz -C $BUILDDIR || exit 1
 elif [ "$REPODIR " != " " ]; then
-  echo "*** ERROR: Cannot find $REPODIR/hiphop-$VERSION$MINOR.hz"
+  echo "*** ERROR: Cannot find $REPODIR/hiphop-$VERSION$MINOR.tar.gz"
   exit 1
 else
-  echo "*** ERROR: Cannot find $HOPREPOSITORY/hiphop-$VERSION$MINOR.hz"
+  echo "*** ERROR: Cannot find $HOPREPOSITORY/hiphop-$VERSION$MINOR.tar.gz"
   exit 1
 fi
 

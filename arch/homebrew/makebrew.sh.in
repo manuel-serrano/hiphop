@@ -3,7 +3,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Tue Apr 21 16:39:11 2020                          */
-#*    Last change :  Thu Apr 23 14:41:38 2020 (serrano)                */
+#*    Last change :  Fri Apr 24 12:12:47 2020 (serrano)                */
 #*    Copyright   :  2020 Manuel Serrano                               */
 #*    -------------------------------------------------------------    */
 #*    Script to build the homebrew formula                             */
@@ -46,7 +46,7 @@ if [ "$REPODIR " != " " ]; then
   repodir=$REPODIR;
 fi
 
-sha256=`sha256sum $repodir/hiphop-$release$minor.hz | awk '{ print $1 }'`
+sha256=`sha256sum $repodir/hiphop-$release$minor.tar.gz | awk '{ print $1 }'`
 cat hiphop.rb.in | \
   sed -e "s/@RELEASE@/$release$minor/" \
       -e "s/@SHA256@/$sha256/" \

@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Thu Apr 23 17:17:44 2020 (serrano)                */
+#*    Last change :  Fri Apr 24 12:14:50 2020 (serrano)                */
 #*    Copyright   :  2006-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -26,6 +26,7 @@ HOPLIBDIR=@HOPLIBDIR@
 HOPVERSION=@HOPVERSION@
 HOPBUILDID=@HOPBUILDID@
 HOPBUILDARCH=@HOPBUILDARCH@
+HOPSODIR=@SODIR@
 
 HOP = @HOP@
 HOPC = @HOPC@
@@ -48,23 +49,23 @@ so: ChangeLog
 .PHONY: install-dir install install-local
 
 install:
-	$(MAKE) install-dir TARGET_DIR=$(DESTDIR)$(NODE_MODULES)
+	$(MAKE) install-dir TARGET_DIR=$(DESTDIR)$(HOPLIBDIR)/$(HZ)/$(HZVERSION)
+	cd $(HOPSODIR) && rm -f $(HZ) && ln -s $(DESTDIR)$(HOPLIBDIR)/$(HZ)/$(HZVERSION) $(HZ)
+	chmod a+rx $(DESTDIR)$(TARGET_DIR)/$(HZ)
 
 install-local:
-	$(MAKE) install-dir TARGET_DIR=$(LOCAL_NODE_MODULES)
+	$(MAKE) install-dir TARGET_DIR=$$HOME/.node_modules/$(HZ)
 
 install-dir:
-	mkdir -p $(TARGET_DIR)/$(HZ)-$(HZVERSION)
-	cp -rf package.json $(TARGET_DIR)/$(HZ)-$(HZVERSION)
-	cp -rf package-lock.json $(TARGET_DIR)/$(HZ)-$(HZVERSION)
-	cp -rf node_modules $(TARGET_DIR)/$(HZ)-$(HZVERSION)
-	cp -rf ulib $(TARGET_DIR)/$(HZ)-$(HZVERSION)
-	cp -rf lib $(TARGET_DIR)/$(HZ)-$(HZVERSION)
-	cp -rf preprocessor $(TARGET_DIR)/$(HZ)-$(HZVERSION)
-	cp -rf so $(TARGET_DIR)/$(HZ)-$(HZVERSION)
-	chmod a+rx -R $(TARGET_DIR)/$(HZ)-$(HZVERSION)
-	rm -f $(TARGET_DIR)/$(HZ)
-	(cd $(TARGET_DIR); ln -s $(HZ)-$(HZVERSION) $(HZ))
+	mkdir -p $(TARGET_DIR)
+	cp -rf package.json $(TARGET_DIR)
+	cp -rf package-lock.json $(TARGET_DIR)
+	cp -rf node_modules $(TARGET_DIR)
+	cp -rf ulib $(TARGET_DIR)
+	cp -rf lib $(TARGET_DIR)
+	cp -rf preprocessor $(TARGET_DIR)
+	cp -rf so $(TARGET_DIR)
+	chmod a+rx -R $(TARGET_DIR)
 
 #*---------------------------------------------------------------------*/
 #*    clean                                                            */
@@ -85,12 +86,13 @@ distclean: cleanall
 #*---------------------------------------------------------------------*/
 #*    hz                                                               */
 #*---------------------------------------------------------------------*/
-.PHONY: distrib hz
+.PHONY: distrib tgz
 
 distrib: hz
-hz: $(HOPREPOSITORY)/$(HZ)-$(HZVERSION).hz
+hz: tgz
+tgz: $(HOPREPOSITORY)/$(HZ)-$(HZVERSION).tar.gz
 
-$(HOPREPOSITORY)/$(HZ)-$(HZVERSION).hz: \
+$(HOPREPOSITORY)/$(HZ)-$(HZVERSION).tar.gz: \
   package.json \
   package-lock.json \
   node_modules \

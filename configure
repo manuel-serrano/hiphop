@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Thu Apr 23 17:11:39 2020 (serrano)                */
+#*    Last change :  Sat Apr 25 07:05:51 2020 (serrano)                */
 #*    Copyright   :  2018-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -97,6 +97,13 @@ while : ; do
 done
 
 #*---------------------------------------------------------------------*/
+#*    default paths                                                    */
+#*---------------------------------------------------------------------*/
+if [ "$etcdir " = " " ]; then
+  etcdir=`$hop --configure --etcdir`
+fi
+
+#*---------------------------------------------------------------------*/
 #*    sopath                                                           */
 #*---------------------------------------------------------------------*/
 hopversion=`$hop --configure --version`
@@ -104,15 +111,15 @@ hoplibdir=`$hop --configure --libdir`
 hopbuildid=`$hop --configure --build-id`
 hopbuildarch=`$hop --configure --build-arch`
 hopsodirname=`$hop --configure --so-dirname`
-hopsodir="$hoplibdir/hop/$hopversion/node_modules/$hz-$version"
+hopsodir="$hoplibdir/hop/$hopversion/node_modules"
 
 #*---------------------------------------------------------------------*/
 #*    checking hop installation                                        */
 #*---------------------------------------------------------------------*/
-hopc=$hoplibdir/hop/$hopversion/node_modules/hopc/lib/so/$hopsodirname/hopc.so
+hopcso=$hoplibdir/hop/$hopversion/node_modules/hopc/lib/so/$hopsodirname/hopc.so
 
-if [ ! -f $hopc ]; then
-  echo "*** ERROR: Cannot find $hopc"
+if [ ! -f $hopcso ]; then
+  echo "*** ERROR: Cannot find $hopcso"
   exit 1
 fi
 
@@ -160,6 +167,6 @@ echo "  hop command........................... $hop"
 echo "  hopc command.......................... $hopc"
 echo "  hflags ............................... $hflags"
 echo "  etc directory......................... $etcdir"
-echo "  lib directory......................... $hoplibdir/hiphop"
+echo "  lib directory......................... $hoplibdir"
 echo "  so directory.......................... $hopsodir"
 
