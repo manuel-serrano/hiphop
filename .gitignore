@@ -8,6 +8,7 @@ Makefile
 config.status
 lib/config.js
 arch/homebrew/makebrew.sh
+arch/debian/makedeb.sh
 lib/so
 preprocessor/so
 so

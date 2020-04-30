@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Fri Apr 24 12:14:50 2020 (serrano)                */
+#*    Last change :  Sat Apr 25 13:01:00 2020 (serrano)                */
 #*    Copyright   :  2006-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -34,9 +34,6 @@ HFLAGS = -O2
 
 HOPCOMPOPTS = -v2 --no-server --so-policy aot --so-target src -q
 
-NODE_MODULES=$(HOPLIBDIR)/hop/$(HOPVERSION)/node_modules
-LOCAL_NODE_MODULES=$$HOME/.node_modules
-
 #*---------------------------------------------------------------------*/
 #*    targets                                                          */
 #*---------------------------------------------------------------------*/
@@ -50,8 +47,9 @@ so: ChangeLog
 
 install:
 	$(MAKE) install-dir TARGET_DIR=$(DESTDIR)$(HOPLIBDIR)/$(HZ)/$(HZVERSION)
-	cd $(HOPSODIR) && rm -f $(HZ) && ln -s $(DESTDIR)$(HOPLIBDIR)/$(HZ)/$(HZVERSION) $(HZ)
-	chmod a+rx $(DESTDIR)$(TARGET_DIR)/$(HZ)
+	mkdir -p $(DESTDIR)$(HOPSODIR)
+	cd $(DESTDIR)$(HOPSODIR) && rm -f $(HZ) && ln -s $(DESTDIR)$(HOPLIBDIR)/$(HZ)/$(HZVERSION) $(HZ)
+	chmod a+rx $(DESTDIR)$(HOPLIBDIR)/$(HZ)
 
 install-local:
 	$(MAKE) install-dir TARGET_DIR=$$HOME/.node_modules/$(HZ)
