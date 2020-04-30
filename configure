@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Thu Apr 30 17:42:57 2020 (serrano)                */
+#*    Last change :  Thu Apr 30 18:04:09 2020 (serrano)                */
 #*    Copyright   :  2018-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -125,7 +125,7 @@ if [ ! -f $hopcso ]; then
 fi
 
 if [ "$libdir " = " " ]; then
-  libdir=$hoplibdir
+  libdir=$hoplibdir/$hz/$version
 fi
 
 # docker/Dockerfile.in

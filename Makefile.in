@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Thu Apr 30 17:55:41 2020 (serrano)                */
+#*    Last change :  Thu Apr 30 18:04:20 2020 (serrano)                */
 #*    Copyright   :  2006-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -48,11 +48,11 @@ so: ChangeLog
 
 install: install-shallow
 	mkdir -p $(DESTDIR)$(HOPSODIR)
-	cd $(DESTDIR)$(HOPSODIR) && rm -f $(HZ) && ln -s $(DESTDIR)$(LIBDIR)/$(HZ)/$(HZVERSION) $(HZ)
+	cd $(DESTDIR)$(HOPSODIR) && rm -f $(HZ) && ln -s $(DESTDIR)$(LIBDIR)
 	chmod a+rx $(DESTDIR)$(HOPSODIR)/$(HZ)
 
 install-shallow:
-	$(MAKE) install-dir TARGET_DIR=$(DESTDIR)$(LIBDIR)/$(HZ)/$(HZVERSION)
+	$(MAKE) install-dir TARGET_DIR=$(DESTDIR)$(LIBDIR)
 
 install-local:
 	$(MAKE) install-dir TARGET_DIR=$$HOME/.node_modules/$(HZ)
