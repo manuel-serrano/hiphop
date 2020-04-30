@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Sat Apr 25 07:05:51 2020 (serrano)                */
+#*    Last change :  Thu Apr 30 13:44:14 2020 (serrano)                */
 #*    Copyright   :  2018-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -112,11 +112,12 @@ hopbuildid=`$hop --configure --build-id`
 hopbuildarch=`$hop --configure --build-arch`
 hopsodirname=`$hop --configure --so-dirname`
 hopsodir="$hoplibdir/hop/$hopversion/node_modules"
+hopso=`$hop --no-server --eval "(print (bigloo-config 'shared-lib-suffix)))"`
 
 #*---------------------------------------------------------------------*/
 #*    checking hop installation                                        */
 #*---------------------------------------------------------------------*/
-hopcso=$hoplibdir/hop/$hopversion/node_modules/hopc/lib/so/$hopsodirname/hopc.so
+hopcso=$hoplibdir/hop/$hopversion/node_modules/hopc/lib/so/$hopsodirname/hopc.$hopso
 
 if [ ! -f $hopcso ]; then
   echo "*** ERROR: Cannot find $hopcso"
