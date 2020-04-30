@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Sat Apr 25 13:01:00 2020 (serrano)                */
+#*    Last change :  Thu Apr 30 16:53:04 2020 (serrano)                */
 #*    Copyright   :  2006-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -63,7 +63,7 @@ install-dir:
 	cp -rf lib $(TARGET_DIR)
 	cp -rf preprocessor $(TARGET_DIR)
 	cp -rf so $(TARGET_DIR)
-	chmod a+rx -R $(TARGET_DIR)
+	chmod -R a+rx $(TARGET_DIR)
 
 #*---------------------------------------------------------------------*/
 #*    clean                                                            */
