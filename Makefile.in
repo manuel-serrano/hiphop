@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Thu Apr 30 16:53:04 2020 (serrano)                */
+#*    Last change :  Thu Apr 30 17:42:32 2020 (serrano)                */
 #*    Copyright   :  2006-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -21,6 +21,7 @@ DATE="@DATE@"
 CATEGORY=programming
 LICENSE=@LICENSE@
 
+LIBDIR=@LIBDIR@
 HOPREPOSITORY=@HOPREPOSITORY@
 HOPLIBDIR=@HOPLIBDIR@
 HOPVERSION=@HOPVERSION@
@@ -46,10 +47,10 @@ so: ChangeLog
 .PHONY: install-dir install install-local
 
 install:
-	$(MAKE) install-dir TARGET_DIR=$(DESTDIR)$(HOPLIBDIR)/$(HZ)/$(HZVERSION)
+	$(MAKE) install-dir TARGET_DIR=$(DESTDIR)$(LIBDIR)/$(HZ)/$(HZVERSION)
 	mkdir -p $(DESTDIR)$(HOPSODIR)
-	cd $(DESTDIR)$(HOPSODIR) && rm -f $(HZ) && ln -s $(DESTDIR)$(HOPLIBDIR)/$(HZ)/$(HZVERSION) $(HZ)
-	chmod a+rx $(DESTDIR)$(HOPLIBDIR)/$(HZ)
+	cd $(DESTDIR)$(HOPSODIR) && rm -f $(HZ) && ln -s $(DESTDIR)$(LIBDIR)/$(HZ)/$(HZVERSION) $(HZ)
+	chmod a+rx $(DESTDIR)$(HOPSODIR)/$(HZ)
 
 install-local:
 	$(MAKE) install-dir TARGET_DIR=$$HOME/.node_modules/$(HZ)

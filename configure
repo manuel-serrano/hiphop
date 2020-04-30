@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Thu Apr 30 17:37:09 2020 (serrano)                */
+#*    Last change :  Thu Apr 30 17:42:57 2020 (serrano)                */
 #*    Copyright   :  2018-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -124,6 +124,10 @@ if [ ! -f $hopcso ]; then
   exit 1
 fi
 
+if [ "$libdir " = " " ]; then
+  libdir=$hoplibdir
+fi
+
 # docker/Dockerfile.in
 for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el doc/doc.json arch/debian/makedeb.sh arch/homebrew/makebrew.sh Makefile lib/config.js; do
   rm -f $path 2> /dev/null
@@ -140,6 +144,7 @@ for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el doc/doc.json arch/
 	  -e "s|@DATE@|$date|g" \
 	  -e "s|@URLBASE@|$urlbase|g" \
           -e "s|@BUILDDIR@|$PWD|g" \
+          -e "s|@LIBDIR@|$libdir|g" \
           -e "s|@HOPLIBDIR@|$hoplibdir|g" \
           -e "s|@HOPBUILDID@|$hopbuildid|g" \
           -e "s|@HOPBUILDARCH@|$hopbuildarch|g" \
@@ -152,10 +157,6 @@ done
 
 chmod a+rx arch/debian/makedeb.sh
 chmod a+rx arch/homebrew/makebrew.sh
-
-if [ "$libdir " = " " ]; then
-  libdir=$hoplibdir
-fi
 
 #*---------------------------------------------------------------------*/
 #*    Summary                                                          */
