@@ -22,7 +22,7 @@ class Hiphop < Formula
 
     system "make"
     system "make", "install-shallow"
-    print "Install locally with \"(mkdir -p $HOME/.node_modules; cd $HOME/.node_modules; ln -s #{prefix} hiphop)\"n"
+    print "Install locally with \"(mkdir -p $HOME/.node_modules; cd $HOME/.node_modules; ln -s #{prefix} hiphop)\"\n"
   end
 
   test do
