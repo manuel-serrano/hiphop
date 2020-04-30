@@ -21,7 +21,8 @@ class Hiphop < Formula
     system "./configure", *args
 
     system "make"
-    system "make", "install"
+    system "make", "install-shallow"
+    print "Install locally with \"(cd $HOME/.node_modules; ln -s #{prefix} hiphop)\""
   end
 
   test do
