@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Thu Apr 30 13:44:14 2020 (serrano)                */
+#*    Last change :  Thu Apr 30 17:37:09 2020 (serrano)                */
 #*    Copyright   :  2018-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -153,6 +153,10 @@ done
 chmod a+rx arch/debian/makedeb.sh
 chmod a+rx arch/homebrew/makebrew.sh
 
+if [ "$libdir " = " " ]; then
+  libdir=$hoplibdir
+fi
+
 #*---------------------------------------------------------------------*/
 #*    Summary                                                          */
 #*---------------------------------------------------------------------*/
@@ -168,6 +172,6 @@ echo "  hop command........................... $hop"
 echo "  hopc command.......................... $hopc"
 echo "  hflags ............................... $hflags"
 echo "  etc directory......................... $etcdir"
-echo "  lib directory......................... $hoplibdir"
+echo "  lib directory......................... $libdir"
 echo "  so directory.......................... $hopsodir"
 
