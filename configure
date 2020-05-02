@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Thu Apr 30 18:04:09 2020 (serrano)                */
+#*    Last change :  Sat May  2 08:40:40 2020 (serrano)                */
 #*    Copyright   :  2018-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -49,8 +49,8 @@ while : ; do
       libdir=$prefix/lib/hiphop;
       mandir=$prefix/man/$mansec;
       etcdir=$prefix/etc;
-      contribsdir=$prefix/share/hop/contribs
-      docdir=$prefix/share/doc/hop;;
+      contribsdir=$prefix/share/hiphop/contribs
+      docdir=$prefix/share/doc/hiphop;;
 
     --etcdir=*)
       etcdir="`echo $1 | sed 's/^[^=]*=//'`";;
@@ -151,7 +151,7 @@ for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el doc/doc.json arch/
           -e "s|@HOP@|$hop|g" \
           -e "s|@HOPC@|$hopc|g" \
           -e "s|@HFLAGS@|$hflags|g" \
-          -e "s|@SODIR@|$hopsodir|g" \
+          -e "s|@SODIR@|$sodir|g" \
    	  >> $path
 done
 
