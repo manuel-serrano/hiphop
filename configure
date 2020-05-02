@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Sat May  2 15:49:43 2020 (serrano)                */
+#*    Last change :  Sat May  2 16:20:30 2020 (serrano)                */
 #*    Copyright   :  2018-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -158,6 +158,7 @@ for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el doc/doc.json arch/
           -e "s|@HOPC@|$hopc|g" \
           -e "s|@HFLAGS@|$hflags|g" \
           -e "s|@SODIR@|$sodir|g" \
+          -e "s|@SO@|$hopso|g" \
   	  >> $path
 done
 

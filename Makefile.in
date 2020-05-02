@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Sat May  2 12:15:58 2020 (serrano)                */
+#*    Last change :  Sat May  2 16:19:45 2020 (serrano)                */
 #*    Copyright   :  2006-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -49,7 +49,7 @@ JSOBJECTS = $(LIB:%=lib/%) $(JSPREPROCESSOR:%=preprocessor/%) $(ULIB:%=ulib/%)
 HOPOBJECTS = $(HOPPREPROCESSOR:%=preprocessor/%)
 OBJECTS=$(JSOBJECTS) $(HOPOBJECTS)
 
-SOFILES = $(JSOBJECTS:%.js=%.so) $(HOPOBJECTS:%.hop=%.so)
+SOFILES = $(JSOBJECTS:%.js=%.@SO@) $(HOPOBJECTS:%.hop=%.@SO@)
 
 SODIR= @SODIR@
 JSDIR = $(LIBDIR)/$(HZVERSION)
@@ -59,22 +59,22 @@ SO=$(SOFILES:%=so/%)
 #*---------------------------------------------------------------------*/
 #*    do                                                               */
 #*---------------------------------------------------------------------*/
-do: $(SOFILES) lib/config.so ChangeLog
+do: $(SOFILES) lib/config.@SO@ ChangeLog
 	@ echo "Compilation complete."
 
 #*---------------------------------------------------------------------*/
 #*    .suffixes                                                        */
 #*---------------------------------------------------------------------*/
 .SUFFIXES:
-.SUFFIXES: .js .hop .so
+.SUFFIXES: .js .hop .@SO@
 
 #*---------------------------------------------------------------------*/
 #*    The implicit rules                                               */
 #*---------------------------------------------------------------------*/
-%.so: %.js
+%.@SO@: %.js
 	$(HOPC) $(HFLAGS) -y -o $@ $< 
 
-%.so: %.hop
+%.@SO@: %.hop
 	$(HOPC) $(HFLAGS) -y -o $@ $< 
 
 #*---------------------------------------------------------------------*/
@@ -91,24 +91,24 @@ install: install-so
 	cp $(ULIB:%=ulib/%) $(DESTDIR)$(HIPHOPLIBDIR)/ulib
 	cp package.json $(DESTDIR)$(HIPHOPLIBDIR)
 	chmod -R a+rx $(DESTDIR)$(LIBDIR)/$(HZ)
-	find $(DESTDIR)$(HIPHOPLIBDIR) -name '*.so' -exec touch {} \;
+	find $(DESTDIR)$(HIPHOPLIBDIR) -name '*.@SO@' -exec touch {} \;
 	echo "Installation complete [$(DESTDIR)$(HIPHOPLIBDIR)]."
 
 install-so:
 	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/lib/$(SODIR)
 	for p in $(LIB:%.js=%) config; do \
-	   cp lib/$$p.so $(DESTDIR)$(HIPHOPLIBDIR)/lib/$(SODIR); \
+	   cp lib/$$p.@SO@ $(DESTDIR)$(HIPHOPLIBDIR)/lib/$(SODIR); \
         done
 	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/ulib/$(SODIR)
 	for p in $(ULIB:%.js=%); do \
-	   cp ulib/$$p.so $(DESTDIR)$(HIPHOPLIBDIR)/ulib/$(SODIR); \
+	   cp ulib/$$p.@SO@ $(DESTDIR)$(HIPHOPLIBDIR)/ulib/$(SODIR); \
         done
 	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor/$(SODIR)
 	for p in $(JSPREPROCESSOR:%.js=%); do \
-	   cp preprocessor/$$p.so $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor/$(SODIR); \
+	   cp preprocessor/$$p.@SO@ $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor/$(SODIR); \
         done
 	for p in $(HOPPREPROCESSOR:%.hop=%); do \
-	   cp preprocessor/$$p.so $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor/$/$(SODIR); \
+	   cp preprocessor/$$p.@SO@ $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor/$/$(SODIR); \
         done
 
 #*---------------------------------------------------------------------*/
