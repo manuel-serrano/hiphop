@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Sat May  2 11:40:49 2020 (serrano)                */
+#*    Last change :  Sat May  2 12:15:58 2020 (serrano)                */
 #*    Copyright   :  2006-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -29,6 +29,8 @@ HOPBUILDID=@HOPBUILDID@
 HOPBUILDARCH=@HOPBUILDARCH@
 HOPSODIR=@SODIR@
 
+HIPHOPLIBDIR=$(LIBDIR)/$(HZ)/$(HZVERSION)
+
 HOP = @HOP@
 HOPC = @HOPC@
 HFLAGS = @HFLAGS@
@@ -37,15 +39,20 @@ LIB = ast.js batch.js compiler.js compiler-utils.js debugger-common.js \
  debugger.js debugger-server.js debug.js error.js hiphop.js lang.js \
  machine.js net.js queue.js signal.js sweep.js
 
-PREPROCESSOR = astutils.js _hhaccess.hop parser.js
+JSPREPROCESSOR = astutils.js parser.js
+HOPPREPROCESSOR = _hhaccess.hop
+PREPROCESSOR=$(JSPREPROCESSOR) $(HOPPREPROCESSOR)
 
 ULIB = parallelmap.js
 
-OBJECTS = $(LIB:%=lib/%) $(PREPROCESSOR:%=preprocessor/%) $(ULIB:%=ulib/%)
-SOFILES = $(OBJECTS:%.js=%.so)
+JSOBJECTS = $(LIB:%=lib/%) $(JSPREPROCESSOR:%=preprocessor/%) $(ULIB:%=ulib/%)
+HOPOBJECTS = $(HOPPREPROCESSOR:%=preprocessor/%)
+OBJECTS=$(JSOBJECTS) $(HOPOBJECTS)
+
+SOFILES = $(JSOBJECTS:%.js=%.so) $(HOPOBJECTS:%.hop=%.so)
 
 SODIR= @SODIR@
-JSDIR = $(LIBDIR)/$(RELEASE)
+JSDIR = $(LIBDIR)/$(HZVERSION)
 
 SO=$(SOFILES:%=so/%)
 
@@ -59,7 +66,7 @@ do: $(SOFILES) lib/config.so ChangeLog
 #*    .suffixes                                                        */
 #*---------------------------------------------------------------------*/
 .SUFFIXES:
-.SUFFIXES: .js .so
+.SUFFIXES: .js .hop .so
 
 #*---------------------------------------------------------------------*/
 #*    The implicit rules                                               */
@@ -67,28 +74,50 @@ do: $(SOFILES) lib/config.so ChangeLog
 %.so: %.js
 	$(HOPC) $(HFLAGS) -y -o $@ $< 
 
+%.so: %.hop
+	$(HOPC) $(HFLAGS) -y -o $@ $< 
+
 #*---------------------------------------------------------------------*/
 #*    install                                                          */
 #*---------------------------------------------------------------------*/
-install:
-	mkdir -p $(DESTDIR)$(LIBDIR)
-	mkdir -p $(DESTDIR)$(LIBDIR)/$(HZVERSION)
-	cp -rf lib $(DESTDIR)$(LIBDIR)/$(HZVERSION)
-	cp -rf preprocessor $(DESTDIR)$(LIBDIR)/$(HZVERSION)
-	cp -rf ulib $(DESTDIR)$(LIBDIR)/$(HZVERSION)
-	cp package.json $(DESTDIR)$(LIBDIR)/$(HZVERSION)
-	chmod -R a+rx $(DESTDIR)$(LIBDIR)
-	find $(DESTDIR)$(LIBDIR) -name '*.so' -exec touch {} \;
-	echo "Installation complete [$(DESTDIR)$(LIBDIR)/$(HZVERSION)]."
+install: install-so
+	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)
+	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/lib
+	cp $(LIB:%=lib/%) $(DESTDIR)$(HIPHOPLIBDIR)/lib
+	cp lib/config.js $(DESTDIR)$(HIPHOPLIBDIR)/lib
+	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor
+	cp $(PREPROCESSOR:%=preprocessor/%) $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor
+	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/ulib
+	cp $(ULIB:%=ulib/%) $(DESTDIR)$(HIPHOPLIBDIR)/ulib
+	cp package.json $(DESTDIR)$(HIPHOPLIBDIR)
+	chmod -R a+rx $(DESTDIR)$(LIBDIR)/$(HZ)
+	find $(DESTDIR)$(HIPHOPLIBDIR) -name '*.so' -exec touch {} \;
+	echo "Installation complete [$(DESTDIR)$(HIPHOPLIBDIR)]."
+
+install-so:
+	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/lib/$(SODIR)
+	for p in $(LIB:%.js=%) config; do \
+	   cp lib/$$p.so $(DESTDIR)$(HIPHOPLIBDIR)/lib/$(SODIR); \
+        done
+	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/ulib/$(SODIR)
+	for p in $(ULIB:%.js=%); do \
+	   cp ulib/$$p.so $(DESTDIR)$(HIPHOPLIBDIR)/ulib/$(SODIR); \
+        done
+	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor/$(SODIR)
+	for p in $(JSPREPROCESSOR:%.js=%); do \
+	   cp preprocessor/$$p.so $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor/$(SODIR); \
+        done
+	for p in $(HOPPREPROCESSOR:%.hop=%); do \
+	   cp preprocessor/$$p.so $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor/$/$(SODIR); \
+        done
 
 #*---------------------------------------------------------------------*/
 #*    clean                                                            */
 #*---------------------------------------------------------------------*/
 clean:
-	rm -rf so
-	rm -rf lib/so
-	rm -rf ulib/so
-	rm -rf preprocessor/so
+	rm -rf lib/*.so
+	rm -rf ulib/*.so
+	rm -rf preprocessor/*.so
 
 cleanall: clean
 	rm -f config.status
