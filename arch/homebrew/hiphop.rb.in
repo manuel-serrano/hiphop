@@ -22,9 +22,7 @@ class Hiphop < Formula
 
     system "make"
     system "make", "install-shallow"
-    print "Install locally with \"(mkdir -p $HOME/.node_modules; cd $HOME/.node_modules; ln -s #{prefix}/hipop/lib hiphop)\"\n"
-    print "or set the NODE_PATH environment variable with:\n"
-    print "NODE_PATH=$NODE_PATH:#{prefix}/hipop/lib\n"
+    print "Install locally with \"(mkdir -p $HOME/.node_modules; cd $HOME/.node_modules; ln -s #{prefix}/lib/hipop .)\"\n"
   end
 
   test do
