@@ -14,14 +14,15 @@ class Hiphop < Formula
 
   def install
     args = %W[
-      --prefix=#{prefix}
+      --prefix=#{prefix},
+      --disable-doc
     ]
 
     ENV['PKG_CONFIG_PATH'] = "/usr/local/opt/openssl@1.1/lib/pkgconfig"
     system "./configure", *args
 
     system "make"
-    system "make", "install-shallow"
+    system "make", "install"
     print "Install locally with \"(mkdir -p $HOME/.node_modules; cd $HOME/.node_modules; ln -s #{prefix}/lib/hipop .)\"\n"
   end
 
