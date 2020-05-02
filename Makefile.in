@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Fri May  1 06:41:26 2020 (serrano)                */
+#*    Last change :  Sat May  2 11:40:49 2020 (serrano)                */
 #*    Copyright   :  2006-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -100,7 +100,7 @@ distclean: cleanall
 #*---------------------------------------------------------------------*/
 #*    hz                                                               */
 #*---------------------------------------------------------------------*/
-.PHONY: distrib tgz
+.PHONY: distrib tgz hz
 
 distrib: hz
 hz: tgz
@@ -110,9 +110,6 @@ $(HOPREPOSITORY)/$(HZ)-$(HZVERSION).tar.gz: \
   package.json \
   package-lock.json \
   node_modules \
-  ulib \
-  lib \
-  preprocessor \
   configure \
   Makefile.in Makefile \
   $(OBJECTS) \
