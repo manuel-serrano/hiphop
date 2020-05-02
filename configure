@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Sat May  2 12:19:12 2020 (serrano)                */
+#*    Last change :  Sat May  2 15:49:43 2020 (serrano)                */
 #*    Copyright   :  2018-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -46,7 +46,7 @@ while : ; do
     --prefix=*)
       prefix="`echo $1 | sed 's/^[^=]*=//'`";
       bindir=$prefix/bin;
-      libdir=$prefix/lib/hiphop;
+      libdir=$prefix/lib
       mandir=$prefix/man/$mansec;
       etcdir=$prefix/etc;
       contribsdir=$prefix/share/hiphop/contribs
