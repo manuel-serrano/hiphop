@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Sat May  2 16:20:30 2020 (serrano)                */
+#*    Last change :  Sun May  3 07:42:56 2020 (serrano)                */
 #*    Copyright   :  2018-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -111,7 +111,6 @@ hoplibdir=`$hop --configure --libdir`
 hopbuildid=`$hop --configure --build-id`
 hopbuildarch=`$hop --configure --build-arch`
 hopsodirname=`$hop --configure --so-dirname`
-hopsodir="$hoplibdir/hop/$hopversion/node_modules"
 hopso=`$hop --no-server --eval "(print (bigloo-config 'shared-lib-suffix)))"`
 
 if [ "$libdir " = " " ]; then
@@ -181,5 +180,5 @@ echo "  hopc command.......................... $hopc"
 echo "  hflags ............................... $hflags"
 echo "  etc directory......................... $etcdir"
 echo "  lib directory......................... $libdir"
-echo "  so directory.......................... $hopsodir"
+echo "  so directory name..................... $hopsodirname"
 
