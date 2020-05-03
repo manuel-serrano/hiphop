@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Sun May  3 07:42:56 2020 (serrano)                */
+#*    Last change :  Sun May  3 07:43:28 2020 (serrano)                */
 #*    Copyright   :  2018-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -174,11 +174,11 @@ echo "configuration completed" > config.status
 echo "** Configuration summary **"
 echo 
 echo "Release:"
-echo "  hiphop release number................. $version"
-echo "  hop command........................... $hop"
-echo "  hopc command.......................... $hopc"
-echo "  hflags ............................... $hflags"
-echo "  etc directory......................... $etcdir"
-echo "  lib directory......................... $libdir"
-echo "  so directory name..................... $hopsodirname"
+echo "  hiphop release number... $version"
+echo "  hop command............. $hop"
+echo "  hopc command............ $hopc"
+echo "  hflags ................. $hflags"
+echo "  etc directory........... $etcdir"
+echo "  lib directory........... $libdir"
+echo "  so directory name....... $hopsodirname"
 
