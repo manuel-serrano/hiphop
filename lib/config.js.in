@@ -9,4 +9,4 @@
 /*    hiphop configuration                                             */
 /*=====================================================================*/
 
-exports.version = "@version@";
+exports.version = "@VERSION@@MINOR@";
