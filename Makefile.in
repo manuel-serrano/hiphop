@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Sun May  3 07:19:30 2020 (serrano)                */
+#*    Last change :  Sun May  3 07:40:10 2020 (serrano)                */
 #*    Copyright   :  2006-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -150,6 +150,7 @@ $(HOPREPOSITORY)/$(HZ)-$(HZVERSION).tar.gz: \
   etc \
   doc \
   .travis.yml.in \
+  tests \
   ChangeLog
 	mkdir -p $(HOPREPOSITORY) && \
 	(cd ..; \
