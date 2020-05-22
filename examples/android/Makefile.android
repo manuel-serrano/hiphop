@@ -1,5 +1,10 @@
 include Makefile.config
 
+../../Makefile
+
+REPOSITORY = $(DISTRIBDIR)
+HIPHOPFULLNAME = $(HZ)-$(HZVERSION)
+
 apk: 
 	$(MAKE) -C $(HOPDIR)/arch/android apk \
              ANDROIDWEBLET=$(ANDROIDWEBLET) \
@@ -18,3 +23,23 @@ prepare-android-weblet:
 	find . -name '*.o' -exec /bin/rm {} \;
 	find . -name '*.so' -exec /bin/rm {} \;
 	rm -rf ../../arch/android
+
+hiphop: apk.hiphop
+
+apk.hiphop: $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME)
+	$(MAKE) apk.hiphop.configure
+	$(MAKE) -C $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME)
+	$(MAKE) -C $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME) install DESTDIR=$(ANDROIDBUILDDIR)
+$(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME): $(REPOSITORY)/$(HIPHOPFULLNAME).tar.gz
+	(cd $(ANDROIDBUILDDIR); rm -rf $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME))
+	(cd $(ANDROIDBUILDDIR); tar xvf $<)
+
+apk.hiphop.configure:
+	(cd $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME); \
+         ./configure \
+            --hopc=$(HOPBINDIR)/hopc \
+            --hop=$(HOPBINDIR)/hop \
+            --prefix=$(ANDROIDHOPPREFIX) \
+            --libdir=$(ANDROIDHOPPREFIX)/lib \
+            $(HIPHOPCONFIGUREOPT))
+
