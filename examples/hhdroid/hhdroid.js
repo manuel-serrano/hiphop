@@ -6,10 +6,12 @@ const hopdroid = require( hop.hopdroid );
 const phone = new hopdroid.phone();
 
 hiphop module Alarm( alarm, minutes ) {
-   async {
-      this.intv = 
-	 setTimeout( () => this.react( {[alarm.signame]: true} ), 
-	    1000 * 60 * minutes );
+   weakabort (alarm.now) {
+      async {
+      	 this.intv = 
+	    setTimeout( () => this.react( {[alarm.signame]: true} ), 
+	       1000 * 60 * minutes );
+      }
    }
 }
 
@@ -19,14 +21,10 @@ hiphop machine autoReply( in smsdelivered, smsreceived, autoreply ) {
       signal alarm;
       abort( smsdelivered.now && smsdelivered.nowval[ 0 ] === no ||
 	     autoreply.now && autoreply.nowval === 0 ) {
-	 fork {
-	    run Alarm( alarm, minutes = autoreply.value );
-	 } par {
-	    await alarm.now;
-	    hop { 
-	       phone.smsSend( no, "I'm busy. I will answer as soon as I can" );
-	       hop.broadcast( "autoreply", no );
- 	    }
+	 run Alarm( alarm, minutes = autoreply.value );
+	 hop { 
+	    phone.smsSend( no, "I'm busy. I will answer as soon as I can" );
+	    hop.broadcast( "autoreply", no );
 	 }
       }
    }
