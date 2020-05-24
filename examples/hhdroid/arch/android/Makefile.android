@@ -2,7 +2,7 @@ include Makefile.config
 
 doapk: apk
 
-include ../../../../Makefile
+include ../../Makefile
 
 REPOSITORY = $$HOME/prgm/distrib
 HIPHOPFULLNAME = $(HZ)-$(HZVERSION)
@@ -11,7 +11,7 @@ apk:
 	$(MAKE) -C $(HOPDIR)/arch/android apk \
              ANDROIDWEBLET=$(ANDROIDWEBLET) \
 	     APKCUSTOMDIR=$(APKCUSTOMDIR) \
-             CONFIG=$(ANDROIDWEBLET)/examples/android/Makefile.config
+             CONFIG=$(ANDROIDWEBLET)/arch/android/Makefile.config
 
 apk-sans-bigloo: doit
 apk-sans-hop: doit
@@ -20,13 +20,13 @@ install-apk: doit
 config:
 	$(MAKE) -C $(HOPDIR)/arch/android config \
             ANDROIDWEBLET=$(ANDROIDWEBLET) \
-            CONFIG=$(ANDROIDWEBLET)/examples/android/Makefile.config
+            CONFIG=$(ANDROIDWEBLET)/arch/android/Makefile.config
 
 doit:
 	$(MAKE) -C $(HOPDIR)/arch/android $(MAKECMDGOALS) \
              ANDROIDWEBLET=$(ANDROIDWEBLET) \
 	     APKCUSTOMDIR=$(APKCUSTOMDIR) \
-             CONFIG=$(ANDROIDWEBLET)/examples/android/Makefile.config
+             CONFIG=$(ANDROIDWEBLET)/arch/android/Makefile.config
 
 prepare-android-weblet:
 	find . -name '*.o' -exec /bin/rm {} \;
