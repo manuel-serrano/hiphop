@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Sun May  3 08:31:54 2020 (serrano)                */
+#*    Last change :  Sun May 24 16:06:51 2020 (serrano)                */
 #*    Copyright   :  2006-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -151,6 +151,7 @@ $(HOPREPOSITORY)/$(HZ)-$(HZVERSION).tar.gz: \
   doc \
   .travis.yml.in \
   tests \
+  examples \
   ChangeLog
 	mkdir -p $(HOPREPOSITORY) && \
 	(cd ..; \
@@ -169,3 +170,19 @@ $(HOPREPOSITORY)/$(HZ)-$(HZVERSION).tar.gz: \
 #*---------------------------------------------------------------------*/
 ChangeLog:
 	git log --pretty=format:"hiphop ($(HZVERSION)-1) unstable; urgency=low%n%n  * %s%n%n -- %an <%ae>  %cD%n" > ChangeLog
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
