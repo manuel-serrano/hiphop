@@ -49,6 +49,7 @@ apk.hiphop.configure:
 	(cd $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME); \
          ./configure \
             --hopc=$(HOPBINDIR)/hopc \
+            --hflags="-O2 --bigloo=$(HOPBINDIR)/bigloo --bigloo-lib-dir=$(ANDROIDBUILDDIR)$(ANDROIDHOPPREFIX)/lib/bigloo/$(RELEASE)" \
             --hop=$(HOPBINDIR)/hop \
             --prefix=$(ANDROIDHOPPREFIX) \
             $(HIPHOPCONFIGUREOPT))
