@@ -1,38 +1,46 @@
 include Makefile.config
 
-../../Makefile
+doapk: apk
 
-REPOSITORY = $(DISTRIBDIR)
+include ../../../../Makefile
+
+REPOSITORY = $$HOME/prgm/distrib
 HIPHOPFULLNAME = $(HZ)-$(HZVERSION)
 
 apk: 
 	$(MAKE) -C $(HOPDIR)/arch/android apk \
              ANDROIDWEBLET=$(ANDROIDWEBLET) \
-             CONFIG=$(ANDROIDWEBLET)/arch/android/Makefile.config
+	     APKCUSTOMDIR=$(APKCUSTOMDIR) \
+             CONFIG=$(ANDROIDWEBLET)/examples/android/Makefile.config
 
 apk-sans-bigloo: doit
 apk-sans-hop: doit
 install-apk: doit
 
+config:
+	$(MAKE) -C $(HOPDIR)/arch/android config \
+            ANDROIDWEBLET=$(ANDROIDWEBLET) \
+            CONFIG=$(ANDROIDWEBLET)/examples/android/Makefile.config
+
 doit:
 	$(MAKE) -C $(HOPDIR)/arch/android $(MAKECMDGOALS) \
              ANDROIDWEBLET=$(ANDROIDWEBLET) \
-             CONFIG=$(ANDROIDWEBLET)/arch/android/Makefile.config
+	     APKCUSTOMDIR=$(APKCUSTOMDIR) \
+             CONFIG=$(ANDROIDWEBLET)/examples/android/Makefile.config
 
 prepare-android-weblet:
 	find . -name '*.o' -exec /bin/rm {} \;
 	find . -name '*.so' -exec /bin/rm {} \;
-	rm -rf ../../arch/android
 
 hiphop: apk.hiphop
 
 apk.hiphop: $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME)
 	$(MAKE) apk.hiphop.configure
-	$(MAKE) -C $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME)
-	$(MAKE) -C $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME) install DESTDIR=$(ANDROIDBUILDDIR)
-$(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME): $(REPOSITORY)/$(HIPHOPFULLNAME).tar.gz
+	$(MAKE)
+	$(MAKE) install DESTDIR=$(ANDROIDBUILDDIR)
+$(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME):
 	(cd $(ANDROIDBUILDDIR); rm -rf $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME))
-	(cd $(ANDROIDBUILDDIR); tar xvf $<)
+	(cd $(ANDROIDBUILDDIR); tar xvf $(REPOSITORY)/$(HIPHOPFULLNAME).tar.gz)
 
 apk.hiphop.configure:
 	(cd $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME); \
