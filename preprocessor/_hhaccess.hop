@@ -3,7 +3,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Nov 13 10:52:14 2018                          */
-;*    Last change :  Wed Feb 26 12:13:02 2020 (serrano)                */
+;*    Last change :  Sun May 24 14:47:36 2020 (serrano)                */
 ;*    Copyright   :  2018-20 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    Patching the AST built by the native parser                      */
@@ -159,11 +159,13 @@
       (instantiate::J2SBlock
 	 (loc loc)
 	 (endloc loc)
-	 (nodes (list
-		   (instantiate::J2SVarDecls
-		      (loc loc)
-		      (decls (map access->general-decl axs)))
-		   node)))))
+	 (nodes (if (pair? axs)
+		    (list
+		       (instantiate::J2SVarDecls
+			  (loc loc)
+			  (decls (map access->general-decl axs)))
+		       node)
+		    (list node))))))
 
 ;*---------------------------------------------------------------------*/
 ;*    find-decl ...                                                    */
