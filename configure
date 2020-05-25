@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Mon May 25 07:35:20 2020 (serrano)                */
+#*    Last change :  Mon May 25 08:30:52 2020 (serrano)                */
 #*    Copyright   :  2018-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -109,22 +109,22 @@ fi
 hopversion=`$hopc $hflags --configure --version`
 hoplibdir=`$hopc $hflags --configure --libdir`
 hopbuildid=`$hopc $hflags --configure --build-id`
-hopbuildarch=`$hopc $hflags --configure --build-arch`
-hopsodirname=`$hopc $hflags --configure --so-dirname`
+hopbuildarch="$hopversion/$hopbuildid/$hopbuildarch"
+hopsodirname=`$hopc $hflags --configure --do-dirname`
 hopso=`$hop --no-server --eval "(print (bigloo-config 'shared-lib-suffix)))"`
 
 if [ "$libdir " = " " ]; then
   libdir=$hoplibdir
 fi
 
-sodir="so/$hopversion/$hopbuildid/$hopbuildarch"
+sodir="so/$hopsodirname"
 
 #*---------------------------------------------------------------------*/
 #*    checking hop installation                                        */
 #*---------------------------------------------------------------------*/
 hopcso=$hoplibdir/hop/$hopversion/node_modules/hopc/lib/so/$hopsodirname/hopc.$hopso
 
-if [ ! -f $hopcso ]; then
+if [ ! -f $DESTDIR$hopcso ]; then
   echo "*** ERROR: Cannot find $hopcso"
   exit 1
 fi
