@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Sun May 24 16:06:51 2020 (serrano)                */
+#*    Last change :  Mon May 25 16:24:50 2020 (serrano)                */
 #*    Copyright   :  2006-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -80,7 +80,10 @@ do: $(SOFILES) lib/config.@SO@ ChangeLog
 #*---------------------------------------------------------------------*/
 #*    install                                                          */
 #*---------------------------------------------------------------------*/
-install: install-so
+install: install-hiphop
+	cd $(DESTDIR)$(HOPLIBDIR)/hop/$(HOPVERSION)/node_modules; ln -s $(DESTDIR)$(LIBDIR)/$(HZ)/$(HZVERSION) $(HZ)
+
+install-hiphop: install-so
 	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)
 	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/lib
 	cp $(LIB:%=lib/%) $(DESTDIR)$(HIPHOPLIBDIR)/lib

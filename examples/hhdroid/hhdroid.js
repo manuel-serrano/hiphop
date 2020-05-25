@@ -1,14 +1,9 @@
 "use hiphop"
 "use hopscript"
 
-#:tprint( "hhdroid=", hop.hopdroid );
 const hopdroid = require( hop.hopdroid );
-#:tprint( "typeof( hhdroid )=", typeof( hopdroid ) );
-
-console.error( "phone=", new hopdroid.phone );
 
 const phone = new hopdroid.phone();
-#:tprint( "typeof( phone )=", typeof( phone ) );
 
 hiphop module Alarm( alarm, minutes ) {
    weakabort (alarm.now) {

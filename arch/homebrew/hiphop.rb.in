@@ -21,7 +21,7 @@ class Hiphop < Formula
     system "./configure", *args
 
     system "make"
-    system "make", "install"
+    system "make", "install-hiphop"
     print "Install locally with \"(mkdir -p $HOME/.node_modules; cd $HOME/.node_modules; ln -s #{prefix}/lib/hiphop/@RELEASE@ hiphop)\"\n"
   end
 
