@@ -1,8 +1,6 @@
 "use hiphop"
 "use hopscript"
 
-const fs = require( "fs" );
-const path = require( "path" );
 const hopdroid = require( hop.hopdroid );
 
 const phone = new hopdroid.phone();
@@ -15,7 +13,7 @@ hiphop module Alarm( alarm, minutes ) {
    }
 }
 
-hiphop module autoReply( in smsdelivered, smsreceived, autoreply ) {
+hiphop machine autoReply( in smsdelivered, smsreceived, autoreply ) {
    every( smsreceived.now && autoreply.nowval > 0 ) {
       let no = smsreceived.nowval[ 0 ];
       signal alarm;
@@ -34,8 +32,8 @@ hiphop module autoReply( in smsdelivered, smsreceived, autoreply ) {
    }
 }
 
-phone.bindEvent( "smsdelivered", phone );
-phone.bindEvent( "smsreceived", phone );
+autoReply.bindEvent( "smsdelivered", phone );
+autoReply.bindEvent( "smsreceived", phone );
 
 service android() {
    const con = <div/>;
