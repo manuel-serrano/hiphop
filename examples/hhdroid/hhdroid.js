@@ -33,7 +33,7 @@ hiphop machine autoReply( in smsdelivered, smsreceived, autoreply ) {
 autoReply.bindEvent( "smsdelivered", phone );
 autoReply.bindEvent( "smsreceived", phone );
 
-service android() {
+service hhdroid() {
    const con = <div/>;
    return <html>
      <script>
