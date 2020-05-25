@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Mon May 25 08:30:52 2020 (serrano)                */
+#*    Last change :  Mon May 25 08:57:45 2020 (serrano)                */
 #*    Copyright   :  2018-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -110,7 +110,7 @@ hopversion=`$hopc $hflags --configure --version`
 hoplibdir=`$hopc $hflags --configure --libdir`
 hopbuildid=`$hopc $hflags --configure --build-id`
 hopbuildarch="$hopversion/$hopbuildid/$hopbuildarch"
-hopsodirname=`$hopc $hflags --configure --do-dirname`
+hopsodirname=`$hopc $hflags --configure --so-dirname`
 hopso=`$hop --no-server --eval "(print (bigloo-config 'shared-lib-suffix)))"`
 
 if [ "$libdir " = " " ]; then
