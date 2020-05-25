@@ -47,7 +47,7 @@ $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME):
 
 apk.hiphop.configure:
 	(cd $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME); \
-         export DESTDIR=$(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME); \
+         export DESTDIR=$(ANDROIDBUILDDIR); \
          ./configure \
             --hopc=$(HOPBINDIR)/hopc \
             --hflags="-O2 --bigloo=$(HOPBINDIR)/bigloo --bigloo-lib-dir=$(ANDROIDBUILDDIR)$(ANDROIDHOPPREFIX)/lib/bigloo/$(RELEASE) --lib-dir=$(ANDROIDBUILDDIR)$(ANDROIDHOPPREFIX)/lib/hop/$(HOPRELEASE)" \
