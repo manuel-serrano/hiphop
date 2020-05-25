@@ -11,7 +11,7 @@ let prg = <hh.module>
                    </hh.local>
                  </hh.local>
                </hh.module>;
-let machine = new hh.ReactiveMachine(prg, "test");
+let machine = new hh.ReactiveMachine(prg, {dumpNets: true } );
 try {
    machine.react();
 } catch(e) {

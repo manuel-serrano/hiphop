@@ -81,6 +81,14 @@ m.react( { O: 24, P: 53 } )
 m.react();
 ```
 
+### mach.bindEvent( event, obj ) ###
+
+A shortcut for:
+
+```hopscript
+obj.addEventListener( event, e => mach.react( { [ event ]: e.value } ) );
+```
+
 Interfacing with HipHop reactive machines
 -----------------------------------------
 
