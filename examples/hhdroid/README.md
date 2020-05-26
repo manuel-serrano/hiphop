@@ -4,6 +4,9 @@ HipHop.js program and the Hop.js `hopdroid` module.
 This example can be _emulated_ on a development machine but it it mostly
 intented to illustrate how to build an Android application with HipHop.js
 
+To run it on the emulator, executed `hop hhdroid.js` and browse the two URL
+(in that order) `localhost:/hop/hhdroid` and `/hop/hopdroid/simulator`.
+
 Building and installing Android applications has pre-requesites described
 in the Hop.js documentation [Android](25-android.html). Once the Android
 developmenent tools are operational, this example can be build with:
@@ -21,5 +24,5 @@ a device:
 adb install /tmp/build.hhdroid-1.0.0.android/hhdroid-1.0.0.apk
 ```
 
-Then open the application on device as any Android application.
+Then open the application on device as usual.
 
