@@ -5,47 +5,50 @@ const hopdroid = require( hop.hopdroid );
 
 const phone = new hopdroid.phone();
 
-hiphop module Alarm( alarm, minutes ) {
-   weakabort (alarm.now) {
-      async {
+hiphop module Alarm( alarm, var minutes ) {
+   weakabort( alarm.now ) {
+      async alarm {
       	 this.intv = 
-	    setTimeout( () => this.react( {[alarm.signame]: true} ), 
+	    setTimeout( () => this.notify( true ),
 	       1000 * 60 * minutes );
       }
    }
 }
 
-hiphop machine autoReply( in smsdelivered, smsreceived, autoreply ) {
+hiphop machine autoReply( in smsdelivered, smsreceived, autoreply = 0 ) {
    every( smsreceived.now && autoreply.nowval > 0 ) {
       let no = smsreceived.nowval[ 0 ];
       signal alarm;
       abort( smsdelivered.now && smsdelivered.nowval[ 0 ] === no ||
 	     autoreply.now && autoreply.nowval === 0 ) {
-	 run Alarm( alarm, minutes = autoreply.value );
+	 run Alarm( minutes = autoreply.nowval );
 	 hop { 
-	    phone.smsSend( no, "I'm busy. I will answer as soon as I can" );
-	    hop.broadcast( "autoreply", no );
+	    phone.sendSms( no, "I'm busy. I will answer as soon as I can" );
+	    hop.broadcast( "autoreply", "delivered " + no );
 	 }
       }
    }
 }
 
-autoReply.bindEvent( "smsdelivered", phone );
 autoReply.bindEvent( "smsreceived", phone );
+autoReply.bindEvent( "smsdelivered", phone );
 
 service hhdroid() {
    const con = <div/>;
+   const del = <span>0</span>;
    return <html>
      <script>
        server.addEventListener( "autoreply", e => ${con}.innerHTML = e.value );
      </script>
-     <input id="autoreply"
-	    type=checkbox 
-	    onclick=~{
-	       ${service (v) { mach.react( { autoreply: v } ) }}( this.value ? dom.getElementById( delay ).value : 0 ).post() }/>
-     <label for="autoreply">delay</label>
-     <input id="delay" type=range min=1 max=10/> 
-     <label for="delay">delay</label>
-     ${ con }
+     <h2>Phone: ${phone.model}</h2>
+     ${del}
+     <input id="delay" type="range" 
+	    value=0 
+	    min=0 
+	    max=9 
+	    onchange=~{${service (v) { autoReply.react( { autoreply: v } ); }}( this.value ).post();
+		       ${del}.innerHTML = this.value}/> 
+     <label for="delay">auto reply delay</label>
+     ${con}
    </html>
 }

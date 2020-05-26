@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Mon May 25 08:57:45 2020 (serrano)                */
+#*    Last change :  Tue May 26 11:36:28 2020 (serrano)                */
 #*    Copyright   :  2018-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -73,6 +73,9 @@ while : ; do
     --hflags=*)
       hflags="`echo $1 | sed 's/^[^=]*=//'`";;
 
+    --debug)
+      hflags=-g2;;
+
     -*)
       if [ $1 != "--help" ]; then
         echo "*** Configure error, unknown option $1" >&2;
@@ -86,10 +89,11 @@ while : ; do
       echo "   --hopc=path................ hopc command" >&2;
       echo "   --hflags=flags............. hopc flags" >&2;
       echo "   --prefix=dir............... prefix to HOP install" >&2;
-      echo "   --etcdir=dir............... Hop etc directory" >&2;
+      echo "   --etcdir=dir............... hop etc directory" >&2;
       echo "   --bindir=dir............... alternative Hop bin directory" >&2;
       echo "   --libdir=dir............... alternative Hop lib directory" >&2;
       echo "   --mandir=dir............... alternative Hop man directory" >&2;
+      echo "   --debug.................... debug mode" >&2;
       echo "" >&2;
       exit 255;
   esac

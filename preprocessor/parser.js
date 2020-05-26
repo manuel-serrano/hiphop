@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue May  7 13:42:56 2019 (serrano)                */
-/*    Copyright   :  2018-19 Manuel Serrano                            */
+/*    Last change :  Tue May 26 11:50:50 2020 (serrano)                */
+/*    Copyright   :  2018-20 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
 /*=====================================================================*/
@@ -1471,7 +1471,7 @@ function parseRun( token ) {
    	    const appl = astutils.J2SDataPropertyInit(
       	       loc, 
       	       astutils.J2SString( loc, "apply" ),
-      	       astutils.J2SMethod( loc, "atomfun", [], ablock, self( loc ) ) );
+      	       astutils.J2SMethod( loc, "runfun", [], ablock, self( loc ) ) );
    	    const attrs = astutils.J2SObjInit( 
 	       loc, [ locInit( loc ), tag, appl ] );
 	    const atom = astutils.J2SCall( loc, hhref( loc, "ATOM" ), null,
