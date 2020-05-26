@@ -38,8 +38,8 @@ before_install:
   - sudo apt-get install -y libgmp10
   
 before_script:
-  - wget ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo-4.3h.tar.gz -O /tmp/bigloo-4.3h.tar.gz
-  - pushd /tmp && tar xvfz /tmp/bigloo-4.3h.tar.gz && popd
+  - wget ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo-latest.tar.gz -O /tmp/bigloo-latest.tar.gz
+  - pushd /tmp && tar xvfz /tmp/bigloo-latest.tar.gz && popd
   - pushd /tmp/bigloo-4.3h && ./configure --prefix=/usr --jvm=no && make && sudo make install && popd
   - wget ftp://ftp-sop.inria.fr/indes/fp/Hop/hop-3.3.0.tar.gz -O /tmp/hop-3.3.0.tar.gz
   - pushd /tmp && tar xvfz /tmp/hop-3.3.0.tar.gz && popd
