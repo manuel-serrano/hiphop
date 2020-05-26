@@ -42,10 +42,7 @@ service hhdroid() {
      </script>
      <h2>Phone: ${phone.model}</h2>
      ${del}
-     <input id="delay" type="range" 
-	    value=0 
-	    min=0 
-	    max=9 
+     <input id="delay" type="range" value=0 min=0 max=9 
 	    onchange=~{${service (v) { autoReply.react( { autoreply: v } ); }}( this.value ).post();
 		       ${del}.innerHTML = this.value}/> 
      <label for="delay">auto reply delay</label>
