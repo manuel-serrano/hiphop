@@ -1,14 +1,17 @@
 {
-   "version": "0.3.0",
-   "title": "Hiphop.js",
+   "version": "1.0.0",
+   "title": "HipHop.js",
    "logo": "logo.svg",
    "github": "https://github.com/manuel-serrano/hiphop.git"
    "urlbase": "ftp://ftp-sop.inria.fr/indes/fp/HipHop",
+   "homepage": "http://hop.inria.fr/hiphop",
+   "date": "28 May 2020",
    "chapters": [ { "name": "Home", "icon": "glyphicon-home", "href": "index.html" },
 		 { "name": "Download", "icon": "glyphicon-cloud-download", "href": "download.html" },
 		 { "name": "Lang", "icon": "glyphicon-blackboard", "href": "lang.html", "json": "lang/lang.json" },
 		 { "name": "API", "icon": "glyphicon-book", "href": "api.html" },
 		 { "name": "Debug", "icon": "glyphicon-wrench", "href": "debug.html" },
-		 { "name": "Index", "icon": "glyphicon-list", "href": "idx.html" }
+		 { "name": "Index", "icon": "glyphicon-list", "href": "idx.html" },
+		 { "name": "Bib", "icon": "glyphicon-comment", "href": "bib.html", "toc": false }
 	       ]
 }

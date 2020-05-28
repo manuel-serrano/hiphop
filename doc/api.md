@@ -24,7 +24,7 @@ Running HipHop reactive machines
 --------------------------------
 
 ### mach.react( sigset ) ###
-[:@glyphicon glyphicon-tag tag]
+[:@glyphicon glyphicon-tag function]
 
 The `react` function machine reactions. If called with no argument,
 it proceed to one step. If called with one or several arguments, it
@@ -63,7 +63,7 @@ of the machine `m` and `O` with value `2` at the second reaction, checking
 ```
 
 ### mach.input( sigset ) ###
-[:@glyphicon glyphicon-tag tag]
+[:@glyphicon glyphicon-tag function]
 
 The `input` function emits signal in the machine but does not
 triggers the reaction. For instance,
@@ -82,6 +82,7 @@ m.react();
 ```
 
 ### mach.bindEvent( event, obj ) ###
+[:@glyphicon glyphicon-tag function]
 
 A shortcut for:
 
@@ -93,7 +94,7 @@ Interfacing with HipHop reactive machines
 -----------------------------------------
 
 ### mach.addEventListener( signame, listener ) ###
-[:@glyphicon glyphicon-tag tag]
+[:@glyphicon glyphicon-tag function]
 
 Associate a listener to the machine event `signame`.
 
@@ -116,7 +117,7 @@ ${ doc.include( "../tests/reactfunc.hh.js" ) }
 ```
 
 ### mach.removeEventListener( signame, listener ) ###
-[:@glyphicon glyphicon-tag tag]
+[:@glyphicon glyphicon-tag function]
 
 Remove the listener from the machine.
 
@@ -125,7 +126,7 @@ Batch execution
 ---------------
 
 ### mach.batch() ###
-[:@glyphicon glyphicon-tag tag]
+[:@glyphicon glyphicon-tag function]
 
 The `batch` machine method executes the machine in batch mode against
 commands that are read from the standard input. Example

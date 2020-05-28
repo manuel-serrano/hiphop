@@ -1,7 +1,7 @@
 {
    "name": "hiphop.js",
-   "version": "0.3.0",
-   "description": "Reactive module for Hop.js",
+   "version": "1.0.0",
+   "description": "HipHop.js, (A)synchronous Web Reactive Programming",
    "main": "lib/hiphop.js",
    "client": [
       "lib/hiphop.js",

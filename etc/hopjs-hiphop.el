@@ -21,7 +21,7 @@
 ;*---------------------------------------------------------------------*/
 ;*    constants ...                                                    */
 ;*---------------------------------------------------------------------*/
-(defconst hiphop-version "0.3.0")
+(defconst hiphop-version "1.0.0")
 
 ;;;###autoload
 (defcustom hiphop-mode-line-string " HipHop"

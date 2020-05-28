@@ -9,6 +9,77 @@ ${ const pkg = require( "../package.json" ) }
 
 ${doc.include( "./license.md" )}
 
+## Binary distributions ##
+
+Precompiled HipHop.js distributions are available.
+
+### Debian/Raspberry ###
+
+A repository is available. To use it, add the following
+to your `apt` path:
+
+```shell[:@config]
+deb [trusted=yes] http://hop.inria.fr/linux/Debian buster hop
+```
+
+### Ubuntu ###
+
+An Ubuntu repository is available. To use it, add the following
+to your `apt` path:
+
+```shell[:@config]
+deb [trusted=yes] http://hop.inria.fr/linux/Ubuntu focal hop
+```
+
+### Homebrew ###
+
+Homebrew users (MacOS X), can use the pre-built version by using:
+
+```shell[:@shell]
+$ brew tap homebrew/hop https://gitlab.inria.fr/mserrano/hopbrew.git
+$ brew install homebrew/hop/bigloo-latest
+```
+
+## Source code installation ##
+
+${<div class="row">
+  <div class="col-xs-8">
+This is the file you should download if you want to get HipHop.js
+  stable version from the sources.
+  </div>
+  <div class="col-xs-3">
+    <xml.downloadButton
+       class="success"
+       title="Stable"
+       icon="glyphicon-download"
+       href=${cfg.urlbase + "/hiphop-" + pkg.version + ".tar.gz"}/>
+  </div>
+</div>}
+
+#### Hiphop.js installation ####
+
+Hiphop.js requires
+[Bigloo](http://www-sop.inria.fr/members/Manuel.Serrano/bigloo/) and
+[Hop.js](http://hop-dev.inria.fr/home/index.html) to works.
+
+To install it:
+
+```shell
+./configure && make && sudo make install
+```
+
+You can also install it locally (without root access) with:
+
+```shell
+./configure && make && sudo make install-local
+```
+
+## Git ##
+
+Hop.js can be forked at
+
+${<a href=${cfg.github}>${cfg.github}</a>}
+
 ## Docker installation ##
 
 ${<div class="row">
@@ -57,35 +128,4 @@ the file `main.js` the entry point, implementing Hop.js service
 
 * Open your browser in the host system, and go to
   `http://localhost:8080/hop/myService`.
-
-
-## Source code installation ##
-
-${<div class="row">
-  <div class="col-xs-8">
-This is the file you should download if you want to get HipHop.js
-  stable version from the sources.
-  </div>
-  <div class="col-xs-3">
-    <xml.downloadButton
-       class="success"
-       title="Stable"
-       icon="glyphicon-download"
-       href=${cfg.urlbase + "/hiphop-" + pkg.version + ".tar.gz"}/>
-  </div>
-</div>}
-
-#### Hiphop.js installation ####
-
-Hiphop.js requires
-[Bigloo](http://www-sop.inria.fr/members/Manuel.Serrano/bigloo/) and
-[Hop.js](http://hop-dev.inria.fr/home/index.html) to works.
-
-Move the Hiphop.js directory inside the node path, for instance, `$HOME/.node\_modules/`.
-
-## Git ##
-
-Hop.js can be forked at
-
-${<a href=${cfg.github}>${cfg.github}</a>}
 

@@ -3,7 +3,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Mon Nov 16 10:15:32 2015                          */
-#*    Copyright   :  2015-18 Manuel Serrano                            */
+#*    Copyright   :  2015-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Build the documentation                                          */
 #*=====================================================================*/
@@ -14,7 +14,7 @@ DOCJS=`$(HOP) --no-server --evaljs 'console.log( require( hop.config ).docDir + 
 #*    Targets                                                          */
 #*---------------------------------------------------------------------*/
 COMMON_TARGETS=index.html idx.html api.html debug.html download.html lang.html \
-   syntax.html
+   syntax.html bib.html
 
 LANG_TARGETS=module.html signal.html flow.html async.html
 
@@ -101,6 +101,7 @@ cleanall: clean
 #*---------------------------------------------------------------------*/
 lang.html: _lang.md
 syntax.html: syntax/hiphop.bnf
+bib.html: hiphop.bib
 
 hss/doc.css: hss/doc.hss
 	cp $< $@

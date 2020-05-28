@@ -1,7 +1,7 @@
 ${ var doc = require( "hopdoc" ) }
 ${ var config = require( hop.config ) }
-${ var xml = require( doc.BUILDDIR + "/doc/xml.js" ) }
-${ var cfg = require( doc.BUILDDIR + "/doc/doc.json" ) }
+${ var xml = require( config.docDir + "/xml.js" ) }
+${ var cfg = require( "./doc.json" ) }
 ${ var bibtex = require( "./_bibtex.hop" ) }
 
 Citations
@@ -10,10 +10,10 @@ Citations
 To cite the Hop software, please use the following Biblatex entry.
 
 ${<pre class="bibtex">
-@software{ hop,
+@software{ hiphop,
    title = {Hop, multitier Web Programming},
-   author = {Serrano, Manuel},
-   year = {2006},
+   author = {Berry, G{\'e}rard and Serrano, Manuel},
+   year = {2011},
    institution = {Inria},
    url = {${cfg.homepage}}
 }
@@ -47,7 +47,7 @@ if( !path ) console.error( e );
   }
 }
 
-${ bibtex.load( "./hop.bib" )
+${ bibtex.load( "./hiphop.bib" )
   .sort( (x, y) => x.year < y.year ? true : x.year > y.year ? false : x.month < y.month )
   .map( e => 
 <div class="bibentry">

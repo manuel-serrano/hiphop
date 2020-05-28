@@ -1,10 +1,10 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/hiphop/doc/hss/hiphop.hss            */
+/*    serrano/prgm/project/hiphop/hiphop/doc/hiphop.hss                */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sun Nov 18 14:36:32 2018                          */
-/*    Last change :  Sun Nov 18 14:37:40 2018 (serrano)                */
-/*    Copyright   :  2018 Manuel Serrano                               */
+/*    Last change :  Thu May 28 14:09:20 2020 (serrano)                */
+/*    Copyright   :  2018-20 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop specific fontification                                    */
 /*=====================================================================*/
@@ -12,6 +12,10 @@
 /*---------------------------------------------------------------------*/
 /*    HipHop specific ...                                              */
 /*---------------------------------------------------------------------*/
+body.hop pre.hiphop {
+    border-left-color: #faab02;
+}
+
 .fontifier-prog span.hiphop,
 .fontifier-prog span.hop {
   background-color: #777;
@@ -26,5 +30,10 @@
 }
 
 .fontifier-prog span.await {
-  color: #E45840
+    color: #E45840
+}
+
+body.library h3.markdown {
+    font-size: 140%;
+    text-shadow: #ccc 1px 1px 1px;
 }
