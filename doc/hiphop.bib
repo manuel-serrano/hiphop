@@ -1,0 +1,107 @@
+@string{lncs	= "Lecture Notes on Computer Science"}
+@string{sas	= "Static Analysis Symposium ({SAS})"}
+@string{jfp	= "Journal of Functional Programming"}
+@string{icfp	= "{\sc ACM Sigplan} Int'l Conference on Functional Programming ({ICFP})"}
+@string{dls	= "Dynamic Language Symposium (DLS)"}
+@string{ppdp	= "{\sc ACM Sigplan} Int'l Conference on Principles and Practice of Declarative Programming ({PPDP})"}
+@string{plilp	= "{I}nt'l {S}ymposium on {P}rogramming {L}anguage
+                   {I}mplementation and {L}ogic {P}rogramming ({PLILP})"}
+@string{hosc    = "Higher Order and Symbolic Computation (HOSC)"}
+@string{toplas  = "ACM Transactions on Programming Languages and Systems (TOPLAS)"}
+@string{urlbase	= "http://www-sop.inria.fr/members/Manuel.Serrano/publi/"}
+
+@InProceedings{ bs:pldi2020,
+  author = {Berry. G. and Serrano, M.},
+  title = {{HipHop.js}: (A)Synchronous {W}eb {R}eactive {P}rogramming},
+  booktitle = {Proceedings of the 41st ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI 2020)},
+  year = 2020,
+  month = jun,
+  address = {London, UK},
+  download = urlbase # "bs-pldi20.pdf",
+  category = "web",
+  abstract = "We present HipHop.js, a synchronous reactive language that adds
+synchronous concurrency and preemption to \js. Inspired from Esterel, HipHop.js
+simplifies the programming of non-trivial temporal behaviors as found
+in complex web interfaces or IoT controllers and the cooperation
+between synchronous and asynchronous activities. HipHop.js is compiled into
+plain sequential \js and executes on unmodified runtime environments.
+We use three examples to present and discuss HipHop.js: a simple web login
+form to introduce the language and show how it differs from \js, and
+two real life examples, a medical prescription pillbox and an
+interactive music system that show why concurrency and preemption help
+programming such temporal applications."
+}
+
+@inproceedings{DBLP:conf/sac/VidalBS18,
+  author    = {Vidal, C. and Berry, G. and Serrano, M.},
+  title     = {Hiphop.js: a language to orchestrate web applications},
+  booktitle = {Proceedings of the 33rd Annual {ACM} Symposium on Applied Computing,
+               {SAC} 2018},
+  pages     = {2193--2195},
+  year      = {2018},
+  address   = {Pau, France},
+  month     = apr,
+  crossref  = {DBLP:conf/sac/2018},
+  url       = {https://doi.org/10.1145/3167132.3167440},
+  doi       = {10.1145/3167132.3167440},
+  timestamp = {Wed, 21 Nov 2018 12:43:56 +0100},
+  biburl    = {https://dblp.org/rec/bib/conf/sac/VidalBS18},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@InProceedings{ bs:icdcit14,
+  author = {Berry, G. and Serrano, M.},
+  title = {{H}op and {H}ipHop : {M}ultitier {W}eb {O}rchestration},
+  booktitle = {Proceedings of the ICDCIT 2014 conference},
+  year = 2014,
+  month = feb,
+  pages = {1--13},
+  download = urlbase # "bs-icdcit14.pdf",
+  category = {web programming},
+  abstract = {
+Rich applications merge classical computing, client-server
+concurrency, web-based interfaces, and the complex time- and
+event-based reactive programming found in embedded systems. To handle
+them, we extend the Hop web programming platform by HipHop, a
+domain-specific language dedicated to event-based process
+orchestration. Borrowing the synchronous reactive model of Esterel,
+HipHop is based on synchronous concurrency and preemption primitives
+that are known to be key components for the modular design of complex
+reactive behaviors. HipHop departs from Esterel by its ability to
+handle the dynamicity of Web applications, thanks to the reflexivity
+of Hop.  Using a music player example, we show how to modularly build
+a non-trivial Hop application using HipHop orchestration code.
+},
+  x-editorial-board = {no},
+  x-international-audience = {yes},
+  x-scientific-popularization = {no},
+}
+
+@InProceedings{ bns:plastic11,
+  author = {Berry, G. and Nicolas, C. and Serrano, M.},
+  title = {{H}ip{H}op: {A} {S}ynchronous {R}eactive {E}xtension for {H}op},
+  booktitle = {Proceedings of the PLASTIC'11 workshop},
+  address = {Portland, USA},
+  year = 2011,
+  month = oct,
+  category = {programming languages},
+  download = {http://plastic.host.adobe.com/plastic2.pdf},
+  abstract = {
+HOP is a SCHEME-based language and system to build rich multi-tier
+web applications. We present HIPHOP, a new language layer within
+HOP dedicated to request and event orchestration. HIPHOP follows the
+synchronous reactive model of the Esterel and ReactiveC languages,
+originally developed for embedded systems programming. It is based on
+synchronous concurrency and preemption primitives, which are known to
+be key components for the modular design of complex temporal
+behaviors. Although the language is concurrent, the generated code is
+purely sequential and thread-free; HIPHOP is translated to HOP for the
+server side and to straight JavaScript for the client side.  With a
+music playing example, we show how to modularly buid non-trivial
+orchestration code with HIPHOP},
+  x-editorial-board = {no},
+  x-international-audience = {yes},
+  x-scientific-popularization = {no},
+  x-proceedings = {yes},
+}
+
