@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Thu May 28 14:30:29 2020 (serrano)                */
+#*    Last change :  Wed Jun  3 13:08:50 2020 (serrano)                */
 #*    Copyright   :  2006-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -139,7 +139,7 @@ distclean: cleanall
 #*---------------------------------------------------------------------*/
 #*    hz                                                               */
 #*---------------------------------------------------------------------*/
-.PHONY: distrib tgz hz
+.PHONY: distrib tgz hz $(HOPREPOSITORY)/$(HZ)-$(HZVERSION).tar.gz
 
 distrib: hz
 hz: tgz
@@ -180,19 +180,3 @@ $(HOPREPOSITORY)/$(HZ)-$(HZVERSION).tar.gz: \
 #*---------------------------------------------------------------------*/
 ChangeLog:
 	git log --pretty=format:"hiphop ($(HZVERSION)-1) unstable; urgency=low%n%n  * %s%n%n -- %an <%ae>  %cD%n" > ChangeLog
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

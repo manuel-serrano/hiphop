@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Sat Dec 22 05:37:50 2007                          */
-#*    Last change :  Fri Apr 24 12:12:56 2020 (serrano)                */
+#*    Last change :  Wed Jun  3 13:38:03 2020 (serrano)                */
 #*    Copyright   :  2007-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    The Shell script to build the .deb for HipHop on Debian          */
@@ -15,8 +15,8 @@
 #*---------------------------------------------------------------------*/
 #*    Global configuration                                             */
 #*---------------------------------------------------------------------*/
-VERSION=@VERSION@    # Hiphop major version e.g. VERSION=0.3.0
-MINOR=@MINOR@        # Hiphop minor release e.g. MINOR=-pre1
+VERSION=@VERSION@    # Hiphop major version
+MINOR=@MINOR@        # Hiphop minor release
 
 SOFILEDIR=@SODIR@
 
@@ -24,9 +24,10 @@ AUTHOR="Manuel.Serrano@inria.fr"
 LICENSE=@LICENSE@
 BUILDDIR=`pwd`/build.hiphop
 BASEDIR=`dirname $0`
-PREFIX=`hop --configure --node_modules`
+HOPPREFIX=`bigloo -eval "(begin (print (dirname (bigloo-config 'ld-library-dir))) (exit 0))"`
 HIPHOPCONFIGUREOPT=
 
+HOPVERSION=@HOPVERSION@
 HOPREPOSITORY=@HOPREPOSITORY@
 
 debformat="3.0 (quilt)"
@@ -129,12 +130,13 @@ cp $BUILDDIR/hiphop-$VERSION/ChangeLog $BUILDDIR/hiphop-$VERSION/debian/changelo
 for p in control rules postinst compat; do
   if [ -f $BASEDIR/$p.in ]; then
     cat $BASEDIR/$p.in \
-      | sed -e "s/@HOPVERSION@/$VERSION/g" \
+      | sed -e "s/@HOPVERSION@/$HOPVERSION/g" \
             -e "s/@HIPHOPCONFIGUREOPT@/$HIPHOPCONFIGUREOPT/g" \
+            -e "s/@HIPHOPVERSION@/$VERSION/g" \
             -e "s/@DEBIAN@/$debian/g" \
             -e "s/@EXTRADEPEND@/$extradepend/g" \
             -e "s/@EXTRABUILDDEPEND@/$extrabuilddepend/g" \
-            -e "s|@PREFIX@|$PREFIX|g" \
+            -e "s|@PREFIX@|$HOPPREFIX|g" \
 	    -e "s|@SOFILEDIR@|$SOFILEDIR|" \
             -e "s/@BIGLOOVERSION@/$BIGLOOVERSION/g" > \
       $BUILDDIR/hiphop-$VERSION/debian/$p;

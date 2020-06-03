@@ -63,7 +63,7 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/bigloo.
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/hiphop
+	$(MAKE) install-hiphop DESTDIR=$(CURDIR)/debian/hiphop
 
 # Build architecture-independent files here.
 binary-indep: build install
