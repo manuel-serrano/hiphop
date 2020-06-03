@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Thu Jan 14 17:37:58 2010                          */
-#*    Last change :  Wed Jun  3 13:45:54 2020 (serrano)                */
+#*    Last change :  Wed Jun  3 14:02:11 2020 (serrano)                */
 #*    Copyright   :  2010-20 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop post debian installation                                  */
@@ -15,9 +15,9 @@
 #*    -------------------------------------------------------------    */
 #*    Touch so files to ensure that they are newer than the sources.   */
 #*---------------------------------------------------------------------*/
-find @PREFIX@/hiphop/@HIPHOPVERSION@/@SOFILEDIR@ -name '*.so' -exec /bin/touch {} \;
+find @PREFIX@/hiphop/@HHVERSION@/@SOFILEDIR@ -name '*.so' -exec /bin/touch {} \;
 
-if [ -d @PREFIX@/hop/@HOPVERSION@/node_modules ]; then
-  cd @PREFIX@/hop/@HOPVERSION@/node_modules;
-  ln -s @PREFIX@/hiphop/@HIPHOPVERSION@ hiphop
+if [ -d @PREFIX@/hop/@HVERSION@/node_modules ]; then
+  cd @PREFIX@/hop/@HVERSION@/node_modules;
+  ln -s @PREFIX@/hiphop/@HHVERSION@ hiphop
 fi
