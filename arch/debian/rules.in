@@ -34,7 +34,7 @@ build-stamp:  config.status
 	dh_testdir
 
 	# Add here commands to compile the package.
-	$(MAKE) so
+	$(MAKE) do
 	#docbook-to-man debian/bigloo.sgml > bigloo.1
 
 	touch build-stamp
