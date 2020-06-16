@@ -17,7 +17,7 @@
 #*---------------------------------------------------------------------*/
 find @PREFIX@/lib/hiphop/@HHVERSION@ -name '*.so' -exec /bin/touch {} \;
 
-if [ -d @PREFIX@/hop/lib/@HVERSION@/node_modules ]; then
-  cd @PREFIX@/hop/lib/@HVERSION@/node_modules;
+if [ -d @PREFIX@/lib/hop/@HVERSION@/node_modules ]; then
+  cd @PREFIX@/lib/hop/@HVERSION@/node_modules;
   ln -s @PREFIX@/lib/hiphop/@HHVERSION@ hiphop
 fi
