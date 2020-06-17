@@ -18,6 +18,7 @@ version=`grep version package.json | awk '{ print $2 }' | sed 's/[",]//g'`
 license=`grep license package.json | awk '{ print $2 }' | sed 's/[",]//g'`
 date=`date +'%d %B %Y'`
 minor=
+bglversion=latest
 
 license=gpl
 
