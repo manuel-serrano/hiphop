@@ -65,6 +65,11 @@ while : ; do
     --mandir=*)
       mandir="`echo $1 | sed 's/^[^=]*=//'`";;
 
+    --hopversion=*)
+      hopversion="`echo $1 | sed 's/^[^=]*=//'`"
+      hopc=hopc-$hopversion
+      hop=hopc-$hopversion;;
+
     --hopc=*)
       hopc="`echo $1 | sed 's/^[^=]*=//'`";;
 
@@ -86,6 +91,7 @@ while : ; do
       echo "" >&2;
       echo "options:" >&2;
       echo "   --help..................... this message" >&2;
+      echo "   --hopversion=version....... hop and hopc versions" >&2;
       echo "   --hop=path................. hop command" >&2;
       echo "   --hopc=path................ hopc command" >&2;
       echo "   --hflags=flags............. hopc flags" >&2;
