@@ -1790,3 +1790,4 @@ parser.addPlugin( "hiphop", parseHiphop );
 
 exports.parser = parser;
 exports.parse = parser.parse.bind( parser );
+

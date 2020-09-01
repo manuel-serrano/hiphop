@@ -17,6 +17,7 @@
       "lib/debugger-common.js",
       "lib/signal.js",
       "lib/queue.js",
+      "lib/config.js",
       "ulib/parallelmap.js"
    ]
 }

@@ -4,7 +4,7 @@
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Oct 16 08:45:43 2012                          */
 /*    Last change :  Sat Oct 27 09:33:16 2018 (serrano)                */
-/*    Copyright   :  2012-18 Manuel Serrano                            */
+/*    Copyright   :  2012-20 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prim numbers aka the Darwin Sieve                                */
 /*    -------------------------------------------------------------    */
@@ -61,5 +61,4 @@ service prims( o ) {
    </html>
 }
        
-	   
-     
+console.log( 'go to "http://' + hop.hostname + ":" + hop.port + '/hop/prims"' );	   

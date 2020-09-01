@@ -47,7 +47,8 @@
 			    be))))
 		  (else
 		   (node->accessors node axs iscnt hhname accessors %this)))))
-	 2 (js-name->jsstring "AstHipHopAccess"))
+	 (js-function-arity 4 0)
+	 (js-function-info :name "exports" :len 4))
       #f %this))
 
 ;*---------------------------------------------------------------------*/
