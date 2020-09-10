@@ -91,9 +91,9 @@
 <HHSustain> --> sustain <Identifier>()
   | sustain <Identifier>( <HHExpression> )
 
-<HHAbort> --> abort <HHDelay <HHBlock>
+<HHAbort> --> abort <HHDelay> <HHBlock>
 
-<HHWeakabort> --> weakabort <HHDelay <HHBlock>
+<HHWeakabort> --> weakabort <HHDelay> <HHBlock>
 
 <HHSuspend> --> suspend <HHDelay> <HHBlock>
   | suspend from <HHDelay> to <HHDelay> <HHBlock>
