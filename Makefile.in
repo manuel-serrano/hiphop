@@ -28,6 +28,7 @@ HOPVERSION=@HOPVERSION@
 HOPBUILDID=@HOPBUILDID@
 HOPBUILDARCH=@HOPBUILDARCH@
 HOPSODIR=@SODIR@
+HOPSHAREDIR=@HOPSHAREDIR@
 
 HIPHOPLIBDIR=$(LIBDIR)/$(HZ)/$(HZVERSION)
 
@@ -85,7 +86,7 @@ install: install-hiphop
 	rm -f $(HZ); \
 	ln -s $(DESTDIR)$(LIBDIR)/$(HZ)/$(HZVERSION) $(HZ)
 
-install-hiphop: install-so
+install-hiphop: install-so install-sitelisp
 	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)
 	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/lib
 	cp $(LIB:%=lib/%) $(DESTDIR)$(HIPHOPLIBDIR)/lib
@@ -120,6 +121,11 @@ install-local:
 	mkdir -p $$HOME/.node_modules
 	rm -rf $$HOME/.node_modules/hiphop
 	pwd=$$PWD; cd ..; cp -r $$pwd $$HOME/.node_modules/hiphop
+
+install-sitelisp:
+	mkdir -p $(DESTDIR)$(HOPSHAREDIR)/hiphop/site-lisp
+	cp etc/hopjs-hiphop.el $(DESTDIR)$(HOPSHAREDIR)/hiphop/site-lisp
+	chmod -R a+rx $(DESTDIR)$(HOPSHAREDIR)/hiphop
 
 #*---------------------------------------------------------------------*/
 #*    clean                                                            */
