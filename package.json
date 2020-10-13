@@ -1,8 +1,9 @@
 {
    "name": "hiphop.js",
-   "version": "1.0.0",
+   "version": "1.1.0",
    "description": "HipHop.js, (A)synchronous Web Reactive Programming",
    "main": "lib/hiphop.js",
+   "type": "module",
    "client": [
       "lib/hiphop.js",
       "lib/lang.js",

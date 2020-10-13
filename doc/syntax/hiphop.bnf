@@ -6,7 +6,7 @@
   | <HHMachine>
   | <HHModule>
   | <HHInterface>
-  | <HHBlock>
+  | <HHSeq>
   | <HHLet>
   | <HHSignal>
   | <HHHalt>
@@ -83,7 +83,9 @@
 
 <HHalt> --> halt
 
-<HHFork> --> fork <HHBlock> [ par <HHBlock> ... par <HHBlock> ]
+<HHSeq> --> [ <String> ] <HHBlock>
+
+<HHFork> --> fork [ <String> ] <HHBlock> [ par <HHBlock> ... par <HHBlock> ]
 
 <HHEmit> --> emit <Identifier>()
   | emit <Identifier>( <HHExpression> )
