@@ -14,7 +14,7 @@ DOCJS=`$(HOP) --no-server --evaljs 'console.log( require( hop.config ).docDir + 
 #*    Targets                                                          */
 #*---------------------------------------------------------------------*/
 COMMON_TARGETS=index.html idx.html api.html debug.html download.html lang.html \
-   syntax.html bib.html
+   syntax.html bib.html dev.html
 
 LANG_TARGETS=module.html signal.html flow.html async.html
 

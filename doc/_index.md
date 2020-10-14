@@ -15,6 +15,9 @@ IoT controllers and the cooperation between synchronous and
 asynchronous activities. HipHop.js is compiled into plain sequential
 JavaScript and executes on unmodified runtime environments.
 
+${<span class="label label-success">Important:</span>} Since version 1.1.0
+HipHop programs can be executed in [Hop.js](http://hop.inria.fr), all
+web browsers, and [Node.js](https://nodejs.org/en/).
 
 ### Example 1
 

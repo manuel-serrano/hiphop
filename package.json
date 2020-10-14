@@ -2,8 +2,22 @@
    "name": "hiphop.js",
    "version": "1.1.0",
    "description": "HipHop.js, (A)synchronous Web Reactive Programming",
-   "main": "lib/hiphop.js",
-   "type": "module",
+   "homepage": "http://hop.inria.fr/home/hiphop/index.html",
+   "license" : "GPL-3.0-or-later",
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/manuel-serrano/hiphop"
+   },
+   "bin": { 
+      "hhc" : "./bin/hhc.sh" 
+   },
+   "engines": { 
+      "hop": ">=3.4.0" ,
+      "node": ">=10.21.0" 
+   },
+   "os": [ "darwin", "linux" ],
+   "main": "lib/nodejs/hiphop.js",
+   "server": "lib/hiphop.js",
    "client": [
       "lib/hiphop.js",
       "lib/lang.js",
