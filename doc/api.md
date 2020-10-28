@@ -153,7 +153,7 @@ ${ doc.include( "../tests/appendseqchild.hh.js" ) }
 ```
 
 
-Batch execution
+Batch Execution
 ---------------
 
 ### mach.batch() ###
@@ -190,3 +190,22 @@ has to be added to this documentation. (In the meantime, the `tests`
 directory contains many `.in` files that can be used as examples.).
 
 
+Evaluating Expression
+---------------------
+
+### hiphop.eval( string ) ###
+[:@glyphicon glyphicon-tag function]
+
+The `eval` function evaluates a string denoting an HipHop statement.
+
+Example:
+
+```hopscript
+"use hopscript"
+"use strict"
+
+const hh = require( "hiphop" );
+
+const prgm = hh.eval( "hiphop machine() { hop { console.log( 'hello' ) } } );
+const mach = new hh.ReactiveMachine( prgm );
+```

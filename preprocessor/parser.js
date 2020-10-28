@@ -1809,4 +1809,5 @@ parser.addPlugin( "hiphop", parseHiphop );
 
 exports.parser = parser;
 exports.parse = parser.parse.bind( parser );
+exports.parseString = parser.parseString.bind( parser );
 
