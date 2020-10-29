@@ -74,6 +74,9 @@ while : ; do
       hopc=hopc-$hopversion
       hop=hopc-$hopversion;;
 
+    --hopminorversion=*)
+      hopminorversion="`echo $1 | sed 's/^[^=]*=//'`";;
+
     --hopc=*)
       hopc="`echo $1 | sed 's/^[^=]*=//'`";;
 
@@ -95,7 +98,8 @@ while : ; do
       echo "" >&2;
       echo "options:" >&2;
       echo "   --help..................... this message" >&2;
-      echo "   --hopversion=version....... hop and hopc versions" >&2;
+      echo "   --hopversion=version....... hop and hopc version" >&2;
+      echo "   --hopminorversion=version.. hop and hopc minor version" >&2;
       echo "   --hop=path................. hop command" >&2;
       echo "   --hopc=path................ hopc command" >&2;
       echo "   --hflags=flags............. hopc flags" >&2;
