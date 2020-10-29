@@ -35,6 +35,7 @@ HIPHOPLIBDIR=$(LIBDIR)/$(HZ)/$(HZVERSION)
 HOP = @HOP@
 HOPC = @HOPC@
 HFLAGS = @HFLAGS@
+HHC = bin/hhc.sh --js-require-hop
 
 LIB = ast.js batch.js compiler.js compiler-utils.js debugger-common.js \
  debugger.js debugger-server.js debug.js error.js hiphop.js lang.js \
@@ -56,12 +57,19 @@ SODIR= @SODIR@
 JSDIR = $(LIBDIR)/$(HZVERSION)
 
 SO=$(SOFILES:%=so/%)
+NODEJSFILES=$(filter-out lib/nodejs/debug.js, $(LIB:%=lib/nodejs/%)) \
+  $(ULIB:%=lib/nodejs/%)
 
 #*---------------------------------------------------------------------*/
 #*    do                                                               */
 #*---------------------------------------------------------------------*/
 do: $(SOFILES) lib/config.@SO@ ChangeLog
 	@ echo "Compilation complete."
+
+#*---------------------------------------------------------------------*/
+#*    nodejs                                                           */
+#*---------------------------------------------------------------------*/
+nodejs: $(NODEJSFILES)
 
 #*---------------------------------------------------------------------*/
 #*    .suffixes                                                        */
@@ -77,6 +85,12 @@ do: $(SOFILES) lib/config.@SO@ ChangeLog
 
 %.@SO@: %.hop
 	$(HOPC) $(HFLAGS) --safe -y -o $@ $< 
+
+lib/nodejs/%.js: lib/%.js
+	$(HHC) -o $@ $< 
+
+lib/nodejs/%.js: ulib/%.js
+	$(HHC) -o $@ $< 
 
 #*---------------------------------------------------------------------*/
 #*    install                                                          */
@@ -117,7 +131,7 @@ install-so:
 	   cp preprocessor/$$p.@SO@ $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor/$/$(SODIR); \
         done
 
-install-local:
+install-nodejs install-local:
 	mkdir -p $$HOME/.node_modules
 	rm -rf $$HOME/.node_modules/hiphop
 	pwd=$$PWD; cd ..; cp -r $$pwd $$HOME/.node_modules/hiphop
@@ -130,7 +144,10 @@ install-sitelisp:
 #*---------------------------------------------------------------------*/
 #*    clean                                                            */
 #*---------------------------------------------------------------------*/
-clean:
+clean-nodejs: 
+	rm -f $(NODEJSFILES)
+
+clean: clean-nodejs
 	rm -rf lib/*.so
 	rm -rf ulib/*.so
 	rm -rf preprocessor/*.so

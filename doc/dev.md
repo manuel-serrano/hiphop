@@ -114,7 +114,7 @@ ${ <span class="label label-info">nodejs.js</span> }
 ```javascript
 const mach = require( "./abro.js" );
 
-mach.addEventListener( "O", e => console.log( v.nowval ) );
+mach.addEventListener( "O", e => console.log( e.nowval ) );
 
 mach.react();
 mach.react( { A: undefined } );
