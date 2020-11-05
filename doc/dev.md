@@ -101,7 +101,8 @@ compiled and installed first with:
 ```
 
 Then, each HipHop programs has to be compiled with the `hhc` compiler
-that is shipped with the `HipHop` package:
+that is shipped with the `HipHop` package. Considering the file `abro.hh.js`
+defined above, it can be compiled with:
 
 ```shell
 ~/.node_modules/hiphop/bin/hhc.sh abro.hh.js -o abro.js
