@@ -1,58 +1,40 @@
+#*=====================================================================*/
+#*    .../hop/arch/android/hzdemo/arch/android/Makefile.android        */
+#*    -------------------------------------------------------------    */
+#*    Author      :  Manuel Serrano                                    */
+#*    Creation    :  Tue Oct 12 11:53:03 2010                          */
+#*    Last change :  Fri Nov 13 15:43:00 2020 (serrano)                */
+#*    Copyright   :  2010-20 Manuel Serrano                            */
+#*    -------------------------------------------------------------    */
+#*    Android Hz demo                                                  */
+#*=====================================================================*/
+
+#*---------------------------------------------------------------------*/
+#*    hopclient configuration passed to hop/arch/android/Makefile      */
+#*---------------------------------------------------------------------*/
 include Makefile.config
 
-doapk: apk
-
-include ../../Makefile
-
-REPOSITORY = $$HOME/prgm/distrib
-HIPHOPFULLNAME = $(HZ)-$(HZVERSION)
-
-apk: 
-	$(MAKE) -C $(HOPDIR)/arch/android apk \
-             ANDROIDMODULE=$(ANDROIDMODULE) \
-	     APKCUSTOMDIR=$(APKCUSTOMDIR) \
-             CONFIG=$(ANDROIDMODULE)/arch/android/Makefile.config
-
-apk-sans-bigloo: doit
-apk-sans-hop: doit
-install-apk: doit
+#*---------------------------------------------------------------------*/
+#*    hzdemo targets                                                   */
+#*---------------------------------------------------------------------*/
+apk:
+	$(MAKE) -C $(HOPDIR)/arch/android apk-sans-hop.client \
+            ANDROIDWEBLET=$(ANDROIDWEBLET) \
+            ANDROIDRES=$(ANDROIDRES) \
+            ANDROIDMANIFEST=$(ANDROIDMANIFEST) \
+            CONFIG=$(ANDROIDWEBLET)/arch/android/Makefile.config \
+            HOPHZ=$(HOPHZ) \
+	    DESTDIR=$(DESTDIR)
 
 config:
 	$(MAKE) -C $(HOPDIR)/arch/android config \
-            ANDROIDMODULE=$(ANDROIDMODULE) \
-            CONFIG=$(ANDROIDMODULE)/arch/android/Makefile.config
+            ANDROIDWEBLET=$(ANDROIDWEBLET) \
+            ANDROIDRES=$(ANDROIDRES) \
+            ANDROIDMANIFEST=$(ANDROIDMANIFEST) \
+            CONFIG=$(ANDROIDWEBLET)/arch/android/Makefile.config
 
-doit:
-	$(MAKE) -C $(HOPDIR)/arch/android $(MAKECMDGOALS) \
-             ANDROIDMODULE=$(ANDROIDMODULE) \
-	     APKCUSTOMDIR=$(APKCUSTOMDIR) \
-             CONFIG=$(ANDROIDMODULE)/arch/android/Makefile.config
-
-prepare-android-module:
+prepare-android-weblet:
+	cp plugins/prefs_android.hop ../../plugins
 	find . -name '*.o' -exec /bin/rm {} \;
-	/bin/rm -rf hiphop/tests
-
-hiphop: apk.hiphop
-
-apk.hiphop: $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME)
-	$(MAKE) -f Makefile.android apk.hiphop.configure
-	$(MAKE) -C $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME)
-	$(MAKE) -C $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME) install DESTDIR=$(ANDROIDBUILDDIR)
-	cp -r $(ANDROIDBUILDDIR)$(ANDROIDHOPPREFIX)/lib/$(HZ)/$(HZVERSION) $(ANDROIDBUILDDIR)/assets/lib/hop/$(HOPRELEASE)/node_modules/$(HZ)
-	cp -r $(ANDROIDBUILDDIR)/$(HZ)-$(HZVERSION)/examples/hhdroid $(ANDROIDBUILDDIR)/assets/lib/hop/$(HOPRELEASE)/weblets
-        
-
-$(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME):
-	(cd $(ANDROIDBUILDDIR); rm -rf $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME))
-	(cd $(ANDROIDBUILDDIR); tar xvf $(REPOSITORY)/$(HIPHOPFULLNAME).tar.gz)
-
-apk.hiphop.configure:
-	(cd $(ANDROIDBUILDDIR)/$(HIPHOPFULLNAME); \
-         export DESTDIR=$(ANDROIDBUILDDIR); \
-         ./configure \
-            --hopc=$(HOPBINDIR)/hopc \
-            --hflags="-O2 --bigloo=$(HOPBINDIR)/bigloo --bigloo-lib-dir=$(ANDROIDBUILDDIR)$(ANDROIDHOPPREFIX)/lib/bigloo/$(RELEASE) --lib-dir=$(ANDROIDBUILDDIR)$(ANDROIDHOPPREFIX)/lib/hop/$(HOPRELEASE)" \
-            --hop=$(HOPBINDIR)/hop \
-            --prefix=$(ANDROIDHOPPREFIX) \
-            $(HIPHOPCONFIGUREOPT))
-
+	find . -name '*.so' -exec /bin/rm {} \;
+	rm -rf ../../arch/android
