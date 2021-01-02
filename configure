@@ -50,11 +50,15 @@ while : ; do
       libdir=$prefix/lib
       mandir=$prefix/man/$mansec;
       etcdir=$prefix/etc;
+      sharedir=$prefix/share;
       contribsdir=$prefix/share/hiphop/contribs
       docdir=$prefix/share/doc/hiphop;;
 
     --etcdir=*)
       etcdir="`echo $1 | sed 's/^[^=]*=//'`";;
+
+    --sharedir=*)
+      sharedir="`echo $1 | sed 's/^[^=]*=//'`";;
 
     --bindir=*)
       bindir="`echo $1 | sed 's/^[^=]*=//'`";;
@@ -69,6 +73,9 @@ while : ; do
       hopversion="`echo $1 | sed 's/^[^=]*=//'`"
       hopc=hopc-$hopversion
       hop=hopc-$hopversion;;
+
+    --hopminorversion=*)
+      hopminorversion="`echo $1 | sed 's/^[^=]*=//'`";;
 
     --hopc=*)
       hopc="`echo $1 | sed 's/^[^=]*=//'`";;
@@ -91,12 +98,14 @@ while : ; do
       echo "" >&2;
       echo "options:" >&2;
       echo "   --help..................... this message" >&2;
-      echo "   --hopversion=version....... hop and hopc versions" >&2;
+      echo "   --hopversion=version....... hop and hopc version" >&2;
+      echo "   --hopminorversion=version.. hop and hopc minor version" >&2;
       echo "   --hop=path................. hop command" >&2;
       echo "   --hopc=path................ hopc command" >&2;
       echo "   --hflags=flags............. hopc flags" >&2;
       echo "   --prefix=dir............... prefix to HOP install" >&2;
       echo "   --etcdir=dir............... hop etc directory" >&2;
+      echo "   --sharedir=dir............. hop share directory" >&2;
       echo "   --bindir=dir............... alternative Hop bin directory" >&2;
       echo "   --libdir=dir............... alternative Hop lib directory" >&2;
       echo "   --mandir=dir............... alternative Hop man directory" >&2;
@@ -112,6 +121,12 @@ done
 #*---------------------------------------------------------------------*/
 if [ "$etcdir " = " " ]; then
   etcdir=`$hop --configure --etcdir`
+fi
+
+if [ "$sharedir " = " " ]; then
+  sharedir=`$hop --configure --sharedir`
+  sharedir=`dirname $sharedir`
+  sharedir=`dirname $sharedir`
 fi
 
 #*---------------------------------------------------------------------*/
@@ -161,6 +176,7 @@ for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el doc/doc.json arch/
 	  -e "s|@URLBASE@|$urlbase|g" \
           -e "s|@BUILDDIR@|$PWD|g" \
           -e "s|@LIBDIR@|$libdir|g" \
+          -e "s|@HOPSHAREDIR@|$sharedir|g" \
           -e "s|@HOPLIBDIR@|$hoplibdir|g" \
           -e "s|@HOPBUILDID@|$hopbuildid|g" \
           -e "s|@HOPBUILDARCH@|$hopbuildarch|g" \
@@ -190,6 +206,11 @@ echo "  hop command............. $hop"
 echo "  hopc command............ $hopc"
 echo "  hflags ................. $hflags"
 echo "  etc directory........... $etcdir"
+echo "  share directory......... $sharedir"
 echo "  lib directory........... $libdir"
 echo "  so directory name....... $hopsodirname"
+echo ""
+echo "Emacs users, add"
+echo "'(hopjs-site-lisp-extra-dir (quote (\"/usr/local/share/hiphop/site-lisp\")))" 
+echo "to your emacs '(custom-set-variables ...)' expression"
 

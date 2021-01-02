@@ -916,15 +916,31 @@ function parseHalt( token ) {
 /*    stmt ::= ...                                                     */
 /*       | SEQUENCE block                                              */
 /*---------------------------------------------------------------------*/
-function parseSequence( token, tagname, consume ) {
+function parseSequence( token, tagname, id, consume ) {
    const loc = token.location;
+   const locid = id.location;
    const tag = tagInit( tagname, loc );
-   const attrs = astutils.J2SObjInit( loc, [ locInit( loc ), tag ] );
    const body = parseHHBlock.call( this, consume );
+   const attrs = id 
+      ? astutils.J2SObjInit( loc,
+	 [ astutils.J2SDataPropertyInit(
+	    loc,
+	    astutils.J2SString( locid, "id" ),
+	    astutils.J2SString( locid, id.value ) ),
+ 	   locInit( loc ), tag ] )
+      : astutils.J2SObjInit( loc, [ locInit( loc ), tag ] );
 
    return astutils.J2SCall( loc, hhref( loc, "SEQUENCE" ), 
 			    null,
 			    [ attrs ].concat( body ) );
+}
+
+/*---------------------------------------------------------------------*/
+/*    parseNamedSequence ...                                           */
+/*---------------------------------------------------------------------*/
+function parseNamedSequence( id, tagname, consume ) {
+   let next = this.consumeToken( this.LBRACE );
+   return parseSequence.call( this, next, tagname, id, consume );
 }
 
 /*---------------------------------------------------------------------*/
@@ -969,7 +985,7 @@ function parseFork( token ) {
    .concat( parseHHBlock.call( this ) ) ) );
 
       while( isIdToken( this, this.peekToken(), "par" ) ) {
-      	 body.push( parseSequence.call( this, this.consumeAny(), "par", true ) );
+      	 body.push( parseSequence.call( this, this.consumeAny(), "par", false, true ) );
       }
 
       return astutils.J2SCall( loc, hhref( loc, "FORK" ), 
@@ -1747,8 +1763,11 @@ function parseStmt( token, declaration ) {
 	 }
 
       case this.LBRACE:
-	 return parseSequence.call( this, next, "sequence", false );
+	 return parseSequence.call( this, next, "sequence", false, false );
 
+      case this.STRING:
+	 return parseNamedSequence.call( this, next, "sequence", false );
+	 
       default:
 	 throw tokenTypeError( this.consumeAny() );
    }
@@ -1790,4 +1809,5 @@ parser.addPlugin( "hiphop", parseHiphop );
 
 exports.parser = parser;
 exports.parse = parser.parse.bind( parser );
+exports.parseString = parser.parseString.bind( parser );
 

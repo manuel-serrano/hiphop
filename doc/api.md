@@ -122,7 +122,38 @@ ${ doc.include( "../tests/reactfunc.hh.js" ) }
 Remove the listener from the machine.
 
 
-Batch execution
+Dynamic programs
+----------------
+
+HipHop `fork` and `sequence` statements can be modified in between two
+reactions using the function `appendChild`.
+
+### mach.getElementById( id ) ###
+
+Returns the HipHop `fork` or `sequence` labeld with `id`.
+
+### mach.appendChild( node, hhstmt ) ###
+[:@glyphicon glyphicon-tag function]
+
+Append a child to a statement. If `node` is a `fork` construct, the
+child is added as a new parallel branch. If node is a sequence, the
+child is added after the node children.
+
+### mach.removeChild( node, child ) ###
+[:@glyphicon glyphicon-tag function]
+
+Remove a child.
+
+Example:
+
+${ <span class="label label-info">appendseqchild.js</span> }
+
+```hopscript
+${ doc.include( "../tests/appendseqchild.hh.js" ) }
+```
+
+
+Batch Execution
 ---------------
 
 ### mach.batch() ###
@@ -159,3 +190,22 @@ has to be added to this documentation. (In the meantime, the `tests`
 directory contains many `.in` files that can be used as examples.).
 
 
+Evaluating Expression
+---------------------
+
+### hiphop.eval( string ) ###
+[:@glyphicon glyphicon-tag function]
+
+The `eval` function evaluates a string denoting an HipHop statement.
+
+Example:
+
+```hopscript
+"use hopscript"
+"use strict"
+
+const hh = require( "hiphop" );
+
+const prgm = hh.eval( "hiphop machine() { hop { console.log( 'hello' ) } } );
+const mach = new hh.ReactiveMachine( prgm );
+```
