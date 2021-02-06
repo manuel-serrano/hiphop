@@ -2,6 +2,8 @@
 
 const hh = require("../lib/hiphop.js");
 const lang = require("../lib/lang.js");
+const error = require("../lib/error.js");
+
 const next_id = (() => {
    let lbl = "__PARALLELMAP_ID__";
    let id = 0;

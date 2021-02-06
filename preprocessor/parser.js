@@ -4,7 +4,7 @@
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
 /*    Last change :  Tue May 26 11:50:50 2020 (serrano)                */
-/*    Copyright   :  2018-20 Manuel Serrano                            */
+/*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
 /*=====================================================================*/
@@ -597,7 +597,6 @@ function parseMachineModule( token, declaration, ctor ) {
    if( declaration ) {
       return astutils.J2SVarDecls(
 	 loc, [ astutils.J2SDeclInit( loc, id.value, mod ) ] );
-      return d;
    } else {
       return mod;
    }
