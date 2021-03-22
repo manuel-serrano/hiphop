@@ -39,7 +39,7 @@ HHC = bin/hhc.sh --js-require-hop
 
 LIB = ast.js batch.js compiler.js compiler-utils.js debugger-common.js \
  debugger.js debugger-server.js debug.js error.js hiphop.js lang.js \
- machine.js net.js queue.js signal.js sweep.js
+ machine.js net.js queue.js signal.js sweep.js causality.js bourdoncle.js
 
 JSPREPROCESSOR = astutils.js parser.js
 HOPPREPROCESSOR = _hhaccess.hop
