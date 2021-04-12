@@ -14,4 +14,4 @@ var example = <hh.module I O>
   </hh.loop>
 </hh.module>;
 
-exports.prg = new hh.ReactiveMachine(example, "presentemit");
+exports.prg = new hh.ReactiveMachine(example, "presentemit",{CausalityErrorTrace:"deep"});
