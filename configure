@@ -4,8 +4,8 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Tue May 26 11:36:28 2020 (serrano)                */
-#*    Copyright   :  2018-20 Manuel Serrano                            */
+#*    Last change :  Mon Apr 12 15:42:07 2021 (serrano)                */
+#*    Copyright   :  2018-21 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
 #*=====================================================================*/
@@ -160,7 +160,7 @@ if [ "$libdir " = " " ]; then
 fi
 
 # docker/Dockerfile.in
-for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el doc/doc.json arch/debian/makedeb.sh arch/homebrew/makebrew.sh Makefile lib/config.js examples/hhdroid/Makefile; do
+for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el doc/doc.json arch/debian/makedeb.sh arch/homebrew/makebrew.sh Makefile lib/config.js examples/hhdroid/Makefile tests/TEST; do
   rm -f $path 2> /dev/null
   cat $path.in \
     | sed -e "s|@HIPHOPVERSION@|$version|g" \
@@ -190,6 +190,7 @@ done
 
 chmod a+rx arch/debian/makedeb.sh
 chmod a+rx arch/homebrew/makebrew.sh
+chmod a+rx tests/TEST
 
 #*---------------------------------------------------------------------*/
 #*    Summary                                                          */

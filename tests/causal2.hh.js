@@ -1,3 +1,4 @@
+"use hiphop"
 "use hopscript"
 
 const hh = require( "hiphop" );
@@ -12,10 +13,12 @@ hiphop module prg() {
       emit V_S_C();
    }
 }
-   
-let machine = new hh.ReactiveMachine( prg, "test" );
+
+let machine = new hh.ReactiveMachine( prg, "test",
+   { sweep: false, CausalityErrorTrace: "deep" } );
+
 try {
    machine.react();
-} catch(e) {
+} catch( e ) {
    console.log( "causality error" );
 }

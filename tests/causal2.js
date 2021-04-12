@@ -11,9 +11,11 @@ let prg = <hh.module>
                    </hh.local>
                  </hh.local>
                </hh.module>;
-let machine = new hh.ReactiveMachine(prg );
+let machine = new hh.ReactiveMachine( prg,
+   { sweep: false, CausalityErrorTrace: "deep "} );
+
 try {
    machine.react();
-} catch(e) {
+} catch( e ) {
    console.log( "causality error" );
 }
