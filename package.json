@@ -33,7 +33,7 @@
       "lib/signal.js",
       "lib/queue.js",
       "lib/config.js",
-      "lib/bourconle.js",
+      "lib/bourdoncle.js",
       "lib/causality.js",
       "ulib/parallelmap.js"
    ]
