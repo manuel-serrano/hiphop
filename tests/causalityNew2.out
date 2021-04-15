@@ -1,1 +1,8 @@
+Causality error
+file:/home/jkrishna/hiphop/tests/causalityNew2.hh.js:90
+file:/home/jkrishna/hiphop/tests/causalityNew2.hh.js:115
+file:/home/jkrishna/hiphop/tests/causalityNew2.hh.js:133
+file:/home/jkrishna/hiphop/tests/causalityNew2.hh.js:147
+file:/home/jkrishna/hiphop/tests/causalityNew2.hh.js:152
+file:/home/jkrishna/hiphop/tests/causalityNew2.hh.js:179
 TypeError: causality cycle of length 6 detected, involving signals B,V_S_C

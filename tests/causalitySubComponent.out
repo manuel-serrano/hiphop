@@ -1,1 +1,21 @@
+Causality error
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:176
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:233
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:272
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:283
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:314
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:324
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:357
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:485
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:541
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:580
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:591
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:622
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:632
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:665
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:1828
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:2314
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:2333
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:2362
+file:/home/jkrishna/hiphop/tests/causalitySubComponent.hh.js:2381
 TypeError: causality cycle of length 19 detected, involving signals Nok2,Req2,Try2,PrevNok2,TokenIn2,Nok1,Req1,Try1,PrevNok1,TokenIn1
