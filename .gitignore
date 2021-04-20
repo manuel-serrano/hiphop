@@ -31,6 +31,8 @@ lib/net.so
 lib/queue.so
 lib/signal.so
 lib/sweep.so
+lib/bourdoncle.so
+lib/causality.so
 preprocessor/_hhaccess.so
 preprocessor/astutils.so
 preprocessor/parser.so
