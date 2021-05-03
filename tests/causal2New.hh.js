@@ -14,7 +14,7 @@ hiphop module prg() {
    }
 }
 
-let machine = new hh.ReactiveMachine( prg, "test");
+let machine = new hh.ReactiveMachine( prg, {CausalityErrorTrace:"shallow"});
 
 try {
    machine.react();
