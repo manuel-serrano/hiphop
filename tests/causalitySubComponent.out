@@ -1,1 +1,1 @@
-TypeError: causality cycle of length 19 detected, involving signals Nok2,Req2,Try2,PrevNok2,TokenIn2,Nok1,Req1,Try1,PrevNok1,TokenIn1
+causality error

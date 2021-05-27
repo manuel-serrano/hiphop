@@ -27,12 +27,12 @@ hiphop module prog(in I,  in A, in B, in R, out O  ) {
     }
 }
 
-let machine = new hh.ReactiveMachine( prog, {CausalityErrorTrace:"deep", sweep:false} );
+let machine = new hh.ReactiveMachine( prog );
 
 try{
-machine.react('A','B');
-machine.react('A');
-machine.react('B');
-}catch (e) {
-    console.error(e.toString());
+    machine.react('A','B');
+    machine.react('A');
+    machine.react('B');
+} catch( e ) { 
+    console.log( "causality error" );
 }

@@ -48,4 +48,4 @@ lib/nodejs/parallelmap.js
 lib/nodejs/queue.js
 lib/nodejs/signal.js
 lib/nodejs/sweep.js
-
+tests/TEST

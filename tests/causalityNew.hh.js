@@ -11,9 +11,8 @@ hiphop module example( I, O ) {
 }
 let machine = new hh.ReactiveMachine(example, {CausalityErrorTrace:"deep", sweep:false} );
 
-//machine.debug_emitted_func = console.log;
 try {
-      machine.react();
-   } catch(e) {
-      console.error(e.toString());
-   }
+    machine.react();
+} catch( e ) { 
+    console.log( "causality error" );
+}
