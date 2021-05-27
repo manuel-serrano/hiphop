@@ -1,9 +1,1 @@
-Causality error
-file:/home/jkrishna/hiphop/tests/causallib.hh.js:123
-file:/home/jkrishna/hiphop/tests/causallib.hh.js:132
-file:/home/jkrishna/hiphop/tests/causallib.hh.js:199
-file:/home/jkrishna/hiphop/tests/causallib.hh.js:236
-file:/home/jkrishna/hiphop/tests/causallib.hh.js:288
-file:/home/jkrishna/hiphop/tests/causallib.hh.js:355
-file:/home/jkrishna/hiphop/tests/causallib.hh.js:383
-TypeError: causality cycle of length 7 detected, involving signals A,O
+causality error

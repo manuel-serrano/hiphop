@@ -13,7 +13,7 @@ hiphop module prg( O1, O2, OUTER = 0 ) {
 let machine = new hh.ReactiveMachine( prg, "TEST" );
 
 try {
-   machine.react();
+    machine.react();
 } catch( e ) {
-   console.log( "causality error" );
+    console.log( "causality error" );
 }

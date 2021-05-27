@@ -10,5 +10,4 @@ hiphop module example( I, O ) {
    }
 }
 
-exports.prg = new hh.ReactiveMachine( example, "presentemit",
-   { CausalityErrorTrace: "deep "} );
+exports.prg = new hh.ReactiveMachine( example, "presentemit" );

@@ -1,5 +1,1 @@
-Causality error
-file:/home/jkrishna/hiphop/tests/causalityNew.hh.js:70
-file:/home/jkrishna/hiphop/tests/causalityNew.hh.js:102
-file:/home/jkrishna/hiphop/tests/causalityNew.hh.js:120
-TypeError: causality cycle of length 3 detected, involving signals I
+causality error

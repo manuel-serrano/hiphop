@@ -14,10 +14,10 @@ hiphop module prg() {
    }
 }
 
-let machine = new hh.ReactiveMachine( prg, {CausalityErrorTrace:"shallow"});
+let machine = new hh.ReactiveMachine( prg );
 
 try {
-   machine.react();
+    machine.react();
 } catch( e ) {
-   console.log( "causality error" );
+    console.log( "causality error" );
 }
