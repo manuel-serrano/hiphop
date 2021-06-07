@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Thu Jan 16 13:54:38 2020 (serrano)                */
-/*    Copyright   :  2018-20 Manuel Serrano                            */
+/*    Last change :  Fri May  7 16:50:57 2021 (serrano)                */
+/*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
 /*=====================================================================*/
@@ -14,6 +14,7 @@ const hopc = require( hop.hopc );
 const ast = require( hopc.ast );
 
 let declKey = 10000;
+const configUtype = hopc.config.naturalCompare( "3.5.0" ) >= 0;
 
 /*---------------------------------------------------------------------*/
 /*    J2SNull ...                                                      */
@@ -183,60 +184,116 @@ function J2SPragma( loc, lang, vars, vals, expr ) {
 /*    J2SFun ...                                                       */
 /*---------------------------------------------------------------------*/
 function J2SFun( loc, name, params, body ) {
-   return new ast.J2SFun( loc, 
-      "unknown" /* type */, 
-      null /* hint */,
-      undefined /* range */, 
-      "unknown" /* rtype */,
-      undefined /* rrange */, 
-      "this" /* idthis */,
-      false /* idgen */, 
-      "normal" /* mode */,
-      false /* decl */, 
-      false /* need_bind_exit_return */,
-      false /* new-target */,
-      false /* vararg */, 
-      name /* name */,
-      false /* generator */, 
-      true /* optimize */,
-      false /* thisp */, 
-      false /* argumentsp */,
-      params, /* params */
-      3 /* constrsize */, 
-      false /* src */,
-      false /* _method */, 
-      false /* ismethodof */,
-      body );
+   if( configUtype ) { 
+      return new ast.J2SFun( loc, 
+      	 "unknown" /* type */, 
+      	 null /* hint */,
+      	 undefined /* range */, 
+      	 "unknown" /* rtype */,
+      	 "unknown" /* rutype */,
+      	 undefined /* rrange */, 
+      	 "this" /* idthis */,
+      	 false /* idgen */, 
+      	 "normal" /* mode */,
+      	 false /* decl */, 
+      	 false /* need_bind_exit_return */,
+      	 false /* new-target */,
+      	 false /* vararg */, 
+      	 name /* name */,
+      	 false /* generator */, 
+      	 true /* optimize */,
+      	 false /* thisp */, 
+      	 false /* argumentsp */,
+      	 params, /* params */
+      	 3 /* constrsize */, 
+      	 false /* src */,
+      	 false /* _method */, 
+      	 false /* ismethodof */,
+      	 body );
+   } else {
+      return new ast.J2SFun( loc, 
+      	 "unknown" /* type */, 
+      	 null /* hint */,
+      	 undefined /* range */, 
+      	 "unknown" /* rtype */,
+      	 undefined /* rrange */, 
+      	 "this" /* idthis */,
+      	 false /* idgen */, 
+      	 "normal" /* mode */,
+      	 false /* decl */, 
+      	 false /* need_bind_exit_return */,
+      	 false /* new-target */,
+      	 false /* vararg */, 
+      	 name /* name */,
+      	 false /* generator */, 
+      	 true /* optimize */,
+      	 false /* thisp */, 
+      	 false /* argumentsp */,
+      	 params, /* params */
+      	 3 /* constrsize */, 
+      	 false /* src */,
+      	 false /* _method */, 
+      	 false /* ismethodof */,
+      	 body );
+   }
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SMethod ...                                                    */
 /*---------------------------------------------------------------------*/
 function J2SMethod( loc, name, params, body, self ) {
-   return new ast.J2SFun( loc, 
-      "unknown" /* type */, 
-      null /* hint */,
-      undefined /* range */, 
-      "unknown" /* rtype */,
-      undefined /* rrange */, 
-      "this" /* idthis */,
-      false /* idgen */, 
-      "normal" /* mode */,
-      false /* decl */, 
-      false /* need_bind_exit_return */,
-      false /* new-target */,
-      false /* vararg */, 
-      name /* name */,
-      false /* generator */, 
-      true /* optimize */,
-      self /* thisp */, 
-      false /* argumentsp */,
-      params /* params */,
-      3 /* constrsize */, 
-      false /* src */,
-      false /* _method */, 
-      false /* ismethodof */,
-      body );
+   if( configRutype ) { 
+      return new ast.J2SFun( loc, 
+      	 "unknown" /* type */, 
+      	 null /* hint */,
+      	 undefined /* range */, 
+      	 "unknown" /* rtype */,
+      	 "unknown" /* rutype */,
+      	 undefined /* rrange */, 
+      	 "this" /* idthis */,
+      	 false /* idgen */, 
+      	 "normal" /* mode */,
+      	 false /* decl */, 
+      	 false /* need_bind_exit_return */,
+      	 false /* new-target */,
+      	 false /* vararg */, 
+      	 name /* name */,
+      	 false /* generator */, 
+      	 true /* optimize */,
+      	 self /* thisp */, 
+      	 false /* argumentsp */,
+      	 params /* params */,
+      	 3 /* constrsize */, 
+      	 false /* src */,
+      	 false /* _method */, 
+      	 false /* ismethodof */,
+      	 body );
+   } else {
+      return new ast.J2SFun( loc, 
+      	 "unknown" /* type */, 
+      	 null /* hint */,
+      	 undefined /* range */, 
+      	 "unknown" /* rtype */,
+      	 undefined /* rrange */, 
+      	 "this" /* idthis */,
+      	 false /* idgen */, 
+      	 "normal" /* mode */,
+      	 false /* decl */, 
+      	 false /* need_bind_exit_return */,
+      	 false /* new-target */,
+      	 false /* vararg */, 
+      	 name /* name */,
+      	 false /* generator */, 
+      	 true /* optimize */,
+      	 self /* thisp */, 
+      	 false /* argumentsp */,
+      	 params /* params */,
+      	 3 /* constrsize */, 
+      	 false /* src */,
+      	 false /* _method */, 
+      	 false /* ismethodof */,
+      	 body );
+   }
 }
 
 /*---------------------------------------------------------------------*/
