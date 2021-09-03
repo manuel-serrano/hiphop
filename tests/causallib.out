@@ -1,1 +1,1 @@
-TypeError: causality cycle of length 7 detected, involving signals A,O
+causality error
