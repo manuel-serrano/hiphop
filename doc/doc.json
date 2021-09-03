@@ -1,11 +1,11 @@
 {
-   "version": "1.2.0",
+   "version": "1.1.2",
    "title": "HipHop.js",
    "logo": "logo.svg",
    "github": "https://github.com/manuel-serrano/hiphop.git"
    "urlbase": "ftp://ftp-sop.inria.fr/indes/fp/HipHop",
    "homepage": "http://hop.inria.fr/hiphop",
-   "date": "16 April 2021",
+   "date": "27 May 2021",
    "chapters": [ { "name": "Home", "icon": "glyphicon-home", "href": "index.html" },
 		 { "name": "Download", "icon": "glyphicon-cloud-download", "href": "download.html" },
 		 { "name": "Dev", "icon": "glyphicon-cog", "href": "dev.html" },

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Fri May  7 16:50:57 2021 (serrano)                */
+/*    Last change :  Fri Sep  3 17:07:14 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -14,7 +14,7 @@ const hopc = require( hop.hopc );
 const ast = require( hopc.ast );
 
 let declKey = 10000;
-const configUtype = hopc.config.naturalCompare( "3.5.0" ) >= 0;
+const configUtype = hop.config.naturalCompare( "3.5.0" ) >= 0;
 
 /*---------------------------------------------------------------------*/
 /*    J2SNull ...                                                      */
@@ -242,7 +242,7 @@ function J2SFun( loc, name, params, body ) {
 /*    J2SMethod ...                                                    */
 /*---------------------------------------------------------------------*/
 function J2SMethod( loc, name, params, body, self ) {
-   if( configRutype ) { 
+   if( configUtype ) { 
       return new ast.J2SFun( loc, 
       	 "unknown" /* type */, 
       	 null /* hint */,
