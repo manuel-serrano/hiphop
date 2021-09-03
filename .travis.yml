@@ -47,6 +47,7 @@ before_script:
   - ./configure
   - (sudo cp -r ../hiphop /usr/lib/hop/3.5.0/node_modules)
   - (sudo chmod a+rx -R /usr/lib/hop/3.5.0/node_modules/hiphop)
+
   
 script:
   - set -e

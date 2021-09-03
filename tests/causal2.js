@@ -15,7 +15,7 @@ let machine = new hh.ReactiveMachine( prg,
    { sweep: false, CausalityErrorTrace: "deep "} );
 
 try {
-   machine.react();
+    machine.react();
 } catch( e ) {
-   console.log( "causality error" );
+    console.log( "causality error" );
 }

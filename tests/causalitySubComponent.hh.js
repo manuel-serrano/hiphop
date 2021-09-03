@@ -88,12 +88,9 @@ hiphop module RR (in Req1, in Req2,
       if (Nok2.now) emit PrevNok1();
    }
 }
-const m = new hh.ReactiveMachine(RR, { sweep: false, CausalityErrorTrace:"deep",
-				     });
+const machine = new hh.ReactiveMachine(RR);
 try {
-      m.react();
-   } catch(e) {
-      console.error(e.toString()); // in .out file for the tests folder remember to inculde new line at the end, 
-                                   // else test fails.
-   }
-
+    machine.react();
+} catch( e ) { 
+    console.log( "causality error" );
+}

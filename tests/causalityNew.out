@@ -1,1 +1,2 @@
-TypeError: causality cycle of length 3 detected, involving signals I
+Warning: Potential causality cycle
+causality error

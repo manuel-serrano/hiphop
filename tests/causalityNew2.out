@@ -1,1 +1,2 @@
-TypeError: causality cycle of length 6 detected, involving signals B,V_S_C
+Warning: Potential causality cycle
+causality error

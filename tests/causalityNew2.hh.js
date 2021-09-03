@@ -14,9 +14,9 @@ hiphop module prg(B) {
    }
 }
 
-const machine = new hh.ReactiveMachine( prg,{CausalityErrorTrace:"deep", sweep:false} );
+const machine = new hh.ReactiveMachine( prg );
 try {
-   machine.react();
-} catch(e) {
-   console.error( e.toString());
+    machine.react();
+} catch( e ) { 
+    console.log( "causality error" );
 }
