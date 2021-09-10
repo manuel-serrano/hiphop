@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue May 26 11:50:50 2020 (serrano)                */
+/*    Last change :  Fri Sep  3 17:32:47 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -956,7 +956,7 @@ function parseFork( token ) {
    let body = [];
 
    if( this.peekToken().type === this.STRING ) {
-      let id = this.consumeAny();
+      id = this.consumeAny();
       const locid = id.location;
 
       attrs = astutils.J2SObjInit(
