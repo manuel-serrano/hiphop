@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Sep  3 17:32:47 2021 (serrano)                */
+/*    Last change :  Wed Dec  8 17:59:32 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -24,7 +24,7 @@ const hhmodule = "hiphop";
 /*    self ...                                                         */
 /*---------------------------------------------------------------------*/
 function self( loc ) {
-   return astutils.J2SDecl( loc, "this", "var", "this" );
+   return astutils.J2SDecl( loc, "this", "let", "this" );
 }
 
 /*---------------------------------------------------------------------*/
@@ -123,7 +123,7 @@ function hhwrapDecl( token, stmt ) {
    const req = astutils.J2SCall( loc, astutils.J2SUnresolvedRef( loc, "require" ),
 				 [ astutils.J2SUndefined( loc ) ],
 				 [ astutils.J2SString( loc, hhmodule ) ] );
-   const decl = astutils.J2SDeclInit( loc, hhname, req, "var" );
+   const decl = astutils.J2SDeclInit( loc, hhname, req, "let" );
 
    return astutils.J2SVarDecls( stmt.loc, [ decl ].concat( stmt.decls ) );
 }

@@ -3,13 +3,13 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Fri Sep 28 16:47:25 2018 (serrano)                */
-/*    Copyright   :  2018 Manuel Serrano                               */
+/*    Last change :  Wed Dec  8 16:24:17 2021 (serrano)                */
+/*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop part of the Timer example.                                */
 /*=====================================================================*/
 "use hiphop"
-"use hopscript"
+//"use hopscript"
 
 /*---------------------------------------------------------------------*/
 /*    imports                                                          */
@@ -19,54 +19,54 @@ const hh = require("hiphop");
 /*---------------------------------------------------------------------*/
 /*    timeoutMod ...                                                   */
 /*---------------------------------------------------------------------*/
-function timeoutMod( nms ) {
+function timeoutMod(nms) {
    return hiphop module() {
       async {
 	 const self = this;
-	 setTimeout( function() { self.terminateExecAndReact() }, nms );
+	 setTimeout(function() { self.terminateExecAndReact() }, nms);
       } resume {
 	 const self = this;
-	 setTimeout( function() { self.terminateExecAndReact() }, nms );
+	 setTimeout(function() { self.terminateExecAndReact() }, nms);
       }
    }
 }
 
-hiphop module basicTimer( in duration=0, out elapsed ) {
-   emit elapsed( 0 );
+hiphop module basicTimer(in duration=0, out elapsed) {
+   emit elapsed(0);
    loop {
-      if( nowval( elapsed ) < nowval( duration ) ) {
-	 run timeoutMod( 100 )();
-	 emit elapsed( preval( elapsed ) + 0.1 );
+      if (elapsed.nowval < duration.nowval) {
+	 run ${timeoutMod(100)}();
+	 emit elapsed(elapsed.preval + 0.1);
       } else {
 	 yield;
       }
    }
 }
 
-hiphop module timer( in duration=0, in reset, out elapsed ) {
+hiphop module timer(in duration=0, in reset, out elapsed) {
    do {
       run basicTimer();
-   } every( now(reset ) );
+   } every (reset.now);
 }
 
-hiphop module suspendableTimer( in reset, in suspend,
+hiphop module suspendableTimer(in reset, in suspend,
 				out elapsed=0, out suspendcolor,
-				inout duration ) {
+				inout duration) {
    do {
       fork {
-	 suspend( toggle now( suspend ) ) {
+	 suspend toggle (suspend.now) {
 	    run timer();
 	 }
       } par {
-	 emit suspendcolor( "transparent" );
+	 emit suspendcolor("transparent");
 	 loop {
-	    await now( suspend );
-	    emit suspendcolor( "orange" );
-	    await now( suspend );
-	    emit suspendcolor( "transparent" );
+	    await (suspend.now);
+	    emit suspendcolor("orange");
+	    await (suspend.now);
+	    emit suspendcolor("transparent");
 	 }
       }
-   } every( now( reset ) )
+   } every (reset.now)
 }
 
 module.exports = new hh.ReactiveMachine(suspendableTimer);

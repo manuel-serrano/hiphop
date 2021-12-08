@@ -11,20 +11,20 @@ orchestrating web applications.
 "use hiphop"
 "use hopscript"
 
-const hh = require( "hiphop" );
+const hh = require("hiphop");
 
-hiphop module prg( in A, in B, in R, out O ) {
+hiphop module prg(in A, in B, in R, out O) {
    do {
       fork {
-         await now( A );
+         await (A.now);
       } par {
-         await now( B );
+         await (B.now);
       }
       emit O();
-   } every( now( R ) )
+   } every (R.now)
 }
 
-const m = new hh.ReactiveMachine( prg, "ABRO" );
-m.addEventListener( "O", e => console.log( "got: ", e ) );
-m.react( { A: 1 }, { B: 2 }, { R: true }, { A: 3, B: 4 } );
+const m = new hh.ReactiveMachine(prg, "ABRO");
+m.addEventListener("O", e => console.log("got: ", e));
+m.react({ A: 1 }, { B: 2 }, { R: true }, { A: 3, B: 4 });
 ```
