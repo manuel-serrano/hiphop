@@ -3,7 +3,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Nov 13 10:52:14 2018                          */
-;*    Last change :  Thu Dec  9 13:31:23 2021 (serrano)                */
+;*    Last change :  Thu Dec  9 17:55:29 2021 (serrano)                */
 ;*    Copyright   :  2018-21 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    Patching the AST built by the native parser                      */
@@ -114,7 +114,7 @@
 			    (loc loc)
 			    (obj (instantiate::J2SUnresolvedRef
 				    (loc loc)
-				    (id 'hop)))
+				    (id 'globalThis)))
 			    (field (instantiate::J2SString
 				      (loc loc)
 				      (val "hiphop")))))
@@ -153,6 +153,7 @@
 	       (writable #f)
 	       (vtype 'object)
 	       (binder 'let)
+	       (scope 'letblock)
 	       (val (instantiate::J2SAccess
 		       (loc loc)
 		       (obj (instantiate::J2SUnresolvedRef
@@ -163,16 +164,17 @@
 				 (val (symbol->string id))))))))))
    
    (with-access::J2SNode node (loc)
-      (instantiate::J2SBlock
-	 (loc loc)
-	 (endloc loc)
-	 (nodes (if (pair? axs)
-		    (list
-		       (instantiate::J2SVarDecls
-			  (loc loc)
-			  (decls (map access->general-decl axs)))
-		       node)
-		    (list node))))))
+      (if (pair? axs)
+	  (instantiate::J2SLetBlock
+	     (loc loc)
+	     (endloc loc)
+	     (rec #f)
+	     (decls (map access->general-decl axs))
+	     (nodes (list node)))
+	  (instantiate::J2SBlock
+	     (loc loc)
+	     (endloc loc)
+	     (nodes (list node))))))
 
 ;*---------------------------------------------------------------------*/
 ;*    find-decl ...                                                    */
@@ -222,7 +224,6 @@
 		  (not (find-decl obj env)))
 	     (with-access::J2SUnresolvedRef obj (id)
 		(with-access::J2SString field (val)
-		   (tprint "VAL= "val)
 		   (if (and (or (string=? val "signame")
 				(string=? val "now")
 				(string=? val "nowval")

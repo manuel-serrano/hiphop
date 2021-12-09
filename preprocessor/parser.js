@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Dec  9 08:01:18 2021 (serrano)                */
+/*    Last change :  Thu Dec  9 17:55:16 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -109,7 +109,7 @@ function isIdToken(parser, token, id) {
 function hhref(loc, name) {
    const hh = astutils.J2SAccess(
       loc,
-      astutils.J2SUnresolvedRef(loc, "hop"),
+      astutils.J2SUnresolvedRef(loc, "globalThis"),
       astutils.J2SString(loc, "hiphop"));
    return astutils.J2SAccess(loc, hh, astutils.J2SString(loc, name));
 }
@@ -128,7 +128,7 @@ function hhwrapDecl(token, stmt) {
       [astutils.J2SString(loc, hhmodule)]);
    const hh = astutils.J2SAccess(
       loc,
-      astutils.J2SUnresolvedRef(loc, "hop"),
+      astutils.J2SUnresolvedRef(loc, "globalThis"),
       astutils.J2SString(loc, "hiphop"));
    const assig = astutils.J2SAssig(loc, hh, req);
    const decl = astutils.J2SDeclInit(loc, hhname + hhkey++, assig, "let");
@@ -182,7 +182,7 @@ function parseHHThisExpr(parser, iscnt = false) {
       
       this.consumeToken(this.RPAREN);
 
-      switch(token.value) {
+      switch (token.value) {
 	 case "now": break;
 	 case "pre": pre = true; break;
 	 case "nowval": val = true; break;
@@ -259,7 +259,7 @@ function parseHHThisBlock() {
       
       this.consumeToken(this.RPAREN);
 
-      switch(token.value) {
+      switch (token.value) {
 	 case "now": break;
 	 case "pre": pre = true; break;
 	 case "nowval": val = true; break;
@@ -462,7 +462,7 @@ function parseHHBlock(consume = true) {
    if (consume) this.consumeToken(this.LBRACE);
 
    while (true) {
-      switch(this.peekToken().type) {
+      switch (this.peekToken().type) {
 	 case this.SEMICOLON:
 	    this.consumeAny();
 	    break;
@@ -678,7 +678,7 @@ function parseInterfaceIntflist() {
       const tag = tagInit("interface", loc);
       let expr;
       
-      switch(token.type) {
+      switch (token.type) {
 	 case this.DOLLAR:
 	    expr = this.parseDollarExpression().node;
 	    break;
@@ -728,7 +728,7 @@ function parseModuleSiglist() {
 	 direction = "IN"
 	 name = t.value;
       } else if (token.type === this.ID) {
-	 switch(token.value) {
+	 switch (token.value) {
 	    case "out": {
 	       let t = this.consumeToken(this.ID);
 	       direction = "OUT"
@@ -803,7 +803,7 @@ function parseModuleSiglist() {
    let vars = [];
 
    while (true) {
-      switch(this.peekToken().type) {
+      switch (this.peekToken().type) {
 	 case this.RPAREN:
 	    this.consumeAny();
 	    return { sigs, vars };
@@ -852,7 +852,6 @@ function parseAtom(token) {
       astutils.J2SMethod(loc, "atomfun", [], block, self(loc)));
    const tag = tagInit("hop", loc);
    const attrs = astutils.J2SObjInit(loc, [locInit(loc), tag, appl]);
-   
    return astutils.J2SCall(loc, hhref(loc, "ATOM"), null,
 			    [attrs].concat(accessors));
 }
@@ -954,7 +953,7 @@ function parseNamedSequence(id, tagname, consume) {
 /*    parseFork ...                                                    */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | fork ["name"] block [par block ...]                       */
+/*       | fork ["name"] block [par block ...]                         */
 /*---------------------------------------------------------------------*/
 function parseFork(token) {
    const loc = token.location;
@@ -1004,7 +1003,7 @@ function parseFork(token) {
 /*---------------------------------------------------------------------*/
 /*    parseEmitSustain ...                                             */
 /*    -------------------------------------------------------------    */
-/*    emitsig ::= ident | ident(hhexpr)                              */
+/*    emitsig ::= ident | ident(hhexpr)                                */
 /*---------------------------------------------------------------------*/
 function parseEmitSustain(token, command) {
    
@@ -1096,7 +1095,7 @@ function parseAwait(token) {
 /*    parseIf ...                                                      */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | IF (hhexpr) block [else stmt]                              */
+/*       | IF (hhexpr) block [else stmt]                               */
 /*---------------------------------------------------------------------*/
 function parseIf (token) {
    const loc = token.location;
@@ -1377,7 +1376,7 @@ function parseRun(token) {
    
    const module = this.parsePrimaryDollar();
    
-   switch(typeof module) {
+   switch (typeof module) {
       case "J2SDollar":
 	 inits.push(astutils.J2SDataPropertyInit(
 			loc, astutils.J2SString(loc, "module"),
@@ -1401,7 +1400,7 @@ function parseRun(token) {
    this.consumeToken(this.LPAREN);
    
    while (true) {
-      switch(this.peekToken().type) {
+      switch (this.peekToken().type) {
 	 case this.RPAREN:
 	    break;
 	    
@@ -1415,7 +1414,7 @@ function parseRun(token) {
 	 case this.ID:
 	    const a = this.consumeAny();
 	    
-	    switch(this.peekToken().type) {
+	    switch (this.peekToken().type) {
 	       case this.COMMA:
 	       case this.RPAREN:
 		  inits.push(astutils.J2SDataPropertyInit(
@@ -1567,7 +1566,7 @@ function parseLet(token, binder) {
 	 inits.push(init);
 	 decls.push(decl);
 	 
-	 switch(this.peekToken().type) {
+	 switch (this.peekToken().type) {
 	    case this.SEMICOLON:
 	       this.consumeAny();
 	       return { decls, inits };
@@ -1659,7 +1658,7 @@ function parseSignal(token) {
 	       args.push(signal.call(this, t.location, t.value, "INOUT", false, []));
 	    }
 	 }
-	 switch(this.peekToken().type) {
+	 switch (this.peekToken().type) {
 	    case this.SEMICOLON:
 	       this.consumeAny();
 	       return args;
@@ -1710,9 +1709,9 @@ function parseTrap(token) {
 function parseStmt(token, declaration) {
    const next = this.consumeAny();
 
-   switch(next.type) {
+   switch (next.type) {
       case this.ID:
-	 switch(next.value) {
+	 switch (next.value) {
 	    case "block":
 	    case "hop":
 	       return parseAtom.call(this, next);
