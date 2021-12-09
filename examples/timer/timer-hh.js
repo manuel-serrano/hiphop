@@ -3,13 +3,13 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Wed Dec  8 16:24:17 2021 (serrano)                */
+/*    Last change :  Thu Dec  9 13:51:17 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop part of the Timer example.                                */
 /*=====================================================================*/
 "use hiphop"
-//"use hopscript"
+"use hopscript"
 
 /*---------------------------------------------------------------------*/
 /*    imports                                                          */
@@ -22,11 +22,10 @@ const hh = require("hiphop");
 function timeoutMod(nms) {
    return hiphop module() {
       async {
-	 const self = this;
-	 setTimeout(function() { self.terminateExecAndReact() }, nms);
+	       console.log("THIS=", this);
+        setTimeout(() => this.react(), nms);
       } resume {
-	 const self = this;
-	 setTimeout(function() { self.terminateExecAndReact() }, nms);
+        setTimeout(() => this.react(), nms);
       }
    }
 }
@@ -34,6 +33,7 @@ function timeoutMod(nms) {
 hiphop module basicTimer(in duration=0, out elapsed) {
    emit elapsed(0);
    loop {
+/*       block { console.log("loop", elapsed.nowval, duration.pre); }  */
       if (elapsed.nowval < duration.nowval) {
 	 run ${timeoutMod(100)}();
 	 emit elapsed(elapsed.preval + 0.1);

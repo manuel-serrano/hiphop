@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Wed Dec  8 17:45:43 2021 (serrano)                */
+/*    Last change :  Thu Dec  9 14:07:43 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -190,7 +190,7 @@ function J2SFun(loc, name, params, body) {
       	 null /* hint */,
       	 undefined /* range */, 
       	 "unknown" /* rtype */,
-      	 "unknown" /* rutype */,
+      	 Symbol("unknown") /* rutype */,
       	 undefined /* rrange */, 
       	 "this" /* idthis */,
       	 false /* idgen */, 
@@ -248,7 +248,7 @@ function J2SMethod(loc, name, params, body, self) {
       	 null /* hint */,
       	 undefined /* range */, 
       	 "unknown" /* rtype */,
-      	 "unknown" /* rutype */,
+      	 Symbol("unknown") /* rutype */,
       	 undefined /* rrange */, 
       	 "this" /* idthis */,
       	 false /* idgen */, 
@@ -347,7 +347,7 @@ function J2SDecl(loc, id, binder = "let", _scmid = false) {
       	 true /* escape */, 
       	 null /* usage */,
       	 binder == "const" ? "let" : binder /* binder */,
-      	 "any" /* utype */, 
+      	 Symbol("any") /* utype */, 
       	 "any" /* itype */,
       	 "any" /* vtype */, 
       	 "any" /* mtype */, 
@@ -367,7 +367,7 @@ function J2SDecl(loc, id, binder = "let", _scmid = false) {
       	 true /* escape */, 
       	 null /* usage */,
       	 binder == "const" ? "let" : binder /* binder */,
-      	 "any" /* utype */, 
+      	 Symbol("any") /* utype */, 
       	 "any" /* itype */,
       	 "any" /* vtype */, 
       	 undefined /* irange */,
@@ -393,7 +393,7 @@ function J2SDeclInit(loc, id, val, binder = "let") {
       	 true /* escape */, 
       	 null /* usage */,
       	 binder /* binder */, 
-      	 "any" /* utype */,
+      	 Symbol("any") /* utype */,
       	 "any" /* itype */, 
       	 "any" /* vtype */,
       	 "any" /* mtype */,
@@ -414,7 +414,7 @@ function J2SDeclInit(loc, id, val, binder = "let") {
       	 true /* escape */, 
       	 null /* usage */,
       	 binder /* binder */, 
-      	 "any" /* utype */,
+      	 Symbol("any") /* utype */,
       	 "any" /* itype */, 
       	 "any" /* vtype */,
       	 undefined /* irange */, 
