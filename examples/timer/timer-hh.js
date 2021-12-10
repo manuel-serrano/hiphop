@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Fri Dec 10 10:40:08 2021 (serrano)                */
+/*    Last change :  Fri Dec 10 14:08:25 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop part of the Timer example.                                */
@@ -22,14 +22,21 @@ const hh = require("hiphop");
 function timeoutMod(nms) {
    return hiphop module(tick) {
       let tmt = false;
+      let d = 0;
       async (tick) {
         tmt = setTimeout(() => this.notify(true), nms);
       } suspend {
-	 console.log("susp...");
+	 d = Date.now();
 	 if (tmt) clearTimeout(tmt);
       } resume {
-	 console.log("resume...");
-        tmt = setTimeout(() => this.notify(true), nms);
+	 d = Date.now() - d;
+	 if (d < nms) {
+            tmt = setTimeout(() => this.notify(true), nms - d);
+	 } else {
+	    this.notify(true);
+	 }
+      } kill {
+	 if (tmt) clearTimeout(tmt);
       }
    }
 }
@@ -54,8 +61,8 @@ hiphop module timer(in duration=0, in reset, out elapsed) {
 }
 
 hiphop interface Timer(in reset, in suspend,
-				    out elapsed=0, out suspendcolor,
-				    inout duration);
+                       out elapsed=0, out suspendcolor,
+                       inout duration);
 
 hiphop module suspendableTimer() implements Timer {
    do {
@@ -75,16 +82,4 @@ hiphop module suspendableTimer() implements Timer {
    } every (reset.now)
 }
 
-hiphop module suspendableTimerDbg() implements Timer {
-   fork {		       
-      run suspendableTimer(...);
-   } par {
-      let tick = 0;
-      loop {
-	 host { console.log("tick:", tick++); }
-	 yield;
-      }
-   }
-}
-   
-module.exports = new hh.ReactiveMachine(suspendableTimerDbg);
+module.exports = suspendableTimer;

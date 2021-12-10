@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Colin Vidal                                       */
 /*    Creation    :  Sat Aug  4 13:41:32 2018                          */
-/*    Last change :  Fri Dec 10 08:07:33 2021 (serrano)                */
+/*    Last change :  Fri Dec 10 14:11:58 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Timer example.                                                   */
@@ -13,7 +13,7 @@
 /*---------------------------------------------------------------------*/
 /*    imports ...                                                      */
 /*---------------------------------------------------------------------*/
-require("hiphop");
+const hh = require("hiphop");
 
 /*---------------------------------------------------------------------*/
 /*    timer ...                                                        */
@@ -25,7 +25,8 @@ service timer() {
        <script src="hiphop" lang="hopscript"/>
        <script src="./timer-hh.js" lang="hiphop"/>
        <script defer>
-	 const m = require("./timer-hh.js", "hiphop");
+	 const hh = require("hiphop");
+	 const m = new hh.ReactiveMachine(require("./timer-hh.js", "hiphop"));
 
 	 window.onload = function() {
 	    const dur = parseInt(document.getElementById("range-timer").value);
@@ -40,6 +41,8 @@ service timer() {
        </div>
        <div>
 	 <span><react>~{m.elapsed.nowval.toFixed(1)}</react></span><span>s</span>
+/								   
+	 <span><react>~{m.duration.nowval.toFixed(1)}</react></span><span>s</span>
        </div>
        <div>
          <span>Duration:</span>
@@ -49,10 +52,9 @@ service timer() {
        <div>
          <button onclick=~{m.react({reset: true})}>Reset</button>
 	 <button onclick=~{m.react({suspend: true})}
-		 style=~{`background-color: ${m.suspendColor?.nowval || "grey"}`}>Suspend</button>
+		 style=~{`background-color: ${m.suspendcolor?.nowval || "grey"}`}>Suspend</button>
        </div>
      </body>
    </html>
 }
-//value=~{m.value.duration}
 

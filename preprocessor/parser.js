@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Dec 10 11:56:47 2021 (serrano)                */
+/*    Last change :  Fri Dec 10 14:16:12 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1204,28 +1204,28 @@ function parseExec(token) {
       loc, astutils.J2SString(loc, "apply"),
       astutils.J2SMethod(loc, "execfun", [], block, self(loc))));
 
-   if (isIdToken(this, this.peekToken(), "kill")) {
-      this.consumeAny();
-      const block = this.parseBlock();
-      inits.push(astutils.J2SDataPropertyInit(
-	 loc, astutils.J2SString(loc, "killApply"),
-	 astutils.J2SMethod(loc, "execkill", [], block, self(loc))));
-   }
-   
-   if (isIdToken(this, this.peekToken(), "suspend")) {
-      this.consumeAny();
-      const block = this.parseBlock();
-      inits.push(astutils.J2SDataPropertyInit(
-	 loc, astutils.J2SString(loc, "suspApply"),
-	 astutils.J2SMethod(loc, "execsusp", [], block, self(loc))));
-   }
-   
-   if (isIdToken(this, this.peekToken(), "resume")) {
-      this.consumeAny();
-      const block = this.parseBlock();
-      inits.push(astutils.J2SDataPropertyInit(
-	 loc, astutils.J2SString(loc, "resApply"),
-	 astutils.J2SMethod(loc, "execresume", [], block, self(loc))));
+   while (true) {
+      if (isIdToken(this, this.peekToken(), "kill")) {
+      	 this.consumeAny();
+      	 const block = this.parseBlock();
+      	 inits.push(astutils.J2SDataPropertyInit(
+	 	       loc, astutils.J2SString(loc, "killApply"),
+	 	       astutils.J2SMethod(loc, "execkill", [], block, self(loc))));
+      } else if (isIdToken(this, this.peekToken(), "suspend")) {
+      	 this.consumeAny();
+      	 const block = this.parseBlock();
+      	 inits.push(astutils.J2SDataPropertyInit(
+	 	       loc, astutils.J2SString(loc, "suspApply"),
+	 	       astutils.J2SMethod(loc, "execsusp", [], block, self(loc))));
+      } else if (isIdToken(this, this.peekToken(), "resume")) {
+      	 this.consumeAny();
+      	 const block = this.parseBlock();
+      	 inits.push(astutils.J2SDataPropertyInit(
+	 	       loc, astutils.J2SString(loc, "resApply"),
+	 	       astutils.J2SMethod(loc, "execresume", [], block, self(loc))));
+      } else {
+	 break;
+      }
    }
    
    const attrs = astutils.J2SObjInit(loc, inits);
