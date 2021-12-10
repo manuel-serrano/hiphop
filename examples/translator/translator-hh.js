@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Thu Aug  2 01:01:22 2018                          */
-/*    Last change :  Fri Sep 28 16:42:27 2018 (serrano)                */
-/*    Copyright   :  2018 Manuel Serrano                               */
+/*    Last change :  Fri Dec 10 18:32:53 2021 (serrano)                */
+/*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    translator demo, client and hiphop parts.                        */
 /*=====================================================================*/
@@ -14,7 +14,7 @@
 /*---------------------------------------------------------------------*/
 /*    import                                                           */
 /*---------------------------------------------------------------------*/
-const hh = require( "hiphop" );
+const hh = require("hiphop");
 
 /*---------------------------------------------------------------------*/
 /*    constant                                                         */
@@ -27,30 +27,30 @@ const mymemory = "http://mymemory.translated.net/api/get";
 /*    For the sake of the example, this demo does not use builtin      */
 /*    Hop services. It uses plain xmlhttprequests instead.             */
 /*---------------------------------------------------------------------*/
-function translate( langPair, text ) {
-   var req = new XMLHttpRequest();
-   var svc = mymemory + "?langpair=" + langPair + "&q=" + text;
+function translate(langPair, text) {
+   const req = new XMLHttpRequest();
+   const svc = mymemory + "?langpair=" + langPair + "&q=" + text;
 
-   return new Promise( (resolve, reject) => {
+   return new Promise((resolve, reject) => {
       req.onreadystatechange = () => {
-	 if( req.readyState === 4 ) {
-	    if( req.status === 200 ) {
-	       const txt = JSON.parse( req.responseText )
+	 if (req.readyState === 4) {
+	    if (req.status === 200) {
+	       const txt = JSON.parse(req.responseText)
 		     .responseData
 		     .translatedText;
 
 	       // mymemory sometime returns "&" instead of the translation
-	       if( txt != "&" ) {
-		  resolve( txt );
+	       if (txt != "&") {
+		  resolve(txt);
 	       } else {
-		  reject( txt );
+		  reject(txt);
 	       }
 	    } else {
-	       reject( txt );
+	       reject(txt);
 	    }
 	 }
       };
-      req.open( "GET", svc, true );
+      req.open("GET", svc, true);
       req.send();
    });
 }
@@ -58,22 +58,22 @@ function translate( langPair, text ) {
 /*---------------------------------------------------------------------*/
 /*    execColor ...                                                    */
 /*---------------------------------------------------------------------*/
-function execColor( langPair ) {
-   return hiphop module( in text, out color, out trans, out error ) {
+function execColor(langPair) {
+   return hiphop module(in text, out color, out trans) {
       signal result;
       
-      emit color( "red" );
-      await immediate( now( text ) );
+      emit color("red");
+      await immediate(text.now);
       
-      async result {
-	 this.notifyAndReact( translate( langPair, nowval( text ) ) );
+      async (result) {
+	 this.notify(translate(langPair, text.nowval));
       }
 
-      if( nowval( result ).resolve ) {
-	 emit trans( nowval( result ).val );
-	 emit color( "green" );
+      if (result.nowval.resolve) {
+	 emit trans(result.nowval.val);
+	 emit color("green");
       } else {
-	 emit color( "orange" );
+	 emit color("orange");
       }
    }
 }
@@ -81,25 +81,23 @@ function execColor( langPair ) {
 /*---------------------------------------------------------------------*/
 /*    trans ...                                                        */
 /*---------------------------------------------------------------------*/
-hiphop module trans( in text,
+hiphop module trans(in text,
 		     out transEn, out colorEn,
 		     out transNe, out colorNe,
 		     out transEs, out colorEs,
-		     out transSe, out colorSe ) {
-   every( now( text ) ) {
+		     out transSe, out colorSe) {
+   every (text.now) {
       fork {
-	 run execColor( "fr|en" )( color=colorEn, trans=transEn );
+	 run ${execColor("fr|en")}(colorEn => color, transEn => trans, ...);
       } par {
-	 run execColor( "en|fr" )( color=colorNe, text=transEn, trans=transNe );
+	 run ${execColor("en|fr")}(colorNe => color, transEn => text, transNe => trans, ...);
       } par {
-	 run execColor( "fr|es" )( color=colorEs, trans=transEs );
+	 run ${execColor("fr|es")}(colorEs => color, transEs => trans, ...);
       } par {
-	 run execColor( "es|fr" )( color=colorSe, text=transEs, trans=transSe );
+	 run ${execColor("es|fr")}(colorSe => color, transEs => text, transSe => trans, ...);
       }
    }
 }
 
 
-module.exports =
-//   new hh.ReactiveMachine( trans, { debuggerName: "debug", sweep: false } );
-   new hh.ReactiveMachine( trans );
+module.exports = trans;

@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Oct 16 08:45:43 2012                          */
-/*    Last change :  Sat Oct 27 09:33:16 2018 (serrano)                */
-/*    Copyright   :  2012-20 Manuel Serrano                            */
+/*    Last change :  Fri Dec 10 18:18:46 2021 (serrano)                */
+/*    Copyright   :  2012-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prim numbers aka the Darwin Sieve                                */
 /*    -------------------------------------------------------------    */
@@ -16,8 +16,8 @@
 /*---------------------------------------------------------------------*/
 /*    prims ...                                                        */
 /*---------------------------------------------------------------------*/
-service prims( o ) {
-   if( !o ) o = {};
+service prims(o) {
+   if (!o) o = {};
    
    let count = ~~o.count || 1;
    let width = ~~o.width || 600;
@@ -26,12 +26,12 @@ service prims( o ) {
    let canvas = <canvas width=${width} height=${height}/>;
 
    return <html>
-     <head css=${require.resolve( "./prims.hss" )}>
+     <head css=${require.resolve("./prims.hss")}>
        <script src="hiphop" lang="hopscript"/>
        <script src="./client.js" lang="hiphop"/>
        <script defer>
-	 const pc = require( "./client.js", "hiphop" );
-	 window.onload = () => pc.start( ${canvas}, ${speed} );
+	 const pc = require("./client.js", "hiphop");
+	 window.onload = () => pc.start(${canvas}, ${speed});
        </script>
      </head>
      <body>
@@ -40,8 +40,8 @@ service prims( o ) {
 	 <div>
 	   <button onclick=~{pc.pause()}>Pause</button>
 	   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	   ${[1,5,10,25,100].map( function( el, idx, arr ) {
-	      return <button onclick=~{pc.addNumber( ${el} )}>
+	   ${[1,5,10,25,100].map(function(el, idx, arr) {
+	      return <button onclick=~{pc.addNumber(${el})}>
 	        Add ${el}
 	      </button>
 	   })}
@@ -52,7 +52,7 @@ service prims( o ) {
 	     <td>
 	       <input type=range 
                       min=0 max=100 value=${100 - speed}
-		      onchange=~{pc.setSpeed( 100 - this.value )}/>
+		      onchange=~{pc.setSpeed(100 - this.value)}/>
              </td>
 	     <td>fast</td></tr>
 	 </table>
@@ -61,4 +61,4 @@ service prims( o ) {
    </html>
 }
        
-console.log( 'go to "http://' + hop.hostname + ":" + hop.port + '/hop/prims"' );	   
+console.log('go to "http://' + hop.hostname + ":" + hop.port + '/hop/prims"');	   
