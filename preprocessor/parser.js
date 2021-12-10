@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Dec  9 17:55:16 2021 (serrano)                */
+/*    Last change :  Fri Dec 10 08:20:24 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -167,76 +167,10 @@ function hhwrapExpr(token, expr) {
 /*       | preval.ident                                                */
 /*---------------------------------------------------------------------*/
 function parseHHThisExpr(parser, iscnt = false) {
-   
    let accessors = [];
-
-   const hhparser = function(token) {
-      const loc = token.location;
-      const access = token.value;
-      let pre = false, val = false;
-      
-      this.consumeToken(this.LPAREN);
-      
-      const tid = this.consumeToken(this.ID);
-      const locid = tid.location;
-      
-      this.consumeToken(this.RPAREN);
-
-      switch (token.value) {
-	 case "now": break;
-	 case "pre": pre = true; break;
-	 case "nowval": val = true; break;
-	 case "preval": pre = true, val = true; break;
-      }
-
-      const signame = astutils.J2SDataPropertyInit(
-	 locid,
-	 astutils.J2SString(locid, "signame"),
-	 astutils.J2SString(locid,  tid.value));
-      const sigpre = astutils.J2SDataPropertyInit(
-	 locid,
-	 astutils.J2SString(locid, "pre"),
-	 astutils.J2SBool(locid, pre));
-      const sigval = astutils.J2SDataPropertyInit(
-	 locid,
-	 astutils.J2SString(locid, "val"),
-	 astutils.J2SBool(locid, val));
-      const sigcnt = astutils.J2SDataPropertyInit(
-	 locid,
-	 astutils.J2SString(locid, "cnt"),
-	 astutils.J2SBool(locid, iscnt));
-
-      const attrs =
-	    astutils.J2SObjInit(loc, [signame, sigpre, sigval, sigcnt]);
-      const sigaccess = astutils.J2SCall(
-	 loc, hhref(loc, "SIGACCESS"), null, [attrs]);
-
-      // push the accessor in the dependencies list
-      accessors.push(sigaccess);
-
-      // return the actual expression
-      return astutils.J2SAccess(
-	 locid,
-	 astutils.J2SAccess(locid,
-			     astutils.J2SHopRef(loc, "this"),
-			     astutils.J2SString(loc, tid.value)),
-	 astutils.J2SString(locid, access));
-   }
-   
-   this.addPlugin("now", hhparser);
-   this.addPlugin("pre", hhparser);
-   this.addPlugin("nowval", hhparser);
-   this.addPlugin("preval", hhparser);
-   try {
-      const { expr: e, accessors: axs } = parser.call(this, accessors);
-      const expr = hhaccess(e, iscnt, hhname, accessors);
-      return { expr: expr, accessors: accessors };
-   } finally {
-      this.removePlugin("preval");
-      this.removePlugin("nowval");
-      this.removePlugin("pre");
-      this.removePlugin("now");
-   }
+   const { expr: e, accessors: axs } = parser.call(this, accessors);
+   const expr = hhaccess(e, iscnt, hhname, accessors);
+   return { expr: expr, accessors: accessors };
 }
 
 /*---------------------------------------------------------------------*/
@@ -246,69 +180,8 @@ function parseHHThisExpr(parser, iscnt = false) {
 /*---------------------------------------------------------------------*/
 function parseHHThisBlock() {
    let accessors = [];
-
-   const hhparser = function(token) {
-      const loc = token.location;
-      const access = token.value;
-      let pre = false, val = false;
-      
-      this.consumeToken(this.LPAREN);
-      
-      const tid = this.consumeToken(this.ID);
-      const locid = tid.location;
-      
-      this.consumeToken(this.RPAREN);
-
-      switch (token.value) {
-	 case "now": break;
-	 case "pre": pre = true; break;
-	 case "nowval": val = true; break;
-	 case "preval": pre = true, val = true; break;
-      }
-
-      const signame = astutils.J2SDataPropertyInit(
-	 locid,
-	 astutils.J2SString(locid, "signame"),
-	 astutils.J2SString(locid,  tid.value));
-      const sigpre = astutils.J2SDataPropertyInit(
-	 locid,
-	 astutils.J2SString(locid, "pre"),
-	 astutils.J2SBool(locid, pre));
-      const sigval = astutils.J2SDataPropertyInit(
-	 locid,
-	 astutils.J2SString(locid, "val"),
-	 astutils.J2SBool(locid, val));
-
-      const attrs =
-	    astutils.J2SObjInit(loc, [signame, sigpre, sigval]);
-      const sigaccess = astutils.J2SCall(
-	 loc, hhref(loc, "SIGACCESS"), null, [attrs]);
-
-      // push the accessor dependencies list
-      accessors.push(sigaccess);
-
-      // return the actual expression
-      return astutils.J2SAccess(
-	 locid,
-	 astutils.J2SAccess(locid,
-			     astutils.J2SUnresolvedRef(loc, "this"),
-			     astutils.J2SString(loc, tid.value)),
-	 astutils.J2SString(locid, access));
-   }
-   
-   this.addPlugin("now", hhparser);
-   this.addPlugin("pre", hhparser);
-   this.addPlugin("nowval", hhparser);
-   this.addPlugin("preval", hhparser);
-   try {
-      const block = hhaccess(this.parseBlock(), false, hhname, accessors);
-      return { block: block, accessors: accessors };
-   } finally {
-      this.removePlugin("preval");
-      this.removePlugin("nowval");
-      this.removePlugin("pre");
-      this.removePlugin("now");
-   }
+   const block = hhaccess(this.parseBlock(), false, hhname, accessors);
+   return { block: block, accessors: accessors };
 }
 
 /*---------------------------------------------------------------------*/
@@ -1309,6 +1182,7 @@ function parseExec(token) {
    const tag = tagInit("async", loc);
    let inits = [locInit(loc), tag];
    
+   this.consumeToken(this.LPAREN);
    if (this.peekToken().type === this.ID) {
       const id = this.consumeAny();
 
@@ -1323,6 +1197,7 @@ function parseExec(token) {
 	 loc, astutils.J2SString(loc, id.value),
 	 astutils.J2SString(loc, "")));
    }
+   this.consumeToken(this.RPAREN);
       
    const { block, accessors } = parseHHThisBlock.call(this);
    inits.push(astutils.J2SDataPropertyInit(

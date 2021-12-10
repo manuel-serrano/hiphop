@@ -5,7 +5,7 @@ ${ var ROOT = path.dirname( module.filename ) }
 Async
 =====
 
-Async forms implement long lasting background Hop (i.e., JavaScript)
+Async forms implement long lasting background JavaScript
 actions. They are the essential ingredient for mixing undeterministic
 asynchronous computation and deterministic synchronous
 computations. In other words, the `async` form enables well-behaving
@@ -16,11 +16,11 @@ synchronous to regulate unsteady asynchronous computations.
 
 [Formal syntax](./syntax.html#HHAsync)
 
-The `async` form execute a JavaScript statement that is supposed to
-spawn a long lasting background computation. When this complete, the
-asynchronous block can resume the synchronous machine by calling the
-function that composes the `async` JavaScript API. When an `ident` is
-specified with the `async` call, the JavaScript will have the possible
+The `async` form executes a JavaScript statement that is supposed to
+spawn a long lasting background computation. When this completes, the
+asynchronous block can resume the synchronous machine by calling one of the
+functions that compose the `async` JavaScript API. When an `ident` is
+specified with the `async` call, the JavaScript code will have the possible
 to emit a signal whose name is `ident` when the asynchronous block
 completes or simply progresses.
 

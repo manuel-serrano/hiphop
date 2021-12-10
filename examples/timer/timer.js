@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Colin Vidal                                       */
 /*    Creation    :  Sat Aug  4 13:41:32 2018                          */
-/*    Last change :  Thu Dec  9 13:41:13 2021 (serrano)                */
+/*    Last change :  Fri Dec 10 08:07:33 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Timer example.                                                   */
@@ -21,15 +21,15 @@ require("hiphop");
 service timer() {
    return <html>
      <head>
+       <link rel="shortcut icon" href="#"/>
        <script src="hiphop" lang="hopscript"/>
        <script src="./timer-hh.js" lang="hiphop"/>
        <script defer>
 	 const m = require("./timer-hh.js", "hiphop");
 
 	 window.onload = function() {
-	    m.inputAndReact("duration",
-			     parseFloat(document.getElementById("range-timer")
-                                         .value));
+	    const dur = parseInt(document.getElementById("range-timer").value);
+	    m.react({duration: dur});
 	 }
        </script>
      </head>
@@ -44,11 +44,11 @@ service timer() {
        <div>
          <span>Duration:</span>
          <input id="range-timer" type="range" min="0" max="100" value="50"
-		onchange=~{m.inputAndReact("duration", parseInt(this.value)) }/>
+		onchange=~{m.react({duration: parseInt(this.value)})}/>
        </div>
        <div>
-         <button onclick=~{m.inputAndReact("reset")}>Reset</button>
-	 <button onclick=~{m.inputAndReact("suspend", true)}
+         <button onclick=~{m.react({reset: true})}>Reset</button>
+	 <button onclick=~{m.react({suspend: true})}
 		 style=~{`background-color: ${m.suspendColor?.nowval || "grey"}`}>Suspend</button>
        </div>
      </body>
