@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Fri Dec 10 07:52:07 2021 (serrano)                */
+/*    Last change :  Fri Dec 10 10:40:08 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop part of the Timer example.                                */
@@ -20,24 +20,26 @@ const hh = require("hiphop");
 /*    timeoutMod ...                                                   */
 /*---------------------------------------------------------------------*/
 function timeoutMod(nms) {
-   return hiphop module(elapsed) {
-      block { console.log(">>> avant async") }
-      async (elapsed) {
-        setTimeout(() => this.react(), nms);
+   return hiphop module(tick) {
+      let tmt = false;
+      async (tick) {
+        tmt = setTimeout(() => this.notify(true), nms);
+      } suspend {
+	 console.log("susp...");
+	 if (tmt) clearTimeout(tmt);
       } resume {
-        setTimeout(() => this.react(), nms);
+	 console.log("resume...");
+        tmt = setTimeout(() => this.notify(true), nms);
       }
-      block { console.log("<<< apres async") }
    }
 }
 
 hiphop module basicTimer(in duration=0, out elapsed) {
    emit elapsed(0);
    loop {
-      block { console.log("basicTimer", elapsed.nowval, duration.nowval); }
       if (elapsed.nowval < duration.nowval) {
+	 signal tick;
 	 run ${timeoutMod(100)}(...);
-	 block { console.log("ici"); }
 	 emit elapsed(elapsed.preval + 0.1);
       } else {
 	 yield;
@@ -56,7 +58,6 @@ hiphop interface Timer(in reset, in suspend,
 				    inout duration);
 
 hiphop module suspendableTimer() implements Timer {
-   block { console.log("waiting...", duration.nowval); }
    do {
       fork {
 	 suspend toggle (suspend.now) {
@@ -80,7 +81,7 @@ hiphop module suspendableTimerDbg() implements Timer {
    } par {
       let tick = 0;
       loop {
-	 block { console.log("tick:", tick++); }
+	 host { console.log("tick:", tick++); }
 	 yield;
       }
    }

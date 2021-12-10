@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Dec 10 08:20:24 2021 (serrano)                */
+/*    Last change :  Fri Dec 10 11:56:47 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1587,7 +1587,7 @@ function parseStmt(token, declaration) {
    switch (next.type) {
       case this.ID:
 	 switch (next.value) {
-	    case "block":
+	    case "host":
 	    case "hop":
 	       return parseAtom.call(this, next);
 	    case "module":
