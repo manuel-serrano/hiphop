@@ -2,7 +2,7 @@
 
 <HHExprStatement> --> hiphop <HHStatement>
 
-<HHStatement> --> <HHAtom>
+<HHStatement> --> <HHHost>
   | <HHMachine>
   | <HHModule>
   | <HHInterface>
@@ -29,7 +29,7 @@
   | <HHDollarExpression>
   | <HHExpression> ; 
 
-<HHAtom> --> block <HHStatement>
+<HHHost> --> host <HHStatement>
 
 <HHBlock> --> {}
   | { <HHStatement> }

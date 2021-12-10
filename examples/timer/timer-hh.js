@@ -3,18 +3,13 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Fri Dec 10 14:08:25 2021 (serrano)                */
+/*    Last change :  Fri Dec 10 15:10:49 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop part of the Timer example.                                */
 /*=====================================================================*/
 "use hiphop"
 "use hopscript"
-
-/*---------------------------------------------------------------------*/
-/*    imports                                                          */
-/*---------------------------------------------------------------------*/
-const hh = require("hiphop");
 
 /*---------------------------------------------------------------------*/
 /*    timeoutMod ...                                                   */
@@ -41,6 +36,9 @@ function timeoutMod(nms) {
    }
 }
 
+/*---------------------------------------------------------------------*/
+/*    basicTimer ...                                                   */
+/*---------------------------------------------------------------------*/
 hiphop module basicTimer(in duration=0, out elapsed) {
    emit elapsed(0);
    loop {
@@ -54,16 +52,25 @@ hiphop module basicTimer(in duration=0, out elapsed) {
    }
 }
 
+/*---------------------------------------------------------------------*/
+/*    timer ...                                                        */
+/*---------------------------------------------------------------------*/
 hiphop module timer(in duration=0, in reset, out elapsed) {
    do {
       run basicTimer(...);
    } every (reset.now);
 }
 
+/*---------------------------------------------------------------------*/
+/*    Timer ...                                                        */
+/*---------------------------------------------------------------------*/
 hiphop interface Timer(in reset, in suspend,
                        out elapsed=0, out suspendcolor,
                        inout duration);
 
+/*---------------------------------------------------------------------*/
+/*    suspendableTimer ...                                             */
+/*---------------------------------------------------------------------*/
 hiphop module suspendableTimer() implements Timer {
    do {
       fork {
@@ -82,4 +89,7 @@ hiphop module suspendableTimer() implements Timer {
    } every (reset.now)
 }
 
+/*---------------------------------------------------------------------*/
+/*    exports                                                          */
+/*---------------------------------------------------------------------*/
 module.exports = suspendableTimer;

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Thu Dec  9 19:57:13 2021 (serrano)                */
+/*    Last change :  Fri Dec 10 15:05:47 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -45,7 +45,8 @@ function J2SString(loc, str) {
       null /* hint */,
       false /* range */, 
       str  /* val */,
-      null /* escape */);
+      null /* escape */,
+      false /* private */);
 }
 
 /*---------------------------------------------------------------------*/
