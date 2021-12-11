@@ -20,7 +20,7 @@ The `async` form executes a JavaScript statement that is supposed to
 spawn a long lasting background computation. When this completes, the
 asynchronous block can resume the synchronous machine by calling one of the
 functions that compose the `async` JavaScript API. When an `ident` is
-specified with the `async` call, the JavaScript code will have the possible
+specified with the `async` call, the JavaScript code will have the possibility
 to emit a signal whose name is `ident` when the asynchronous block
 completes or simply progresses.
 
