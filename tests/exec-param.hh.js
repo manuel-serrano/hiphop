@@ -5,7 +5,7 @@ const hh = require( "hiphop" );
 
 hiphop module prg( in IN combine (x, y) => x + y ) {
    emit IN( ${5} );
-   async {
+   async (){
       console.log( "receive " + IN.nowval );
       this.notify( undefined, false );
    }

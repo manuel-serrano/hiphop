@@ -9,7 +9,7 @@ hiphop module prg( in R, O, OT, in T ) {
    do {
       fork {
 	 abort( R.now ) {
-	    async T {
+	    async (T) {
 	       console.log( "Oi." );
 	       setTimeout( function( self ) {
 		  console.log( "Oi timeout." );

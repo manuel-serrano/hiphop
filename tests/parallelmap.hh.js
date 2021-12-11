@@ -55,9 +55,9 @@ const machine = new hh.ReactiveMachine(
 	 
 	 weakabort( AIRLINESFOUND.now ) {
 	    fork {
-	       async AIRLINESFOUND { svcSearch1.call( this, SRC.nowval, DST.nowval ) }
+	       async (AIRLINESFOUND) { svcSearch1.call( this, SRC.nowval, DST.nowval ) }
 	    } par {
-	       async AIRLINESFOUND { svcSearch2.call( this, SRC.nowval, DST.nowval ) }
+	       async (AIRLINESFOUND) { svcSearch2.call( this, SRC.nowval, DST.nowval ) }
 	    }
 	 }
 
@@ -67,7 +67,7 @@ const machine = new hh.ReactiveMachine(
 	    ${ <pm.parallelmap apply=${function() {return this.AIRLINESFOUND.nowval}} AIRLINE>
                ${ hiphop {
 		  signal BADSEATS;
-		  async BADSEATS { svcSeatGuru.call( this, AIRLINE.nowval ) }
+		  async (BADSEATS) { svcSeatGuru.call( this, AIRLINE.nowval ) }
 		  emit TEMP( (function( t, airline, badseats ) {
       	             t[ airline ] = badseats;
       	             return t;

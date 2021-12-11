@@ -8,7 +8,7 @@ hiphop module prg() {
 
       emit L( "foo bar" );
       yield;
-      hop { console.log( "atom works! value of L is", L.nowval ) }
+      host { console.log( "atom works! value of L is", L.nowval ) }
    }
 }
 

@@ -11,7 +11,7 @@ const machine = new hh.ReactiveMachine(
 	       emit B();
 	    }
 	 }
-	 hop { console.log( "weakabort terminated 1." ); }
+	 host { console.log( "weakabort terminated 1." ); }
       } every( A.now )
    } );
 
@@ -29,7 +29,7 @@ const machine2 = new hh.ReactiveMachine(
 	       emit B();
 	    }
 	 }
-	 hop { console.log( "weakabort terminated 2." ); }
+	 host { console.log( "weakabort terminated 2." ); }
       } every( A.now )
    } );
 
@@ -49,7 +49,7 @@ const machine3 = new hh.ReactiveMachine(
 	    yield;
 	    emit B();
 	 }
-	 hop { console.log( "weakabort terminated 3." ); }
+	 host { console.log( "weakabort terminated 3." ); }
       } every( A.now )
    } );
 

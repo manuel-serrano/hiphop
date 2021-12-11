@@ -1,4 +1,4 @@
-"use hopscript"
+"use hopscript";
 
 const hh = require( "hiphop" );
 
