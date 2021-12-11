@@ -1,6 +1,6 @@
 "use hopscript"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
 function bool_and(x, y) {
    return x && y
@@ -14,7 +14,7 @@ function plus(x, y) {
    return x + y
 }
 
-var prg = <hh.module SEQ=${{initValue: 1, combine: plus}}
+const prg = <hh.module SEQ=${{initValue: 1, combine: plus}}
 		     STATE1=${{initValue: false, combine: bool_or}}
 		     STATE2=${{initValue: false, combine: bool_and}} S TOOGLE>
   <hh.loop>

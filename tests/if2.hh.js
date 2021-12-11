@@ -1,9 +1,9 @@
 "use hopscript"
 
-var hh = require( "hiphop" );
+const hh = require( "hiphop" );
 
-var s1 = true;
-var s2 = false;
+const s1 = true;
+const s2 = false;
 
 hiphop module prg( O1, O2 ) {
    loop {

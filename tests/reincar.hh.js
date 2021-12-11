@@ -1,6 +1,6 @@
 "use hopstrict"
 
-var hh = require( "hiphop" );
+const hh = require( "hiphop" );
 
 hiphop module prg( O ) {
    loop {

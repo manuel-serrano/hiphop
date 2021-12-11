@@ -1,6 +1,6 @@
 "use hopscript"
 
-var hh = require( "hiphop" );
+const hh = require( "hiphop" );
 
 hiphop module m( in S, O, F, W, Z ) {
    weakabort( S.now ) {

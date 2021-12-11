@@ -1,11 +1,11 @@
 "use hopscript"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var inSig = {direction: hh.IN};
-var outSig = {direction: hh.OUT};
+const inSig = {direction: hh.IN};
+const outSig = {direction: hh.OUT};
 
-var prg =
+const prg =
     <hh.module A=${inSig} B=${inSig} C=${inSig} R=${inSig} O=${outSig}>
       <hh.loopeach R>
 	<hh.parallel>

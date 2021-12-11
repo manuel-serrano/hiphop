@@ -1,7 +1,7 @@
 "use hiphop"
 "use hopscript"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 hiphop module prg( O1, O2, OUTER = 0 ) {
    hop { console.log( "dans atom" ) }
    emit O1( (console.log("emit o1"), OUTER.nowval) );

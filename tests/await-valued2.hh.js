@@ -1,6 +1,6 @@
 "use hopscript"
 
-var hh = require( "hiphop" );
+const hh = require( "hiphop" );
 
 function foo( evt ) {
    console.log( "foo called by", evt.type, "with value", evt.nowval );
@@ -22,7 +22,7 @@ hiphop module prg( in I, out O ) {
    }
 }
 
-var m = new hh.ReactiveMachine( prg, "awaitvalued2" );
+const m = new hh.ReactiveMachine( prg, "awaitvalued2" );
 m.debug_emitted_func = console.log;
 
 m.addEventListener( "O", foo );

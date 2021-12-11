@@ -21,6 +21,6 @@ hiphop module prg( in SAME=1 ) {
    hop { console.log( "3:", SAME.nowval ) }
 }
 
-var m = new hh.ReactiveMachine( prg );
+const m = new hh.ReactiveMachine( prg );
 
 m.react();

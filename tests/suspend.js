@@ -1,8 +1,8 @@
 "use hopscript"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var prg = <hh.module I=${{accessibility: hh.IN}} J O>
+const prg = <hh.module I=${{accessibility: hh.IN}} J O>
   <hh.sequence>
     <hh.suspend I>
       <hh.loop>

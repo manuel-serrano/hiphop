@@ -1,9 +1,9 @@
 "use strict"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
 try {
-   var prg = <hh.module O>
+   const prg = <hh.module O>
      <hh.loop>
        <hh.local L>
 	 <hh.emit L value=${"foo bar"}/>
@@ -12,7 +12,7 @@ try {
      </hh.loop>
    </hh.module>;
 
-   var m = new hh.ReactiveMachine(prg, "instloop");
+   const m = new hh.ReactiveMachine(prg, "instloop");
 
    m.react();
    m.react();

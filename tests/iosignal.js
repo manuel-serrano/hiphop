@@ -7,7 +7,7 @@ const prg =
 	<hh.emit Y/>
       </hh.module>;
 
-var m = new hh.ReactiveMachine(prg);
+const m = new hh.ReactiveMachine(prg);
 m.debug_emitted_func = console.log
 
 m.inputAndReact("I")

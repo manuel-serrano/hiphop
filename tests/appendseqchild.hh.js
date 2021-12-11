@@ -25,7 +25,7 @@ hiphop machine M() {
 
 M.react();
 
-var seq = M.getElementById( "myseq" );
+const seq = M.getElementById( "myseq" );
 
 seq.appendChild( makePar( () => console.log( "p1" ), () => console.log( "p2" ) ) );
 

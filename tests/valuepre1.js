@@ -1,8 +1,8 @@
 "use hopscript"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var prg =
+const prg =
     <hh.module I O=${{initValue: 5}} U>
       <hh.loop>
 	<hh.emit I value=${3} />

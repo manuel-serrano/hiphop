@@ -1,11 +1,11 @@
 "use hopscript"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var inSig = {accessibility: hh.IN};
-var outSig = {accessibility: hh.OUT};
+const inSig = {accessibility: hh.IN};
+const outSig = {accessibility: hh.OUT};
 
-var prg = <hh.module I=${inSig} J=${outSig} K=${outSig} V=${outSig}>
+const prg = <hh.module I=${inSig} J=${outSig} K=${outSig} V=${outSig}>
   <hh.loop>
     <hh.sequence>
       <hh.abort I>

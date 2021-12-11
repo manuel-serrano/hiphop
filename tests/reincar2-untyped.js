@@ -1,12 +1,12 @@
 "use hopscript"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
 function plus(a, b) {
    return a + b;
 }
 
-var prg =
+const prg =
     <hh.module S I J>
       <hh.loop>
 	<hh.parallel>

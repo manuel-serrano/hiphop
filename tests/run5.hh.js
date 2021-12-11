@@ -1,7 +1,7 @@
 "use hiphop"
 "use hopscript"
 
-hiphop module mod( out O, var n, var m ) {
+hiphop module mod( out O, const n, var m ) {
    emit O( n + m );
 }
     

@@ -12,6 +12,6 @@ hiphop module prg() {
    hop { console.log( "top level" ) };
 }
 
-var m = new hh.ReactiveMachine( prg );
+const m = new hh.ReactiveMachine( prg );
 
 m.react();

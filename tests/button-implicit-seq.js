@@ -2,12 +2,12 @@
 
 function plus (x, y) { return x+y };
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var sigIn={accessibility: hh.IN};
-var sigOut={accessibility: hh.OUT};
+const sigIn={accessibility: hh.IN};
+const sigOut={accessibility: hh.OUT};
 
-var BUTTON =
+const BUTTON =
     <hh.module UL=${sigIn} UR=${sigIn} LL=${sigIn} LR=${sigIn}
 	       WATCH_MODE_COMMAND=${sigOut}
 	       ENTER_SET_WATCH_MODE_COMMAND=${sigOut}

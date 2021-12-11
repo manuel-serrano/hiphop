@@ -2,11 +2,11 @@
 
 function plus (x, y) { return x+y };
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var inSig={accessibility: hh.IN};
+const inSig={accessibility: hh.IN};
 
-var prg =
+const prg =
     <hh.module I=${inSig} R=${inSig} O=${{initValue: 0}}>
       <hh.loop>
 	<hh.abort R>

@@ -1,6 +1,6 @@
 "use hopscript"
 
-var hh = require( "hiphop" );
+const hh = require( "hiphop" );
 
 try {
    hiphop module prg( I, O ) {

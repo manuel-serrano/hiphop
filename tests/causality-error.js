@@ -1,8 +1,8 @@
 "use hopscript"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var example = <hh.module I O>
+const example = <hh.module I O>
   <hh.loop>
     <hh.sequence>
       <hh.if O>

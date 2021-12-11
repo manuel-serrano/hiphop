@@ -1,8 +1,8 @@
 "use strict"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var prg = <hh.module T>
+const prg = <hh.module T>
   <hh.sequence>
     <hh.pause/>
     <hh.local S>

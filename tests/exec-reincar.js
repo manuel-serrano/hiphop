@@ -2,7 +2,7 @@
 
 const hh = require("hiphop");
 
-var glob = 5;
+const glob = 5;
 
 const prg =
       <hh.module R=${{accessibility: hh.IN}} O OT T=${{accessibility: hh.IN}}>
@@ -23,7 +23,7 @@ const prg =
 	</hh.loopeach>
       </hh.module>
 
-var machine = new hh.ReactiveMachine(prg, "exec");
+const machine = new hh.ReactiveMachine(prg, "exec");
 machine.debug_emitted_func = console.log
 
 machine.react()

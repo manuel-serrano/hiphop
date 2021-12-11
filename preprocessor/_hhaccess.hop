@@ -3,7 +3,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Nov 13 10:52:14 2018                          */
-;*    Last change :  Thu Dec  9 17:55:29 2021 (serrano)                */
+;*    Last change :  Sat Dec 11 06:10:12 2021 (serrano)                */
 ;*    Copyright   :  2018-21 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    Patching the AST built by the native parser                      */
@@ -154,14 +154,18 @@
 	       (vtype 'object)
 	       (binder 'let)
 	       (scope 'letblock)
-	       (val (instantiate::J2SAccess
+	       (val (instantiate::J2SCast
 		       (loc loc)
-		       (obj (instantiate::J2SUnresolvedRef
-			       (loc loc)
-			       (id 'this)))
-		       (field (instantiate::J2SString
-				 (loc loc)
-				 (val (symbol->string id))))))))))
+		       (type 'object)
+		       (static #t)
+		       (expr (instantiate::J2SAccess
+				(loc loc)
+				(obj (instantiate::J2SUnresolvedRef
+					(loc loc)
+					(id 'this)))
+				(field (instantiate::J2SString
+					  (loc loc)
+					  (val (symbol->string id))))))))))))
    
    (with-access::J2SNode node (loc)
       (if (pair? axs)

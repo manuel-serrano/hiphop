@@ -60,19 +60,20 @@ run_test() {
 
     if [ -f $file.in ]; then
 	cat <<EOF > $batchfile
-"use hopscript"
-"use strict"
+"use hopscript";
+"use strict";
 
 const batch = require("hiphop");
 let test = require("$dir/$file$suf.js", "hiphop");
 
-if (test.prg)
+if (test.prg) {
    try {
       batch.batch(test.prg);
-   } catch(e){
+   } catch (e){
       console.log(e.message);
       process.exit(1);
    }
+}
 EOF
 
 	if [ "$verb " != " " ]; then
@@ -83,8 +84,8 @@ EOF
 	status=$?
     else
 	cat <<EOF > $batchfile
-"use hopscript"
-"use strict"
+"use hopscript";
+"use strict";
 
 const batch = require("hiphop");
 let test = require("$dir/$file$suf.js", "hiphop");

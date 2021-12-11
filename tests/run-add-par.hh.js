@@ -1,7 +1,7 @@
 "use hiphop";
 "use hopscript";
 
-var hh = require( "hiphop" );
+const hh = require( "hiphop" );
 
 hiphop module m1( S, U, W, Z ) {
    fork {
@@ -19,7 +19,7 @@ hiphop module run2( S, U, A, B ) {
    }
 }
 
-var m = new hh.ReactiveMachine( run2, "run2" );
+const m = new hh.ReactiveMachine( run2, "run2" );
 m.debug_emitted_func = console.log
 
 //console.log( m.pretty_print() );

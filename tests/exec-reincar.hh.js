@@ -3,7 +3,7 @@
 
 const hh = require( "hiphop" );
 
-var glob = 5;
+const glob = 5;
 
 hiphop module prg( in R, O, OT, in T ) {
    do {
@@ -24,7 +24,7 @@ hiphop module prg( in R, O, OT, in T ) {
    } every( R.now )
 }
 
-var machine = new hh.ReactiveMachine( prg, "exec" );
+const machine = new hh.ReactiveMachine( prg, "exec" );
 machine.debug_emitted_func = console.log
 
 machine.react()

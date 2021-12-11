@@ -1,7 +1,7 @@
 "use hiphop"
 "use hopscript"
 
-var hh = require( "hiphop" );
+const hh = require( "hiphop" );
 
 function sum( arg1, arg2 ) {
    return arg1 + arg2;

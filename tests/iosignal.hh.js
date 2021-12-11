@@ -6,7 +6,7 @@ hiphop module prg( in I, X, Y ) {
    emit Y();
 }
 
-var m = new hh.ReactiveMachine( prg );
+const m = new hh.ReactiveMachine( prg );
 m.debug_emitted_func = console.log
 
 m.inputAndReact( "I" );

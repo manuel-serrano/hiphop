@@ -12,7 +12,7 @@ WatchTimeType.prototype.toString = function() {
       + (this.ampm ? "AM" : "PM");
 }
 
-var WatchTime = new WatchTimeType(0, 0, 0, false);
+const WatchTime = new WatchTimeType(0, 0, 0, false);
 
 function IncrementTimeInPlace (t) {
    let hours = t.hours;
@@ -42,11 +42,11 @@ function updateFromOutside(watch) {
 }
 
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var inSig = {accessibility: hh.IN};
+const inSig = {accessibility: hh.IN};
 
-var prg =
+const prg =
     <hh.module I=${inSig} TIN=${inSig} Time=${{initValue: WatchTime}}>
       <hh.loop>
 	<hh.emit Time apply=${function() {

@@ -1,8 +1,8 @@
 "use hopscript"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var m1 = <hh.module T W V Z>
+const m1 = <hh.module T W V Z>
      <hh.parallel>
        <hh.if T>
 	 <hh.local L>
@@ -18,8 +18,8 @@ var m1 = <hh.module T W V Z>
      </hh.parallel>
    </hh.module>;
 
-var inSig={accessibility: hh.IN};
-var m2 = <hh.module S=${inSig} U=${inSig} A B>
+const inSig={accessibility: hh.IN};
+const m2 = <hh.module S=${inSig} U=${inSig} A B>
   <hh.sequence>
     <hh.local L>
       <hh.emit L/>

@@ -9,7 +9,7 @@ const prg =
 	}}/>
       </hh.module>
 
-var machine = new hh.ReactiveMachine(prg, "exec");
+const machine = new hh.ReactiveMachine(prg, "exec");
 
 machine.addEventListener("O", function(evt) {
    console.log("O emitted!");

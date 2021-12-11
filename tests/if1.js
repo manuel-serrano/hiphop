@@ -1,10 +1,10 @@
 "use hopscript"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var inSig = {accessibility: hh.IN};
+const inSig = {accessibility: hh.IN};
 
-var prg =
+const prg =
     <hh.module I1=${inSig} O1 I2=${inSig} O2>
       <hh.loop>
 	<hh.if apply=${function() {return this.I1.now}}>

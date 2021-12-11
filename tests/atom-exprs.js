@@ -1,8 +1,8 @@
 "use strict"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var prg =
+const prg =
     <hh.module>
       <hh.loop>
 	<hh.local L>

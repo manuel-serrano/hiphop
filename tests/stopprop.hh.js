@@ -1,6 +1,6 @@
 "use hopscript"
 
-var hh = require( "hiphop" );
+const hh = require( "hiphop" );
 
 hiphop module prg( O ) {
    loop {
@@ -9,7 +9,7 @@ hiphop module prg( O ) {
    }
 }
 
-var m = new hh.ReactiveMachine( prg, "foo" );
+const m = new hh.ReactiveMachine( prg, "foo" );
 
 m.addEventListener( "O", function( evt ) {
    console.log( "first", evt.type );

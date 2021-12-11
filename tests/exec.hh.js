@@ -17,7 +17,7 @@ hiphop module prg( in T, O, OT ) {
    }
 }
 
-var machine = new hh.ReactiveMachine( prg, "exec" );
+const machine = new hh.ReactiveMachine( prg, "exec" );
 machine.debug_emitted_func = console.log
 
 machine.react()
