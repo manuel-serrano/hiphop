@@ -3,7 +3,7 @@
 const hh = require("hiphop");
 const pm = hh.parallelmap;
 
-function setTimeout( proc, count ) { 
+function setTimeout(proc, count) { 
    proc();
 }
 
@@ -14,7 +14,7 @@ const simul_data = {
    "British Airways": ["2D", "14A"]
 };
 
-function svcSeatGuru() {
+function svcSeatGuru(airline) {
    function rand(v) {
       switch (v) {
       case "Air France":
@@ -27,10 +27,11 @@ function svcSeatGuru() {
 	 return 6;
       }
    }
+   console.log(this);
    setTimeout(() => {
-      console.log("svcSeatGuru", this.AIRLINE.nowval, "returns");
-      this.notify(simul_data[this.AIRLINE.nowval]);
-   }, rand(this.AIRLINE.nowval));
+      console.log("svcSeatGuru", airline, "returns");
+      this.notify(simul_data[airline]);
+   }, rand(airline));
 }
 
 function svcSearch1() {
@@ -60,7 +61,7 @@ const machine = new hh.ReactiveMachine(
 	 <hh.local TEMP=${{initValue: {}}}>
 	   <pm.parallelmap apply=${function() {return this.AIRLINESFOUND.nowval}} AIRLINE>
 	     <hh.local BADSEATS>
-	       <hh.exec BADSEATS apply=${svcSeatGuru}/>
+	       <hh.exec BADSEATS apply=${function() {return svcSeatGuru.call(this, this.AIRLINE.nowval)}}/>
 	       <hh.emit TEMP apply=${function() {
       	          let t = this.TEMP.preval;
       	          t[this.AIRLINE.nowval] = this.BADSEATS.nowval;

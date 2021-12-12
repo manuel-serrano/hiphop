@@ -3,7 +3,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Nov 13 10:52:14 2018                          */
-;*    Last change :  Sat Dec 11 06:10:12 2021 (serrano)                */
+;*    Last change :  Sun Dec 12 06:28:22 2021 (serrano)                */
 ;*    Copyright   :  2018-21 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    Patching the AST built by the native parser                      */
@@ -110,14 +110,9 @@
 	    (thisargs '())
 	    (fun (instantiate::J2SAccess
 		    (loc loc)
-		    (obj (instantiate::J2SAccess
-			    (loc loc)
-			    (obj (instantiate::J2SUnresolvedRef
+		    (obj (instantiate::J2SUnresolvedRef
 				    (loc loc)
-				    (id 'globalThis)))
-			    (field (instantiate::J2SString
-				      (loc loc)
-				      (val "hiphop")))))
+				    (id '$$hiphop)))
 		    (field (instantiate::J2SString
 			      (loc loc)
 			      (val "SIGACCESS")))))
@@ -152,7 +147,7 @@
 	       (id id)
 	       (writable #f)
 	       (vtype 'object)
-	       (binder 'let)
+	       (binder 'let-opt)
 	       (scope 'letblock)
 	       (val (instantiate::J2SCast
 		       (loc loc)
@@ -173,7 +168,15 @@
 	     (loc loc)
 	     (endloc loc)
 	     (rec #f)
-	     (decls (map access->general-decl axs))
+	     (decls (map access->general-decl
+		       (delete-duplicates axs
+			  (lambda (a1 a2)
+			     (with-access::J2SAccess a1 ((o1 obj))
+				(with-access::J2SUnresolvedRef o1 ((id1 id))
+				   (with-access::J2SAccess a2 ((o2 obj))
+				      (with-access::J2SUnresolvedRef o2 ((id2 id))
+					 (eq? id1 id2)))))))))
+	     (mode 'hopscript)
 	     (nodes (list node)))
 	  (instantiate::J2SBlock
 	     (loc loc)

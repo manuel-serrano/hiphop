@@ -29,7 +29,7 @@ report_failure() {
   echo -en "\x1B[32m\x1B[1mfailure\x1B[0m"
   failure=$(($failure+1))
 
-  if [ "$debug " != " " ]; then
+  if [ "$verb " != " " ]; then
     echo ""
     cat $output_hop
     exit 1

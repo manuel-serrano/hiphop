@@ -3,49 +3,49 @@
 
 /* check if semantics of suspends / resume is correct when a task is over */
 
-const hh = require( "hiphop" );
+const hh = require("hiphop");
 
-const glob = 5;
+let glob = 5;
 
-hiphop module prg( in RESS, in S, O, OT, in T ) {
+hiphop module prg(in RESS, in S, O, OT, in T) {
    fork {
-      suspend( S.now ) {
-	 async T {
-	    console.log( "Oi." );
-	    setTimeout( function( self ) {
-		  console.log( "Oi timeout." );
-	       	  self.notify( glob++, false );
-	       }, 1000, this );
+      suspend(S.now) {
+	 async (T) {
+	    console.log("Oi.");
+	    setTimeout(function(self) {
+		  console.log("Oi timeout.");
+	       	  self.notify(glob++, false);
+	       }, 1000, this);
 	 } suspend {
-	    console.log( "suspended." );
+	    console.log("suspended.");
 	 } resume {
-	    console.log( "resumed.");
+	    console.log("resumed.");
 	 }
       }
-      emit OT( T.nowval );
+      emit OT(T.nowval);
    } par {
       emit O();
    }
 
-   await( RESS.now );
-   emit OT( T.nowval );
+   await(RESS.now);
+   emit OT(T.nowval);
 }
 
-const machine = new hh.ReactiveMachine( prg, "exec" );
+const machine = new hh.ReactiveMachine(prg, "exec");
 machine.debug_emitted_func = console.log;
 
 machine.react()
-machine.inputAndReact( "S" )
-machine.inputAndReact( "S" )
-machine.inputAndReact( "S" )
-machine.inputAndReact( "S" )
+machine.inputAndReact("S")
+machine.inputAndReact("S")
+machine.inputAndReact("S")
+machine.inputAndReact("S")
 machine.react()
 machine.react()
-machine.inputAndReact( "S" )
+machine.inputAndReact("S")
 
-setTimeout( function() {
+setTimeout(function() {
    machine.react()
-   machine.inputAndReact( "RESS" )
-   machine.inputAndReact( "S" )
+   machine.inputAndReact("RESS")
+   machine.inputAndReact("S")
    machine.react()
-}, 2000 );
+}, 2000);

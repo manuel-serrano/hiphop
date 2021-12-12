@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Dec 10 14:16:12 2021 (serrano)                */
+/*    Last change :  Sun Dec 12 07:17:49 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -107,10 +107,7 @@ function isIdToken(parser, token, id) {
 /*    hhref ...                                                        */
 /*---------------------------------------------------------------------*/
 function hhref(loc, name) {
-   const hh = astutils.J2SAccess(
-      loc,
-      astutils.J2SUnresolvedRef(loc, "globalThis"),
-      astutils.J2SString(loc, "hiphop"));
+   const hh = astutils.J2SUnresolvedRef(loc, "$$hiphop");
    return astutils.J2SAccess(loc, hh, astutils.J2SString(loc, name));
 }
 
@@ -121,19 +118,7 @@ function hhref(loc, name) {
 /*      STMT -> hop.hihop = require("hiphop"); STMT                    */
 /*---------------------------------------------------------------------*/
 function hhwrapDecl(token, stmt) {
-   const loc = token.location;
-   const req = astutils.J2SCall(
-      loc, astutils.J2SUnresolvedRef(loc, "require"),
-      [astutils.J2SUndefined(loc)],
-      [astutils.J2SString(loc, hhmodule)]);
-   const hh = astutils.J2SAccess(
-      loc,
-      astutils.J2SUnresolvedRef(loc, "globalThis"),
-      astutils.J2SString(loc, "hiphop"));
-   const assig = astutils.J2SAssig(loc, hh, req);
-   const decl = astutils.J2SDeclInit(loc, hhname + hhkey++, assig, "let");
-		
-   return astutils.J2SVarDecls(stmt.loc, [decl].concat(stmt.decls));
+   return stmt;
 }
 
 /*---------------------------------------------------------------------*/
@@ -399,12 +384,12 @@ function parseMachineModule(token, declaration, ctor) {
       const locid = id.location;
 
       attrs = astutils.J2SObjInit(
-	 locid,
-	 [astutils.J2SDataPropertyInit(
-	      locid,
-	      astutils.J2SString(locid, "id"),
-	      astutils.J2SString(locid, id.value)),
-	   locInit(loc), tag]);
+         locid,
+         [astutils.J2SDataPropertyInit(
+              locid,
+              astutils.J2SString(locid, "id"),
+              astutils.J2SString(locid, id.value)),
+           locInit(loc), tag]);
    } else if (declaration) {
       throw tokenTypeError(this.consumeAny());
    } else {
@@ -424,60 +409,60 @@ function parseMachineModule(token, declaration, ctor) {
    
    if (vars.length !== 0) {
       const decls = 
-	 vars.map(tok => astutils.J2SDecl(tok.location, tok.value));
+         vars.map(tok => astutils.J2SDeclInit(tok.location, tok.value, astutils.J2SUndefined(loc), "let"));
       const framep = astutils.J2SDecl(loc, "__frame", "param");
       const assigframe = astutils.J2SSeq(
-	 loc, 
-	 decls.map(d => astutils.J2SStmtExpr(
-		       loc,
-		       astutils.J2SAssig(loc, 
-			  astutils.J2SRef(loc, d),
-		       	  astutils.J2SAccess(loc, 
-			     astutils.J2SRef(loc, framep), 
-			     astutils.J2SString(loc, d.id))))));
+         loc, 
+         decls.map(d => astutils.J2SStmtExpr(
+                       loc,
+                       astutils.J2SAssig(loc, 
+                          astutils.J2SRef(loc, d),
+                          astutils.J2SAccess(loc, 
+                             astutils.J2SRef(loc, framep), 
+                             astutils.J2SString(loc, d.id))))));
       const ablock = astutils.J2SBlock(loc, loc, [assigframe]);
       const appl = astutils.J2SDataPropertyInit(loc, 
-	 astutils.J2SString(loc, "apply"),
-	 astutils.J2SMethod(loc, "framefun", [framep], ablock, self(loc)));
+         astutils.J2SString(loc, "apply"),
+         astutils.J2SMethod(loc, "framefun", [framep], ablock, self(loc)));
       const aattrs = astutils.J2SObjInit(
-	 loc, [locInit(loc), tagInit("frame", loc), appl]);
+         loc, [locInit(loc), tagInit("frame", loc), appl]);
       const sattrs = astutils.J2SObjInit(
-	 loc, [locInit(loc), tagInit("frame", loc)]);
+         loc, [locInit(loc), tagInit("frame", loc)]);
       const atom = astutils.J2SCall(loc, 
-	 hhref(loc, "ATOM"), null, [aattrs]);
+         hhref(loc, "ATOM"), null, [aattrs]);
       
       const val = astutils.J2SCall(loc, hhref(loc, "SEQUENCE"), 
-      	 null,
-      	 [sattrs, atom].concat(stmts));
+         null,
+         [sattrs, atom].concat(stmts));
       
       const ret = astutils.J2SReturn(loc, val);
       
       const cblock = astutils.J2SBlock(loc, loc, 
-	 [astutils.J2SVarDecls(loc, decls), ret]);
+         [astutils.J2SVarDecls(loc, decls), ret]);
       const clone = astutils.J2SFun(loc, "letfun", [], cblock);
       
       const fattrs = astutils.J2SObjInit(
-	 loc,
-	 [astutils.J2SDataPropertyInit(
-	      loc,
-	      astutils.J2SString(loc, "fun"),
-	      clone),
-	   locInit(loc), tag]);
+         loc,
+         [astutils.J2SDataPropertyInit(
+              loc,
+              astutils.J2SString(loc, "fun"),
+              clone),
+           locInit(loc), tag]);
       const cfun = astutils.J2SCall(loc, hhref(loc, "FRAME"), 
-	 null, [fattrs]);
+         null, [fattrs]);
 
       mod = astutils.J2SCall(loc, hhref(loc, ctor), 
-      	 null,
-      	 [attrs].concat(sigs, [cfun]));
+         null,
+         [attrs].concat(sigs, [cfun]));
    } else {
       mod = astutils.J2SCall(loc, hhref(loc, ctor), 
-      	 null,
-      	 [attrs].concat(sigs, stmts));
+         null,
+         [attrs].concat(sigs, stmts));
    }
    
    if (declaration) {
       return astutils.J2SVarDecls(
-	 loc, [astutils.J2SDeclInit(loc, id.value, mod)]);
+         loc, [astutils.J2SDeclInit(loc, id.value, mod)]);
    } else {
       return mod;
    }
@@ -1425,9 +1410,8 @@ function parseLet(token, binder) {
 
 	 const { expr, accessors: axs } = parseLetInit.call(this, iloc);
 	 
-	 const decl = astutils.J2SDecl(iloc, t.value);
-	 const assig = astutils.J2SAssig(iloc, astutils.J2SRef(loc, decl), expr);
-	 const ret = astutils.J2SReturn(loc, assig);
+	 const decl = astutils.J2SDeclInitScope(iloc, t.value, expr, "letblock", "let-opt");
+	 const ret = astutils.J2SReturn(loc, astutils.J2SUnresolvedRef(iloc, t.value));
 	 const block = astutils.J2SBlock(loc, loc, [ret]);
 	 const appl = astutils.J2SDataPropertyInit(
 	    loc, 
@@ -1461,8 +1445,7 @@ function parseLet(token, binder) {
    const attrs = astutils.J2SObjInit(loc, [locInit(loc)]);
    const stmt = stmts.length === 1 ? stmts[0] : astutils.J2SCall(loc, hhref(loc, "SEQUENCE"), null, [attrs].concat(stmts));
    const ret = astutils.J2SReturn(loc, stmt);
-   const vdecls = astutils.J2SVarDecls(loc, decls);
-   const block = astutils.J2SBlock(loc, loc, [vdecls, ret]);
+   const block = astutils.J2SLetBlock(loc, loc, decls, [ret]);
    const fun = astutils.J2SFun(loc, "letfun", [], block);
 				
    return astutils.J2SCall(loc, fun, [astutils.J2SUndefined(loc)], []);
@@ -1656,9 +1639,9 @@ function parseStmt(token, declaration) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseHiphop ...                                                  */
+/*    parseHiphopValue ...                                             */
 /*---------------------------------------------------------------------*/
-function parseHiphop(token, declaration) {
+function parseHiphopValue(token, declaration, conf) {
    
    function wrapVarDecl(val) {
       if (val instanceof ast.J2SVarDecls) {
@@ -1681,6 +1664,29 @@ function parseHiphop(token, declaration) {
       return wrapVarDecl(parseInterface.call(this, next, declaration));
    } else {
       return hhwrapExpr(token, parseStmt.call(this, token, declaration ));
+   }
+}
+
+/*---------------------------------------------------------------------*/
+/*    parseHiphopInit ...                                              */
+/*---------------------------------------------------------------------*/
+function parseHiphopInit(token, declaration, conf) {
+   const loc = token.location;
+   const req = astutils.J2SCall( loc, astutils.J2SUnresolvedRef( loc, "require" ),
+      [ astutils.J2SUndefined( loc ) ],
+      [ astutils.J2SString( loc, hhmodule ) ] );
+   const decl = astutils.J2SDeclInitScope(loc, "$$hiphop", req, "global", "let-opt" );
+   return astutils.J2SVarDecls(loc, [decl]);
+}
+
+/*---------------------------------------------------------------------*/
+/*    parseHiphop ...                                                  */
+/*---------------------------------------------------------------------*/
+function parseHiphop(token, declaration, conf) {
+   switch (declaration) {
+      case "module": return parseHiphopInit.call(this, token, declaration, conf);
+      case "function": return false;
+      default: return parseHiphopValue.call(this, token, declaration, conf);
    }
 }
 

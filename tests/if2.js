@@ -2,8 +2,8 @@
 
 const hh = require("hiphop");
 
-const s1 = true;
-const s2 = false;
+let s1 = true;
+let s2 = false;
 
 const prg =
     <hh.module O1 O2>

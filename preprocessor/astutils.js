@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Fri Dec 10 15:05:47 2021 (serrano)                */
+/*    Last change :  Sun Dec 12 09:50:58 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -379,16 +379,16 @@ function J2SDecl(loc, id, binder = "let", _scmid = false) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    J2SDeclInit ...                                                  */
+/*    J2SDeclInitScope ...                                             */
 /*---------------------------------------------------------------------*/
-function J2SDeclInit(loc, id, val, binder = "let") {
+function J2SDeclInitScope(loc, id, val, scope, binder = "let") {
    if (configUtype) { 
       return new ast.J2SDeclInit(loc, 
       	 id, 
       	 false /* _scmid */, 
       	 declKey++ /* key */,
       	 true /* writable */, 
-      	 "local" /* scope */,
+      	 scope /* scope */,
       	 0 /* usecnt */, 
       	 false /* useinloop */,
       	 true /* escape */, 
@@ -409,7 +409,7 @@ function J2SDeclInit(loc, id, val, binder = "let") {
       	 false /* _scmid */, 
       	 declKey++ /* key */,
       	 true /* writable */, 
-      	 "local" /* scope */,
+      	 scope /* scope */,
       	 0 /* usecnt */, 
       	 false /* useinloop */,
       	 true /* escape */, 
@@ -427,11 +427,30 @@ function J2SDeclInit(loc, id, val, binder = "let") {
 }
 
 /*---------------------------------------------------------------------*/
+/*    J2SDeclInit ...                                                  */
+/*---------------------------------------------------------------------*/
+function J2SDeclInit(loc, id, val, binder = "let") {
+   return J2SDeclInitScope(loc, id, val, "local", binder);
+}
+
+/*---------------------------------------------------------------------*/
 /*    J2SVarDecls ...                                                  */
 /*---------------------------------------------------------------------*/
 function J2SVarDecls(loc, decls) {
    return new ast.J2SVarDecls(loc, 
       decls);
+}
+
+/*---------------------------------------------------------------------*/
+/*    J2SLetBlock ...                                                  */
+/*---------------------------------------------------------------------*/
+function J2SLetBlock(loc, endloc, decls, nodes, rec = false) {
+   return new ast.J2SLetBlock(loc, 
+      nodes /* nodes */,
+      endloc /* endloc */,
+      rec /* rec */,
+      decls /* decls */,
+      "hopscript" /* mode */);
 }
 
 /*---------------------------------------------------------------------*/
@@ -489,9 +508,11 @@ exports.J2SFun = J2SFun;
 exports.J2SMethod = J2SMethod;
 exports.J2SReturn = J2SReturn;
 exports.J2SBlock = J2SBlock;
+exports.J2SLetBlock = J2SLetBlock;
 exports.J2SStmtExpr = J2SStmtExpr;
 exports.J2SSeq = J2SSeq;
 exports.J2SDecl = J2SDecl;
+exports.J2SDeclInitScope = J2SDeclInitScope;
 exports.J2SDeclInit = J2SDeclInit;
 exports.J2SVarDecls = J2SVarDecls;
 exports.J2SArray = J2SArray;

@@ -1,22 +1,24 @@
 "use hiphop"
 "use hopscript"
 
-const hh = require( "hiphop" );
+const hh = require("hiphop");
 
-hiphop module prg( in sig ) {
+hiphop module prg(in sig) {
    let v = 1;
 
-   every( sig.now ) {
-      if( sig.nowval > v ) hop { v = sig.nowval + 1 };
+   every (sig.now) {
+      if (sig.nowval > v) {
+	 host { v = sig.nowval + 1 }
+      }
 
-      hop { console.log( "v=", v ) }
+      host { console.log("v=", v) }
       yield;
    }
 }
 
-const m = new hh.ReactiveMachine( prg, "variable" );
+const m = new hh.ReactiveMachine(prg, "variable");
 exports.prg = prg;
 
 m.react()
-m.inputAndReact( "sig", 0 );
-m.inputAndReact( "sig", 10 );
+m.inputAndReact("sig", 0);
+m.inputAndReact("sig", 10);

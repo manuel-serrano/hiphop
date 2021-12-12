@@ -4,7 +4,7 @@
 
 const hh = require("hiphop");
 
-const glob = 5;
+let glob = 5;
 
 const prg =
       <hh.module RESS=${{accessibility: hh.IN}} S=${{accessibility: hh.IN}} O OT

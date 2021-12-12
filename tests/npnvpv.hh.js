@@ -1,4 +1,4 @@
-"use hopscript"
+"use hopscript";
 
 hiphop machine prg( in A = "_", in B ) {
    loop {
