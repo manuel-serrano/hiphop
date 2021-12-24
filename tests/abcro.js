@@ -1,6 +1,7 @@
-"use hopscript"
+"use strict";
+"use hopscript";
 
-const hh = require("hiphop");
+import * as hh from "../";
 
 const inSig = {direction: hh.IN};
 const outSig = {direction: hh.OUT};

@@ -1,7 +1,7 @@
 "use hiphop";
 "use hopscript";
 
-const hh = require("hiphop");
+import * as hh from "../";
 
 hiphop module prg(in A, in B, in C, in R, out O) {
    do {

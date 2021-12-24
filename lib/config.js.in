@@ -1,12 +1,18 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hop/work/hopsmtp/config.js.in               */
+/*    serrano/prgm/project/hiphop/hiphop/lib/config.js.in              */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Wed Oct 12 06:25:55 2016                          */
-/*    Last change :                                                    */
-/*    Copyright   :  2016 Manuel Serrano                               */
+/*    Last change :  Fri Dec 24 09:59:39 2021 (serrano)                */
+/*    Copyright   :  2016-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    hiphop configuration                                             */
 /*=====================================================================*/
 
-exports.version = "@VERSION@@MINOR@";
+/*---------------------------------------------------------------------*/
+/*    es6 module                                                       */
+/*---------------------------------------------------------------------*/
+export { version, CAUSALITY_JSON };
+       
+const version = "@VERSION@@MINOR@";
+const CAUSALITY_JSON = "hiphop.causality.json";

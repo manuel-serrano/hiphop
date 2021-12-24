@@ -10,6 +10,22 @@ const next_id = (() => {
    return () => lbl + id++;
 })();
 
+//
+// Allows to easilly expands children node when building high level
+// instructions (see macro.js, ../ulib/*.js)
+//
+const expandChildren = function(children) {
+   function _expandChildren(c) {
+      return <sequence nodebug>
+        ${isHiphopInstruction(c[0]) ? c[0] : <nothing nodebug/>}
+        ${c.length > 1 ? _expandChildren(c.slice(1)) : <nothing nodebug/>}
+      </sequence>;
+   }
+   return _expandChildren(Array.prototype.slice.call(children, 1,
+						     children.length));
+}
+
+
 const PARALLELMAP = (attrs) => {
    let loc = null;
    let id = next_id();

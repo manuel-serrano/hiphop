@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Sun Dec 12 09:50:58 2021 (serrano)                */
+/*    Last change :  Fri Dec 24 18:30:26 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -355,7 +355,7 @@ function J2SDecl(loc, id, binder = "let", _scmid = false) {
       	 undefined /* irange */,
       	 undefined /* vrange */, 
       	 null /* hint */,
-      	 null /* exports */);
+      	 false /* export */);
    } else {
       return new ast.J2SDecl(loc, 
       	 id /* id */, 
@@ -374,7 +374,7 @@ function J2SDecl(loc, id, binder = "let", _scmid = false) {
       	 undefined /* irange */,
       	 undefined /* vrange */, 
       	 null /* hint */,
-      	 null /* exports */);
+      	 false /* export */);
    }
 }
 
@@ -401,7 +401,7 @@ function J2SDeclInitScope(loc, id, val, scope, binder = "let") {
       	 undefined /* irange */, 
       	 undefined /* vrange */,
       	 null /* hint */, 
-      	 null /* exports */, 
+      	 false /* export */, 
       	 val);
    } else {
       return new ast.J2SDeclInit(loc, 
@@ -421,7 +421,7 @@ function J2SDeclInitScope(loc, id, val, scope, binder = "let") {
       	 undefined /* irange */, 
       	 undefined /* vrange */,
       	 null /* hint */, 
-      	 null /* exports */, 
+      	 false /* export */, 
       	 val);
    }
 }
