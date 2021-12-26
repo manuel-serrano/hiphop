@@ -60,15 +60,15 @@ run_test() {
 
     if [ -f $file.in ]; then
 	cat <<EOF > $batchfile
-"use hopscript";
 "use strict";
+"use hopscript";
 
-const batch = require("hiphop");
-let test = require("$dir/$file$suf.js", "hiphop");
+import { batch } from "`dirname $PWD`/tests/node_modules/@hop/hiphop/lib/batch.js";
+import test from "$dir/$file$suf.js";
 
 if (test.prg) {
    try {
-      batch.batch(test.prg);
+      batch(test.prg);
    } catch (e){
       console.log(e.message);
       process.exit(1);
@@ -84,11 +84,11 @@ EOF
 	status=$?
     else
 	cat <<EOF > $batchfile
-"use hopscript";
 "use strict";
+"use hopscript";
 
-const batch = require("hiphop");
-let test = require("$dir/$file$suf.js", "hiphop");
+import { batch } from "`dirname $PWD`/tests/node_modules/@hop/hiphop/lib/batch.js";
+import test from "$dir/$file$suf.js";
 EOF
 	if [ "$verb " != " " ]; then
 	  echo "$hop $hop_opt $batchfile"

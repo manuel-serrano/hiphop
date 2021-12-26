@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Fri Dec 24 18:30:26 2021 (serrano)                */
+/*    Last change :  Sat Dec 25 10:10:39 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -488,6 +488,22 @@ function J2SLiteralValue(loc, val) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    J2SImportName ...                                                */
+/*---------------------------------------------------------------------*/
+function J2SImportName(loc, name, alias) {
+   return new ast.J2SImportName(loc, name, alias);
+}
+
+/*---------------------------------------------------------------------*/
+/*    J2SImport ...                                                    */
+/*---------------------------------------------------------------------*/
+function J2SImport(loc, path, names) {
+   return new ast.J2SImport(loc, path, false, 
+      new J2SUndefined(loc), 
+      names, false, false);
+}
+
+/*---------------------------------------------------------------------*/
 /*    exports                                                          */
 /*---------------------------------------------------------------------*/
 exports.J2SNull = J2SNull;
@@ -518,3 +534,5 @@ exports.J2SVarDecls = J2SVarDecls;
 exports.J2SArray = J2SArray;
 exports.J2SAssig = J2SAssig;
 exports.J2SLiteralValue = J2SLiteralValue;
+exports.J2SImportName = J2SImportName;
+exports.J2SImport = J2SImport;

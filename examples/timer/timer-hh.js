@@ -3,13 +3,13 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Fri Dec 24 06:27:06 2021 (serrano)                */
+/*    Last change :  Sun Dec 26 12:12:56 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop part of the Timer example.                                */
 /*=====================================================================*/
-"use hiphop"
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
 /*---------------------------------------------------------------------*/
 /*    module                                                           */
@@ -93,8 +93,3 @@ hiphop module suspendableTimer() implements Timer {
       }
    } every (reset.now)
 }
-
-/*---------------------------------------------------------------------*/
-/*    exports                                                          */
-/*---------------------------------------------------------------------*/
-module.exports = suspendableTimer;

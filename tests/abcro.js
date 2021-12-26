@@ -1,7 +1,7 @@
 "use strict";
 "use hopscript";
 
-import * as hh from "../";
+import * as hh from "@hop/hiphop";
 
 const inSig = {direction: hh.IN};
 const outSig = {direction: hh.OUT};

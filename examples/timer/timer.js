@@ -3,12 +3,12 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Colin Vidal                                       */
 /*    Creation    :  Sat Aug  4 13:41:32 2018                          */
-/*    Last change :  Fri Dec 24 06:35:31 2021 (serrano)                */
+/*    Last change :  Sun Dec 26 11:33:04 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Timer example.                                                   */
 /*=====================================================================*/
-"use hopscript"
+"use hopscript";
 
 /*---------------------------------------------------------------------*/
 /*    timer ...                                                        */
@@ -17,10 +17,9 @@ service timer() {
    return <html>
      <head>
        <link rel="shortcut icon" href="#"/>
-       <script src=${require.resolve("./timer-hh.js")} type="module" lang="hiphop"/>
-       <script type="module" async>
-         //import { suspendableTimer } from ${require.resolve("./timer-hh.js")};
-         import { ReactiveMachine } from ${require.resolve("hiphop")};
+       <script type="module">
+         import { suspendableTimer } from ${require.resolve("./timer-hh.js") + "?mjs=?" + require.resolve('./timer-hh.js') + "&lang=@hop/hiphop"};
+         import { ReactiveMachine } from ${require.resolve("@hop/hiphop")};
 	 globalThis.m = new ReactiveMachine(suspendableTimer);
 
 	 window.onload = function() {

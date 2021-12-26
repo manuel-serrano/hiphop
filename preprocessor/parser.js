@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sun Dec 12 07:17:49 2021 (serrano)                */
+/*    Last change :  Sat Dec 25 10:06:27 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -18,9 +18,25 @@ const parser = new hopc.Parser();
 const hhaccess = require("./_hhaccess.hop");
 
 const hhname = "__hh_module";
-const hhmodule = "hiphop";
+//const hhmodule = "hiphop";
+let hhmodulePath;
+
 let hhkey = 0;
        
+/*---------------------------------------------------------------------*/
+/*    setRootDirectory ...                                             */
+/*---------------------------------------------------------------------*/
+function setRootDirectory(dir) {
+   hhmodulePath = dir;
+}
+   
+/*---------------------------------------------------------------------*/
+/*    setHHModulePath ...                                              */
+/*---------------------------------------------------------------------*/
+function setHHModulePath(path) {
+   hhmodulePath = path;
+}   
+   
 /*---------------------------------------------------------------------*/
 /*    self ...                                                         */
 /*---------------------------------------------------------------------*/
@@ -128,17 +144,18 @@ function hhwrapDecl(token, stmt) {
 /*      EXPR -> ((__hh_module => EXPR)require("hiphop"))               */
 /*---------------------------------------------------------------------*/
 function hhwrapExpr(token, expr) {
-   const loc = token.location;
-   const req = astutils.J2SCall(loc, astutils.J2SUnresolvedRef(loc, "require"),
-				 [astutils.J2SUndefined(loc)],
-				 [astutils.J2SString(loc, hhmodule)]);
-   const fun = astutils.J2SFun(
-      loc, "hhwrap", [astutils.J2SDecl(loc, hhname, "param")],
-      astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, expr)]));
-
-   return astutils.J2SCall(loc, fun,
-			    [astutils.J2SUndefined(loc)],
-			    [req]);
+   return expr;
+/*    const loc = token.location;                                      */
+/*    const req = astutils.J2SCall(loc, astutils.J2SUnresolvedRef(loc, "require"), */
+/* 				 [astutils.J2SUndefined(loc)],         */
+/* 				 [astutils.J2SString(loc, hhmodulePath)]); */
+/*    const fun = astutils.J2SFun(                                     */
+/*       loc, "hhwrap", [astutils.J2SDecl(loc, hhname, "param")],      */
+/*       astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, expr)])); */
+/*                                                                     */
+/*    return astutils.J2SCall(loc, fun,                                */
+/* 			    [astutils.J2SUndefined(loc)],              */
+/* 			    [req]);                                    */
 }
    
 /*---------------------------------------------------------------------*/
@@ -1663,7 +1680,7 @@ function parseHiphopValue(token, declaration, conf) {
       this.consumeAny();
       return wrapVarDecl(parseInterface.call(this, next, declaration));
    } else {
-      return hhwrapExpr(token, parseStmt.call(this, token, declaration ));
+      return hhwrapExpr(token, parseStmt.call(this, token, declaration));
    }
 }
 
@@ -1672,11 +1689,15 @@ function parseHiphopValue(token, declaration, conf) {
 /*---------------------------------------------------------------------*/
 function parseHiphopInit(token, declaration, conf) {
    const loc = token.location;
-   const req = astutils.J2SCall( loc, astutils.J2SUnresolvedRef( loc, "require" ),
-      [ astutils.J2SUndefined( loc ) ],
-      [ astutils.J2SString( loc, hhmodule ) ] );
-   const decl = astutils.J2SDeclInitScope(loc, "$$hiphop", req, "global", "let-opt" );
-   return astutils.J2SVarDecls(loc, [decl]);
+   const nm = astutils.J2SImportName(loc, Symbol("*"), "$$hiphop");
+   
+   return astutils.J2SImport(loc, hhmodulePath, [nm]);
+/*                                                                     */
+/*    const req = astutils.J2SCall(loc, astutils.J2SUnresolvedRef(loc, "require"), */
+/*       [astutils.J2SUndefined(loc)],                                 */
+/*       [astutils.J2SString(loc, hhmodule)]);                         */
+/*    const decl = astutils.J2SDeclInitScope(loc, "$$hiphop", req, "global", "let-opt"); */
+/*    return astutils.J2SVarDecls(loc, [decl]);                        */
 }
 
 /*---------------------------------------------------------------------*/
@@ -1693,9 +1714,11 @@ function parseHiphop(token, declaration, conf) {
 /*---------------------------------------------------------------------*/
 /*    exports                                                          */
 /*---------------------------------------------------------------------*/
+parser.addPlugin("@hop/hiphop", parseHiphop);
 parser.addPlugin("hiphop", parseHiphop);
 
 exports.parser = parser;
 exports.parse = parser.parse.bind(parser);
 exports.parseString = parser.parseString.bind(parser);
+exports.setRootDirectory = setRootDirectory;
 
