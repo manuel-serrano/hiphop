@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Colin Vidal                                       */
 /*    Creation    :  Sat Aug  4 13:41:32 2018                          */
-/*    Last change :  Mon Dec 27 08:40:13 2021 (serrano)                */
+/*    Last change :  Mon Dec 27 09:12:10 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Timer example.                                                   */
@@ -18,7 +18,7 @@ service timer() {
      <head>
        <link rel="shortcut icon" href="#"/>
        <script type="module">
-         import { suspendableTimer } from ${require.resolve("./timer-hh.js") + "?mjs=?" + require.resolve('./timer-hh.js') + "&lang=@hop/hiphop"};
+         import { suspendableTimer } from ${require.resolve("./timer-hh.js")};
          import { ReactiveMachine } from ${require.resolve("@hop/hiphop")};
 	 globalThis.m = new ReactiveMachine(suspendableTimer);
 
