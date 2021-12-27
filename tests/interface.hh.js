@@ -1,7 +1,7 @@
-"use hiphop";
+"use @hop/hiphop";
 "use hopscript"
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 hiphop interface I1( A, B, C );
 hiphop interface I2( D ) extends I1;

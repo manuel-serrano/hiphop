@@ -1,6 +1,6 @@
 "use hopscript"
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 function minus(arg1, arg2) { return arg1 - arg2 };
 function plus(arg1, arg2) { return arg1 + arg2 };

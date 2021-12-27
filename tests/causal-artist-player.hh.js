@@ -1,7 +1,7 @@
-"use hiphop";
+"use @hop/hiphop";
 "use hopscript";
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 function prg2() {
    return hiphop module(artist, playlist) {

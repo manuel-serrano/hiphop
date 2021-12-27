@@ -1,7 +1,7 @@
-"use hiphop"
+"use @hop/hiphop"
 "use hopscript"
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 hiphop module RRNode1 (in Req1, in Initial1, in TokenIn1, in PrevNok1,
 		     out TokenOut1, out Ok1, out Nok1) {

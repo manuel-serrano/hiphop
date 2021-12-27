@@ -1,5 +1,6 @@
-"use hopscript"
-let hh = require("hiphop");
+"use hopscript";
+
+import * as hh from "@hop/hiphop";
 
 let prg =
     <hh.module O1 O2  OUTER=${{initValue: 0}}>

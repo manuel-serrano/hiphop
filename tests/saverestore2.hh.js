@@ -1,6 +1,7 @@
 "use hopscript"
 
-const machine = require( "./valuepre1.js" ).prg;
+import valuepre1 from "./valuepre1.js";
+const machine = valuepre1.prg;
 machine.debug_emitted_func = console.log
 
 let state1 = machine.save();

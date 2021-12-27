@@ -1,6 +1,6 @@
 "use hopscript"
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 const zoom_in_cb = function() {
    console.log("********* ZOOOOOOOOOOOOOOOOOM ************");

@@ -1,6 +1,7 @@
 "use hopscript"
 
-const machine = require("./toogle.js").prg;
+import toogle from "./toogle.js";
+const machine = toogle.prg;
 machine.debug_emitted_func = console.log
 
 let state1 = machine.save();

@@ -2,7 +2,7 @@
 
 function plus (x, y) { return x+y };
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 const inSig={accessibility: hh.IN};
 

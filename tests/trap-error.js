@@ -1,7 +1,7 @@
 "use hiphop";
 "use hopscript"
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 const sub = 
     <hh.module>

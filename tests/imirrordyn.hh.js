@@ -1,6 +1,6 @@
-"use hiphop";
+"use @hop/hiphop";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 const SIGS = [ {name: "I", direction: "in"}, {name: "O", direction: "out"} ];
 

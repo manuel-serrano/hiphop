@@ -1,6 +1,7 @@
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 const machine = new hh.ReactiveMachine(
    hiphop module( A, B ) {

@@ -1,4 +1,7 @@
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
+
+import {ReactiveMachine} from "@hop/hiphop";
 
 hiphop module M1( a ) {
    emit a( 100 );
@@ -7,11 +10,13 @@ hiphop module M1( a ) {
    }
 }
 
-hiphop machine m( a, b ) {
+hiphop module main( a, b ) {
    run M1( a as b );
    yield;
    run M1( a );
 }
+
+const m = new ReactiveMachine(main, "exec-module");
 
 m.addEventListener( "a", e => console.log( "a=", e.nowval ) );
 m.addEventListener( "b", e => console.log( "b=", e.nowval ) );

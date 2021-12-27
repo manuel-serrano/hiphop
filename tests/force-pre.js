@@ -1,6 +1,6 @@
 "use hopscript"
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 try {
    const prg = <hh.module O=${{initValue: 0}}>

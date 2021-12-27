@@ -1,6 +1,6 @@
 "use hopscript"
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 function foo(evt) {
    console.log("hi from foo signal", evt.type, "is set!")

@@ -1,6 +1,7 @@
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 hiphop module m( in S, O, F, W ) {
    weakabort( S.now ) {

@@ -1,6 +1,7 @@
-"use hopscropt"
+"use @hop/hiphop";
+"use hopscropt";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 hiphop module prg( A, B ) {
    emit A(), B();

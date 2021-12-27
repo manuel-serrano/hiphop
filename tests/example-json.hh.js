@@ -1,4 +1,5 @@
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
 function WatchTimeType( h, m, s, ampm ) {
    this.hours = h;
@@ -42,7 +43,7 @@ function updateFromOutside( watch ) {
 			     watch.seconds, watch.ampm );
 }
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 const inSig = {accessibility: hh.IN};
 

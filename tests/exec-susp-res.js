@@ -2,7 +2,7 @@
 
 /* check if semantics of suspends / resume is correct when a task is over */
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 let glob = 5;
 

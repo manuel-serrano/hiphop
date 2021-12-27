@@ -1,3 +1,4 @@
+"use @hop/hiphop";
 "use hopscript";
 
 hiphop module M1(a) {

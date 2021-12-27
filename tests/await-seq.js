@@ -1,6 +1,6 @@
 "use hopscript"
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 const sigIn={accessibility: hh.IN};
 const sigOut={accessibility: hh.OUT};

@@ -1,6 +1,6 @@
-"use hiphop";
+"use @hop/hiphop";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 hiphop interface Intf( in I, out O );
 

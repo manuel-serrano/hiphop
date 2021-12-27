@@ -1,4 +1,4 @@
-"use hiphop"
+"use @hop/hiphop"
 "use hopscript"
 
 hiphop module mod(out O, var n, var m) {

@@ -1,4 +1,4 @@
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 const m = new hh.ReactiveMachine(
    <hh.module  S=${{accessibility: 2  }}>

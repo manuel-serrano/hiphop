@@ -1,7 +1,8 @@
-"use hiphop"
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
+
 hiphop module prg( O1, O2, OUTER = 0 ) {
    host { console.log( "dans atom" ) }
    emit O1( (console.log("emit o1"), OUTER.nowval) );

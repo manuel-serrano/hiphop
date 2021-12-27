@@ -1,6 +1,6 @@
 "use hopscript"
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 hiphop module example( I, O ) {
    loop {

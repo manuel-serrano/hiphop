@@ -1,6 +1,6 @@
 "use strict";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 const t = <hh.module n=${{accessibility: hh.IN}}>
   <hh.sequence>

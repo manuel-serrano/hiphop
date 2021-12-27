@@ -1,5 +1,5 @@
-"use hiphop"
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
 const gameTimeout = 100;
 

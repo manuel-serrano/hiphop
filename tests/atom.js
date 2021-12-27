@@ -1,6 +1,6 @@
 "use strict"
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 const func = function() {
    console.log("atom works!");

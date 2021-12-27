@@ -1,6 +1,6 @@
 "use hopscript"
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 const m =
     <hh.module S=${{accessibility: hh.IN}} O F W Z>

@@ -41,7 +41,7 @@ function print_time(evt) {
 }
 
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 const prg =
     <hh.module I=${{accessibility: hh.IN}} Time=${{initValue: WatchTime}}>
