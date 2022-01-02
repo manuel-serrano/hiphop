@@ -1,8 +1,8 @@
 "use hopscript"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var prg =
+const prg =
     <hh.module I=${{accessibility: hh.IN}} O>
       <hh.every countValue=2 I>
 	<hh.emit O/>

@@ -1,12 +1,12 @@
 "use hopscript"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
 function sum(arg1, arg2) {
    return arg1 + arg2;
 }
 
-var prg = <hh.module O>
+const prg = <hh.module O>
   <hh.loop>
     <hh.local S=${{initValue: 1}}>
       <hh.emit S apply=${function() {return this.S.preval + 1}}/>

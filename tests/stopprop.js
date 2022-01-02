@@ -1,8 +1,8 @@
 "use hopscript"
 
-var hh = require("hiphop")
+const hh = require("hiphop")
 
-var prg =
+const prg =
     <hh.module O>
       <hh.loop>
 	<hh.emit O/>
@@ -10,7 +10,7 @@ var prg =
       </hh.loop>
     </hh.module>;
 
-var m = new hh.ReactiveMachine(prg, "foo");
+const m = new hh.ReactiveMachine(prg, "foo");
 
 m.addEventListener("O", function(evt) {
    console.log("first", evt.type);

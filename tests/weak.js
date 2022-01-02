@@ -1,8 +1,8 @@
 "use hopscript"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var m =
+const m =
     <hh.module S=${{accessibility: hh.IN}} O F W>
       <hh.weakabort S>
 	<hh.loop>

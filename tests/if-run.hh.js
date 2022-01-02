@@ -1,4 +1,4 @@
-"use hopscript"
+"use hopscript";
 
 const hh = require( "hiphop" );
 
@@ -9,13 +9,13 @@ const pauseModule = hiphop module() {
 const m = new hh.ReactiveMachine(
    hiphop module() {
       loop {
-	 hop { console.log( ">>> start" ) };
+	 host { console.log( ">>> start" ) };
 	 if( 1 ) {
 	    run ${pauseModule}();
 	 } else {
 	    yield;
 	 }
-	 hop { console.log( ">>> end" ) }
+	 host { console.log( ">>> end" ) }
       }
    } )
 

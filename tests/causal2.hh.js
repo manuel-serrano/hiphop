@@ -1,23 +1,23 @@
-"use hiphop"
-"use hopscript"
+"use hiphop";
+"use hopscript";
 
-const hh = require( "hiphop" );
+const hh = require("hiphop");
 
 hiphop module prg() {
    signal V_S_C, V_S_i;
 
-   if( now( V_S_C ) ) {
+   if (V_S_C.now) {
       ;
    }
-   if( now( V_S_i ) ) {
+   if (V_S_i.now) {
       emit V_S_C();
    }
 }
 
-let machine = new hh.ReactiveMachine( prg );
+let machine = new hh.ReactiveMachine(prg);
 
 try {
     machine.react();
-} catch( e ) {
-    console.log( "causality error" );
+} catch(e) {
+    console.log("causality error");
 }

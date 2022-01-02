@@ -1,4 +1,4 @@
-"use hopscript"
+"use strict"
 
 const hh = require("../lib/hiphop.js");
 const lang = require("../lib/lang.js");

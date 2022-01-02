@@ -2,7 +2,7 @@
 
 <HHExprStatement> --> hiphop <HHStatement>
 
-<HHStatement> --> <HHHop>
+<HHStatement> --> <HHHost>
   | <HHMachine>
   | <HHModule>
   | <HHInterface>
@@ -29,7 +29,7 @@
   | <HHDollarExpression>
   | <HHExpression> ; 
 
-<HHHop> --> hop <HHStatement>
+<HHHost> --> host <HHStatement>
 
 <HHBlock> --> {}
   | { <HHStatement> }
@@ -105,7 +105,7 @@
 
 <HHLoop> --> loop <HHBlock>
 
-<HHAsync> --> async [ <Identifier> ] HHBLock <HHAsyncKill> <HHAsyncSuspend> <HHAsyncResume>
+<HHAsync> --> async ( [ <Identifier> ] ) HHBLock <HHAsyncKill> <HHAsyncSuspend> <HHAsyncResume>
 
 <HHAsyncKill> --> | kill <HHBlock>
 

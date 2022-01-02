@@ -1,12 +1,12 @@
 "use strict"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var func = function() {
+const func = function() {
    console.log("atom works!");
 }
 
-var prg = <hh.module>
+const prg = <hh.module>
   <hh.loop>
     <hh.sequence>
       <hh.pause/>

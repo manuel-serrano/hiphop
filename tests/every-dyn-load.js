@@ -38,7 +38,7 @@ const prg =
 	</hh.local>
       </hh.module>;
 
-var machine = new hh.ReactiveMachine(prg, "");
+const machine = new hh.ReactiveMachine(prg, "");
 machine.debug_emitted_func = console.log;
 
 //console.log(machine.ast.pretty_print());

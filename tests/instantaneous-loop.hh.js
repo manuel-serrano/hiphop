@@ -1,7 +1,7 @@
 "use hiphop"
 "use strict"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
 try {
    const prg = hiphop module( O ) {

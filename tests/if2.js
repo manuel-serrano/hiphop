@@ -1,11 +1,11 @@
 "use hopscript"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var s1 = true;
-var s2 = false;
+let s1 = true;
+let s2 = false;
 
-var prg =
+const prg =
     <hh.module O1 O2>
       <hh.loop>
 	<hh.if value=${s1}>

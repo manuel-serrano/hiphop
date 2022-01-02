@@ -1,14 +1,14 @@
 "use hiphop";
 "use hopscript"
 
-var hh = require( "hiphop" );
+const hh = require( "hiphop" );
 
-var sub = 
+const sub = 
     <hh.module>
       <hh.exit T/>
     </hh.module>;
 
-var main = 
+const main = 
    <hh.module>
      <hh.trap T>
        <hh.run module=${sub}/>

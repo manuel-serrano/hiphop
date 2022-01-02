@@ -13,6 +13,6 @@ const prg =
 	<hh.atom apply=${() => console.log("top level")}/>
       </hh.module>;
 
-var m = new hh.ReactiveMachine(prg);
+const m = new hh.ReactiveMachine(prg);
 
 m.react();

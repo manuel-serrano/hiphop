@@ -1,6 +1,6 @@
 "use hopscript"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
 function foo(evt) {
    console.log("hi from foo signal", evt.type, "is set!")
@@ -11,9 +11,9 @@ function bar(evt) {
 	       evt.nowval, "!")
 }
 
-var inSig={accessibility:hh.IN};
+const inSig={accessibility:hh.IN};
 
-var prg = <hh.module I1=${inSig} I2=${inSig} I3=${inSig} I4=${inSig} O1 O2 O3 O4>
+const prg = <hh.module I1=${inSig} I2=${inSig} I3=${inSig} I4=${inSig} O1 O2 O3 O4>
   <hh.loop>
     <hh.sequence>
       <hh.if I1>
@@ -33,7 +33,7 @@ var prg = <hh.module I1=${inSig} I2=${inSig} I3=${inSig} I4=${inSig} O1 O2 O3 O4
   </hh.loop>
 </hh.module>
 
-var m = new hh.ReactiveMachine(prg, "mirror");
+const m = new hh.ReactiveMachine(prg, "mirror");
 m.addEventListener("O1", foo);
 m.addEventListener("O2", bar);
 m.addEventListener("O3", bar);

@@ -8,7 +8,7 @@ function WatchTimeType( h, m, s, ampm ) {
 }
 
 
-var WatchTime = new WatchTimeType( 0, 0, 0, false );
+const WatchTime = new WatchTimeType( 0, 0, 0, false );
 
 function IncrementTimeInPlace( t ) {
    let hours = t.hours;
@@ -41,7 +41,7 @@ function print_time( evt ) {
 }
 
 
-var hh = require( "hiphop" );
+const hh = require( "hiphop" );
 
 hiphop module prg( in I, Time=WatchTime ) {
    loop {
@@ -50,7 +50,7 @@ hiphop module prg( in I, Time=WatchTime ) {
    }
 }
 
-var m = new hh.ReactiveMachine( prg, "Foo" );
+const m = new hh.ReactiveMachine( prg, "Foo" );
 
 m.addEventListener( "Time", print_time );
 

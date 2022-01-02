@@ -1,9 +1,9 @@
 "use hopscript"
 
-var hh = require("hiphop");
+const hh = require("hiphop");
 
-var inSig = {accessibility: hh.IN};
-var outSig = {accessibility: hh.OUT};
+const inSig = {accessibility: hh.IN};
+const outSig = {accessibility: hh.OUT};
 
 function foo(evt) {
    console.log("foo called by", evt.type, "with value", evt.nowval);
@@ -18,7 +18,7 @@ function foo3(evt) {
 }
 
 
-var prg = <hh.module I=${inSig} O=${outSig}>
+const prg = <hh.module I=${inSig} O=${outSig}>
   <hh.loop>
     <hh.sequence>
       <hh.await I />
@@ -27,7 +27,7 @@ var prg = <hh.module I=${inSig} O=${outSig}>
   </hh.loop>
 </hh.module>;
 
-var m = new hh.ReactiveMachine(prg, "awaitvalued2");
+const m = new hh.ReactiveMachine(prg, "awaitvalued2");
 m.debug_emitted_func = console.log;
 
 m.addEventListener("O", foo);

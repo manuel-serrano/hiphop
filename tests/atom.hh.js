@@ -1,6 +1,6 @@
 "use strict"
 
-var hh = require( "hiphop" );
+const hh = require( "hiphop" );
 
 function func() {
    console.log( "atom works!" );

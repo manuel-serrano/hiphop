@@ -12,7 +12,7 @@ hiphop module prg( in X, Y, Z ) {
    emit Z();
 }
 
-var m = new hh.ReactiveMachine( prg );
+const m = new hh.ReactiveMachine( prg );
 m.debug_emitted_func = console.log
 
 m.react()

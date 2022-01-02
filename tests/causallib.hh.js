@@ -1,7 +1,7 @@
 "use hiphop";
 "use strict";
 
-var hh = require( "hiphop" );
+const hh = require( "hiphop" );
 
 
 hiphop module mymod( in A, in B, in R, out O ) {

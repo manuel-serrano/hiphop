@@ -41,12 +41,12 @@ before_script:
   - wget ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo-latest.tar.gz -O /tmp/bigloo-latest.tar.gz
   - pushd /tmp && tar xvfz /tmp/bigloo-latest.tar.gz && popd
   - pushd /tmp/bigloo-latest && ./configure --prefix=/usr --jvm=no && make && sudo make install && popd
-  - wget ftp://ftp-sop.inria.fr/indes/fp/Hop/hop-3.4.2.tar.gz -O /tmp/hop-3.4.2.tar.gz
-  - pushd /tmp && tar xvfz /tmp/hop-3.4.2.tar.gz && popd
-  - pushd /tmp/hop-3.4.2 && ./configure --prefix=/usr --disable-doc && make && sudo make install && popd
+  - wget ftp://ftp-sop.inria.fr/indes/fp/Hop/hop-3.5.0-pre1.tar.gz -O /tmp/hop-3.5.0-pre1.tar.gz
+  - pushd /tmp && tar xvfz /tmp/hop-3.5.0-pre1.tar.gz && popd
+  - pushd /tmp/hop-3.5.0-pre1 && ./configure --prefix=/usr --disable-doc && make && sudo make install && popd
   - ./configure
-  - (sudo cp -r ../hiphop /usr/lib/hop/3.4.2/node_modules)
-  - (sudo chmod a+rx -R /usr/lib/hop/3.4.2/node_modules/hiphop)
+  - (sudo cp -r ../hiphop /usr/lib/hop/3.5.0/node_modules)
+  - (sudo chmod a+rx -R /usr/lib/hop/3.5.0/node_modules/hiphop)
   
 script:
   - set -e

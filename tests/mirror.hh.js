@@ -1,6 +1,6 @@
 "use hopscript"
 
-var hh = require( "hiphop" );
+const hh = require( "hiphop" );
 
 function foo( evt ) {
    console.log( "hi from foo signal", evt.type, "is set!" )
@@ -21,7 +21,7 @@ hiphop module prg( in I1, in I2, in I3, in I4, O1, O2, O3, O4 ) {
    }
 }
 
-var m = new hh.ReactiveMachine( prg, "mirror" );
+const m = new hh.ReactiveMachine( prg, "mirror" );
 m.addEventListener( "O1", foo );
 m.addEventListener( "O2", bar );
 m.addEventListener( "O3", bar );

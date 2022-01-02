@@ -2,7 +2,7 @@
 
 hiphop module M1( a ) {
    emit a( 100 );
-   async a {
+   async (a) {
       this.notify( 10 );
    }
 }

@@ -3,7 +3,7 @@
 
 function plus( x, y ) { return x+y };
 
-var hh = require( "hiphop" );
+const hh = require( "hiphop" );
 
 hiphop module prg( in I, in R, O = 0 ) {
    loop {

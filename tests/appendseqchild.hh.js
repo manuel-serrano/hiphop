@@ -1,23 +1,23 @@
-"use hopscript"
+"use hopscript";
 
-const hh = require( "hiphop" );
+const hh = require("hiphop");
 
-function makePar( x, y ) {
+function makePar(x, y) {
    return hiphop fork {
-      hop { x() }
+      host { x() }
    } par {
-      hop { y() }
+      host { y() }
    }
 }
 
 hiphop machine M() {
    "myseq" {
       loop {	      
-        hop { console.log( "a" ) }
+        host { console.log("a") }
 	yield;
-        hop { console.log( "b" ) }
+        host { console.log("b") }
 	yield;
-        hop { console.log( "c" ) }
+        host { console.log("c") }
 	yield;
       }
    }
@@ -25,9 +25,9 @@ hiphop machine M() {
 
 M.react();
 
-var seq = M.getElementById( "myseq" );
+const seq = M.getElementById("myseq");
 
-seq.appendChild( makePar( () => console.log( "p1" ), () => console.log( "p2" ) ) );
+seq.appendChild(makePar(() => console.log("p1"), () => console.log("p2")));
 
 M.react();
 M.react();

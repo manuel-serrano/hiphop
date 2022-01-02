@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Mon Apr 12 15:42:07 2021 (serrano)                */
+#*    Last change :  Fri Sep 10 12:13:52 2021 (serrano)                */
 #*    Copyright   :  2018-21 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -203,7 +203,7 @@ echo "** Configuration summary **"
 echo 
 echo "Release:"
 echo "  hiphop release number... $version"
-echo "  hop command............. $hop"
+echo "  hop command............. $hop $hopversion$hopminorversion"
 echo "  hopc command............ $hopc"
 echo "  hflags ................. $hflags"
 echo "  etc directory........... $etcdir"
