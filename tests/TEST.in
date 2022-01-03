@@ -156,6 +156,18 @@ while : ; do
   shift
 done
 
+if [ ! -d node_modules ]; then
+  mkdir node_modules
+fi
+
+if [ ! -d node_modules/@hop ]; then
+  mkdir node_modules/@hop
+fi  
+
+if [ ! -f node_modules/@hop/hiphop ]; then
+  (cd node_modules/@hop; ln -s ../../../../hiphop hiphop)
+fi  
+
 init_stats
 
 echo -e "\x1B[1m$space*** HIPHOP.JS TESTS ***\x1B[0m"
