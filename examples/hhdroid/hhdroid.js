@@ -1,7 +1,7 @@
-"use hiphop"
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
-const hopdroid = require(hop.hopdroid);
+import hopdroid from hop.hopdroid;
 
 const phone = new hopdroid.phone();
 
