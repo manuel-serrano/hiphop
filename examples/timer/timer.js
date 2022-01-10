@@ -23,8 +23,8 @@ service timer() {
 	 globalThis.m = new ReactiveMachine(suspendableTimer);
 
 	 window.onload = function() {
-	    const dur = parseInt(document.getElementById("range-timer").value);
-	    m.react({duration: dur});
+	    const initDuration = parseInt(document.getElementById("range-timer").value);
+	    m.react({duration: initDuration});
 	 }
        </script>
      </head>
