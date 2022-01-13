@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sat Dec 25 10:06:27 2021 (serrano)                */
-/*    Copyright   :  2018-21 Manuel Serrano                            */
+/*    Last change :  Thu Jan 13 07:34:19 2022 (serrano)                */
+/*    Copyright   :  2018-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
 /*=====================================================================*/
@@ -13,16 +13,27 @@
 const hopc = require(hop.hopc);
 const ast = require(hopc.ast);
 const astutils = require("./astutils.js");
-const error = require("../lib/error.js");
 const parser = new hopc.Parser();
 const hhaccess = require("./_hhaccess.hop");
+import * as error from "../lib/error.js";
 
 const hhname = "__hh_module";
-//const hhmodule = "hiphop";
 let hhmodulePath;
 
 let hhkey = 0;
-       
+
+/*---------------------------------------------------------------------*/
+/*    consumeID ...                                                    */
+/*---------------------------------------------------------------------*/
+function consumeID(val) {
+   const tok = this.consumeToken(this.ID);
+   if (tok.value !== val) {
+      throw tokenTypeError(tok);
+   } else {
+      return tok;
+   }
+}
+
 /*---------------------------------------------------------------------*/
 /*    setRootDirectory ...                                             */
 /*---------------------------------------------------------------------*/
@@ -1241,10 +1252,186 @@ function parseExec(token) {
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
 /*       | run dollarexpr (sigalias, ...)                              */
+/*       | run { sigalias, ... } in dollarexpr(var, ...)               */
 /*    dollarexpr ::= $dollar | hhexpr                                  */
-/*    sigalias ::= ident | ident = ident                               */
+/*    sigalias ::= ident | ident = expr | ident => ident               */
+/*    var ::= ident = expr                                             */
 /*---------------------------------------------------------------------*/
 function parseRun(token) {
+   if (this.peekToken().type === this.LBRACE) {
+      return parseNewRun.call(this, token);
+   } else {
+      return parseOldRun.call(this, token);
+   }
+}
+
+/*---------------------------------------------------------------------*/
+/*    parseNewRun ...                                                  */
+/*---------------------------------------------------------------------*/
+function parseNewRun(token) {
+   const loc = token.location;
+   const next = this.peekToken();
+   const tag = tagInit("run", loc);
+   let inits = [locInit(loc), tag];
+   let exprs = [], axs = [], finits = [];
+
+   this.consumeToken(this.LBRACE);
+   
+   while (true) {
+      switch (this.peekToken().type) {
+	 case this.RBRACE:
+	    break;
+	    
+	 case this.MUL:
+	    const d = this.consumeAny();
+	    inits.push(astutils.J2SDataPropertyInit(
+			   d.location, astutils.J2SString(d.location, "autocomplete"),
+			   astutils.J2SBool(d.location, true)));
+	    break;
+	    
+	 case this.ID:
+	    const a = this.consumeAny();
+	    
+	    switch (this.peekToken().type) {
+	       case this.COMMA:
+	       case this.RBRACE:
+		  inits.push(astutils.J2SDataPropertyInit(
+				 a.location, astutils.J2SString(a.location, a.value),
+				 astutils.J2SString(a.location, "")));
+		  break;
+		  
+	       case this.EGAL:
+		  this.consumeAny();
+		  const { expr, accessors } = parseHHExpression.call(this);
+		  const assig = astutils.J2SStmtExpr(a.location,
+		     astutils.J2SAssig(
+		     	a.location,
+		     	astutils.J2SAccess(
+			   a.location,
+			   astutils.J2SUnresolvedRef(
+			      a.location, "__frame"),
+			   astutils.J2SString(
+			      a.location, a.value)),
+		     	expr));
+		  const init = astutils.J2SDataPropertyInit(
+		     a.location,
+		     astutils.J2SString(a.location, a.value),
+		     astutils.J2SUndefined(a.location));
+
+		  finits.push(init);
+		  exprs.push(assig);
+		  axs = axs.concat(accessors);
+		  break;
+		  
+	       case this.ID:
+		  const tok = this.consumeToken(this.ID);
+		  const as = this.consumeToken(this.ID);
+
+		  switch (tok.value) {
+		     case "from": 
+			inits.push(astutils.J2SDataPropertyInit(
+				      a.location, astutils.J2SString(as.location, as.value),
+				      astutils.J2SString(a.location, a.value)));
+		     	break;
+		     
+		     case "to": 
+			inits.push(astutils.J2SDataPropertyInit(
+				      a.location, astutils.J2SString(as.location, as.value),
+				      astutils.J2SString(a.location, a.value)));
+		     	break;
+		     	
+		     default: 
+			throw tokenTypeError(tok);
+		  }
+	    }
+	    break;
+	    
+	    default:
+	       throw tokenTypeError(this.consumeAny());
+      }
+      
+      if (this.peekToken().type === this.RBRACE) {
+	 this.consumeAny();
+
+      	 this.consumeToken(this.in);
+
+      	 const module = this.parsePrimaryDollar();
+	 this.consumeToken(this.LPAREN);
+	 this.consumeToken(this.RPAREN);
+	 
+   	 switch (typeof module) {
+      	    case "J2SDollar":
+	       inits.push(astutils.J2SDataPropertyInit(
+			     loc, astutils.J2SString(loc, "module"),
+			     module.node));
+	       break;
+	       
+      	    case "J2SUnresolvedRef":
+	       inits.push(astutils.J2SDataPropertyInit(
+			     module.loc,
+			     astutils.J2SString(loc, "module"),
+			     astutils.J2SCall(loc, hhref(loc, "getModule"),
+			   	null,
+			   	[astutils.J2SString(loc, module.id),
+			     	 location(module.loc)])));
+	       break;
+
+      	    default:
+	       throw error.SyntaxError("RUN: bad module", tokenLocation(token));
+   	 }
+   
+	 const attrs = astutils.J2SObjInit(loc, inits);
+      	 const run = astutils.J2SCall(loc, hhref(loc, "RUN"), null,
+	    [attrs].concat(axs));
+      	 
+      	 if (exprs.length === 0) {
+	    return run;
+      	 } else {
+	    const param = astutils.J2SDecl(loc, "__frame", "param");
+	    const frame = astutils.J2SDataPropertyInit(
+	       loc, 
+	       astutils.J2SString(loc, "%frame"),	
+	       astutils.J2SRef(loc, param));
+	    
+	    const ablock = astutils.J2SBlock(
+	       loc, loc, exprs);
+	    const tag = tagInit("hop", loc);
+	    const appl = astutils.J2SDataPropertyInit(
+	       loc, 
+	       astutils.J2SString(loc, "apply"),
+	       astutils.J2SMethod(loc, "runfun", [], ablock, self(loc)));
+	    const attrs = astutils.J2SObjInit(
+	       loc, [locInit(loc), tag, appl]);
+	    const atom = astutils.J2SCall(loc, hhref(loc, "ATOM"), null,
+	       [attrs].concat(axs));
+	    const seqattrs = astutils.J2SObjInit(loc, 
+	       [locInit(loc), tagInit("run", loc)]);
+
+	    const seq = astutils.J2SCall(
+	       loc, hhref(loc, "SEQUENCE"),
+	       null, [seqattrs, atom, run]);
+	    
+	    const ret = astutils.J2SReturn(loc, seq);
+	    const block = astutils.J2SBlock(loc, loc, [ret]);
+	    const fun = astutils.J2SFun(loc, "runfun", [param], block);
+	    const arg = astutils.J2SObjInit(loc, finits);
+
+	    inits.push(frame);
+	    
+	    return astutils.J2SCall(
+	       loc, fun, [astutils.J2SUndefined(loc)], 
+	       [arg]);
+      	 }
+      } else {
+      	 this.consumeToken(this.COMMA);
+      }
+   }
+}
+   
+/*---------------------------------------------------------------------*/
+/*    parseOldRun ...                                                  */
+/*---------------------------------------------------------------------*/
+function parseOldRun(token) {
    const loc = token.location;
    const next = this.peekToken();
    const tag = tagInit("run", loc);

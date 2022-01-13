@@ -73,3 +73,5 @@ const PARALLELMAP = (attrs) => {
    </hh.local>
 }
 exports.PARALLELMAP = PARALLELMAP;
+
+export { PARALLELMAP };

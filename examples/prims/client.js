@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Jan 16 07:20:47 2016                          */
-/*    Last change :  Mon Dec 27 11:31:31 2021 (serrano)                */
-/*    Copyright   :  2016-21 Manuel Serrano                            */
+/*    Last change :  Wed Jan 12 11:56:46 2022 (serrano)                */
+/*    Copyright   :  2016-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prims client part                                                */
 /*=====================================================================*/
@@ -31,7 +31,7 @@ function Num(G) {
    this.color = G.predatorColor;
    this.font = `${G.fontWeight} ${G.fontSize}px ${G.font}`;
    this.eaten = 0;
-   this.x = Math.random() *  G.width;
+   this.x = Math.random() * G.width;
    this.y = Math.random() * G.height;
 
    this.init();
