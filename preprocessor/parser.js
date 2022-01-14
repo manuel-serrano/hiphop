@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Jan 13 07:34:19 2022 (serrano)                */
+/*    Last change :  Fri Jan 14 08:34:50 2022 (serrano)                */
 /*    Copyright   :  2018-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1300,46 +1300,18 @@ function parseNewRun(token) {
 				 astutils.J2SString(a.location, "")));
 		  break;
 		  
-	       case this.EGAL:
-		  this.consumeAny();
-		  const { expr, accessors } = parseHHExpression.call(this);
-		  const assig = astutils.J2SStmtExpr(a.location,
-		     astutils.J2SAssig(
-		     	a.location,
-		     	astutils.J2SAccess(
-			   a.location,
-			   astutils.J2SUnresolvedRef(
-			      a.location, "__frame"),
-			   astutils.J2SString(
-			      a.location, a.value)),
-		     	expr));
-		  const init = astutils.J2SDataPropertyInit(
-		     a.location,
-		     astutils.J2SString(a.location, a.value),
-		     astutils.J2SUndefined(a.location));
-
-		  finits.push(init);
-		  exprs.push(assig);
-		  axs = axs.concat(accessors);
-		  break;
-		  
 	       case this.ID:
 		  const tok = this.consumeToken(this.ID);
 		  const as = this.consumeToken(this.ID);
 
 		  switch (tok.value) {
 		     case "from": 
-			inits.push(astutils.J2SDataPropertyInit(
-				      a.location, astutils.J2SString(as.location, as.value),
-				      astutils.J2SString(a.location, a.value)));
-		     	break;
-		     
 		     case "to": 
 			inits.push(astutils.J2SDataPropertyInit(
 				      a.location, astutils.J2SString(as.location, as.value),
 				      astutils.J2SString(a.location, a.value)));
 		     	break;
-		     	
+		     
 		     default: 
 			throw tokenTypeError(tok);
 		  }
@@ -1356,7 +1328,42 @@ function parseNewRun(token) {
       	 this.consumeToken(this.in);
 
       	 const module = this.parsePrimaryDollar();
+	 
 	 this.consumeToken(this.LPAREN);
+	 
+	 if (this.peekToken().type === this.ID) {
+	    while (true) {
+	       const a = this.consumeToken(this.ID);
+	       this.consumeToken(this.EGAL);
+	       
+	       const { expr, accessors } = parseHHExpression.call(this);
+	       const assig = astutils.J2SStmtExpr(a.location,
+		  astutils.J2SAssig(
+		     a.location,
+		     astutils.J2SAccess(
+			a.location,
+			astutils.J2SUnresolvedRef(
+			   a.location, "__frame"),
+			astutils.J2SString(
+			   a.location, a.value)),
+		     expr));
+	       const init = astutils.J2SDataPropertyInit(
+		  a.location,
+		  astutils.J2SString(a.location, a.value),
+		  astutils.J2SUndefined(a.location));
+
+	       finits.push(init);
+	       exprs.push(assig);
+	       axs = axs.concat(accessors);
+	       
+	       if (this.peekToken().type !== this.COMMA) {
+		  break;
+	       } else {
+		  this.consumeAny();
+	       }
+	    }
+	 }
+
 	 this.consumeToken(this.RPAREN);
 	 
    	 switch (typeof module) {
@@ -1487,7 +1494,6 @@ function parseOldRun(token) {
 		  break;
 		  
 	       case this.EGAL:
-		  this.consumeAny();
 		  const { expr, accessors } = parseHHExpression.call(this);
 		  const assig = astutils.J2SStmtExpr(a.location,
 		     astutils.J2SAssig(
