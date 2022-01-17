@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Jan 14 08:34:50 2022 (serrano)                */
+/*    Last change :  Mon Jan 17 07:32:37 2022 (serrano)                */
 /*    Copyright   :  2018-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -52,7 +52,7 @@ function setHHModulePath(path) {
 /*    self ...                                                         */
 /*---------------------------------------------------------------------*/
 function self(loc) {
-   return astutils.J2SDecl(loc, "this", "let", "this");
+   return astutils.J2SDecl(loc, "this", "let-opt", "this");
 }
 
 /*---------------------------------------------------------------------*/
@@ -441,13 +441,14 @@ function parseMachineModule(token, declaration, ctor) {
       const framep = astutils.J2SDecl(loc, "__frame", "param");
       const assigframe = astutils.J2SSeq(
          loc, 
-         decls.map(d => astutils.J2SStmtExpr(
-                       loc,
-                       astutils.J2SAssig(loc, 
-                          astutils.J2SRef(loc, d),
-                          astutils.J2SAccess(loc, 
-                             astutils.J2SRef(loc, framep), 
-                             astutils.J2SString(loc, d.id))))));
+         decls.map((d, i, arr) => astutils.J2SStmtExpr(
+		     loc,
+		     astutils.J2SAssig(loc, 
+			astutils.J2SUnresolvedRef(loc, d.id),
+			astutils.J2SAccess(loc, 
+			   astutils.J2SRef(loc, framep), 
+			   astutils.J2SNumber(loc, i))))));
+/* 			   astutils.J2SString(loc, d.id))))));         */
       const ablock = astutils.J2SBlock(loc, loc, [assigframe]);
       const appl = astutils.J2SDataPropertyInit(loc, 
          astutils.J2SString(loc, "apply"),
@@ -467,7 +468,7 @@ function parseMachineModule(token, declaration, ctor) {
       
       const cblock = astutils.J2SBlock(loc, loc, 
          [astutils.J2SVarDecls(loc, decls), ret]);
-      const clone = astutils.J2SFun(loc, "letfun", [], cblock);
+      const clone = astutils.J2SFun(loc, "modfun", [], cblock);
       
       const fattrs = astutils.J2SObjInit(
          loc,
@@ -1331,36 +1332,30 @@ function parseNewRun(token) {
 	 
 	 this.consumeToken(this.LPAREN);
 	 
-	 if (this.peekToken().type === this.ID) {
-	    while (true) {
-	       const a = this.consumeToken(this.ID);
-	       this.consumeToken(this.EGAL);
-	       
-	       const { expr, accessors } = parseHHExpression.call(this);
-	       const assig = astutils.J2SStmtExpr(a.location,
-		  astutils.J2SAssig(
-		     a.location,
-		     astutils.J2SAccess(
-			a.location,
-			astutils.J2SUnresolvedRef(
-			   a.location, "__frame"),
-			astutils.J2SString(
-			   a.location, a.value)),
-		     expr));
-	       const init = astutils.J2SDataPropertyInit(
-		  a.location,
-		  astutils.J2SString(a.location, a.value),
-		  astutils.J2SUndefined(a.location));
+	 for (let idx = 0; this.peekToken().type != this.RPAREN; idx++) {
+	    const { expr, accessors } = parseHHExpression.call(this);
+	    const loc = expr.loc;
+	    const assig = astutils.J2SStmtExpr(loc,
+	       astutils.J2SAssig(
+		  loc,
+		  astutils.J2SAccess(
+		     loc,
+		     astutils.J2SUnresolvedRef(
+			loc, "__frame"),
+		     astutils.J2SNumber(
+			loc, idx)),
+		  expr));
+	    const init = astutils.J2SDataPropertyInit(
+	       loc,
+	       astutils.J2SNumber(loc, idx),
+	       astutils.J2SUndefined(loc));
 
-	       finits.push(init);
-	       exprs.push(assig);
-	       axs = axs.concat(accessors);
-	       
-	       if (this.peekToken().type !== this.COMMA) {
-		  break;
-	       } else {
-		  this.consumeAny();
-	       }
+	    finits.push(init);
+	    exprs.push(assig);
+	    axs = axs.concat(accessors);
+	    
+	    if (this.peekToken().type === this.COMMA) {
+	       this.consumeAny();
 	    }
 	 }
 
@@ -1389,7 +1384,7 @@ function parseNewRun(token) {
    
 	 const attrs = astutils.J2SObjInit(loc, inits);
       	 const run = astutils.J2SCall(loc, hhref(loc, "RUN"), null,
-	    [attrs].concat(axs));
+	    [attrs]);
       	 
       	 if (exprs.length === 0) {
 	    return run;
@@ -1470,7 +1465,7 @@ function parseOldRun(token) {
    
    this.consumeToken(this.LPAREN);
    
-   while (true) {
+   for (let idx = 0; true; idx++) {
       switch (this.peekToken().type) {
 	 case this.RPAREN:
 	    break;
@@ -1502,8 +1497,10 @@ function parseOldRun(token) {
 			   a.location,
 			   astutils.J2SUnresolvedRef(
 			      a.location, "__frame"),
-			   astutils.J2SString(
-			      a.location, a.value)),
+			   astutils.J2SNumber(
+			      a.location, idx)),
+/* 			   astutils.J2SString(                         */
+/* 			      a.location, a.value)),                   */
 		     	expr));
 		  const init = astutils.J2SDataPropertyInit(
 		     a.location,
@@ -1610,6 +1607,22 @@ function parseLet(token, binder) {
       }
    }
    
+   function initVar(tok, expr, accessors) {
+      const loc = tok.location;
+      const assig = astutils.J2SAssig(loc, 
+	 astutils.J2SUnresolvedRef(loc, tok.value),
+	 expr);
+      const block = astutils.J2SBlock(loc, assig.loc, [astutils.J2SStmtExpr(loc, assig)]);
+      const appl = astutils.J2SDataPropertyInit(
+      	 loc, 
+      	 astutils.J2SString(loc, "apply"),
+      	 astutils.J2SMethod(loc, "atomfun", [], block, self(loc)));
+      const tag = tagInit("hop", loc);
+      const attrs = astutils.J2SObjInit(loc, [locInit(loc), tag, appl]);
+      return astutils.J2SCall(loc, hhref(loc, "ATOM"), null,
+	 [attrs].concat(accessors));
+   }
+   
    function parseDecls() {
       let decls = [];
       let inits = [];
@@ -1617,20 +1630,11 @@ function parseLet(token, binder) {
       while (true) {
 	 const t = this.consumeToken(this.ID);
 	 const iloc = t.location;
-
-	 const { expr, accessors: axs } = parseLetInit.call(this, iloc);
-	 
-	 const decl = astutils.J2SDeclInitScope(iloc, t.value, expr, "letblock", "let-opt");
-	 const ret = astutils.J2SReturn(loc, astutils.J2SUnresolvedRef(iloc, t.value));
-	 const block = astutils.J2SBlock(loc, loc, [ret]);
-	 const appl = astutils.J2SDataPropertyInit(
-	    loc, 
-	    astutils.J2SString(loc, "apply"),
-	    astutils.J2SMethod(loc, "atomfun", [], block, self(loc)));
-	 const attrs = astutils.J2SObjInit(loc, [locInit(loc), appl]);
-	 const init = astutils.J2SCall(iloc,
-					hhref(loc, "ATOM"), null,
-					[attrs].concat(axs));
+	 const { expr, accessors } = parseLetInit.call(this, iloc);
+	 const decl = astutils.J2SDeclInitScope(iloc, t.value, 
+	    astutils.J2SUndefined(loc), 
+	    "letblock", "let-opt");
+	 const init = initVar(t, expr, accessors);
 	 
 	 inits.push(init);
 	 decls.push(decl);
@@ -1638,7 +1642,7 @@ function parseLet(token, binder) {
 	 switch (this.peekToken().type) {
 	    case this.SEMICOLON:
 	       this.consumeAny();
-	       return { decls, inits };
+	       return { decls, inits, accessors };
 	       
 	    case this.COMMA:
 	       this.consumeAny();
@@ -1653,10 +1657,13 @@ function parseLet(token, binder) {
    const { decls, inits } = parseDecls.call(this);
    const stmts = inits.concat(parseHHBlock.call(this, false));
    const attrs = astutils.J2SObjInit(loc, [locInit(loc)]);
-   const stmt = stmts.length === 1 ? stmts[0] : astutils.J2SCall(loc, hhref(loc, "SEQUENCE"), null, [attrs].concat(stmts));
+   const seqattrs = astutils.J2SObjInit(loc, 
+      [locInit(loc), tagInit("let", loc)]);
+   const stmt = astutils.J2SCall(loc, hhref(loc, "SEQUENCE"), null, 
+      [seqattrs].concat(stmts));
    const ret = astutils.J2SReturn(loc, stmt);
    const block = astutils.J2SLetBlock(loc, loc, decls, [ret]);
-   const fun = astutils.J2SFun(loc, "letfun", [], block);
+   const fun = astutils.J2SMethod(loc, "letfun", [], block, self(loc));
 				
    return astutils.J2SCall(loc, fun, [astutils.J2SUndefined(loc)], []);
 }

@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Fri Jan 14 09:29:05 2022 (serrano)                */
+#*    Last change :  Sat Jan 15 06:28:44 2022 (serrano)                */
 #*    Copyright   :  2006-22 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -33,7 +33,7 @@ HOPSHAREDIR=@HOPSHAREDIR@
 HIPHOPLIBDIR=$(LIBDIR)/$(HZ)/$(HZVERSION)
 
 HOP = @HOP@
-HOPC = @HOPC@
+HOPC = @HOPC@ --js-plugins
 HFLAGS = @HFLAGS@
 HHC = bin/hhc.sh --js-require-hop
 
@@ -47,7 +47,7 @@ PREPROCESSOR=$(JSPREPROCESSOR) $(HOPPREPROCESSOR)
 
 ULIB = parallelmap.js
 
-MODULES = http.hh.js
+MODULES = interval.hh.js http.hh.js
 
 JSOBJECTS = $(LIB:%=lib/%) $(JSPREPROCESSOR:%=preprocessor/%) $(ULIB:%=ulib/%) \
   $(MODULES:%=modules/%)
@@ -120,6 +120,8 @@ install-js:
 	cp $(PREPROCESSOR:%=preprocessor/%) $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor
 	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/ulib
 	cp $(ULIB:%=ulib/%) $(DESTDIR)$(HIPHOPLIBDIR)/ulib
+	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/modules
+	cp $(MODULES:%=modules/%) $(DESTDIR)$(HIPHOPLIBDIR)/modules
 	cp package.json $(DESTDIR)$(HIPHOPLIBDIR)
 	chmod -R a+rx $(DESTDIR)$(LIBDIR)/$(HZ)
 	find $(DESTDIR)$(HIPHOPLIBDIR) -name '*.@SO@' -exec touch {} \;
@@ -133,6 +135,10 @@ install-so:
 	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/ulib/$(SODIR)
 	for p in $(ULIB:%.js=%); do \
 	   cp ulib/$$p.@SO@ $(DESTDIR)$(HIPHOPLIBDIR)/ulib/$(SODIR); \
+        done
+	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/modules/$(SODIR)
+	for p in $(MODULES:%.js=%); do \
+	   cp modules/$$p.@SO@ $(DESTDIR)$(HIPHOPLIBDIR)/modules/$(SODIR); \
         done
 	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor/$(SODIR)
 	for p in $(JSPREPROCESSOR:%.js=%); do \
