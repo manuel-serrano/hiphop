@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Mon Jan 17 07:32:37 2022 (serrano)                */
+/*    Last change :  Mon Jan 17 15:26:00 2022 (serrano)                */
 /*    Copyright   :  2018-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -156,17 +156,6 @@ function hhwrapDecl(token, stmt) {
 /*---------------------------------------------------------------------*/
 function hhwrapExpr(token, expr) {
    return expr;
-/*    const loc = token.location;                                      */
-/*    const req = astutils.J2SCall(loc, astutils.J2SUnresolvedRef(loc, "require"), */
-/* 				 [astutils.J2SUndefined(loc)],         */
-/* 				 [astutils.J2SString(loc, hhmodulePath)]); */
-/*    const fun = astutils.J2SFun(                                     */
-/*       loc, "hhwrap", [astutils.J2SDecl(loc, hhname, "param")],      */
-/*       astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, expr)])); */
-/*                                                                     */
-/*    return astutils.J2SCall(loc, fun,                                */
-/* 			    [astutils.J2SUndefined(loc)],              */
-/* 			    [req]);                                    */
 }
    
 /*---------------------------------------------------------------------*/
@@ -406,6 +395,7 @@ function parseMachineModule(token, declaration, ctor) {
    const tag = tagInit(ctor.toLowerCase(), loc);
    let id;
    let attrs;
+   let esigs = [];
 
    if (this.peekToken().type === this.ID) {
       id = this.consumeAny();
@@ -424,31 +414,40 @@ function parseMachineModule(token, declaration, ctor) {
       attrs = astutils.J2SObjInit(loc, [locInit(loc), tag]);
    }
 
-   let { sigs, vars } = parseModuleSiglist.call(this);
+   const { vars, vals } = parseModuleVarlist.call(this);
    
    if (this.peekToken().type === this.ID 
        && this.peekToken().value === "implements") {
       this.consumeAny();
-      sigs = sigs.concat(parseInterfaceIntflist.call(this));
+      esigs = parseInterfaceIntflist.call(this);
    }
    
-   const stmts = parseHHBlock.call(this);
+   this.consumeToken(this.LBRACE);
+   const sigs = parseModuleSiglist.call(this).concat(esigs);
+   
+   const stmts = parseHHBlock.call(this, false);
    let mod;
    
    if (vars.length !== 0) {
       const decls = 
          vars.map(tok => astutils.J2SDeclInit(tok.location, tok.value, astutils.J2SUndefined(loc), "let"));
-      const framep = astutils.J2SDecl(loc, "__frame", "param");
+      const framep = astutils.J2SDeclParam(loc, "__frame", "array");
       const assigframe = astutils.J2SSeq(
-         loc, 
+         loc,
          decls.map((d, i, arr) => astutils.J2SStmtExpr(
 		     loc,
-		     astutils.J2SAssig(loc, 
+		     astutils.J2SAssig(loc,
 			astutils.J2SUnresolvedRef(loc, d.id),
-			astutils.J2SAccess(loc, 
-			   astutils.J2SRef(loc, framep), 
-			   astutils.J2SNumber(loc, i))))));
-/* 			   astutils.J2SString(loc, d.id))))));         */
+			astutils.J2SCond(loc,
+			   astutils.J2SBinary(loc, "<",
+			      astutils.J2SNumber(loc, i),
+			      astutils.J2SAccess(loc,
+				 astutils.J2SRef(loc, framep),
+				 astutils.J2SString(loc, "length"))),
+			   astutils.J2SAccess(loc,
+			      astutils.J2SRef(loc, framep),
+			      astutils.J2SNumber(loc, i)),
+                           vals[i])))));
       const ablock = astutils.J2SBlock(loc, loc, [assigframe]);
       const appl = astutils.J2SDataPropertyInit(loc, 
          astutils.J2SString(loc, "apply"),
@@ -501,9 +500,60 @@ function parseMachineModule(token, declaration, ctor) {
 /*    parseInterface ...                                               */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | interface [ident] (signal, ...) [extends dollarexpr, ...]   */
+/*       | interface [ident] [extends dollarexpr, ...] { signal, ... } */
 /*---------------------------------------------------------------------*/
 function parseInterface(token, declaration) {
+   const loc = token.location;
+   const tag = tagInit("interface", loc);
+   let id;
+   let attrs;
+   let esigs = [];
+
+   if (this.peekToken().type === this.ID) {
+      id = this.consumeAny();
+      const locid = id.location;
+      attrs = astutils.J2SObjInit(
+	 locid,
+	 [astutils.J2SDataPropertyInit(
+	    locid,
+	    astutils.J2SString(locid, "id"),
+	    astutils.J2SString(locid, id.value)),
+	   locInit(loc), tag]);
+   } else if (declaration) {
+      throw tokenTypeError(this.consumeAny());
+   } else {
+      attrs = astutils.J2SObjInit(loc, [locInit(loc), tag]);
+   }
+
+   if (this.peekToken().type === this.extends) {
+      this.consumeAny();
+
+      esigs = parseInterfaceIntflist.call(this);
+   }
+
+   this.consumeToken(this.LBRACE);
+   let sigs = parseModuleSiglist.call(this);
+   this.consumeToken(this.RBRACE);
+
+   const intf = astutils.J2SCall(loc, hhref(loc, "INTERFACE"), 
+				 null,
+				 [attrs].concat(sigs.concat(esigs)));
+   
+   if (declaration) {
+      return astutils.J2SVarDecls(
+	 loc, [astutils.J2SDeclInit(loc, id.value, intf)]);
+   } else {
+      return intf;
+   }
+}
+
+/*---------------------------------------------------------------------*/
+/*    parseInterfaceOld ...                                            */
+/*    -------------------------------------------------------------    */
+/*    stmt ::= ...                                                     */
+/*       | interface [ident] (signal, ...) [extends dollarexpr, ...]   */
+/*---------------------------------------------------------------------*/
+function parseInterfaceOld(token, declaration) {
    const loc = token.location;
    const tag = tagInit("interface", loc);
    let id;
@@ -525,7 +575,7 @@ function parseInterface(token, declaration) {
       attrs = astutils.J2SObjInit(loc, [locInit(loc), tag]);
    }
 
-   let { sigs, vars } = parseModuleSiglist.call(this);
+   let { sigs, vars } = parseModuleSiglistOld.call(this);
 
    if (this.peekToken().type === this.extends) {
       this.consumeAny();
@@ -602,9 +652,148 @@ function parseInterfaceIntflist() {
 }
    
 /*---------------------------------------------------------------------*/
+/*    parseModuleVarlist ...                                           */
+/*---------------------------------------------------------------------*/
+function parseModuleVarlist() {
+   let vars = [];
+   let vals = [];
+   
+   this.consumeToken(this.LPAREN);
+   
+   while (this.peekToken().type !== this.RPAREN) {
+      const tok = this.consumeToken(this.ID);
+      vars.push(tok);
+      
+      if (this.peekToken().type === this.EGAL) {
+	 this.consumeAny();
+      	 vals.push(this.parseAssigExpression());
+      } else {
+      	 vals.push(astutils.J2SUndefined(tok.location));
+      }
+
+      if (this.peekToken().type === this.COMMA) {
+	 this.consumeAny();
+      }
+   }
+
+   this.consumeToken(this.RPAREN);
+
+   return { vars, vals };
+}
+
+/*---------------------------------------------------------------------*/
 /*    parseModuleSiglist ...                                           */
 /*---------------------------------------------------------------------*/
 function parseModuleSiglist() {
+
+   function parseSignalModule(token) {
+      const loc = token.location;
+      let name, direction;
+
+      if (token.type === this.in) {
+	 let t = this.consumeToken(this.ID);
+	 direction = "IN"
+	 name = t.value;
+      } else if (token.type === this.ID) {
+	 switch (token.value) {
+	    case "out": {
+	       let t = this.consumeToken(this.ID);
+	       direction = "OUT"
+	       name = t.value;
+	       break;
+	    }
+	    case "inout": {
+	       let t = this.consumeToken(this.ID);
+	       direction = "INOUT"
+	       name = t.value;
+	       break;
+	    }
+	    default: {
+	       direction = "INOUT"
+	       name = token.value;
+	    }
+
+	 }
+      } else {
+	 throw tokenTypeError(token)
+      }
+      
+      const dir = astutils.J2SDataPropertyInit(
+	 loc,
+	 astutils.J2SString(loc, "direction"),
+	 astutils.J2SString(loc, direction));
+      const id = astutils.J2SDataPropertyInit(
+	 loc,
+	 astutils.J2SString(loc, "name"),
+	 astutils.J2SString(loc, name));
+
+      const inits = [locInit(loc), dir, id];
+      let accessors = [];
+      
+      if (this.peekToken().type === this.EGAL) {
+	 this.consumeAny();
+	 const { expr, accessors: axs } = parseHHExpression.call(this);
+
+	 const func = astutils.J2SMethod(
+	    loc, "initfunc", [],
+	    astutils.J2SBlock(
+	       loc, loc,
+	       [astutils.J2SReturn(loc, expr)]),
+            self(loc));
+	 const initfunc = astutils.J2SDataPropertyInit(
+	    loc,
+	    astutils.J2SString(loc, "init_func"),
+	    func);
+
+	 accessors = axs;
+	 inits.push(initfunc);
+      }
+	 
+      if (isIdToken(this, this.peekToken(), "combine")) {
+	 const locc = this.consumeAny().location;
+	 const fun = this.parseCondExpression();
+
+	 const combine = astutils.J2SDataPropertyInit(
+	    loc,
+	    astutils.J2SString(loc, "combine_func"),
+	    fun);
+	 inits.push(combine);
+      }
+
+      const attrs = astutils.J2SObjInit(loc, inits);
+      return astutils.J2SCall(loc, hhref(loc, "SIGNAL"), null,
+			       [attrs].concat(accessors));
+   }
+
+   let sigs = [];
+
+   while (true) {
+      const ty = this.peekToken().type;
+      
+      if (ty === this.in) {
+	 sigs.push(parseSignalModule.call(this, this.consumeAny()));
+	 this.consumeToken(this.SEMICOLON);
+      } else if (ty === this.ID) {
+	 const val = this.peekToken().value;
+ 	 
+	 if (val === "out" || val === "inout") {
+	    sigs.push(parseSignalModule.call(this, this.consumeAny()));
+	    this.consumeToken(this.SEMICOLON);
+	 } else {
+	    break;
+	 }
+      } else {
+	 break;
+      }
+   }
+   
+   return sigs;
+}
+
+/*---------------------------------------------------------------------*/
+/*    parseModuleSiglistOld ...                                        */
+/*---------------------------------------------------------------------*/
+function parseModuleSiglistOld() {
 
    function parseSignalModule(token) {
       const loc = token.location;
@@ -1345,10 +1534,11 @@ function parseNewRun(token) {
 		     astutils.J2SNumber(
 			loc, idx)),
 		  expr));
-	    const init = astutils.J2SDataPropertyInit(
-	       loc,
-	       astutils.J2SNumber(loc, idx),
-	       astutils.J2SUndefined(loc));
+/* 	    const init = astutils.J2SDataPropertyInit(                 */
+/* 	       loc,                                                    */
+/* 	       astutils.J2SNumber(loc, idx),                           */
+/* 	       astutils.J2SUndefined(loc));                            */
+	    const init = astutils.J2SUndefined(loc);
 
 	    finits.push(init);
 	    exprs.push(assig);
@@ -1416,7 +1606,7 @@ function parseNewRun(token) {
 	    const ret = astutils.J2SReturn(loc, seq);
 	    const block = astutils.J2SBlock(loc, loc, [ret]);
 	    const fun = astutils.J2SFun(loc, "runfun", [param], block);
-	    const arg = astutils.J2SObjInit(loc, finits);
+	    const arg = astutils.J2SArray(loc, finits);
 
 	    inits.push(frame);
 	    
