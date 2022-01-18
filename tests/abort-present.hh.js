@@ -3,7 +3,9 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module prg( in I, out J, out K, out V ) {
+hiphop module prg() {
+   in I; out J; out K; out V;
+      
    loop {
       abort( I.now ) {
 	 emit J();

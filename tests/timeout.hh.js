@@ -3,7 +3,8 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module prg(X=1, Y, Z) {
+hiphop module prg() {
+   inout X = 1, Y, Z;
    T: {
       signal __internal=-1;
 

@@ -3,7 +3,8 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module m( in S, O, F, W, Z ) {
+hiphop module m() {
+   in S; out O, F, W, Z;
    weakabort( S.now ) {
       loop {
 	 emit O();

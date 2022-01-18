@@ -15,10 +15,12 @@ function plus( x, y ) {
    return x + y
 }
 
-hiphop module prg( SEQ=1 combine plus,
-		   STATE1=false combine bool_or,
-		   STATE2=false combine bool_and,
-		   S, TOOGLE ) {
+hiphop module prg() {
+   inout SEQ=1 combine plus;
+   inout STATE1=false combine bool_or;
+   inout STATE2=false combine bool_and;
+   inout S, TOOGLE;
+		
    loop {
       emit SEQ( SEQ.preval + 1 );
       emit STATE1( ${true} );

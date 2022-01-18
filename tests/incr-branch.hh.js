@@ -3,7 +3,8 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module prg( O combine (x, y) => x + y ) {
+hiphop module prg() {
+   out O combine (x, y) => x + y;
    loop {
       fork "par" {
 	 emit O( 1 );

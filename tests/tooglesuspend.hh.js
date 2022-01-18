@@ -3,7 +3,9 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop machine mach( toogle ) {
+hiphop machine mach() {
+   in toogle;
+   
    suspend toggle( toogle.now ) {
       loop {
 	 hop { console.log( "plop" ); }

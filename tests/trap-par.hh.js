@@ -3,7 +3,8 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module prg( A, B, C ) {
+hiphop module prg() {
+   inout A, B, C;
    T: fork {
       emit A();
       break T;

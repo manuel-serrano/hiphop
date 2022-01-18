@@ -5,7 +5,8 @@ function plus( x, y ) { return x+y };
 
 import * as hh from "@hop/hiphop";
 
-hiphop module prg( in I, in R, O = 0 ) {
+hiphop module prg() {
+   in I; in R; out O = 0;
    loop {
       abort( R.now ) {
 	 await( I.now );

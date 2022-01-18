@@ -3,7 +3,8 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module prg( OK, O, A, B, C, BBBB, NEVER, in STOP, in AIN ) {
+hiphop module prg() {
+   inout OK, O, A, B, C, BBBB, NEVER; in STOP; in AIN;
    abort( STOP.now ) {
       loop {
 	 JMP: {
@@ -43,7 +44,8 @@ hiphop module prg( OK, O, A, B, C, BBBB, NEVER, in STOP, in AIN ) {
    }
 }
 
-hiphop module prg2( O, V ) {
+hiphop module prg2() {
+   inout O, V;
    loop {
       yield;
       yield;
@@ -58,7 +60,8 @@ hiphop module prg2( O, V ) {
    emit O();
 }
 
-hiphop module prg3( O ) {
+hiphop module prg3() {
+   out O;
    {
       yield;
       emit O();
@@ -66,14 +69,16 @@ hiphop module prg3( O ) {
    emit O();
 }
 
-hiphop module prg4( OK, O ) {
+hiphop module prg4() {
+   out OK, O;
    emit O();
    if( O.now ) {
       emit OK();
    }
 }
 
-hiphop module prg5( OK, O ) {
+hiphop module prg5() {
+   out OK, O;
    if( O.now ) {
       emit OK();
    }

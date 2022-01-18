@@ -1,7 +1,8 @@
 "use @hop/hiphop";
 "use strict";
 
-hiphop module M( a = 99999 ) {
+hiphop module M() {
+   inout a = 99999;
    host {console.log( "a=", a.nowval ) };
 }
 

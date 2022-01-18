@@ -44,7 +44,8 @@ function print_time( evt ) {
 
 import * as hh from "@hop/hiphop";
 
-hiphop module prg( in I, Time=WatchTime ) {
+hiphop module prg() {
+   in I; out Time=WatchTime;
    loop {
       emit Time( IncrementTimeInPlace( Time.preval ) );
       yield;

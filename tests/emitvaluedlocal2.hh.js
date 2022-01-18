@@ -7,7 +7,8 @@ function sum( arg1, arg2 ) {
    return arg1 + arg2;
 }
 
-hiphop module prg( O ) {
+hiphop module prg() {
+   out O;
    loop {
       signal S = 1;
 

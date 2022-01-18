@@ -3,15 +3,16 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop interface I1( A, B, C );
-hiphop interface I2( D ) extends I1;
+hiphop interface I1 { inout A, B, C };
+hiphop interface I2 { inout D } extends I1;
 
 hiphop module M2() implements I2 {
    emit A( 10 );
    emit D( 23 );
 }
 
-hiphop module M1( Z ) implements I1 {
+hiphop module M1() implements I1 {
+   inout Z;
    run M2( D as Z, ... );
 }
 

@@ -3,12 +3,13 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module example( I, O ) {
-
-      if(  I.now ) emit I();
-      emit O();
-
+hiphop module example() {
+   in I; out O;
+      
+   if(  I.now ) emit I();
+   emit O();
 }
+
 let machine = new hh.ReactiveMachine(example, {CausalityErrorTrace:"deep", sweep:false} );
 
 try {

@@ -3,7 +3,8 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module prg( B = 5, A = B.nowval ) {
+hiphop module prg() {
+   inout B = 5, A = B.nowval;
    emit A();
    yield;
    {

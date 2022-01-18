@@ -3,7 +3,8 @@
 import * as hh from "@hop/hiphop";
 
 const m = new hh.ReactiveMachine(
-   hiphop module( out S ) {
+   hiphop module() {
+      out S;
       loop {
 	 signal L = 2;
 

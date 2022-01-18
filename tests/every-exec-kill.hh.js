@@ -3,7 +3,8 @@
 
 import * as hh from "@hop/hiphop";
 const mach = new hh.ReactiveMachine(
-   hiphop module(S) {
+   hiphop module() {
+      inout S;
       every (S.now) {
 	 host { console.log("every") };
 	 async () {

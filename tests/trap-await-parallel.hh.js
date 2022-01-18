@@ -3,7 +3,8 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module prg( A, B ) {
+hiphop module prg() {
+   inout A, B;
    EXIT: fork {
       await( A.now );
       hop { console.log( "A" ) }

@@ -4,7 +4,9 @@
 import * as hh from "@hop/hiphop";
 
 try {
-   const prg = hiphop module( O ) {
+   const prg = hiphop module() {
+      out O;
+      
       loop {
 	 signal L;
 

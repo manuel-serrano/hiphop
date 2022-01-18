@@ -4,7 +4,8 @@
 const gameTimeout = 100;
 
 function Timer( timeout ) { 
-   return hiphop module( tmt ) {
+   return hiphop module() {
+      out tmt;
       async (tmt) {
 	 this.timer = setTimeout(() => this.notify( "ok" ), timeout ); 
       } kill { 
@@ -13,11 +14,12 @@ function Timer( timeout ) {
    }
 }
     
-hiphop machine mach( O ) {
+hiphop machine mach() {
+   out O;
    signal tmt;
    
    fork {
-      run ${Timer( gameTimeout )}( ... );
+      run ${Timer(gameTimeout)}() { * };
    } par {
       await( tmt.now );
       emit O( tmt.nowval );

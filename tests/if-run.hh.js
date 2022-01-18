@@ -12,7 +12,7 @@ const m = new hh.ReactiveMachine(
       loop {
 	 host { console.log( ">>> start" ) };
 	 if( 1 ) {
-	    run ${pauseModule}();
+	    run ${pauseModule}() {};
 	 } else {
 	    yield;
 	 }

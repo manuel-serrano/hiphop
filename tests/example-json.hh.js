@@ -47,7 +47,8 @@ import * as hh from "@hop/hiphop";
 
 const inSig = {accessibility: hh.IN};
 
-hiphop module prg( in I, in TIN, Time=WatchTime ) {
+hiphop module prg() {
+   in I; in TIN; out Time = WatchTime;
    loop {
       emit Time( IncrementTimeInPlace( Time.preval ) );
       yield;

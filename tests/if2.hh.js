@@ -6,7 +6,8 @@ import * as hh from "@hop/hiphop";
 let s1 = true;
 let s2 = false;
 
-hiphop module prg(O1, O2) {
+hiphop module prg() {
+   out O1, O2;
    loop {
       if(${ s1 }) emit O1();
       if(${ s2 }) emit O2();

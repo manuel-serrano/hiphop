@@ -3,17 +3,19 @@
 
 import {ReactiveMachine} from "@hop/hiphop";
 
-hiphop module M1( a ) {
+hiphop module M1() {
+   out a;
    emit a( 100 );
    async (a) {
       this.notify( 10 );
    }
 }
 
-hiphop module main( a, b ) {
-   run M1( a as b );
+hiphop module main() {
+   out a, b;
+   run M1() { b as a };
    yield;
-   run M1( a );
+   run M1() { a };
 }
 
 const m = new ReactiveMachine(main, "exec-module");

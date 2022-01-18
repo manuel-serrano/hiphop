@@ -3,7 +3,8 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module prg(O) {
+hiphop module prg() {
+   out O;
    async (O) {
       setTimeout(() => this.notify(5), 3000);
    }

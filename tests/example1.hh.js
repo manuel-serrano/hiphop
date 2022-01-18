@@ -3,7 +3,9 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module prg( T ) {
+hiphop module prg() {
+   out T;
+   
    yield;
    {
       signal S;

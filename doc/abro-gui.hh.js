@@ -1,28 +1,30 @@
-"use hiphop";
+"use @hop/hiphop";
 
 service abro() {
    return <html>
      <head>
-       <script src="hiphop" lang="hopscript"/>
-       <script defer>
-          hiphop machine prg( in A, in B, in R, out O ) {
+       <script type="module" lang="@hop/hiphop">
+	 hiphop machine prg() {
+ 	    in A; in B; in R; out O;
+			   
              do {
 		fork {
-		   await( A.now );
+		   await(A.now);
 		} par {
-		   await( B.now );
+		   await(B.now);
 		}
 		emit O();
-	     } every( R.now )
+	     } every(R.now)
 	  }
    
-          prg.addEventListener( "O", v => alert( "got O: " + v ) );
+          prg.addEventListener("O", v => alert("got O: " + v));
+	  globalThis.prg = prg;
        </script>
      </head>
      <body>
-       <button onclick=~{prg.react( "A" )}>A</button>
-       <button onclick=~{prg.react( "B" )}>B</button>
-       <button onclick=~{prg.react( "R" )}>R</button>
+       <button onclick=~{prg.react("A")}>A</button>
+       <button onclick=~{prg.react("B")}>B</button>
+       <button onclick=~{prg.react("R")}>R</button>
      </body>
    </html>
 }   

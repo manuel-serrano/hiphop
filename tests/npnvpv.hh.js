@@ -1,7 +1,8 @@
 "use @hop/hiphop";
 "use hopscript";
 
-hiphop machine prg(in A = "_", in B) {
+hiphop machine prg() {
+   in A = "_"; in B;
    loop {
       host {
 	 console.log("A.now=" + A.now, "A.pre=" + A.pre, 

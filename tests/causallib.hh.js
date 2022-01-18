@@ -4,7 +4,8 @@
 import * as hh from "@hop/hiphop";
 
 
-hiphop module mymod( in A, in B, in R, out O ) {
+hiphop module mymod() {
+   in A; in B; in R; out O;
    do{
       fork {
 	 await( A.now );
@@ -17,10 +18,11 @@ hiphop module mymod( in A, in B, in R, out O ) {
 
 
 
-hiphop module prog(in I,  in A, in B, in R, out O  ) {
+hiphop module prog() {
+    in I, A, B, R; out O;
     signal A;
     fork {
-        run mymod( ... );
+       run mymod() { * };
     } par {
         await (O.now);
         emit A();

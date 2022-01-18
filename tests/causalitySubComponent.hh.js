@@ -3,8 +3,9 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module RRNode1 (in Req1, in Initial1, in TokenIn1, in PrevNok1,
-		     out TokenOut1, out Ok1, out Nok1) {
+hiphop module RRNode1() {
+   in Req1, Initial1, TokenIn1, PrevNok1;
+   out TokenOut1, Ok1, Nok1;
    signal Try1;
  //  if (TokenIn1.pre) emit TokenOut1();
    if (TokenIn1.pre || PrevNok1.now) emit Try1();
@@ -12,8 +13,9 @@ hiphop module RRNode1 (in Req1, in Initial1, in TokenIn1, in PrevNok1,
    if (Try1.now && !Req1.now ) emit Nok1();
 }
 
-hiphop module RRNode2 (in Req2, in Initial2, in TokenIn2, in PrevNok2,
-		     out TokenOut2, out Ok2, out Nok2) {
+hiphop module RRNode2() {
+   in Req2, Initial2, TokenIn2, PrevNok2;
+   out TokenOut2, Ok2, Nok2;
    signal Try2;
  // if (TokenIn2.pre) emit TokenOut2();
    if (TokenIn2.pre || PrevNok2.now) emit Try2();
@@ -62,22 +64,23 @@ hiphop module RR (in Req1, in Req2, in Req3,
 }
 */
 
-hiphop module RR (in Req1, in Req2,
-		 out Ok1, out Ok2) {
-    signal Initial1, Initial2,
-           TokenIn1, TokenIn2,
-           TokenOut1, TokenOut2,
-           PrevNok1, PrevNok2,
-           Nok1, Nok2;
+hiphop module RR() {
+   in Req1; in Req2;
+   out Ok1; out Ok2;
+   signal Initial1, Initial2,
+	  TokenIn1, TokenIn2,
+	  TokenOut1, TokenOut2,
+	  PrevNok1, PrevNok2,
+	  Nok1, Nok2;
 //   emit Initial1();
    fork { 
-      run RRNode1 ( Initial1,  Req1,
-		 TokenIn1,  PrevNok1,
-		  TokenOut1, Ok1, Nok1);
+      run RRNode1() { Initial1,  Req1,
+		      TokenIn1,  PrevNok1,
+		      TokenOut1, Ok1, Nok1 };
    } par {
-      run RRNode2 (Initial2, Req2,
-		 TokenIn2,PrevNok2,
-		  TokenOut2,  Ok2,  Nok2);
+      run RRNode2() { Initial2, Req2,
+		      TokenIn2,PrevNok2,
+		      TokenOut2,  Ok2,  Nok2 };
    } par {
       if (TokenOut1.now) emit TokenIn2();
    } par {

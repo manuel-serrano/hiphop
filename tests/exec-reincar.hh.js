@@ -5,7 +5,8 @@ import * as hh from "@hop/hiphop";
 
 let glob = 5;
 
-hiphop module prg(in R, O, OT, in T) {
+hiphop module prg() {
+   in R; out O; out OT; in T;
    do {
       fork {
 	 abort(R.now) {

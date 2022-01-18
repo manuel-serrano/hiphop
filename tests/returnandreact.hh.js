@@ -8,7 +8,8 @@ function foo( cb ) {
 }
 
 const m = new hh.ReactiveMachine(
-   hiphop module( S ) {
+   hiphop module() {
+      out S;
       async (S) {
          setTimeout( this.notify.bind( this ), 100, 5 );
       }

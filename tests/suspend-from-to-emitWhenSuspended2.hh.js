@@ -4,7 +4,8 @@
 import * as hh from "@hop/hiphop";
 
 const m = new hh.ReactiveMachine(
-   hiphop module( S, R, E ) {
+   hiphop module() {
+      inout S, R, E;
       loop {
 	 suspend from immediate( S.now ) to immediate( R.now ) emit E() {
 	    hop { console.log( "not suspended!" ) }

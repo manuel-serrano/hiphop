@@ -3,7 +3,8 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module prg( in I, O ) {
+hiphop module prg() {
+   in I; out O;
    every immediate( I.now ) {
       emit O();
    }

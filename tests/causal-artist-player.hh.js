@@ -4,7 +4,8 @@
 import * as hh from "@hop/hiphop";
 
 function prg2() {
-   return hiphop module(artist, playlist) {
+   return hiphop module() {
+      inout artist, playlist;
       found: loop {
 	 signal candidateArtist, candidatePlaylist;
 	 async (candidateArtist) {
@@ -22,10 +23,11 @@ function prg2() {
    }
 }
 
-hiphop module prg(artist, playlist, exit) {
+hiphop module prg() {
+   inout artist, playlist, exit;
    abort(exit.now) {
       fork {
-	 run ${prg2()}(artist as artist, ...);
+	 run ${prg2()}() { artist as artist, * };
       } par {
 	 every(artist.now) {
 	    host { console.log("***ARTIST***", artist.nowval) };
