@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Sat Jan 15 06:28:44 2022 (serrano)                */
+#*    Last change :  Tue Jan 18 14:08:40 2022 (serrano)                */
 #*    Copyright   :  2006-22 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -31,6 +31,7 @@ HOPSODIR=@SODIR@
 HOPSHAREDIR=@HOPSHAREDIR@
 
 HIPHOPLIBDIR=$(LIBDIR)/$(HZ)/$(HZVERSION)
+MODDESTDIR=$(HOPLIBDIR)/hop/$(HOPVERSION)/node_modules/@hop/$(HZ)
 
 HOP = @HOP@
 HOPC = @HOPC@ --js-plugins
@@ -84,7 +85,7 @@ nodejs: $(NODEJSFILES)
 #*    The implicit rules                                               */
 #*---------------------------------------------------------------------*/
 %.@SO@: %.js
-	$(HOPC) $(HFLAGS) --safe -y -o $@ $< 
+	$(HOPC) $(HFLAGS) --safe -y -o $@ $< --destdir $(MODDESTDIR)
 
 %.@SO@: %.hop
 	$(HOPC) $(HFLAGS) --safe -y -o $@ $< 
@@ -147,6 +148,7 @@ install-so:
 	for p in $(HOPPREPROCESSOR:%.hop=%); do \
 	   cp preprocessor/$$p.@SO@ $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor/$/$(SODIR); \
         done
+	chmod -R a+rx $(DESTDIR)$(LIBDIR)/$(HZ)
 
 install-nodejs install-local:
 	mkdir -p $$HOME/.node_modules

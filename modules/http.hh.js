@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Tue Jan 11 18:12:15 2022                          */
-/*    Last change :  Mon Jan 17 16:03:59 2022 (serrano)                */
+/*    Last change :  Tue Jan 18 07:37:58 2022 (serrano)                */
 /*    Copyright   :  2022 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HTTP HipHop module.                                              */
@@ -17,7 +17,7 @@
 import * as http from "http";
 import * as https from "https";
 
-export { httpInterface, httpModule };
+export { request, HttpRequest };
 
 /*---------------------------------------------------------------------*/
 /*    debug ...                                                        */
@@ -27,16 +27,16 @@ function debug() {
 }
 
 /*---------------------------------------------------------------------*/
-/*    httpInterface ...                                                */
+/*    Http ...                                                         */
 /*---------------------------------------------------------------------*/
-hiphop interface httpInterface {
+hiphop interface HttpRequest {
    out result;
 }
 
 /*---------------------------------------------------------------------*/
-/*    httpModuleBuilder ...                                            */
+/*    request ...                                                      */
 /*---------------------------------------------------------------------*/
-hiphop module httpModule(options, protocol = "http", playload = undefined) implements httpInterface {
+hiphop module request(protocol, options, payload = undefined) implements HttpRequest {
    let state = "active";
    let buf = "";
    let req = false;
@@ -50,7 +50,8 @@ hiphop module httpModule(options, protocol = "http", playload = undefined) imple
       req = proto.request(options, _res => {
        	 res = _res;
        	 if (debug()) {
-	    console.error("*** HIPHOP_DEBUG [" + options.path + "], statusCode: ", res.statusCode);
+	    console.error("*** HTTP_DEBUG [" + protocol + "://" + options.path + "]",
+	       "statusCode: " + res.statusCode);
        	 }
        	 if (res.statusCode !== 200) {
 	    self.notify(res);
@@ -60,7 +61,8 @@ hiphop module httpModule(options, protocol = "http", playload = undefined) imple
 	       res.buffer = buf;
 	       
 	       if (debug()) {
-		  console.error("*** HIPHOP_DEBUG: [" + options.path + "], buf=[" + buf + "]");
+		  console.error("*** HTTP_DEBUG [" + protocol + "://" + options.path + "]",
+		     "buf: [" + buf + "]");
 	       }
 
 	       if (state === "active") {
@@ -81,7 +83,8 @@ hiphop module httpModule(options, protocol = "http", playload = undefined) imple
 
       req.on('error', error => {
        	 if (debug()) {
-	    console.error("*** HIPHOP_DEBUG [" + options.path + "], error: ", error);
+	    console.error("*** HTTP_DEBUG [" + protocol + "://" + options.path + "]", 
+	       "error: " + error);
        	 }
        	 if (state === "active") self.notify("error");
       });
