@@ -1,12 +1,12 @@
 /*=====================================================================*/
-/*    .../prgm/project/hiphop/hiphop/examples/timer/timer-hh.js        */
+/*    serrano/prgm/project/hiphop/hiphop/modules/interval.hh.js        */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Tue Jan 18 16:47:52 2022 (serrano)                */
+/*    Last change :  Tue Jan 18 07:36:44 2022 (serrano)                */
 /*    Copyright   :  2018-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
-/*    HipHop part of the Timer example.                                */
+/*    HipHop interval module.                                          */
 /*=====================================================================*/
 "use @hop/hiphop";
 "use hopscript";
@@ -14,27 +14,29 @@
 /*---------------------------------------------------------------------*/
 /*    module                                                           */
 /*---------------------------------------------------------------------*/
-export { suspendableTimer };
+export { interval, Interval };
        
 /*---------------------------------------------------------------------*/
-/*    timeoutMod ...                                                   */
+/*    timeout ...                                                      */
 /*---------------------------------------------------------------------*/
-hiphop module timeoutMod(nms) {
+hiphop module timeout(duration, step) {
    out tick;
    
    let tmt = false;
+   let ds = 0;
    let d = 0;
+   
    async (tick) {
-      tmt = setTimeout(() => this.notify(true), nms);
+      tmt = setTimeout(() => this.notify(step), step);
    } suspend {
-      d = Date.now();
+      ds = Date.now();
       if (tmt) clearTimeout(tmt);
    } resume {
-      d = Date.now() - d;
-      if (d < nms) {
-	 tmt = setTimeout(() => this.notify(true), nms - d);
+      const dr = Date.now() - ds;
+      if (ds < step) {
+	 tmt = setTimeout(() => this.notify(step), ds - step);
       } else {
-	 this.notify(true);
+	 this.notify(step);
       }
    } kill {
       if (tmt) clearTimeout(tmt);
@@ -42,18 +44,20 @@ hiphop module timeoutMod(nms) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    basicTimer ...                                                   */
+/*    basicInterval ...                                                */
 /*---------------------------------------------------------------------*/
-hiphop module basicTimer() {
-   in duration = 0;
+hiphop module basicInterval(duration, step) {
    out elapsed;
-      
+   out state;
+   
+   emit state("running");
    emit elapsed(0);
+   
    loop {
-      if (elapsed.nowval < duration.nowval) {
+      if (elapsed.nowval < duration) {
 	 signal tick;
-	 run timeoutMod(100) { * };
-	 emit elapsed(elapsed.preval + 0.1);
+	 run timeout(duration, step || 100) { * };
+         emit elapsed(elapsed.preval + tick.nowval);
       } else {
 	 yield;
       }
@@ -61,46 +65,34 @@ hiphop module basicTimer() {
 }
 
 /*---------------------------------------------------------------------*/
-/*    timer ...                                                        */
+/*    Interface ...                                                    */
 /*---------------------------------------------------------------------*/
-hiphop module timer() {
-   in duration = 0;
-   in reset;
-   out elapsed;
-      
-   do {
-      run basicTimer() { * };
-   } every (reset.now);
-}
-
-/*---------------------------------------------------------------------*/
-/*    Timer ...                                                        */
-/*---------------------------------------------------------------------*/
-hiphop interface Timer {
+hiphop interface Interval {
    in reset;
    in suspend;
    out elapsed = 0; 
-   out suspendcolor;
-   inout duration;
-}      
+   out state;
+}
 
 /*---------------------------------------------------------------------*/
-/*    suspendableTimer ...                                             */
+/*    interval ...                                                     */
 /*---------------------------------------------------------------------*/
-hiphop module suspendableTimer() implements Timer {
+hiphop module interval(duration, step) implements Interval {
    do {
       fork {
 	 suspend toggle (suspend.now) {
-	    run timer() { * };
+   	    do {
+      	       run basicInterval(duration, step) { * };
+   	    } every (reset.now);
 	 }
       } par {
-	 emit suspendcolor("transparent");
 	 loop {
 	    await (suspend.now);
-	    emit suspendcolor("orange");
+	    emit state("suspended");
 	    await (suspend.now);
-	    emit suspendcolor("transparent");
+	    emit state("running");
 	 }
       }
-   } every (reset.now)
+   } every (reset.now);
+   emit state("finished");
 }

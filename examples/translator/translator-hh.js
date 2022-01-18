@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Thu Aug  2 01:01:22 2018                          */
-/*    Last change :  Wed Dec 29 17:16:53 2021 (serrano)                */
-/*    Copyright   :  2018-21 Manuel Serrano                            */
+/*    Last change :  Tue Jan 18 16:53:02 2022 (serrano)                */
+/*    Copyright   :  2018-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    translator demo, client and hiphop parts.                        */
 /*=====================================================================*/
@@ -58,43 +58,46 @@ function translate(langPair, text) {
 /*---------------------------------------------------------------------*/
 /*    execColor ...                                                    */
 /*---------------------------------------------------------------------*/
-function execColor(langPair) {
-   return hiphop module(in text, out color, out trans) {
-      signal result;
+hiphop module execColor(langPair) {
+   in text; 
+   out color; 
+   out trans;
+   signal result;
       
-      emit color("red");
-      await immediate(text.now);
+   emit color("red");
+   await immediate(text.now);
       
-      async (result) {
-	 this.notify(translate(langPair, text.nowval));
-      }
+   async (result) {
+      this.notify(translate(langPair, text.nowval));
+   }
 
-      if (result.nowval.resolve) {
-	 emit trans(result.nowval.val);
-	 emit color("green");
-      } else {
-	 emit color("orange");
-      }
+   if (result.nowval.resolve) {
+      emit trans(result.nowval.val);
+      emit color("green");
+   } else {
+      emit color("orange");
    }
 }
 
 /*---------------------------------------------------------------------*/
 /*    trans ...                                                        */
 /*---------------------------------------------------------------------*/
-hiphop module trans(in text,
-		     out transEn, out colorEn,
-		     out transNe, out colorNe,
-		     out transEs, out colorEs,
-		     out transSe, out colorSe) {
+hiphop module trans() {
+   in text;
+   out transEn; out colorEn;
+   out transNe; out colorNe;
+   out transEs; out colorEs;
+   out transSe; out colorSe;
+      
    every (text.now) {
       fork {
-	 run ${execColor("fr|en")}(colorEn => color, transEn => trans, ...);
+	 run execColor("fr|en") { colorEn from color, transEn from trans, * };
       } par {
-	 run ${execColor("en|fr")}(colorNe => color, transEn => text, transNe => trans, ...);
+	 run execColor("en|fr") { colorNe from color, transEn to text, transNe from trans, * }
       } par {
-	 run ${execColor("fr|es")}(colorEs => color, transEs => trans, ...);
+	 run execColor("fr|es") { colorEs from color, transEs from trans, * };
       } par {
-	 run ${execColor("es|fr")}(colorSe => color, transEs => text, transSe => trans, ...);
+	 run execColor("es|fr") { colorSe from color, transEs to text, transSe from trans, * };
       }
    }
 }

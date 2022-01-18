@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Jan 16 07:20:47 2016                          */
-/*    Last change :  Wed Jan 12 11:56:46 2022 (serrano)                */
+/*    Last change :  Tue Jan 18 16:44:10 2022 (serrano)                */
 /*    Copyright   :  2016-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prims client part                                                */
@@ -190,9 +190,11 @@ function prims(G) {
       return acc;
    }
 
-   return hiphop module (inout go,
-			  inout killn combine reduce,
-			  inout numbers combine reduce) {
+   return hiphop module () {
+      inout go;
+      inout killn combine reduce;
+      inout numbers combine reduce;
+      
       fork "numbers" {
 	 loop {
 	    host { G.ctx.clearRect(0, 0, G.width, G.height) }
