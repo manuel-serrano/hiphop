@@ -4,7 +4,7 @@
 import * as hh from "@hop/hiphop";
 
 hiphop machine mach() {
-   in toogle;
+   inout toogle;
    
    suspend toggle( toogle.now ) {
       loop {

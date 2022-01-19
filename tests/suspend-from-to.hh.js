@@ -4,7 +4,7 @@
 import * as hh from "@hop/hiphop";
 
 hiphop module prg() {
-   in I; out O;
+   inout I; inout O;
    yield;
    suspend from( I.now ) to( O.now ) {
       loop {

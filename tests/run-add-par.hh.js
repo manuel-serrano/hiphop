@@ -15,7 +15,7 @@ hiphop module m1() {
 hiphop module run2() {
    inout S, U, A, B;
    fork "par" {
-      run m1() { S, U, W as A, Z as B };
+      run m1() { S, U, A as W, B as Z };
    } par {
       halt;
    }
@@ -29,7 +29,7 @@ console.log( "m.inputAndReact(S)" );
 m.inputAndReact( "S" )
 
 //m.react();
-m.getElementById( "par" ).appendChild( hiphop run m1( S, U, Z as A ) );
+m.getElementById( "par" ).appendChild( hiphop run m1() { S, U, A as Z } );
 
 console.log( "==================== ADD RUN PARALLEL ==================" );
 

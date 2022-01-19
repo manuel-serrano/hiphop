@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Tue Jan 18 14:08:40 2022 (serrano)                */
+#*    Last change :  Wed Jan 19 08:11:23 2022 (serrano)                */
 #*    Copyright   :  2006-22 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -31,7 +31,6 @@ HOPSODIR=@SODIR@
 HOPSHAREDIR=@HOPSHAREDIR@
 
 HIPHOPLIBDIR=$(LIBDIR)/$(HZ)/$(HZVERSION)
-MODDESTDIR=$(HOPLIBDIR)/hop/$(HOPVERSION)/node_modules/@hop/$(HZ)
 
 HOP = @HOP@
 HOPC = @HOPC@ --js-plugins
@@ -85,7 +84,7 @@ nodejs: $(NODEJSFILES)
 #*    The implicit rules                                               */
 #*---------------------------------------------------------------------*/
 %.@SO@: %.js
-	$(HOPC) $(HFLAGS) --safe -y -o $@ $< --destdir $(MODDESTDIR)
+	$(HOPC) $(HFLAGS) --safe -y -o $@ $<
 
 %.@SO@: %.hop
 	$(HOPC) $(HFLAGS) --safe -y -o $@ $< 
@@ -169,6 +168,7 @@ clean-nodejs:
 clean: clean-nodejs
 	rm -rf lib/*.so
 	rm -rf ulib/*.so
+	rm -rf modules/*.so
 	rm -rf preprocessor/*.so
 
 cleanall: clean
