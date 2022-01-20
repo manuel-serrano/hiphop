@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Tue Jan 11 18:12:15 2022                          */
-/*    Last change :  Tue Jan 18 07:37:58 2022 (serrano)                */
+/*    Last change :  Thu Jan 20 09:56:55 2022 (serrano)                */
 /*    Copyright   :  2022 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HTTP HipHop module.                                              */
@@ -23,7 +23,7 @@ export { request, HttpRequest };
 /*    debug ...                                                        */
 /*---------------------------------------------------------------------*/
 function debug() {
-   process.env.HIPHOP_DEBUG && process.env.HIPHOP_DEBUG.indexOf("http") >= 0;
+   return process.env.HIPHOP_DEBUG && process.env.HIPHOP_DEBUG.indexOf("http") >= 0;
 }
 
 /*---------------------------------------------------------------------*/
@@ -85,7 +85,7 @@ hiphop module request(protocol, options, payload = undefined) implements HttpReq
        	 if (debug()) {
 	    console.error("*** HTTP_DEBUG [" + protocol + "://" + options.path + "]", 
 	       "error: " + error);
-       	 }
+	 }
        	 if (state === "active") self.notify("error");
       });
 
