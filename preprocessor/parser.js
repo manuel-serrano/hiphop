@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Jan 20 07:08:50 2022 (serrano)                */
+/*    Last change :  Thu Jan 20 07:59:02 2022 (serrano)                */
 /*    Copyright   :  2018-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1409,44 +1409,40 @@ function parseRun(token) {
 	 throw error.SyntaxError("RUN: bad module", tokenLocation(token));
    }
    
-   const attrs = astutils.J2SObjInit(loc, inits);
-   const run = astutils.J2SCall(loc, hhref(loc, "RUN"), null, [attrs]);
+   const runattrs = astutils.J2SObjInit(loc, inits);
+   const run = astutils.J2SCall(loc, hhref(loc, "RUN"), null, [runattrs]);
       	 
-   if (exprs.length === 0) {
-      return run;
-   } else {
-      const param = astutils.J2SDecl(loc, "__frame", "param");
-      const frame = astutils.J2SDataPropertyInit(
-	 loc, 
-	 astutils.J2SString(loc, "%frame"),	
-	 astutils.J2SRef(loc, param));
-      const ablock = astutils.J2SBlock(
-	 loc, loc, exprs);
-      const tag = tagInit("hop", loc);
-      const appl = astutils.J2SDataPropertyInit(
-	 loc, 
-	 astutils.J2SString(loc, "apply"),
-	 astutils.J2SMethod(loc, "runfun", [], ablock, self(loc)));
-      const attrs = astutils.J2SObjInit(
-	 loc, [locInit(loc), tag, appl]);
-      const atom = astutils.J2SCall(loc, hhref(loc, "ATOM"), null,
-	 [attrs].concat(axs));
-      const seqattrs = astutils.J2SObjInit(loc, 
-	 [locInit(loc), tagInit("run", loc)]);
-      const seq = astutils.J2SCall(
-	 loc, hhref(loc, "SEQUENCE"),
-	 null, [seqattrs, atom, run]);
-      const ret = astutils.J2SReturn(loc, seq);
-      const block = astutils.J2SBlock(loc, loc, [ret]);
-      const fun = astutils.J2SFun(loc, "runfun", [param], block);
-      const arg = astutils.J2SArray(loc, finits);
-
-      inits.push(frame);
-      
-      return astutils.J2SCall(
-	 loc, fun, [astutils.J2SUndefined(loc)], 
-	 [arg]);
-   }
+   const param = astutils.J2SDecl(loc, "__frame", "param");
+   const frame = astutils.J2SDataPropertyInit(
+      loc, 
+      astutils.J2SString(loc, "%frame"),	
+      astutils.J2SRef(loc, param));
+   const ablock = astutils.J2SBlock(
+      loc, loc, exprs);
+   const tag = tagInit("hop", loc);
+   const appl = astutils.J2SDataPropertyInit(
+      loc, 
+      astutils.J2SString(loc, "apply"),
+      astutils.J2SMethod(loc, "runfun", [], ablock, self(loc)));
+   const attrs = astutils.J2SObjInit(
+      loc, [locInit(loc), tag, appl]);
+   const atom = astutils.J2SCall(loc, hhref(loc, "ATOM"), null,
+      [attrs].concat(axs));
+   const seqattrs = astutils.J2SObjInit(loc, 
+      [locInit(loc), tagInit("run", loc)]);
+   const seq = astutils.J2SCall(
+      loc, hhref(loc, "SEQUENCE"),
+      null, [seqattrs, atom, run]);
+   const ret = astutils.J2SReturn(loc, seq);
+   const block = astutils.J2SBlock(loc, loc, [ret]);
+   const fun = astutils.J2SFun(loc, "runfun", [param], block);
+   const arg = astutils.J2SArray(loc, finits);
+   
+   inits.push(frame);
+   
+   return astutils.J2SCall(
+      loc, fun, [astutils.J2SUndefined(loc)], 
+      [arg]);
 }
    
 /*---------------------------------------------------------------------*/
