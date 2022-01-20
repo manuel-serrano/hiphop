@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Jan 18 18:33:24 2022 (serrano)                */
+/*    Last change :  Thu Jan 20 07:08:50 2022 (serrano)                */
 /*    Copyright   :  2018-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1296,8 +1296,13 @@ function parseRun(token) {
    const tag = tagInit("run", loc);
    let inits = [locInit(loc), tag];
    let exprs = [], axs = [], finits = [];
-
+   
    // module expression
+   const tty = this.peekToken().type;
+   
+   if (tty !== this.DOLLAR && tty !== this.ID) {
+      throw tokenTypeError(this.consumeAny());
+   }
    const module = this.parsePrimaryDollar();
 	 
    // variables
