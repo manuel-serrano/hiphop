@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Tue Jan 11 18:12:15 2022                          */
-/*    Last change :  Thu Jan 20 09:56:55 2022 (serrano)                */
+/*    Last change :  Thu Jan 20 10:24:57 2022 (serrano)                */
 /*    Copyright   :  2022 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HTTP HipHop module.                                              */
@@ -24,6 +24,15 @@ export { request, HttpRequest };
 /*---------------------------------------------------------------------*/
 function debug() {
    return process.env.HIPHOP_DEBUG && process.env.HIPHOP_DEBUG.indexOf("http") >= 0;
+}
+
+/*---------------------------------------------------------------------*/
+/*    debug_url ...                                                    */
+/*---------------------------------------------------------------------*/
+function debug_url(protocol, options) {
+   return protocol + "://" + options.hostname
+      + ":" + (options.port || 80)
+      +  options.path;
 }
 
 /*---------------------------------------------------------------------*/
@@ -50,7 +59,7 @@ hiphop module request(protocol, options, payload = undefined) implements HttpReq
       req = proto.request(options, _res => {
        	 res = _res;
        	 if (debug()) {
-	    console.error("*** HTTP_DEBUG [" + protocol + "://" + options.path + "]",
+	    console.error("*** HTTP_DEBUG [" + debug_url(protocol, options) + "]",
 	       "statusCode: " + res.statusCode);
        	 }
        	 if (res.statusCode !== 200) {
@@ -61,7 +70,7 @@ hiphop module request(protocol, options, payload = undefined) implements HttpReq
 	       res.buffer = buf;
 	       
 	       if (debug()) {
-		  console.error("*** HTTP_DEBUG [" + protocol + "://" + options.path + "]",
+	    	  console.error("*** HTTP_DEBUG [" + debug_url(protocol, options) + "]",
 		     "buf: [" + buf + "]");
 	       }
 
@@ -83,7 +92,7 @@ hiphop module request(protocol, options, payload = undefined) implements HttpReq
 
       req.on('error', error => {
        	 if (debug()) {
-	    console.error("*** HTTP_DEBUG [" + protocol + "://" + options.path + "]", 
+	    console.error("*** HTTP_DEBUG [" + debug_url(protocol, options) + "]",
 	       "error: " + error);
 	 }
        	 if (state === "active") self.notify("error");
