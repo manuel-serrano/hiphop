@@ -156,6 +156,8 @@ while : ; do
   shift
 done
 
+hiphop=`(cd ..; basename $PWD)`
+
 if [ ! -d node_modules ]; then
   mkdir node_modules
 fi
@@ -165,7 +167,7 @@ if [ ! -d node_modules/@hop ]; then
 fi  
 
 if [ ! -d node_modules/@hop/hiphop ]; then
-  (cd node_modules/@hop; ln -s ../../../../hiphop hiphop)
+  (cd node_modules/@hop; ln -s ../../../../$hiphop hiphop)
 fi  
 
 init_stats
