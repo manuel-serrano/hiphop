@@ -1,9 +1,11 @@
-"use hiphop";
+"use @hop/hiphop";
 "use hopscript";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
-hiphop machine mach( toogle ) {
+hiphop machine mach() {
+   inout toogle;
+   
    suspend toggle( toogle.now ) {
       loop {
 	 hop { console.log( "plop" ); }

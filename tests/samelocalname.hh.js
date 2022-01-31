@@ -1,9 +1,10 @@
-"use hiphop"
+"use @hop/hiphop"
 "use hopscript"
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
-hiphop module prg( in SAME=1 ) {
+hiphop module prg() {
+   in SAME = 1;
    emit SAME( 2 );
    hop { console.log( "1:", SAME.nowval ) }
    {

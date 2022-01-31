@@ -1,7 +1,7 @@
 "use strict"
 "use hopscript"
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 const prg =
       <hh.module O>

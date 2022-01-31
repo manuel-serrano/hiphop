@@ -1,10 +1,12 @@
-"use hiphop"
+"use @hop/hiphop"
 "use strict"
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 try {
-   const prg = hiphop module( O ) {
+   const prg = hiphop module() {
+      out O;
+      
       loop {
 	 signal L;
 

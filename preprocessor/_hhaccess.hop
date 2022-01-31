@@ -3,8 +3,8 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Nov 13 10:52:14 2018                          */
-;*    Last change :  Sun Dec 12 06:28:22 2021 (serrano)                */
-;*    Copyright   :  2018-21 Manuel Serrano                            */
+;*    Last change :  Sun Jan 16 09:07:41 2022 (serrano)                */
+;*    Copyright   :  2018-22 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    Patching the AST built by the native parser                      */
 ;*=====================================================================*/
@@ -139,28 +139,48 @@
       ;; for an access sig.{now,nowval,pre,preval}, this creates
       ;; a new variable named after sig and initialized with a dummy
       ;; empty and sealed object
-      (with-access::J2SAccess ax (loc obj field)
-	 (js-array-push accessors (accessor loc obj field) %this #f)
-	 (with-access::J2SUnresolvedRef obj (id)
-	    (instantiate::J2SDeclInit
-	       (loc loc)
-	       (id id)
-	       (writable #f)
-	       (vtype 'object)
-	       (binder 'let-opt)
-	       (scope 'letblock)
-	       (val (instantiate::J2SCast
-		       (loc loc)
-		       (type 'object)
-		       (static #t)
-		       (expr (instantiate::J2SAccess
-				(loc loc)
-				(obj (instantiate::J2SUnresolvedRef
-					(loc loc)
-					(id 'this)))
-				(field (instantiate::J2SString
-					  (loc loc)
-					  (val (symbol->string id))))))))))))
+      (if (>=fx (bigloo-debug) 1)
+	  ;; debug mode don't assume anything about types
+	  (with-access::J2SAccess ax (loc obj field)
+	     (js-array-push accessors (accessor loc obj field) %this #f)
+	     (with-access::J2SUnresolvedRef obj (id)
+		(instantiate::J2SDeclInit
+		   (loc loc)
+		   (id id)
+		   (writable #f)
+		   (vtype 'any)
+		   (binder 'let-opt)
+		   (scope 'letblock)
+		   (val (instantiate::J2SAccess
+			   (loc loc)
+			   (obj (instantiate::J2SUnresolvedRef
+				   (loc loc)
+				   (id 'this)))
+			   (field (instantiate::J2SString
+				     (loc loc)
+				     (val (symbol->string id)))))))))
+	  (with-access::J2SAccess ax (loc obj field)
+	     (js-array-push accessors (accessor loc obj field) %this #f)
+	     (with-access::J2SUnresolvedRef obj (id)
+		(instantiate::J2SDeclInit
+		   (loc loc)
+		   (id id)
+		   (writable #f)
+		   (vtype 'object)
+		   (binder 'let-opt)
+		   (scope 'letblock)
+		   (val (instantiate::J2SCast
+			   (loc loc)
+			   (type 'object)
+			   (static #t)
+			   (expr (instantiate::J2SAccess
+				    (loc loc)
+				    (obj (instantiate::J2SUnresolvedRef
+					    (loc loc)
+					    (id 'this)))
+				    (field (instantiate::J2SString
+					      (loc loc)
+					      (val (symbol->string id)))))))))))))
    
    (with-access::J2SNode node (loc)
       (if (pair? axs)

@@ -1,7 +1,7 @@
-"use hopscript"
+"use hopscript";
 
-const hh = require("hiphop");
-const fs = require("fs");
+import * as hh from "@hop/hiphop";
+import fs from "fs";
 
 function make_atom(i) {
    return <hh.loopeach GO>

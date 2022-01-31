@@ -1,6 +1,7 @@
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 function foo( evt ) {
    console.log( "foo called by", evt.type, "with value", evt.nowval );
@@ -15,7 +16,8 @@ function foo3( evt ) {
 }
 
 
-hiphop module prg( in I, out O ) {
+hiphop module prg() {
+   in I; out O;
    loop {
       await( I.now );
       emit O( I.nowval );

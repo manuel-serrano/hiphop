@@ -3,18 +3,23 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Jan 16 07:20:47 2016                          */
-/*    Last change :  Fri Dec 10 18:18:02 2021 (serrano)                */
-/*    Copyright   :  2016-21 Manuel Serrano                            */
+/*    Last change :  Tue Jan 18 16:44:10 2022 (serrano)                */
+/*    Copyright   :  2016-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prims client part                                                */
 /*=====================================================================*/
-"use hiphop";
+"use @hop/hiphop";
 "use hopscript";
 
 /*---------------------------------------------------------------------*/
-/*    Imports                                                          */
+/*    module                                                           */
 /*---------------------------------------------------------------------*/
-const hh = require("hiphop");
+import { ReactiveMachine } from ${require.resolve("@hop/hiphop")};
+export { addNumber, resume, pause, setSpeed, start };
+
+/*---------------------------------------------------------------------*/
+/*    Global variable ...                                              */
+/*---------------------------------------------------------------------*/
 let G;
 
 /*---------------------------------------------------------------------*/
@@ -26,7 +31,7 @@ function Num(G) {
    this.color = G.predatorColor;
    this.font = `${G.fontWeight} ${G.fontSize}px ${G.font}`;
    this.eaten = 0;
-   this.x = Math.random() *  G.width;
+   this.x = Math.random() * G.width;
    this.y = Math.random() * G.height;
 
    this.init();
@@ -185,10 +190,11 @@ function prims(G) {
       return acc;
    }
 
-   console.log("hh=", globalThis);
-   return hiphop module (inout go,
-			  inout killn combine reduce,
-			  inout numbers combine reduce) {
+   return hiphop module () {
+      inout go;
+      inout killn combine reduce;
+      inout numbers combine reduce;
+      
       fork "numbers" {
 	 loop {
 	    host { G.ctx.clearRect(0, 0, G.width, G.height) }
@@ -203,44 +209,56 @@ function prims(G) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    addNumber ...                                                    */
+/*    appendChildNumber ...                                            */
 /*---------------------------------------------------------------------*/
-function addNumber(G) {
+function appendChildNumber(G) {
    G.mach.getElementById("numbers").appendChild(number(G));
 }
    
 /*---------------------------------------------------------------------*/
-/*    exports                                                          */
+/*    addNumber ...                                                    */
 /*---------------------------------------------------------------------*/
-exports.addNumber = function(num) {
+function addNumber(num) {
    while (num-- >  0) {
-      addNumber(G);
+      appendChildNumber(G);
    }
 }
 
-exports.resume = function() {
+/*---------------------------------------------------------------------*/
+/*    resume ...                                                       */
+/*---------------------------------------------------------------------*/
+function resume() {
    G.timer = setInterval(() => G.mach.react(), G.speed);
 }
-   
-exports.pause = function() {
+
+/*---------------------------------------------------------------------*/
+/*    pause ...                                                        */
+/*---------------------------------------------------------------------*/
+function pause() {
    if (G.timer) {
       clearInterval(G.timer);
       G.timer = false;
    } else {
-      exports.resume();
+      resume();
    }
 }
 
-exports.setSpeed = function(speed) {
+/*---------------------------------------------------------------------*/
+/*    setSpeed ...                                                     */
+/*---------------------------------------------------------------------*/
+function setSpeed(speed) {
    G.speed = ~~speed;
    
    if (G.timer) {
       clearInterval(G.timer);
-      exports.resume();
+      resume();
    }
 }
 
-exports.start = function(g, speed) {
+/*---------------------------------------------------------------------*/
+/*    start ...                                                        */
+/*---------------------------------------------------------------------*/
+function start(g, speed) {
    G = g;
 
    G.ctx = G.getContext("2d");
@@ -252,7 +270,7 @@ exports.start = function(g, speed) {
    G.fontWeight = "bold";
    G.count = 2;
 
-   exports.setSpeed(speed);
-   G.mach = new hh.ReactiveMachine(prims(G));
-   exports.resume();
+   setSpeed(speed);
+   G.mach = new ReactiveMachine(prims(G));
+   resume();
 }

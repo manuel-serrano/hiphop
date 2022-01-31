@@ -1,15 +1,17 @@
-"use hiphop"
+"use @hop/hiphop"
 "use hopscript"
 
-hiphop module mod(out O, var n, var m) {
+hiphop module mod(n, m) {
+   out O;
    emit O(n + m);
 }
     
-hiphop machine mach(O combine (x, y) => x + y) {
+hiphop machine mach() {
+   out O combine (x, y) => x + y;
    fork {
-      run mod(m = 5, n = 10, ...);
+      run mod(10, 5) { * };
    } par {
-      run mod(n = 100, m = 123, ...);
+      run mod(100, 123) { * };
    }
 }
 

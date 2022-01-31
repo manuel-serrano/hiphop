@@ -16,7 +16,7 @@
       "node": ">=10.21.0" 
    },
    "os": [ "darwin", "linux" ],
-   "main": "lib/nodejs/hiphop.js",
+   "main": "lib/hiphop.js",
    "server": "lib/hiphop.js",
    "client": [
       "lib/hiphop.js",

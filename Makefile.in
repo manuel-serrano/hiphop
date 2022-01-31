@@ -4,8 +4,8 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Wed Jun  3 13:08:50 2020 (serrano)                */
-#*    Copyright   :  2006-20 Manuel Serrano                            */
+#*    Last change :  Wed Jan 19 08:11:23 2022 (serrano)                */
+#*    Copyright   :  2006-22 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
 #*=====================================================================*/
@@ -33,7 +33,7 @@ HOPSHAREDIR=@HOPSHAREDIR@
 HIPHOPLIBDIR=$(LIBDIR)/$(HZ)/$(HZVERSION)
 
 HOP = @HOP@
-HOPC = @HOPC@
+HOPC = @HOPC@ --js-plugins
 HFLAGS = @HFLAGS@
 HHC = bin/hhc.sh --js-require-hop
 
@@ -47,7 +47,10 @@ PREPROCESSOR=$(JSPREPROCESSOR) $(HOPPREPROCESSOR)
 
 ULIB = parallelmap.js
 
-JSOBJECTS = $(LIB:%=lib/%) $(JSPREPROCESSOR:%=preprocessor/%) $(ULIB:%=ulib/%)
+MODULES = interval.hh.js http.hh.js
+
+JSOBJECTS = $(LIB:%=lib/%) $(JSPREPROCESSOR:%=preprocessor/%) $(ULIB:%=ulib/%) \
+  $(MODULES:%=modules/%)
 HOPOBJECTS = $(HOPPREPROCESSOR:%=preprocessor/%)
 OBJECTS=$(JSOBJECTS) $(HOPOBJECTS)
 
@@ -81,7 +84,7 @@ nodejs: $(NODEJSFILES)
 #*    The implicit rules                                               */
 #*---------------------------------------------------------------------*/
 %.@SO@: %.js
-	$(HOPC) $(HFLAGS) --safe -y -o $@ $< 
+	$(HOPC) $(HFLAGS) --safe -y -o $@ $<
 
 %.@SO@: %.hop
 	$(HOPC) $(HFLAGS) --safe -y -o $@ $< 
@@ -92,15 +95,23 @@ lib/nodejs/%.js: lib/%.js
 lib/nodejs/%.js: ulib/%.js
 	$(HHC) -o $@ $< 
 
+lib/nodejs/%.js: modules/%.js
+	$(HHC) -o $@ $< 
+
 #*---------------------------------------------------------------------*/
 #*    install                                                          */
 #*---------------------------------------------------------------------*/
-install: install-hiphop
-	cd $(DESTDIR)$(HOPLIBDIR)/hop/$(HOPVERSION)/node_modules; \
+install-sans-so: install-js install-sitelisp
+	$(MAKE) install-hop
+
+install: install-sans-so install-so
+
+install-hop: 
+	cd $(DESTDIR)$(HOPLIBDIR)/hop/$(HOPVERSION)/node_modules/@hop; \
 	rm -f $(HZ); \
 	ln -s $(DESTDIR)$(LIBDIR)/$(HZ)/$(HZVERSION) $(HZ)
 
-install-hiphop: install-so install-sitelisp
+install-js:
 	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)
 	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/lib
 	cp $(LIB:%=lib/%) $(DESTDIR)$(HIPHOPLIBDIR)/lib
@@ -109,6 +120,8 @@ install-hiphop: install-so install-sitelisp
 	cp $(PREPROCESSOR:%=preprocessor/%) $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor
 	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/ulib
 	cp $(ULIB:%=ulib/%) $(DESTDIR)$(HIPHOPLIBDIR)/ulib
+	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/modules
+	cp $(MODULES:%=modules/%) $(DESTDIR)$(HIPHOPLIBDIR)/modules
 	cp package.json $(DESTDIR)$(HIPHOPLIBDIR)
 	chmod -R a+rx $(DESTDIR)$(LIBDIR)/$(HZ)
 	find $(DESTDIR)$(HIPHOPLIBDIR) -name '*.@SO@' -exec touch {} \;
@@ -123,6 +136,10 @@ install-so:
 	for p in $(ULIB:%.js=%); do \
 	   cp ulib/$$p.@SO@ $(DESTDIR)$(HIPHOPLIBDIR)/ulib/$(SODIR); \
         done
+	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/modules/$(SODIR)
+	for p in $(MODULES:%.js=%); do \
+	   cp modules/$$p.@SO@ $(DESTDIR)$(HIPHOPLIBDIR)/modules/$(SODIR); \
+        done
 	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor/$(SODIR)
 	for p in $(JSPREPROCESSOR:%.js=%); do \
 	   cp preprocessor/$$p.@SO@ $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor/$(SODIR); \
@@ -130,6 +147,7 @@ install-so:
 	for p in $(HOPPREPROCESSOR:%.hop=%); do \
 	   cp preprocessor/$$p.@SO@ $(DESTDIR)$(HIPHOPLIBDIR)/preprocessor/$/$(SODIR); \
         done
+	chmod -R a+rx $(DESTDIR)$(LIBDIR)/$(HZ)
 
 install-nodejs install-local:
 	mkdir -p $$HOME/.node_modules
@@ -150,6 +168,7 @@ clean-nodejs:
 clean: clean-nodejs
 	rm -rf lib/*.so
 	rm -rf ulib/*.so
+	rm -rf modules/*.so
 	rm -rf preprocessor/*.so
 
 cleanall: clean

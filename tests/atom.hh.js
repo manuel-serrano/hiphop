@@ -1,6 +1,7 @@
+"use @hop/hiphop";
 "use strict"
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 function func() {
    console.log( "atom works!" );

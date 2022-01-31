@@ -1,8 +1,10 @@
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
-hiphop module prg( in I, X, Y ) {
+hiphop module prg() {
+   in I; inout X, Y;
    emit Y();
 }
 

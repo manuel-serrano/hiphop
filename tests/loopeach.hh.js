@@ -1,9 +1,10 @@
-"use hiphop";
+"use @hop/hiphop";
 "use hopscript";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
-hiphop module prg( in I, O ) {
+hiphop module prg() {
+   in I; out O;
    do {
       emit O();
    } every( I.now )

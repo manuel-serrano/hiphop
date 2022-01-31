@@ -1,13 +1,14 @@
-"use hiphop";
+"use @hop/hiphop";
 "use hopscript";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 function zoom_in_cb() {
    console.log( "********* ZOOOOOOOOOOOOOOOOOM ************" );
 }
 
-hiphop module prg( ZOOM_LOCK_TOOGLE, ZOOM_IN ) {
+hiphop module prg() {
+   inout ZOOM_LOCK_TOOGLE, ZOOM_IN;
    loop {
       abort( ZOOM_LOCK_TOOGLE.now ) {
 	 every( ZOOM_IN.now ) {

@@ -1,13 +1,14 @@
-"use hiphop"
+"use @hop/hiphop"
 "use hopscript"
 
 /* check if semantics of suspends / resume is correct when a task is over */
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 let glob = 5;
 
-hiphop module prg(in RESS, in S, O, OT, in T) {
+hiphop module prg() {
+   in RESS; in S; out O; out OT; in T;
    fork {
       suspend(S.now) {
 	 async (T) {

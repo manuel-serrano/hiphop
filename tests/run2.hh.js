@@ -1,9 +1,10 @@
-"use hiphop"
+"use @hop/hiphop"
 "use hopscript"
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
-hiphop module m1( T, W, V, Z ) {
+hiphop module m1() {
+   inout T, W, V, Z;
    fork {
       if( T.now ) {
 	 signal L;
@@ -16,13 +17,14 @@ hiphop module m1( T, W, V, Z ) {
    }
 }
 
-hiphop module m2( in S, in U, A, B ) {
+hiphop module m2() {
+   in S; in U; inout A, B;
    signal L;
 
    emit L();
 
-   run m1( T as S, W as U, V as A, Z as B );
-   run m1( T as S, W as U, V as A, Z as B );
+   run m1() { S as T, U as W, A from V, B as Z };
+   run m1() { S as T, U as W, A from V, B as Z };
 }
 
 exports.prg = new hh.ReactiveMachine( m2, "run22" );

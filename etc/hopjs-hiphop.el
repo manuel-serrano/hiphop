@@ -4,8 +4,8 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Tue Oct  1 08:16:49 2019 (serrano)                */
-;*    Copyright   :  2018-20 Manuel Serrano                            */
+;*    Last change :  Mon Dec 27 15:42:17 2021 (serrano)                */
+;*    Copyright   :  2018-21 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
 ;*=====================================================================*/
@@ -21,7 +21,7 @@
 ;*---------------------------------------------------------------------*/
 ;*    constants ...                                                    */
 ;*---------------------------------------------------------------------*/
-(defconst hiphop-version "1.1.2")
+(defconst hiphop-version "1.2.0")
 
 ;;;###autoload
 (defcustom hiphop-mode-line-string " HipHop"
@@ -33,8 +33,8 @@ Set this to nil if you don't want a modeline indicator."
 ;; font lock
 (defcustom hiphop-font-lock-keywords
   (list
-   (cons "\\(?:hiphop\\|hop\\)\\>" 'font-lock-face-hopjs12)
-   (cons "\\<\\(?:fork\\|par\\|in\\|out\\)\\>" 'font-lock-keyword-face)
+   (cons "\\(?:hiphop\\|host\\)\\>" 'font-lock-face-hopjs12)
+   (cons "\\<\\(?:fork\\|par\\|in\\|out\\|inout\\)\\>" 'font-lock-keyword-face)
    (cons "\\(?:loop\\|every\\|while\\|do\\|abort\\|weakabort\\|run\\|signal\\|module\\|interface\\|machine\\)\\>" 'font-lock-keyword-face)
    (cons "\\<\\(?:async\\|kill\\|suspend\\|resume\\)\\>" 'font-lock-face-hopjs3)
    (cons "\\(?:now\\|pre\\|nowval\\|preval\\)\\>" 'font-lock-face-hopjs8)

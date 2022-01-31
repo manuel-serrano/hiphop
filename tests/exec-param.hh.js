@@ -1,9 +1,11 @@
-"use hiphop"
+"use @hop/hiphop"
 "use hopscript"
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
-hiphop module prg( in IN combine (x, y) => x + y ) {
+hiphop module prg() {
+   in IN combine (x, y) => x + y;
+	 
    emit IN( ${5} );
    async (){
       console.log( "receive " + IN.nowval );

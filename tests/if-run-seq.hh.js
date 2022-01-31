@@ -1,6 +1,7 @@
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 const pauseModule = hiphop module() { yield }
 
@@ -9,7 +10,7 @@ const m = new hh.ReactiveMachine(
       loop {
 	 hop { console.log( ">>> start" ) }
 	 if( 1 ) {
-	    run ${pauseModule}();
+	    run ${pauseModule}() {};
 	 } else {
 	    yield;
 	 }

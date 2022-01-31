@@ -1,4 +1,5 @@
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
 function WatchTimeType( h, m, s, ampm ) {
    this.hours = h;
@@ -41,9 +42,10 @@ function print_time( evt ) {
 }
 
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
-hiphop module prg( in I, Time=WatchTime ) {
+hiphop module prg() {
+   in I; out Time=WatchTime;
    loop {
       emit Time( IncrementTimeInPlace( Time.preval ) );
       yield;

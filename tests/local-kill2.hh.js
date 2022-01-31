@@ -1,10 +1,11 @@
-"use hiphop";
+"use @hop/hiphop";
 "use hopscript";
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 const mach = new hh.ReactiveMachine(
-   hiphop module(A) {
+   hiphop module() {
+      inout A;
       T: fork {
 	 loop {
 	    let tmt;

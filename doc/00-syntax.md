@@ -16,7 +16,7 @@ The HipHop syntax extends the JavaScript syntax with one single
 expression rule:
 
 ```ebnf
-  hiphop <HHstatement>
+  hiphop <HHStatement>
 ```
 
 Its complete formal syntax is given in Section [Formal Syntax](./00-syntax.html#formal-syntax).
@@ -33,8 +33,10 @@ HipHop Module
 =============
 
 ```ebnf
-<HHModule> --> module [ <Identifier> ] ( <FormalSignalList> )
-
+<HHModule> --> module [ <Identifier> ] ( <Param> ) { 
+   <FormalSignalList>
+   <HHStatement>
+}
 ```
 
 ### module [ident]( ... ) ###

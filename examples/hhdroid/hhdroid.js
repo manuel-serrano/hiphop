@@ -1,11 +1,13 @@
-"use hiphop"
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
-const hopdroid = require(hop.hopdroid);
+import hopdroid from hop.hopdroid;
 
 const phone = new hopdroid.phone();
 
-hiphop module Alarm(alarm, var minutes) {
+hiphop module Alarm(minutes) {
+   out alarm;
+   
    weakabort (alarm.now) {
       async (alarm) {
       	 this.intv = 
@@ -15,13 +17,17 @@ hiphop module Alarm(alarm, var minutes) {
    }
 }
 
-hiphop machine autoReply(in smsdelivered, smsreceived, autoreply = 0) {
+hiphop machine autoReply() {
+   in smsdelivered;
+   in smsreceived;
+   in autoreply = 0;
+      
    every(smsreceived.now && autoreply.nowval > 0) {
       let no = smsreceived.nowval[ 0 ];
       signal alarm;
       abort(smsdelivered.now && smsdelivered.nowval[ 0 ] === no ||
 	     autoreply.now && autoreply.nowval === 0) {
-	 run Alarm(minutes = autoreply.nowval);
+	 run Alarm(autoreply.nowval) { * };
 	 host { 
 	    phone.sendSms(no, "I'm busy. I will answer as soon as I can");
 	    hop.broadcast("autoreply", "delivered " + no);

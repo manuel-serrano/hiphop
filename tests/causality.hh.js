@@ -1,8 +1,11 @@
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
-hiphop module example( I, O ) {
+hiphop module example() {
+   inout I; out O;
+      
    loop {
       if( O.now ) emit I();
       yield;

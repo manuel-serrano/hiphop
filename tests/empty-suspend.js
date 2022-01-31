@@ -1,7 +1,8 @@
 "use strict";
-"use hopscript"
+"use hopscript";
 
-let hh = require("hiphop");
+import * as hh from "@hop/hiphop";
+
 let prg = <hh.module>
             <hh.local V_S_W>
                 <hh.suspend V_S_W><hh.nothing/></hh.suspend>

@@ -1,18 +1,19 @@
-"use hiphop";
+"use @hop/hiphop";
 "use hopscript"
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
-hiphop interface I1( A, B, C );
-hiphop interface I2( D ) extends I1;
+hiphop interface I1 { inout A, B, C; };
+hiphop interface I2 extends I1 { inout D; } ;
 
 hiphop module M2() implements I2 {
    emit A( 10 );
    emit D( 23 );
 }
 
-hiphop module M1( Z ) implements I1 {
-   run M2( D as Z, ... );
+hiphop module M1() implements I1 {
+   inout Z;
+   run M2() { Z as D, * };
 }
 
 const m = new hh.ReactiveMachine( M1 );

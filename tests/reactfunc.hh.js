@@ -1,7 +1,7 @@
-"use hiphop"
+"use @hop/hiphop"
 "use hopscript"
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 function foo( evt ) {
    console.log( "hi from foo signal", evt.type, "is set!" )
@@ -19,7 +19,8 @@ function bar2( evt ) {
    console.log( "hi from bar2 signal", evt.type, "is set with", evt.nowval, "!" )
 }
 
-hiphop module prg( in I1, in I2, O1, O11, O2 ) {
+hiphop module prg() {
+   in I1; in I2; out O1, O11, O2;
    loop {
       if( I1.now ) {
 	 emit O1();

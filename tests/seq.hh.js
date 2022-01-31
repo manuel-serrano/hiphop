@@ -1,8 +1,9 @@
-"use hiphop";
+"use @hop/hiphop";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
-hiphop module t( n ) {
+hiphop module t() {
+   in n;
    host { console.log( "1", n.nowval ) }
    host { console.log( "2" ) }
 }

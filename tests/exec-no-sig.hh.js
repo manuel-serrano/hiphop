@@ -1,8 +1,10 @@
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
-hiphop module prg(O, OT) {
+hiphop module prg() {
+   out O, OT;
    fork {
       async () {
 	 console.log("Oi.");

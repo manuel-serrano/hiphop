@@ -1,12 +1,14 @@
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 function plus( a, b ) {
    return a + b;
 }
 
-hiphop module prg( S, I, J ) {
+hiphop module prg() {
+   inout S, I, J;
    loop {
       fork {
 	 signal M=5;

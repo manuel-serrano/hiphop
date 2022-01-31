@@ -8,10 +8,10 @@ orchestrating web applications.
 
 
 ```javascript
-"use hiphop"
+"use @hop/hiphop"
 "use hopscript"
 
-const hh = require("hiphop");
+import { ReactiveMachine } from "@hop/hiphop";
 
 hiphop module prg(in A, in B, in R, out O) {
    do {
@@ -24,7 +24,7 @@ hiphop module prg(in A, in B, in R, out O) {
    } every (R.now)
 }
 
-const m = new hh.ReactiveMachine(prg, "ABRO");
+const m = new ReactiveMachine(prg, "ABRO");
 m.addEventListener("O", e => console.log("got: ", e));
 m.react({ A: 1 }, { B: 2 }, { R: true }, { A: 3, B: 4 });
 ```

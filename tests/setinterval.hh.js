@@ -1,9 +1,10 @@
-"use hiphop";
+"use @hop/hiphop";
 "use hopscript";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
-hiphop module setinterval( A, Tick ) {
+hiphop module setinterval() {
+   inout A, Tick;
    fork {
       abort count( 3, Tick.now ) {
 	 async (A) {

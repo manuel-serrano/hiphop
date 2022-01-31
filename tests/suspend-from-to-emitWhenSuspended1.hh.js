@@ -1,9 +1,11 @@
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 const m = new hh.ReactiveMachine(
-   hiphop module( S, R, E ) {
+   hiphop module() {
+      inout S, R, E;
       suspend from( S.now ) to( R.now ) emit E() {
 	 loop {
 	    hop { console.log( "not suspended!" ) }

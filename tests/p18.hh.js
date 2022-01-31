@@ -1,13 +1,14 @@
-"use hiphop";
+"use @hop/hiphop";
 "use hopscript"
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 function sum( arg1, arg2 ) {
    return arg1 + arg2;
 }
 
-hiphop module prg( S1_and_S2, S1_and_not_S2, not_S1_and_S2, not_S1_and_not_S2 ) {
+hiphop module prg() {
+   inout S1_and_S2, S1_and_not_S2, not_S1_and_S2, not_S1_and_not_S2;
    loop {
       T1: {
 	 signal S1;

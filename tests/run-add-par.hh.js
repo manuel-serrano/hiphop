@@ -1,9 +1,10 @@
-"use hiphop";
+"use @hop/hiphop";
 "use hopscript";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
-hiphop module m1( S, U, W, Z ) {
+hiphop module m1() {
+   inout S, U, W, Z;
    fork {
       if( S.now ) emit W();
    } par {
@@ -11,9 +12,10 @@ hiphop module m1( S, U, W, Z ) {
    }
 }
 
-hiphop module run2( S, U, A, B ) {
+hiphop module run2() {
+   inout S, U, A, B;
    fork "par" {
-      run m1( S, U, W as A, Z as B );
+      run m1() { S, U, A as W, B as Z };
    } par {
       halt;
    }
@@ -27,7 +29,7 @@ console.log( "m.inputAndReact(S)" );
 m.inputAndReact( "S" )
 
 //m.react();
-m.getElementById( "par" ).appendChild( hiphop run m1( S, U, Z as A ) );
+m.getElementById( "par" ).appendChild( hiphop run m1() { S, U, A as Z } );
 
 console.log( "==================== ADD RUN PARALLEL ==================" );
 

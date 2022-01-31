@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Oct 16 08:45:43 2012                          */
-/*    Last change :  Fri Dec 10 18:18:46 2021 (serrano)                */
+/*    Last change :  Mon Dec 27 11:25:16 2021 (serrano)                */
 /*    Copyright   :  2012-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prim numbers aka the Darwin Sieve                                */
@@ -27,11 +27,11 @@ service prims(o) {
 
    return <html>
      <head css=${require.resolve("./prims.hss")}>
-       <script src="hiphop" lang="hopscript"/>
-       <script src="./client.js" lang="hiphop"/>
-       <script defer>
-	 const pc = require("./client.js", "hiphop");
+       <link rel="shortcut icon" href="#"/>
+       <script type="module">
+	 import * as pc from ${require.resolve("./client.js")};
 	 window.onload = () => pc.start(${canvas}, ${speed});
+	 globalThis.pc = pc;
        </script>
      </head>
      <body>

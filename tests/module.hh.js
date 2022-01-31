@@ -1,11 +1,12 @@
-"use hiphop";
+"use @hop/hiphop";
 "use strict";
 
-hiphop module M( a = 99999 ) {
+hiphop module M() {
+   inout a = 99999;
    host {console.log( "a=", a.nowval ) };
 }
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 const m = new hh.ReactiveMachine( M );
 
 // test that default arguments are correctly overriden

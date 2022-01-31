@@ -1,13 +1,15 @@
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
 function foo( cb ) {
    cb( 4 );
 }
 
 const m = new hh.ReactiveMachine(
-   hiphop module( S ) {
+   hiphop module() {
+      out S;
       async (S) {
          setTimeout( this.notify.bind( this ), 100, 5 );
       }

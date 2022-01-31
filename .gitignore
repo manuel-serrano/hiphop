@@ -37,6 +37,8 @@ preprocessor/_hhaccess.so
 preprocessor/astutils.so
 preprocessor/parser.so
 ulib/parallelmap.so
+modules/http.hh.so
+modules/interval.hh.so
 lib/nodejs/ast.js
 lib/nodejs/batch.js
 lib/nodejs/compiler-utils.js
@@ -51,3 +53,4 @@ lib/nodejs/queue.js
 lib/nodejs/signal.js
 lib/nodejs/sweep.js
 tests/TEST
+tests/node_modules

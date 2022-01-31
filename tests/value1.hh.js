@@ -1,9 +1,10 @@
-"use hiphop";
+"use @hop/hiphop";
 "use hopscript";
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop";
 
-hiphop module prg( O=5 combine (x, y) => x + y ) {
+hiphop module prg() {
+   out O = 5 combine (x, y) => x + y;
    loop {
       emit O( ${5} );
       emit O( ${10} );

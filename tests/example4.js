@@ -1,6 +1,6 @@
 "use hopscript"
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 const prg = <hh.module A=${{accessibility: hh.IN}} T V>
   <hh.local S>

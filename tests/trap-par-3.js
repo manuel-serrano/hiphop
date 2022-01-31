@@ -1,6 +1,6 @@
 "use hopscript"
 
-const hh = require("hiphop")
+import * as hh from "@hop/hiphop"
 
 const prg = <hh.module S1_and_S2 S1_and_not_S2 not_S1_and_S2 not_S1_and_not_S2>
   <hh.local S1 S2>

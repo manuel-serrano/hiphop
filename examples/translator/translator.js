@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Thu Aug  2 00:58:52 2018                          */
-/*    Last change :  Fri Dec 10 18:33:21 2021 (serrano)                */
+/*    Last change :  Wed Dec 29 17:17:32 2021 (serrano)                */
 /*    Copyright   :  2018-21 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Multiple parallel translations example                           */
@@ -11,7 +11,7 @@
 /*    run with:                                                        */
 /*      http://localhost:8080/hop/trans                                */
 /*=====================================================================*/
-"use hopscript"
+"use hopscript";
 
 /*---------------------------------------------------------------------*/
 /*    translator ...                                                   */
@@ -19,11 +19,10 @@
 service translator() {
    return <html>
      <head>
-       <script src="hiphop" lang="hopscript"/>
-       <script src="./translator-hh.js" lang="hiphop"/>
-       <script defer>
-	 const hh = require("hiphop");
-	 const m = new hh.ReactiveMachine(require("./translator-hh.js", "hiphop"));
+       <script type="module">
+	 import { ReactiveMachine } from ${require.resolve("@hop/hiphop")};
+	 import { trans } from ${require.resolve("./translator-hh.js")};
+	 globalThis.m = new ReactiveMachine(trans);
        </script>
      </head>
      <style> * { font-size: 60px; color: black; }</style>

@@ -1,6 +1,7 @@
+"use @hop/hiphop";
 "use hopscript";
 
-const hh = require("hiphop");
+import * as hh from "@hop/hiphop";
 
 function makePar(x, y) {
    return hiphop fork {
@@ -10,9 +11,9 @@ function makePar(x, y) {
    }
 }
 
-hiphop machine M() {
+hiphop module main() {
    "myseq" {
-      loop {	      
+      loop {
         host { console.log("a") }
 	yield;
         host { console.log("b") }
@@ -22,6 +23,8 @@ hiphop machine M() {
       }
    }
 }
+
+const M = new hh.ReactiveMachine(main, "appendseqchild");
 
 M.react();
 
