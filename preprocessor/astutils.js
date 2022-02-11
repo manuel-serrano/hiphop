@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Mon Jan 17 16:11:22 2022 (serrano)                */
+/*    Last change :  Fri Feb 11 13:12:38 2022 (serrano)                */
 /*    Copyright   :  2018-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -15,6 +15,7 @@ const ast = require(hopc.ast);
 
 let declKey = 10000;
 const configUtype = process.versions.hop.naturalCompare("3.5.0") >= 0;
+const configCtype = process.versions.hop.naturalCompare("3.6.0") >= 0;
 
 /*---------------------------------------------------------------------*/
 /*    J2SNull ...                                                      */
@@ -362,7 +363,28 @@ function J2SReturn(loc, expr) {
 /*    J2SDecl ...                                                      */
 /*---------------------------------------------------------------------*/
 function J2SDecl(loc, id, binder = "let", _scmid = false) {
-   if (configUtype) { 
+   if (configCtype) { 
+      return new ast.J2SDecl(loc, 
+      	 id /* id */, 
+      	 _scmid /* _scmid */, 
+      	 declKey++ /* key */,
+      	 binder != "const" /* writable */,
+      	 "local" /* scope */,
+      	 0 /* usecnt */, 
+      	 false /* useinloop */,
+      	 true /* escape */, 
+      	 null /* usage */,
+      	 binder == "const" ? "let" : binder /* binder */,
+      	 Symbol("any") /* ctype */, 
+      	 Symbol("any") /* utype */, 
+      	 Symbol("any") /* itype */,
+      	 Symbol("any") /* vtype */, 
+      	 Symbol("any") /* mtype */, 
+      	 undefined /* irange */,
+      	 undefined /* vrange */, 
+      	 null /* hint */,
+      	 false /* export */);
+   } else if (configUtype) { 
       return new ast.J2SDecl(loc, 
       	 id /* id */, 
       	 _scmid /* _scmid */, 
@@ -408,6 +430,28 @@ function J2SDecl(loc, id, binder = "let", _scmid = false) {
 /*    J2SDeclParam ...                                                 */
 /*---------------------------------------------------------------------*/
 function J2SDeclParam(loc, id, utype) {
+   if (configCtype) { 
+      return new ast.J2SDecl(loc, 
+      	 id /* id */, 
+      	 false /* _scmid */, 
+      	 declKey++ /* key */,
+      	 true /* writable */,
+      	 "local" /* scope */,
+      	 0 /* usecnt */, 
+      	 false /* useinloop */,
+      	 true /* escape */, 
+      	 null /* usage */,
+      	 "param" /* binder */,
+      	 Symbol(utype) /* ctype */, 
+      	 Symbol(utype) /* utype */, 
+      	 Symbol(utype) /* itype */,
+      	 Symbol(utype) /* vtype */, 
+      	 Symbol(utype) /* mtype */, 
+      	 undefined /* irange */,
+      	 undefined /* vrange */, 
+      	 null /* hint */,
+      	 false /* export */);
+   } else if (configUtype) { 
       return new ast.J2SDecl(loc, 
       	 id /* id */, 
       	 false /* _scmid */, 
@@ -427,13 +471,55 @@ function J2SDeclParam(loc, id, utype) {
       	 undefined /* vrange */, 
       	 null /* hint */,
       	 false /* export */);
+   } else {
+      return new ast.J2SDecl(loc, 
+      	 id /* id */, 
+      	 false /* _scmid */, 
+      	 declKey++ /* key */,
+      	 true /* writable */,
+      	 "local" /* scope */,
+      	 0 /* usecnt */, 
+      	 false /* useinloop */,
+      	 true /* escape */, 
+      	 null /* usage */,
+      	 "param" /* binder */,
+      	 Symbol(utype) /* itype */,
+      	 Symbol(utype) /* vtype */, 
+      	 Symbol(utype) /* mtype */, 
+      	 undefined /* irange */,
+      	 undefined /* vrange */, 
+      	 null /* hint */,
+      	 false /* export */);
+   }
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SDeclInitScope ...                                             */
 /*---------------------------------------------------------------------*/
 function J2SDeclInitScope(loc, id, val, scope, binder = "let") {
-   if (configUtype) { 
+   if (configCtype) { 
+      return new ast.J2SDeclInit(loc, 
+      	 id, 
+      	 false /* _scmid */, 
+      	 declKey++ /* key */,
+      	 true /* writable */, 
+      	 scope /* scope */,
+      	 0 /* usecnt */, 
+      	 false /* useinloop */,
+      	 true /* escape */, 
+      	 null /* usage */,
+      	 binder /* binder */, 
+      	 Symbol("any") /* ctype */,
+      	 Symbol("any") /* utype */,
+      	 Symbol("any") /* itype */, 
+      	 Symbol("any") /* vtype */,
+      	 Symbol("any") /* mtype */,
+      	 undefined /* irange */, 
+      	 undefined /* vrange */,
+      	 null /* hint */, 
+      	 false /* export */, 
+      	 val);
+   } else if (configUtype) { 
       return new ast.J2SDeclInit(loc, 
       	 id, 
       	 false /* _scmid */, 
