@@ -1,9 +1,9 @@
 "use @hop/hiphop";
 "use hopscript";
 
-import hopdroid from hop.hopdroid;
+import { Phone } from "hop:hopdroid";
 
-const phone = new hopdroid.phone();
+const phone = new Phone();
 
 hiphop module Alarm(minutes) {
    out alarm;
@@ -22,12 +22,17 @@ hiphop machine autoReply() {
    in smsreceived;
    in autoreply = 0;
       
-   every(smsreceived.now && autoreply.nowval > 0) {
-      let no = smsreceived.nowval[ 0 ];
-      signal alarm;
-      abort(smsdelivered.now && smsdelivered.nowval[ 0 ] === no ||
+   every (smsreceived.now && autoreply.nowval > 0) {
+      let no = smsreceived.nowval[0];
+
+      host { 
+	 console.log("smsecv:", 
+	    no + ", waiting", autoreply.nowval + "m before autoreply...");
+      }
+      
+      abort (smsdelivered.now && smsdelivered.nowval[0] === no ||
 	     autoreply.now && autoreply.nowval === 0) {
-	 run Alarm(autoreply.nowval) { * };
+	 run Alarm(autoreply.nowval) {};
 	 host { 
 	    phone.sendSms(no, "I'm busy. I will answer as soon as I can");
 	    hop.broadcast("autoreply", "delivered " + no);
