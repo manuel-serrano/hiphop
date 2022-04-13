@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Jan 20 07:59:02 2022 (serrano)                */
+/*    Last change :  Wed Apr 13 15:08:54 2022 (serrano)                */
 /*    Copyright   :  2018-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -435,10 +435,10 @@ function parseMachineModule(token, declaration, ctor) {
 			   astutils.J2SBinary(loc, "<",
 			      astutils.J2SNumber(loc, i),
 			      astutils.J2SAccess(loc,
-				 astutils.J2SRef(loc, framep),
+				 astutils.J2SUnresolvedRef(loc, "__frame"),
 				 astutils.J2SString(loc, "length"))),
 			   astutils.J2SAccess(loc,
-			      astutils.J2SRef(loc, framep),
+			      astutils.J2SUnresolvedRef(loc, "__frame"),
 			      astutils.J2SNumber(loc, i)),
                            vals[i])))));
       const ablock = astutils.J2SBlock(loc, loc, [assigframe]);
@@ -1416,7 +1416,7 @@ function parseRun(token) {
    const frame = astutils.J2SDataPropertyInit(
       loc, 
       astutils.J2SString(loc, "%frame"),	
-      astutils.J2SRef(loc, param));
+      astutils.J2SUnresolvedRef(loc, "__frame"));
    const ablock = astutils.J2SBlock(
       loc, loc, exprs);
    const tag = tagInit("hop", loc);

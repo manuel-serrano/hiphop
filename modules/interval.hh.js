@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Tue Jan 18 07:36:44 2022 (serrano)                */
+/*    Last change :  Sat Apr  9 10:43:26 2022 (serrano)                */
 /*    Copyright   :  2018-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop interval module.                                          */
@@ -19,7 +19,7 @@ export { interval, Interval };
 /*---------------------------------------------------------------------*/
 /*    timeout ...                                                      */
 /*---------------------------------------------------------------------*/
-hiphop module timeout(duration, step) {
+hiphop module Timeout(duration, step) {
    out tick;
    
    let tmt = false;

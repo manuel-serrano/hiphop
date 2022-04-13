@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Sat Feb 19 10:07:07 2022 (serrano)                */
+#*    Last change :  Wed Apr 13 13:44:55 2022 (serrano)                */
 #*    Copyright   :  2006-22 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -47,7 +47,7 @@ PREPROCESSOR=$(JSPREPROCESSOR) $(HOPPREPROCESSOR)
 
 ULIB = parallelmap.js
 
-MODULES = interval.hh.js http.hh.js
+MODULES = interval.hh.js http.hh.js promise.hh.js
 
 JSOBJECTS = $(LIB:%=lib/%) $(JSPREPROCESSOR:%=preprocessor/%) $(ULIB:%=ulib/%) \
   $(MODULES:%=modules/%)
