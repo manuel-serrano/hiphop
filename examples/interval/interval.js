@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Colin Vidal                                       */
 /*    Creation    :  Sat Aug  4 13:41:32 2018                          */
-/*    Last change :  Tue Jan 18 13:17:58 2022 (serrano)                */
+/*    Last change :  Thu Apr 14 13:17:07 2022 (serrano)                */
 /*    Copyright   :  2018-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Timer example.                                                   */
@@ -23,8 +23,7 @@ service interval() {
          import { interval, Interval } from ${require.resolve("@hop/hiphop/modules/interval.hh.js")};
 				   
 	 hiphop module main() implements Interval {
-            inout duration;							   
-	    inout step;
+            inout duration;							   	    inout step;
 
             do {
                run interval(duration.nowval, step.nowval) { * };

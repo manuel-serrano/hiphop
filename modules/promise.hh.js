@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sun Apr 10 08:11:59 2022                          */
-/*    Last change :  Wed Apr 13 15:46:23 2022 (serrano)                */
+/*    Last change :  Thu Apr 14 11:57:50 2022 (serrano)                */
 /*    Copyright   :  2022 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Promise module.                                                  */
@@ -27,13 +27,14 @@ hiphop interface Promise {
 /*    promise ...                                                      */
 /*---------------------------------------------------------------------*/
 hiphop module promise(promise) implements Promise {
+   out value;
+   
    let self;
    let state = "active";
    let res, rej = false;
    let prom;
    
    let onres = (value) => {
-      console.log("ONRES value=", value);
       switch (state) {
 	 case "suspend":
 	    state = "pending";
@@ -47,7 +48,6 @@ hiphop module promise(promise) implements Promise {
    };
    
    let onrej = (value) => {
-      console.log("ONREJ value=", value);
       switch (state) {
 	 case "suspend":
 	    state = "pending";

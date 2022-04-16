@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Apr 13 15:08:54 2022 (serrano)                */
+/*    Last change :  Thu Apr 14 07:57:59 2022 (serrano)                */
 /*    Copyright   :  2018-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1745,8 +1745,15 @@ function parseHiphopValue(token, declaration, conf) {
 /*---------------------------------------------------------------------*/
 function hiphopInit(loc) {
    const nm = astutils.J2SImportName(loc, Symbol("*"), "$$hiphop");
+   const cwd = process.cwd();
+   let hhmod = hhmodulePath;
    
-   return astutils.J2SImport(loc, hhmodulePath, [nm]);
+   if (hhmodulePath.indexOf(cwd) === 0) {
+      const i = hhmodulePath.indexOf("@hop");
+      hhmod = hhmodulePath.substring(i);
+      #:tprint("hhmod=", cwd, " ", hhmodulePath, " hhmod=", hhmod);
+   }
+   return astutils.J2SImport(loc, hhmod, [nm]);
 }
    
 /*---------------------------------------------------------------------*/
