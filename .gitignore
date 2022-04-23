@@ -39,6 +39,8 @@ preprocessor/parser.so
 ulib/parallelmap.so
 modules/http.hh.so
 modules/interval.hh.so
+modules/promise.hh.so
+modules/timeout.hh.so
 lib/nodejs/ast.js
 lib/nodejs/batch.js
 lib/nodejs/compiler-utils.js

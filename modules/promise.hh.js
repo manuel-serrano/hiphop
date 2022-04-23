@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sun Apr 10 08:11:59 2022                          */
-/*    Last change :  Thu Apr 14 11:57:50 2022 (serrano)                */
+/*    Last change :  Thu Apr 21 08:52:53 2022 (serrano)                */
 /*    Copyright   :  2022 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Promise module.                                                  */
@@ -27,8 +27,6 @@ hiphop interface Promise {
 /*    promise ...                                                      */
 /*---------------------------------------------------------------------*/
 hiphop module promise(promise) implements Promise {
-   out value;
-   
    let self;
    let state = "active";
    let res, rej = false;

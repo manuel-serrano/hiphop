@@ -19,10 +19,10 @@ signal and trap scopes. That is:
 
 [Formal syntax](./syntax.html#HHModule)
 
-Modules parameters are either _signals_ or _variables_. Variables 
-are equivalent to variables declared with `var` or `let` forms. They
-denotes Hop values that can be used in any expressions of the module.
-They are passed to the module with the `run` form.
+Modules parameters are equivalent to variables declared with `var` or
+`let` forms. They denotes Hop values that can be used in any
+expressions of the module.  They are passed to the module with the
+`run` form.
   
 Modules body constist of HipHop
 [statements](./syntax.html#HHStatement). The arguments, which are
@@ -32,7 +32,10 @@ signals. Here is an example of a module with an input, an output
 signal, and an input/output signal:
 
 ```hiphop
-module mod( in S, out T, inout U, var x ) { ; }
+module mod(x) {
+  in S; out T; inout U;
+  ...
+}
 ```
 
 #### module.precompile() ####
@@ -47,7 +50,7 @@ HipHop Machine
 This syntax is a shorthand for declaring a module, creating a machine, and
 loading that module into the machine.
 
-### machine [ident]( arg, ... ) [implements [mirror] intf, ...] { ... } ###
+### machine [ident]() [implements [mirror] intf, ...] { ... } ###
 [:@glyphicon glyphicon-tag syntax]
 
 [Formal syntax](./syntax.html#HHMachine)
@@ -61,7 +64,7 @@ or packed into an _interface_ that a module can then implements.
 The interface declaration is all similar to a module declaration but an
 interface contains no body.
 
-### interface [ident]( arg, ... ) [extends intf, ...] ###
+### interface [ident] [extends intf, ...] { ... } ###
 [:@glyphicon glyphicon-tag syntax]
 
 [Formal syntax](./syntax.html#HHInterface)
@@ -69,9 +72,9 @@ interface contains no body.
 Here is an example of interface declaration and use to define a module:
 
 ```hiphop
-interface common( in S, out T );
+interface common { in S; out T };
 
-module mod( inout U ) implements common { ; }
+module mod() implements common { inout U; ... }
 ```
 
 The signals `S`, `T`, and `U` are all defined in `mod`.
@@ -94,7 +97,7 @@ A module can be executed either because it is directly loaded into a
 [reactive machine](./api.html) or because it is ran by other module
 via the run syntactif form.
 
-### run module( arg, ... ) ###
+### run module(arg, ...) { sig, ...} ###
 [:@glyphicon glyphicon-tag syntax]
 
 [Formal syntax](./syntax#HHRun). 
@@ -105,29 +108,29 @@ The module can either be:
  Its is an error to refer to an unbound module.
   2. a dollar expression, which must evaluate to a module. If it fails to do
  so, a `TypeError` is signal when the program is construct.
- 
+
 ${ <span class="label label-warning">Note:</span> } The module resolution
 always take place *before* the HipHop execution. That is, when a 
 module identifier is used, that identifier is searched before the execution,
 when a dollar expression is used, that expression is evaluated *before* the
 HipHop execution.
 
+The arguments of the `run` form are bound the module variables.
 
-The arguments can either be:
+When a module is ran the signals of the callee are _linked_ to the
+caller signals. The purpose of the signals list is to specify are to
+proceed to this linking.
 
-  1. `ident`
-  2. `ident as ident`
-  3. `ident=expression`
-  4. `...`
+The linkings can either be:
 
-When a module is ran the signal of the callee must be _linked_ to the
-caller signals. The purpose of the arguments is to specify are to
-proceed to this linking and to pass values to variable arguments. The
-first form links a caller signal and a callee signal whose names are
-both `ident`. The second form links the signals of two different
-names. The third assigned the module variable parameter to
-`expression`. The fourth form links all the caller modules that are
-defined at the `run` location whose name matches a callee signal.
+  1. `ident`; 
+  2. `ident to ident`; bind the caller signal to the module input signal
+  3. `ident from ident`; bind the caller signal to the module output signal
+  4. `ident as ident`; bind the caller signal to the module signal
+  5. `+`; autocomplete the signals list, bind automatically signals with
+      same names, raises an error if some signals are unbound.
+  6. `***`; autocomplete the signals list, bind automatically signals with
+      same names, but contrary to `+`, ignore unbound signals.
 
 
 Top level Definitions
@@ -139,14 +142,14 @@ JavaScript global variable. That is
 
 
 ```hiphop
-const intf = hiphop intf( ... );
+const intf = hiphop intf { ... };
 const mod = hiphop module() implements ${intf} { .... }
 ```
 
 are equivalent to:
 
 ```hiphop
-hiphop interface intf( ... );
+hiphop interface intf { ... };
 hiphop module mod() implements intf { .... }
 ```
 

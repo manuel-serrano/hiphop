@@ -2,28 +2,29 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop interface Intf( in I, out O );
+hiphop interface Intf { in I; out O };
 
 hiphop module M1() implements Intf {
-   if( now( I ) ) emit O();
+   if (I.now) emit O();
 }
 
-hiphop module M2( out OK ) implements mirror Intf {
+hiphop module M2 implements mirror Intf { out OK } {
    emit I();
-   if( now( O ) ) emit OK();
+   if (O.now) emit OK();
 }
 
-hiphop module Main( OK ) {
+hiphop module Main() {
+   inout OK;
    signal implements Intf;
 
    fork {
-      run M1( ... );
+      run M1() { * };
    } par {
-      run M2( OK, ... );
+      run M2() { OK, + };
    }
 }
 
-const m = new hh.ReactiveMachine( Main );
-m.addEventListener( "OK", v => console.log( "got OK" ) );
+const m = new hh.ReactiveMachine(Main);
+m.addEventListener("OK", v => console.log("got OK"));
 
 m.react();

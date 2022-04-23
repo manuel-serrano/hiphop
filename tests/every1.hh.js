@@ -5,9 +5,9 @@ import * as hh from "@hop/hiphop";
 
 hiphop module prg() {
    in I; out O;
-   every( I.now ) {
+   every (I.now) {
       emit O();
    }
 }
 
-exports.prg = new hh.ReactiveMachine( prg, "every1" );
+exports.prg = new hh.ReactiveMachine(prg, "every1");

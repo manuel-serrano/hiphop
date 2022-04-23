@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Apr 14 07:57:59 2022 (serrano)                */
+/*    Last change :  Wed Apr 20 19:33:11 2022 (serrano)                */
 /*    Copyright   :  2018-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1342,7 +1342,14 @@ function parseRun(token) {
 	 case this.MUL:
 	    const d = this.consumeAny();
 	    inits.push(astutils.J2SDataPropertyInit(
-			   d.location, astutils.J2SString(d.location, "autocomplete"),
+			   d.location, astutils.J2SString(d.location, "autocompletes"),
+			   astutils.J2SBool(d.location, true)));
+	    break;
+	    
+	 case this.PLUS:
+	    const d = this.consumeAny();
+	    inits.push(astutils.J2SDataPropertyInit(
+			   d.location, astutils.J2SString(d.location, "autocompletestrict"),
 			   astutils.J2SBool(d.location, true)));
 	    break;
 	    
@@ -1751,7 +1758,6 @@ function hiphopInit(loc) {
    if (hhmodulePath.indexOf(cwd) === 0) {
       const i = hhmodulePath.indexOf("@hop");
       hhmod = hhmodulePath.substring(i);
-      #:tprint("hhmod=", cwd, " ", hhmodulePath, " hhmod=", hhmod);
    }
    return astutils.J2SImport(loc, hhmod, [nm]);
 }

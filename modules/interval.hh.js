@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Thu Apr 14 13:24:13 2022 (serrano)                */
+/*    Last change :  Thu Apr 21 10:31:09 2022 (serrano)                */
 /*    Copyright   :  2018-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop interval module.                                          */
@@ -19,7 +19,7 @@ export { interval, Interval };
 /*---------------------------------------------------------------------*/
 /*    timeout ...                                                      */
 /*---------------------------------------------------------------------*/
-hiphop module timeout(duration, step, preval) {
+const timeout = hiphop module(duration, step, preval) {
    out elapsed;
    
    let tmt = false;
@@ -30,7 +30,10 @@ hiphop module timeout(duration, step, preval) {
       tmt = setTimeout(() => this.notify(preval + step), step);
    } suspend {
       ds = Date.now();
-      if (tmt) clearTimeout(tmt);
+      if (tmt) {
+	 clearTimeout(tmt);
+	 tmt = false;
+      }
    } resume {
       const dr = Date.now() - ds;
       if (ds < step) {
@@ -39,7 +42,10 @@ hiphop module timeout(duration, step, preval) {
 	 this.notify(preval + step);
       }
    } kill {
-      if (tmt) clearTimeout(tmt);
+      if (tmt) {
+	 clearTimeout(tmt);
+	 tmt = false;
+      }
    }
 }
 
@@ -55,7 +61,7 @@ hiphop module basicInterval(duration, step) {
    
    abort (elapsed.nowval >= duration) {
       loop {
-	 run timeout(duration, step || 100, elapsed.nowval) { * };
+	 run ${timeout}(duration, step || 100, elapsed.nowval) { * };
       }
    }
    emit state("finished");

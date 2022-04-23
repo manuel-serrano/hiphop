@@ -115,13 +115,18 @@
 
 <HHAsyncResume> --> | resume <HHBlock>
 
-<HHRun> --> run <HHDollarIdent> ( <HHExpression>, ... <HHExpression> ) { <HHSigRun> }
+<HHRun> --> run <HHDollarIdent> ( <HHRunExpressions> ) { <HHRunSigs> }
 
-<HHSigRun> --> <Identifier>
+<HHRunExpressions> --> | | <HHExpression>, ... <HHExpression>
+
+<HHRunSigs> --> | <HHRunSig> , ... <HHRunSig>
+
+<HHRunSig> --> <Identifier>
   | <Identifier> as <Identifier>
   | <Identifier> from <Identifier>
   | <Identifier> to <Identifier>
   | *
+  | +
 
 <HHEvery> --> every <HHDelay> <HHBlock>
 
