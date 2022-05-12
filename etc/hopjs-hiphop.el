@@ -4,8 +4,8 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Mon Dec 27 15:42:17 2021 (serrano)                */
-;*    Copyright   :  2018-21 Manuel Serrano                            */
+;*    Last change :  Thu May 12 11:14:26 2022 (serrano)                */
+;*    Copyright   :  2018-22 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
 ;*=====================================================================*/
@@ -17,6 +17,21 @@
 (require 'json)
 (require 'js)
 (require 'hopjs)
+(require 'hopjs-parse)
+(require 'hopjs-macro)
+
+;*---------------------------------------------------------------------*/
+;*    debugging, to be removed                                         */
+;*---------------------------------------------------------------------*/
+(define-key (current-local-map)
+  "\C-x\C-z"
+  '(lambda ()
+     (interactive)
+     (load-library "hopjs.el")
+     (load-library "hopjs-macro.el")
+     (load-library "hopjs-parse.el")
+     (load-library "hopjs-config.el")
+     (load-library "hopjs-hiphop.el")))
 
 ;*---------------------------------------------------------------------*/
 ;*    constants ...                                                    */
@@ -204,7 +219,232 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
 			      (setq l (+ l 1))))))))
 		  (setq j (+ j 1)))))
 	    (setq i (+ i 1))))))))
-    
+
+;*---------------------------------------------------------------------*/
+;*    hopjs-hiphop-parse ...                                           */
+;*---------------------------------------------------------------------*/
+(defun hopjs-hiphop-parse (ctx otok indent)
+  (with-debug
+   "hopjs-hiphop-parse (%s) otok=%s indent=%s ntok=%s"
+   (point) otok indent (hopjs-parse-peek-token)
+   (let ((ctx hopjs-hiphop-context)
+	 (tok (hopjs-parse-pop-token)))
+     (case (hopjs-parse-peek-token-type)
+       ((eop)
+	(hopjs-parse-token-column otok indent))
+       ((ident)
+	(let ((val (hopjs-parse-token-string (hopjs-parse-peek-token))))
+	  (cond
+	   ((string= val "module")
+	    (hopjs-hiphop-parse-module ctx otok indent))
+	   (t
+	    -10001))))
+       ((interface)
+	(hopjs-hiphop-parse-interface ctx otok indent))
+       (t
+	-10000)))))
+
+;*---------------------------------------------------------------------*/
+;*    hopjs-hiphop-parse-module ...                                    */
+;*---------------------------------------------------------------------*/
+(defun hopjs-hiphop-parse-module (ctx otok indent)
+  (with-debug
+   "hopjs-hiphop-parse-module (%s) otok=%s indent=%s ntok=%s"
+   (point) otok indent (hopjs-parse-peek-token)
+   (let ((mtok (hopjs-parse-pop-token)))
+     (case (hopjs-parse-peek-token-type)
+       ((eop)
+	(hopjs-parse-token-column otok indent))
+       ((ident)
+	(hopjs-parse-pop-token)
+	(orn (hopjs-parse-args ctx mtok hopjs-parse-args-indent nil)
+	     (hopjs-hiphop-parse-implements ctx otok indent mtok)))
+       ((lparen)
+	(let ((ltok (hopjs-parse-peek-token)))
+	  (orn (hopjs-parse-args ctx ltok 1 nil)
+	       (hopjs-hiphop-parse-implements ctx otok indent mtok))))
+       (t
+	-10002)))))
+
+;*---------------------------------------------------------------------*/
+;*    hopjs-hiphop-parse-interface ...                                 */
+;*---------------------------------------------------------------------*/
+(defun hopjs-hiphop-parse-interface (ctx otok indent)
+  (with-debug
+   "hopjs-hiphop-parse-interface (%s) otok=%s indent=%s ntok=%s"
+   (point) otok indent (hopjs-parse-peek-token)
+   (let ((itok (hopjs-parse-pop-token)))
+     (case (hopjs-parse-peek-token-type)
+       ((eop)
+	(hopjs-parse-token-column otok indent))
+       ((ident)
+	(hopjs-parse-pop-token)
+	(hopjs-hiphop-parse-implements ctx otok indent itok))
+       (t
+	-10003)))))
+
+;*---------------------------------------------------------------------*/
+;*    hopjs-hiphop-parse-implements ...                                */
+;*---------------------------------------------------------------------*/
+(defun hopjs-hiphop-parse-implements (ctx otok indent mtok)
+  (with-debug
+   "hopjs-hiphop-parse-implements (%s) otok=%s indent=%s ntok=%s"
+   (point) otok indent (hopjs-parse-peek-token)
+   (if (eq (hopjs-parse-peek-token-type) 'eop)
+       (hopjs-parse-token-column otok indent)
+     (if (string= (hopjs-parse-peek-token-string) "implements")
+	 (let ((i (hopjs-parse-pop-token)))
+	   (if (eq (hopjs-parse-peek-token-type) 'eop)
+	       (hopjs-parse-token-column mtok hojs-parse-args-indent)
+	     (orn (hopjs-parse-expr ctx otok indent)
+		  (hopjs-parse-block ctx otok indent))))
+       (hopjs-parse-block ctx otok indent)))))
+
+;*---------------------------------------------------------------------*/
+;*    hopjs-hiphop-parse-async ...                                     */
+;*---------------------------------------------------------------------*/
+(defun hopjs-hiphop-parse-async (ctx otok indent)
+  (with-debug
+   "hopjs-hiphop-parse-async (%s) otok=%s indent=%s ntok=%s"
+   (point) otok indent (hopjs-parse-peek-token)
+   (let ((atok (hopjs-parse-pop-token)))
+     (if (eq (hopjs-parse-peek-token-type) 'lparen)
+	 (let ((ltok (hopjs-parse-pop-token)))
+	   (if (eq (hopjs-parse-peek-token-type) 'ident)
+	       (let ((itok (hopjs-parse-pop-token)))
+		 (if (eq (hopjs-parse-peek-token-type) 'rparen)
+		     (let ((rtok (hopjs-parse-pop-token)))
+		       (if (eq (hopjs-parse-peek-token-type) 'lbracket)
+			   (progn
+			     (hopjs-parse-push-token rtok)
+			     (hopjs-parse-push-token itok)
+			     (hopjs-parse-push-token ltok)
+			     (hopjs-parse-push-token atok)
+			     (hopjs-parse-catch ctx otok indent))
+			 (progn
+			   (hopjs-debug 0 "hopjs-hiphop-parse-async.fail.4 rtok=%s itok=%s ltok=%s atok=%s ntok=%s"
+				  rtok itok ltok atok (hopjs-parse-peek-token))
+			   (hopjs-parse-push-token rtok)
+			   (hopjs-parse-push-token itok)
+			   (hopjs-parse-push-token ltok)
+			   (hopjs-parse-push-token atok)
+			   (hopjs-parse-stmt-expr ctx otok indent))))
+		   (progn
+		     (hopjs-debug 0 "hopjs-hiphop-parse-async.fail.3 itok=%s ltok=%s atok=%s ntok=%s"
+				  itok ltok atok (hopjs-parse-peek-token))
+		     (hopjs-parse-push-token itok)
+		     (hopjs-parse-push-token ltok)
+		     (hopjs-parse-push-token atok)
+		     (hopjs-parse-stmt-expr ctx otok indent))))
+	     (progn
+	       (hopjs-debug 0 "hopjs-hiphop-parse-async.fail.2 ltok=%s atok=%s ntok=%s"
+		      ltok atok (hopjs-parse-peek-token))
+	       (hopjs-parse-push-token ltok)
+	       (hopjs-parse-push-token atok)
+	       (hopjs-parse-stmt-expr ctx otok indent))))
+       (progn
+	 (hopjs-debug 0 "hopjs-hiphop-parse-async.fail.1 atok=%s ntok=%s"
+		      atok (hopjs-parse-peek-token))
+	 (hopjs-parse-push-token atok)
+	 (hopjs-parse-stmt-expr ctx otok indent))))))
+
+;*---------------------------------------------------------------------*/
+;*    hopjs-hiphop-parse-in ...                                        */
+;*---------------------------------------------------------------------*/
+(defun hopjs-hiphop-parse-in (ctx otok indent)
+  (with-debug
+   "hopjs-hiphop-parse-in (%s) otok=%s indent=%s ntok=%s"
+   (point) otok indent (hopjs-parse-peek-token)
+   (hopjs-parse-decls ctx otok indent)))
+
+;*---------------------------------------------------------------------*/
+;*    hopjs-hiphop-parse-run ...                                       */
+;*---------------------------------------------------------------------*/
+(defun hopjs-hiphop-parse-run (ctx otok indent)
+  (with-debug
+   "hopjs-hiphop-parse-run (%s) otok=%s indent=%s ntok=%s"
+   (point) otok indent (hopjs-parse-peek-token)
+   (let ((tok (hopjs-parse-pop-token)))
+     (orn (hopjs-parse-expr ctx otok indent)
+	  (case (hopjs-parse-peek-token-type)
+	    ((eop)
+	     (hopjs-parse-token-column otok indent))
+	    ((lbrace)
+	     (hopjs-hiphop-parse-run-args ctx otok indent))
+	    (t
+	     -10006))))))
+
+;*---------------------------------------------------------------------*/
+;*    hopjs-hiphop-parse-run-args ...                                  */
+;*---------------------------------------------------------------------*/
+(defun hopjs-hiphop-parse-run-args (ctx otok indent)
+  (with-debug
+   "hopjs-hiphop-parse-run-args (%s) otok=%s indent=%s ntok=%s" (point)
+   otok indent (hopjs-parse-peek-token)
+   (let ((lbrace (hopjs-parse-pop-token))
+	 (res nil))
+     (while (not res)
+       (case (hopjs-parse-peek-token-type)
+	 ((binop)
+	  (hopjs-parse-pop-token))
+	 ((rbrace)
+	  (hopjs-parse-pop-token)
+	  (setq res lbrace))
+	 (t
+	  (setq res -10008)))))))
+  
+;*---------------------------------------------------------------------*/
+;*    hopjs-hiphop-parse-every ...                                     */
+;*---------------------------------------------------------------------*/
+(defun hopjs-hiphop-parse-every (ctx otok indent)
+  (with-debug
+   "hopjs-hiphop-parse-every (%s) otok=%s indent=%s ntok=%s"
+   (point) otok indent (hopjs-parse-peek-token)
+   (let ((tok (hopjs-parse-pop-token)))
+     (hopjs-parse-paren-expr ctx otok indent))))
+
+;*---------------------------------------------------------------------*/
+;*    hopjs-hiphop-parse-dollar ...                                    */
+;*---------------------------------------------------------------------*/
+(defun hopjs-hiphop-parse-dollar (ctx otok indent)
+  (with-debug
+   "hopjs-hiphop-parse-dollar (%s) otok=%s indent=%s ntok=%s"
+   (point) otok indent (hopjs-parse-peek-token)
+   (let ((dtok (hopjs-parse-pop-token)))
+     (if (eq (hopjs-parse-peek-token-type) 'eop)
+	 (hopjs-parse-token-column otok indent)
+       (orn (hopjs-parse-expr ctx otok indent)
+	    (case (hopjs-parse-peek-token-type)
+	      ((eop)
+	       (hopjs-parse-token-column otok indent))
+	      ((rbrace)
+	       (hopjs-parse-pop-token)
+	       dtok)
+	      (t
+	       -10005)))))))
+  
+;*---------------------------------------------------------------------*/
+;*    hiphop-parse-plugin                                              */
+;*---------------------------------------------------------------------*/
+(setq hopjs-parse-initial-context
+      (vector
+       ;; statments
+       (cons (cons "hiphop" #'hopjs-hiphop-parse)
+	     (aref hopjs-parse-initial-context 0))
+       ;; expressions
+       (cons (cons "hiphop" #'hopjs-hiphop-parse)
+	     (aref hopjs-parse-initial-context 1))))
+
+;*---------------------------------------------------------------------*/
+;*    hopjs-hiphop-context ...                                         */
+;*---------------------------------------------------------------------*/
+(defvar hopjs-hiphop-context
+  (vector (list (cons "async" #'hopjs-hiphop-parse-async)
+		(cons "in" #'hopjs-hiphop-parse-in)
+		(cons "run" #'hopjs-hiphop-parse-run)
+		(cons "every" #'hopjs-hiphop-parse-every))
+	  (list (cons "${" #'hopjs-hiphop-parse-dollar))))
+
 ;*---------------------------------------------------------------------*/
 ;*    automode                                                         */
 ;*---------------------------------------------------------------------*/
