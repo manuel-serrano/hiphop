@@ -4,7 +4,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Thu May 12 11:14:26 2022 (serrano)                */
+;*    Last change :  Fri May 13 08:28:41 2022 (serrano)                */
 ;*    Copyright   :  2018-22 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
@@ -404,26 +404,6 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
      (hopjs-parse-paren-expr ctx otok indent))))
 
 ;*---------------------------------------------------------------------*/
-;*    hopjs-hiphop-parse-dollar ...                                    */
-;*---------------------------------------------------------------------*/
-(defun hopjs-hiphop-parse-dollar (ctx otok indent)
-  (with-debug
-   "hopjs-hiphop-parse-dollar (%s) otok=%s indent=%s ntok=%s"
-   (point) otok indent (hopjs-parse-peek-token)
-   (let ((dtok (hopjs-parse-pop-token)))
-     (if (eq (hopjs-parse-peek-token-type) 'eop)
-	 (hopjs-parse-token-column otok indent)
-       (orn (hopjs-parse-expr ctx otok indent)
-	    (case (hopjs-parse-peek-token-type)
-	      ((eop)
-	       (hopjs-parse-token-column otok indent))
-	      ((rbrace)
-	       (hopjs-parse-pop-token)
-	       dtok)
-	      (t
-	       -10005)))))))
-  
-;*---------------------------------------------------------------------*/
 ;*    hiphop-parse-plugin                                              */
 ;*---------------------------------------------------------------------*/
 (setq hopjs-parse-initial-context
@@ -443,7 +423,7 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
 		(cons "in" #'hopjs-hiphop-parse-in)
 		(cons "run" #'hopjs-hiphop-parse-run)
 		(cons "every" #'hopjs-hiphop-parse-every))
-	  (list (cons "${" #'hopjs-hiphop-parse-dollar))))
+	  (list (cons "${" #'hopjs-parse-dollar))))
 
 ;*---------------------------------------------------------------------*/
 ;*    automode                                                         */
