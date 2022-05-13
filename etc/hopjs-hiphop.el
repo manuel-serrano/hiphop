@@ -4,7 +4,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Fri May 13 08:28:41 2022 (serrano)                */
+;*    Last change :  Fri May 13 09:06:45 2022 (serrano)                */
 ;*    Copyright   :  2018-22 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
@@ -404,6 +404,26 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
      (hopjs-parse-paren-expr ctx otok indent))))
 
 ;*---------------------------------------------------------------------*/
+;*    hopjs-hiphop-parse-fork ...                                      */
+;*---------------------------------------------------------------------*/
+(defun hopjs-hiphop-parse-fork (ctx otok indent)
+  (with-debug
+   "hopjs-parse-fork (%s) otok=%s indent=%s ntok=%s"
+   (point) otok indent (hopjs-parse-peek-token)
+   (let ((dtok (hopjs-parse-pop-token)))
+     (if (eq (hopjs-parse-peek-token-type) 'eop)
+	 (hopjs-parse-token-column otok indent)
+       (orn (hopjs-parse-block ctx otok indent)
+	    (cond
+	     ((eq (hopjs-parse-peek-token-type) 'eop)
+	      (hopjs-parse-token-column otok indent))
+	     ((string= (hopjs-parse-peek-token-string) "par")
+	      (orn (hopjs-hiphop-parse-fork ctx otok indent)
+		   dtok))
+	      (t
+	       -10009)))))))
+
+;*---------------------------------------------------------------------*/
 ;*    hiphop-parse-plugin                                              */
 ;*---------------------------------------------------------------------*/
 (setq hopjs-parse-initial-context
@@ -422,7 +442,8 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
   (vector (list (cons "async" #'hopjs-hiphop-parse-async)
 		(cons "in" #'hopjs-hiphop-parse-in)
 		(cons "run" #'hopjs-hiphop-parse-run)
-		(cons "every" #'hopjs-hiphop-parse-every))
+		(cons "every" #'hopjs-hiphop-parse-every)
+		(cons "fork" #'hopjs-hiphop-parse-fork))
 	  (list (cons "${" #'hopjs-parse-dollar))))
 
 ;*---------------------------------------------------------------------*/
