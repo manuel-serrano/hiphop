@@ -4,7 +4,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Fri May 13 09:06:45 2022 (serrano)                */
+;*    Last change :  Wed May 18 07:28:45 2022 (serrano)                */
 ;*    Copyright   :  2018-22 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
@@ -370,7 +370,7 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
 	    ((eop)
 	     (hopjs-parse-token-column otok indent))
 	    ((lbrace)
-	     (hopjs-hiphop-parse-run-args ctx otok indent))
+	     (hopjs-hiphop-parse-run-args ctx tok hopjs-parse-block-indent))
 	    (t
 	     -10006))))))
 
@@ -387,6 +387,19 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
        (case (hopjs-parse-peek-token-type)
 	 ((binop)
 	  (hopjs-parse-pop-token))
+	 ((comma)
+	  (hopjs-parse-pop-token)
+	  (when (eq (hopjs-parse-peek-token-type) 'eop)
+	    (setq res (hopjs-parse-token-column otok indent))))
+	 ((ident)
+	  (hopjs-parse-pop-token)
+	  (case (hopjs-parse-peek-token-type)
+	    ((eop)
+	     (setq res (hopjs-parse-token-column otok indent)))
+	    ((as)
+	     (hopjs-parse-pop-token)
+	     (when (eq (hopjs-parse-peek-token-type) 'eop)
+	       (setq res (hopjs-parse-token-column otok indent))))))
 	 ((rbrace)
 	  (hopjs-parse-pop-token)
 	  (setq res lbrace))
@@ -433,7 +446,9 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
 	     (aref hopjs-parse-initial-context 0))
        ;; expressions
        (cons (cons "hiphop" #'hopjs-hiphop-parse)
-	     (aref hopjs-parse-initial-context 1))))
+	     (aref hopjs-parse-initial-context 1))
+       ;; start parse stmt
+       "^hiphop "))
 
 ;*---------------------------------------------------------------------*/
 ;*    hopjs-hiphop-context ...                                         */
@@ -444,7 +459,8 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
 		(cons "run" #'hopjs-hiphop-parse-run)
 		(cons "every" #'hopjs-hiphop-parse-every)
 		(cons "fork" #'hopjs-hiphop-parse-fork))
-	  (list (cons "${" #'hopjs-parse-dollar))))
+	  (list (cons "${" #'hopjs-parse-dollar))
+	  "^hiphop "))
 
 ;*---------------------------------------------------------------------*/
 ;*    automode                                                         */

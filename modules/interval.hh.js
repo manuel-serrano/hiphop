@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Thu Apr 21 10:31:09 2022 (serrano)                */
+/*    Last change :  Wed May 18 07:20:45 2022 (serrano)                */
 /*    Copyright   :  2018-22 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop interval module.                                          */
@@ -72,7 +72,7 @@ hiphop module basicInterval(duration, step) {
 /*---------------------------------------------------------------------*/
 hiphop interface Interval {
    in reset;
-   in suspend;
+   in pause;
    out elapsed = 0; 
    out state = "uninitialized";
 }

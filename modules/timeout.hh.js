@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Wed Apr 27 18:36:23 2022 (serrano)                */
+/*    Last change :  Wed May 18 07:18:51 2022 (serrano)                */
 /*    Copyright   :  2022 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop timeout module.                                           */
@@ -20,13 +20,13 @@ export { timeout, Timeout };
 /*    sleep ...                                                        */
 /*---------------------------------------------------------------------*/
 const sleep = hiphop module (duration) {
-   out timeout;
+   out elapsed;
 
    let tmt = false;
    let d0 = Date.now();
    let dr = 0;
 
-   async (timeout) {
+   async (elapsed) {
       tmt = setTimeout(() => { tmt = false; this.notify(duration) }, duration);
    } suspend {
       if (tmt) {
@@ -53,17 +53,17 @@ const sleep = hiphop module (duration) {
 /*---------------------------------------------------------------------*/
 hiphop interface Timeout {
    in reset;
-   in suspend;
-   out timeout;
+   in pause;
+   out elapsed;
 }
 
 /*---------------------------------------------------------------------*/
 /*    timeout ...                                                      */
 /*---------------------------------------------------------------------*/
 hiphop module timeout(duration) implements Timeout {
-   abort immediate (timeout.now) {
+   abort (elapsed.now) {
       do {
-	 suspend toggle (suspend.now) {
+	 suspend toggle (pause.now) {
 	    run ${sleep}(duration) { * };
 	 }
       } every (reset.now);

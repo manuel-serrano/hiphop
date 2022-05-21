@@ -166,7 +166,7 @@ if [ ! -d node_modules/@hop ]; then
   mkdir node_modules/@hop
 fi  
 
-if [ ! -d node_modules/@hop/hiphop ]; then
+if [ ! -e node_modules/@hop/hiphop ]; then
   (cd node_modules/@hop; ln -s ../../../../$hiphop hiphop)
 fi  
 

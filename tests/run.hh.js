@@ -14,7 +14,7 @@ hiphop module sub() {
 
 hiphop module main() {
    in S; in U; inout A, B;
-   run sub() { S; U; A as W; B as Z };
+   run sub() { S, U, A as W, B as Z };
 } 
 
 exports.prg = new hh.ReactiveMachine(main, "run2");
