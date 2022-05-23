@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Wed May 18 07:18:51 2022 (serrano)                */
+/*    Last change :  Mon May 23 20:19:58 2022 (serrano)                */
 /*    Copyright   :  2022 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop timeout module.                                           */
@@ -54,17 +54,18 @@ const sleep = hiphop module (duration) {
 hiphop interface Timeout {
    in reset;
    in pause;
-   out elapsed;
+   in elapsed;
 }
 
 /*---------------------------------------------------------------------*/
 /*    timeout ...                                                      */
 /*---------------------------------------------------------------------*/
 hiphop module timeout(duration) implements Timeout {
-   abort (elapsed.now) {
+   done: {
       do {
 	 suspend toggle (pause.now) {
 	    run ${sleep}(duration) { * };
+            break done;
 	 }
       } every (reset.now);
    }
