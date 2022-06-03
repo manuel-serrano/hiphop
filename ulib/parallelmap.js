@@ -16,10 +16,10 @@ const next_id = (() => {
 //
 const expandChildren = function(children) {
    function _expandChildren(c) {
-      return <sequence nodebug>
-        ${isHiphopInstruction(c[0]) ? c[0] : <nothing nodebug/>}
-        ${c.length > 1 ? _expandChildren(c.slice(1)) : <nothing nodebug/>}
-      </sequence>;
+      return <hh.sequence nodebug>
+        ${hh.isHiphopInstruction(c[0]) ? c[0] : <hh.nothing nodebug/>}
+        ${c.length > 1 ? _expandChildren(c.slice(1)) : <hh.nothing nodebug/>}
+      </hh.sequence>;
    }
    return _expandChildren(Array.prototype.slice.call(children, 1,
 						     children.length));

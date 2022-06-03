@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Sun May 22 07:05:02 2022 (serrano)                */
+#*    Last change :  Fri Jun  3 10:51:52 2022 (serrano)                */
 #*    Copyright   :  2006-22 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -49,7 +49,8 @@ ULIB = parallelmap.js
 
 MODULES = interval.hh.js http.hh.js promise.hh.js timeout.hh.js
 
-JSOBJECTS = $(LIB:%=lib/%) $(JSPREPROCESSOR:%=preprocessor/%) $(ULIB:%=ulib/%) \
+JSOBJECTS = $(LIB:%=lib/%) $(JSPREPROCESSOR:%=preprocessor/%) \
+  $(ULIB:%=ulib/%) \
   $(MODULES:%=modules/%)
 HOPOBJECTS = $(HOPPREPROCESSOR:%=preprocessor/%)
 OBJECTS=$(JSOBJECTS) $(HOPOBJECTS)
@@ -98,7 +99,8 @@ lib/nodejs/%.js: ulib/%.js
 lib/nodejs/%.js: modules/%.js
 	$(HHC) -o $@ $< 
 
-$(MODULES:%.js=modules/%.@SO@): modules/node_modules/@hop/hiphop
+$(MODULES:%.js=modules/%.@SO@): modules/node_modules/@hop/hiphop \
+  $(LIB:%.js=lib/%.@SO@)
 
 modules/node_modules/@hop/hiphop: modules/node_modules/@hop
 	(hiphop=`basename $$PWD`; cd modules/node_modules/@hop; ln -s ../../../../$$hiphop hiphop)
