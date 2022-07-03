@@ -4,7 +4,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Wed May 18 07:28:45 2022 (serrano)                */
+;*    Last change :  Sun Jul  3 18:24:41 2022 (serrano)                */
 ;*    Copyright   :  2018-22 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
@@ -241,6 +241,8 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
 	    -10001))))
        ((interface)
 	(hopjs-hiphop-parse-interface ctx otok indent))
+       ((lbrace)
+	(hopjs-parse-stmt ctx otok indent))
        (t
 	-10000)))))
 
@@ -413,28 +415,33 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
   (with-debug
    "hopjs-hiphop-parse-every (%s) otok=%s indent=%s ntok=%s"
    (point) otok indent (hopjs-parse-peek-token)
-   (let ((tok (hopjs-parse-pop-token)))
-     (hopjs-parse-paren-expr ctx otok indent))))
+   (hopjs-parse-while ctx (hopjs-parse-peek-token) 0)))
+;*    (let ((tok (hopjs-parse-pop-token)))                             */
+;*      (hopjs-parse-paren-expr ctx otok indent))))                    */
 
 ;*---------------------------------------------------------------------*/
 ;*    hopjs-hiphop-parse-fork ...                                      */
 ;*---------------------------------------------------------------------*/
 (defun hopjs-hiphop-parse-fork (ctx otok indent)
   (with-debug
-   "hopjs-parse-fork (%s) otok=%s indent=%s ntok=%s"
+   "hopjs-hiphop-parse-fork (%s) otok=%s indent=%s ntok=%s"
    (point) otok indent (hopjs-parse-peek-token)
    (let ((dtok (hopjs-parse-pop-token)))
-     (if (eq (hopjs-parse-peek-token-type) 'eop)
-	 (hopjs-parse-token-column otok indent)
-       (orn (hopjs-parse-block ctx otok indent)
-	    (cond
-	     ((eq (hopjs-parse-peek-token-type) 'eop)
-	      (hopjs-parse-token-column otok indent))
-	     ((string= (hopjs-parse-peek-token-string) "par")
-	      (orn (hopjs-hiphop-parse-fork ctx otok indent)
-		   dtok))
+     (case (hopjs-parse-peek-token-type)
+       ((eop)
+	(hopjs-parse-token-column otok indent))
+       ((dollar)
+	(hopjs-parse-dollar hopjs-parse-initial-context dtok indent))
+       (t
+	(orn (hopjs-parse-block ctx dtok indent)
+	     (cond
+	      ((eq (hopjs-parse-peek-token-type) 'eop)
+	       (hopjs-parse-token-column dtok indent))
+	      ((string= (hopjs-parse-peek-token-string) "par")
+	       (orn (hopjs-hiphop-parse-fork ctx dtok indent)
+		    dtok))
 	      (t
-	       -10009)))))))
+	       -10009))))))))
 
 ;*---------------------------------------------------------------------*/
 ;*    hiphop-parse-plugin                                              */
@@ -448,7 +455,9 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
        (cons (cons "hiphop" #'hopjs-hiphop-parse)
 	     (aref hopjs-parse-initial-context 1))
        ;; start parse stmt
-       "^hiphop "))
+       "^hiphop "
+       ;; extra collapsing
+       '("fork")))
 
 ;*---------------------------------------------------------------------*/
 ;*    hopjs-hiphop-context ...                                         */
@@ -460,7 +469,8 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
 		(cons "every" #'hopjs-hiphop-parse-every)
 		(cons "fork" #'hopjs-hiphop-parse-fork))
 	  (list (cons "${" #'hopjs-parse-dollar))
-	  "^hiphop "))
+	  "^hiphop "
+	  '("fork")))
 
 ;*---------------------------------------------------------------------*/
 ;*    automode                                                         */
