@@ -4,7 +4,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Sun Jul  3 18:24:41 2022 (serrano)                */
+;*    Last change :  Fri Jul 22 08:31:57 2022 (serrano)                */
 ;*    Copyright   :  2018-22 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
@@ -259,7 +259,7 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
 	(hopjs-parse-token-column otok indent))
        ((ident)
 	(hopjs-parse-pop-token)
-	(orn (hopjs-parse-args ctx mtok hopjs-parse-args-indent nil)
+	(orn (hopjs-parse-args ctx mtok hopjs-parse-indent nil)
 	     (hopjs-hiphop-parse-implements ctx otok indent mtok)))
        ((lparen)
 	(let ((ltok (hopjs-parse-peek-token)))
@@ -297,7 +297,7 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
      (if (string= (hopjs-parse-peek-token-string) "implements")
 	 (let ((i (hopjs-parse-pop-token)))
 	   (if (eq (hopjs-parse-peek-token-type) 'eop)
-	       (hopjs-parse-token-column mtok hojs-parse-args-indent)
+	       (hopjs-parse-token-column mtok hojs-parse-indent)
 	     (orn (hopjs-parse-expr ctx otok indent)
 		  (hopjs-parse-block ctx otok indent))))
        (hopjs-parse-block ctx otok indent)))))
@@ -372,7 +372,7 @@ This runs `hiphop-mode-hook' after hiphop is enterend."
 	    ((eop)
 	     (hopjs-parse-token-column otok indent))
 	    ((lbrace)
-	     (hopjs-hiphop-parse-run-args ctx tok hopjs-parse-block-indent))
+	     (hopjs-hiphop-parse-run-args ctx tok hopjs-parse-indent))
 	    (t
 	     -10006))))))
 
