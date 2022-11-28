@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Mon Nov 28 07:52:55 2022 (serrano)                */
+#*    Last change :  Mon Nov 28 12:35:26 2022 (serrano)                */
 #*    Copyright   :  2006-22 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -218,6 +218,7 @@ $(HOPREPOSITORY)/$(HZ)-$(HZVERSION).tar.gz: \
   configure \
   Makefile.in Makefile \
   lib/config.js.in \
+  lib/hiphop.d.ts \
   $(OBJECTS) \
   $(FILES) \
   LICENSE \
