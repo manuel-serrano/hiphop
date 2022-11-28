@@ -4,8 +4,8 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Sat Dec 22 05:37:50 2007                          */
-#*    Last change :  Wed Jun  3 14:02:04 2020 (serrano)                */
-#*    Copyright   :  2007-20 Manuel Serrano                            */
+#*    Last change :  Mon Nov 28 08:05:02 2022 (serrano)                */
+#*    Copyright   :  2007-22 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    The Shell script to build the .deb for HipHop on Debian          */
 #*    -------------------------------------------------------------    */
@@ -28,7 +28,10 @@ HOPPREFIX=`bigloo -eval "(begin (print (dirname (bigloo-config 'ld-library-dir))
 HIPHOPCONFIGUREOPT=
 
 HOPVERSION=@HOPVERSION@
-HOPREPOSITORY=@HOPREPOSITORY@
+
+if [ "$HOPREPOSITORY " = " " ]; then
+  HOPREPOSITORY=@HOPREPOSITORY@
+fi  
 
 debformat="3.0 (quilt)"
 fakeroot=fakeroot
