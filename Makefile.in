@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Mon Nov 28 07:44:23 2022 (serrano)                */
+#*    Last change :  Mon Nov 28 07:52:55 2022 (serrano)                */
 #*    Copyright   :  2006-22 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -214,7 +214,7 @@ tgz: $(HOPREPOSITORY)/$(HZ)-$(HZVERSION).tar.gz
 $(HOPREPOSITORY)/$(HZ)-$(HZVERSION).tar.gz: \
   package.json \
   package-lock.json \
-  node_modules \
+  modules \
   configure \
   Makefile.in Makefile \
   lib/config.js.in \
