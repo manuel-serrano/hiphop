@@ -9,6 +9,5 @@ Package: hiphop
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, hop, , bigloo-libs, libssl-bigloo, 
  libalsa-bigloo, libpulseaudio-bigloo, libflac-bigloo, libmpg123-bigloo,
- libwav-bigloo, libavahi-bigloo,  libsqlite-bigloo, libuv-bigloo,
- libweb-bigloo, @EXTRADEPEND@ 
+ libwav-bigloo, libavahi-bigloo,  libsqlite-bigloo, @EXTRADEPEND@ 
 Description: Hiphop Programming Language
