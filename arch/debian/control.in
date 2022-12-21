@@ -3,7 +3,7 @@ Section: user/programming
 Priority: optional
 Maintainer: unknown <Manuel.Serrano@inria.fr>
 Build-Depends: debhelper (>= 4.0.0), bigloo (>= 4.5a), hop (>= 3.6.0)
-Standards-Version: 3.6.1
+Standards-Version: 3.6.0
 
 Package: hiphop
 Architecture: any
