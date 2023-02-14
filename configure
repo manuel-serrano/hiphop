@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Mon Nov 28 07:43:52 2022 (serrano)                */
+#*    Last change :  Wed Dec 21 06:54:01 2022 (serrano)                */
 #*    Copyright   :  2018-22 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -159,6 +159,42 @@ if [ "$libdir " = " " ]; then
   libdir=$hoplibdir/$hz/$version
 fi
 
+#*---------------------------------------------------------------------*/
+#*    Debian, Homebrew, and Docker scripts                             */
+#*---------------------------------------------------------------------*/
+# debian
+for deb in arch/debian/makedeb.sh arch/debian/makedebremote.sh; do
+  rm -f $deb 2> /dev/null
+  echo "#!/bin/sh" > $deb
+  echo "#* Automatically generated file (don't edit) */" >> $deb
+
+  cat $deb.in \
+    | sed -e "s|#!/bin/sh||" \
+          -e "s|@BIGLOOREQUIRED@|$bigloorequired|" \
+          -e "s|@VERSION@|$version|" \
+          -e "s|@WEBLETSDIR@|$webletsdir|" \
+          -e "s|@NMODULESDIR@|$nodemodulesdir|" \
+          -e "s|@MINOR@|$minorversion|" \
+  	>> $deb  
+  chmod a+rx $deb
+done
+
+# homebrew
+brew=arch/homebrew/makebrew.sh
+rm -f $brew 2> /dev/null
+echo "#!/bin/sh" > $brew
+echo "#* Automatically generated file (don't edit) */" >> $brew
+
+cat $brew.in \
+  | sed -e "s|#!/bin/sh||" \
+        -e "s|@BIGLOOREQUIRED@|$bigloorequired|" \
+        -e "s|@VERSION@|$version|" \
+        -e "s|@WEBLETSDIR@|$webletsdir|" \
+        -e "s|@NMODULESDIR@|$nodemodulesdir|" \
+        -e "s|@MINOR@|$minorversion|" \
+	>> $brew  
+chmod a+rx $brew
+ 
 # docker/Dockerfile.in
 for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el doc/doc.json arch/debian/makedeb.sh arch/homebrew/makebrew.sh Makefile lib/config.js examples/hhdroid/Makefile tests/TEST; do
   rm -f $path 2> /dev/null
