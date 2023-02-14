@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Wed May 18 07:20:45 2022 (serrano)                */
-/*    Copyright   :  2018-22 Manuel Serrano                            */
+/*    Last change :  Tue Feb 14 14:42:12 2023 (serrano)                */
+/*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop interval module.                                          */
 /*=====================================================================*/
@@ -75,6 +75,7 @@ hiphop interface Interval {
    in pause;
    out elapsed = 0; 
    out state = "uninitialized";
+   in suspend;
 }
 
 /*---------------------------------------------------------------------*/
