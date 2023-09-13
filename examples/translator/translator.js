@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Thu Aug  2 00:58:52 2018                          */
-/*    Last change :  Wed Dec 29 17:17:32 2021 (serrano)                */
-/*    Copyright   :  2018-21 Manuel Serrano                            */
+/*    Last change :  Tue Sep 12 23:55:59 2023 (serrano)                */
+/*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Multiple parallel translations example                           */
 /*    -------------------------------------------------------------    */
@@ -47,3 +47,5 @@ service translator() {
      </body>
    </html>;
 }
+
+console.log('go to "http://' + hop.hostname + ":" + hop.port + '/hop/translator"');	   
