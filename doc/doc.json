@@ -5,11 +5,7 @@
    "github": "https://github.com/manuel-serrano/hiphop.git"
    "urlbase": "ftp://ftp-sop.inria.fr/indes/fp/HipHop",
    "homepage": "http://hop.inria.fr/hiphop",
-<<<<<<< HEAD
    "date": "12 September 2023",
-=======
-   "date": "07 April 2023",
->>>>>>> b2272665c19dd2abbd277ca69a89abf002942768
    "chapters": [ { "name": "Home", "icon": "glyphicon-home", "href": "index.html" },
 		 { "name": "Download", "icon": "glyphicon-cloud-download", "href": "download.html" },
 		 { "name": "Dev", "icon": "glyphicon-cog", "href": "dev.html" },
