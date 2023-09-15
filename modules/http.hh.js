@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Tue Jan 11 18:12:15 2022                          */
-/*    Last change :  Thu Jan 20 10:24:57 2022 (serrano)                */
-/*    Copyright   :  2022 manuel serrano                               */
+/*    Last change :  Fri Sep 15 16:15:44 2023 (serrano)                */
+/*    Copyright   :  2022-23 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HTTP HipHop module.                                              */
 /*=====================================================================*/
@@ -104,11 +104,14 @@ hiphop module request(protocol, options, payload = undefined) implements HttpReq
    } resume {
       if (ended) {
        	 self.notify(res);
+      } else {
+	 state = "active";
       }
    } kill {
       if (req) {
        	 req.destroy();
        	 req = false;
+	 state = "dead";
       }
    }
 }
