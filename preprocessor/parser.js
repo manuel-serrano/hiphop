@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sat Apr 23 07:33:07 2022 (serrano)                */
-/*    Copyright   :  2018-22 Manuel Serrano                            */
+/*    Last change :  Fri Sep 15 16:48:01 2023 (serrano)                */
+/*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
 /*=====================================================================*/
@@ -1219,13 +1219,13 @@ function parseLoopeach(token) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseExec ...                                                    */
+/*    parseAsync ...                                                   */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | exec [ident] block                                          */
+/*       | async [ident] block                                         */
 /*           [kill block] [suspend block] [resume block]               */
 /*---------------------------------------------------------------------*/
-function parseExec(token) {
+function parseAsync(token) {
    const loc = token.location;
    const tag = tagInit("async", loc);
    let inits = [locInit(loc), tag];
@@ -1674,7 +1674,7 @@ function parseStmt(token, declaration) {
 	    case "every":
 	       return parseEvery.call(this, next);
 	    case "async":
-	       return parseExec.call(this, next);
+	       return parseAsync.call(this, next);
 	    case "run":
 	       return parseRun.call(this, next);
 	       

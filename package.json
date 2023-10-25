@@ -18,6 +18,7 @@
    "os": [ "darwin", "linux" ],
    "main": "lib/hiphop.js",
    "types": "lib/hiphop.d.ts",
+   "type": "module",
    "server": "lib/hiphop.js",
    "client": [
       "lib/hiphop.js",

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Tue Jan 11 18:12:15 2022                          */
-/*    Last change :  Fri Sep 15 16:15:44 2023 (serrano)                */
+/*    Last change :  Fri Sep 15 16:26:01 2023 (serrano)                */
 /*    Copyright   :  2022-23 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HTTP HipHop module.                                              */
@@ -52,7 +52,7 @@ hiphop module request(protocol, options, payload = undefined) implements HttpReq
    let ended = false;
    let res = undefined;
    let self;
-   
+
    async (result) {
       const proto = (protocol === "https" ? https : http);
       self = this;
