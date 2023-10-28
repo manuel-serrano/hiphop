@@ -3,8 +3,8 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Nov 13 10:52:14 2018                          */
-;*    Last change :  Sun Jan 16 09:07:41 2022 (serrano)                */
-;*    Copyright   :  2018-22 Manuel Serrano                            */
+;*    Last change :  Sat Oct 28 09:51:19 2023 (serrano)                */
+;*    Copyright   :  2018-23 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    Patching the AST built by the native parser                      */
 ;*=====================================================================*/
@@ -69,7 +69,7 @@
 		 (id 'this)))
 	 (field field)))
 
-   (define (sigaccess loc name pre val cnt)
+   (define (sigaccess loc name pre val)
       (let ((attr (instantiate::J2SObjInit
 		     (loc loc)
 		     (inits (list
@@ -123,15 +123,15 @@
 	 (with-access::J2SString field (val)
 	    (cond
 	       ((string=? val "signame")
-		(sigaccess loc (symbol->string id) #f #f #f))
+		(sigaccess loc (symbol->string id) #f #f))
 	       ((string=? val "now")
-		(sigaccess loc (symbol->string id) #f #f #f))
+		(sigaccess loc (symbol->string id) #f #f))
 	       ((string=? val "nowval")
-		(sigaccess loc (symbol->string id) #f #t #f))
+		(sigaccess loc (symbol->string id) #f #t))
 	       ((string=? val "pre")
-		(sigaccess loc (symbol->string id) #t #f #f))
+		(sigaccess loc (symbol->string id) #t #f))
 	       ((string=? val "preval")
-		(sigaccess loc (symbol->string id) #t #t #f))
+		(sigaccess loc (symbol->string id) #t #t))
 	       (else
 		(error "hiphop" "illegal accessor" val))))))
 
@@ -243,7 +243,7 @@
 ;*    collect-accessor* ::J2SAccess ...                                */
 ;*---------------------------------------------------------------------*/
 (define-method (collect-accessor* this::J2SAccess env)
-   (with-access::J2SAccess this (obj field loc)
+   (with-access::J2SAccess this (obj field)
       (let ((axobj (collect-accessor* obj env))
 	    (axfd (collect-accessor* field env)))
 	 (if (and (isa? obj J2SUnresolvedRef)
@@ -278,7 +278,7 @@
 			   (loc loc)))
 	     (nenv (cons arguments (append ldecls env1)))
 	     (bdenv (if (isa? thisp J2SDecl) (cons thisp nenv) nenv))
-	     (nwenv (cons arguments (append decls params env))))
+	     (nwenv (append decls params bdenv)))
 	 (collect-accessor* body nwenv))))
       
 ;*---------------------------------------------------------------------*/
@@ -328,13 +328,8 @@
 ;*---------------------------------------------------------------------*/
 (define-method (collect-var* this::J2SVarDecls)
    (with-access::J2SVarDecls this (decls)
-      (filter-map (lambda (d::J2SDecl)
-		     (cond
-			((j2s-let? d) #f)
-			((isa? d J2SDeclFun) d)
-			((isa? d J2SDeclExtern) d)
-			((isa? d J2SDeclInit) d)
-			(else d)))
+      (filter (lambda (d::J2SDecl)
+		 (not (j2s-let? d)))
 	 decls)))
 
 ;*---------------------------------------------------------------------*/

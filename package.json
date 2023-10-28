@@ -1,6 +1,6 @@
 {
    "name": "hiphop.js",
-   "version": "1.2.0",
+   "version": "1.3.0",
    "description": "HipHop.js, (A)synchronous Web Reactive Programming",
    "homepage": "http://hop.inria.fr/home/hiphop/index.html",
    "license" : "GPL-3.0-or-later",
@@ -12,12 +12,13 @@
       "hhc" : "./bin/hhc.sh" 
    },
    "engines": { 
-      "hop": ">=3.5.0" ,
-      "node": ">=10.21.0" 
+      "hop": ">=3.4.0" ,
+      "node": ">=18.13.0" 
    },
    "os": [ "darwin", "linux" ],
    "main": "lib/hiphop.js",
    "types": "lib/hiphop.d.ts",
+   "type": "module",
    "server": "lib/hiphop.js",
    "client": [
       "lib/hiphop.js",

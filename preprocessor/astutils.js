@@ -3,24 +3,30 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Fri Feb 11 13:12:38 2022 (serrano)                */
-/*    Copyright   :  2018-22 Manuel Serrano                            */
+/*    Last change :  Wed Oct 25 11:53:23 2023 (serrano)                */
+/*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
 /*=====================================================================*/
-"use hopscript";
+"use strict"
+"use hopscript"
 
-const hopc = require(hop.hopc);
-const ast = require(hopc.ast);
+/*---------------------------------------------------------------------*/
+/*    imports                                                          */
+/*---------------------------------------------------------------------*/
+import { ast } from "@hop/hopc";
 
+/*---------------------------------------------------------------------*/
+/*    global variables                                                 */
+/*---------------------------------------------------------------------*/
 let declKey = 10000;
-const configUtype = process.versions.hop.naturalCompare("3.5.0") >= 0;
-const configCtype = process.versions.hop.naturalCompare("3.6.0") >= 0;
+const configUtype = true;
+const configCtype = true;
 
 /*---------------------------------------------------------------------*/
 /*    J2SNull ...                                                      */
 /*---------------------------------------------------------------------*/
-function J2SNull(loc) {
+export function J2SNull(loc) {
    return new ast.J2SNull(loc, 
       Symbol("null") /* type */, 
       null /* hint */, 
@@ -30,7 +36,7 @@ function J2SNull(loc) {
 /*---------------------------------------------------------------------*/
 /*    J2SUndefined ...                                                 */
 /*---------------------------------------------------------------------*/
-function J2SUndefined(loc) {
+export function J2SUndefined(loc) {
    return new ast.J2SUndefined(loc, 
       Symbol("undefined") /* type */,
       null /* hint */, 
@@ -40,7 +46,7 @@ function J2SUndefined(loc) {
 /*---------------------------------------------------------------------*/
 /*    J2SString ...                                                    */
 /*---------------------------------------------------------------------*/
-function J2SString(loc, str) {
+export function J2SString(loc, str) {
    return new ast.J2SString(loc, 
       Symbol("string") /* type */, 
       null /* hint */,
@@ -53,7 +59,7 @@ function J2SString(loc, str) {
 /*---------------------------------------------------------------------*/
 /*    J2SNumber ...                                                    */
 /*---------------------------------------------------------------------*/
-function J2SNumber(loc, num) {
+export function J2SNumber(loc, num) {
    return new ast.J2SNumber(loc, 
       Symbol("unknown") /* type */, 
       null /* hint */,
@@ -64,7 +70,7 @@ function J2SNumber(loc, num) {
 /*---------------------------------------------------------------------*/
 /*    J2SBool ...                                                      */
 /*---------------------------------------------------------------------*/
-function J2SBool(loc, bool) {
+export function J2SBool(loc, bool) {
    return new ast.J2SBool(loc, 
       Symbol("bool") /* type */, 
       null /* hint */,
@@ -75,7 +81,7 @@ function J2SBool(loc, bool) {
 /*---------------------------------------------------------------------*/
 /*    J2SRef ...                                                       */
 /*---------------------------------------------------------------------*/
-function J2SRef(loc, decl) {
+export function J2SRef(loc, decl) {
    return new ast.J2SRef(loc, 
       Symbol("any") /* type */, 
       null /* hint */,
@@ -86,7 +92,7 @@ function J2SRef(loc, decl) {
 /*---------------------------------------------------------------------*/
 /*    J2SUnresolvedRef ...                                             */
 /*---------------------------------------------------------------------*/
-function J2SUnresolvedRef(loc, id) {
+export function J2SUnresolvedRef(loc, id) {
    return new ast.J2SUnresolvedRef(loc, 
       Symbol("any") /* type */, 
       null /* hint */,
@@ -98,7 +104,7 @@ function J2SUnresolvedRef(loc, id) {
 /*---------------------------------------------------------------------*/
 /*    J2SHopRef ...                                                    */
 /*---------------------------------------------------------------------*/
-function J2SHopRef(loc, id) {
+export function J2SHopRef(loc, id) {
    return new ast.J2SHopRef(loc, 
       Symbol("any") /* type */, 
       null /* hint */,
@@ -111,7 +117,7 @@ function J2SHopRef(loc, id) {
 /*---------------------------------------------------------------------*/
 /*    J2SThis ...                                                      */
 /*---------------------------------------------------------------------*/
-function J2SThis(loc, decl) {
+export function J2SThis(loc, decl) {
    return new ast.J2SThis(loc, 
       Symbol("any") /* type */, 
       null /* hint */,
@@ -122,7 +128,7 @@ function J2SThis(loc, decl) {
 /*---------------------------------------------------------------------*/
 /*    J2SAccess ...                                                    */
 /*---------------------------------------------------------------------*/
-function J2SAccess(loc, obj, field) {
+export function J2SAccess(loc, obj, field) {
    return new ast.J2SAccess(loc, 
       Symbol("any") /*type */, 
       null /* hint */, 
@@ -134,7 +140,7 @@ function J2SAccess(loc, obj, field) {
 /*---------------------------------------------------------------------*/
 /*    J2SCall ...                                                      */
 /*---------------------------------------------------------------------*/
-function J2SCall(loc, fun, thisarg, args) {
+export function J2SCall(loc, fun, thisarg, args) {
    return new ast.J2SCall(loc, 
       Symbol("any") /* type */, 
       null /* hint */,
@@ -149,7 +155,7 @@ function J2SCall(loc, fun, thisarg, args) {
 /*---------------------------------------------------------------------*/
 /*    J2SBinary ...                                                    */
 /*---------------------------------------------------------------------*/
-function J2SBinary(loc, op, lhs, rhs) {
+export function J2SBinary(loc, op, lhs, rhs) {
    return new ast.J2SBinary(loc, 
       Symbol("unknown") /* type */,
       null /* hint */,
@@ -162,7 +168,7 @@ function J2SBinary(loc, op, lhs, rhs) {
 /*---------------------------------------------------------------------*/
 /*    J2SCond ...                                                      */
 /*---------------------------------------------------------------------*/
-function J2SCond(loc, test, then, otherwise) {
+export function J2SCond(loc, test, then, otherwise) {
    return new ast.J2SCond(loc, 
       Symbol("unknown"),
       null /* hint */,
@@ -175,7 +181,7 @@ function J2SCond(loc, test, then, otherwise) {
 /*---------------------------------------------------------------------*/
 /*    J2SObjInit ...                                                   */
 /*---------------------------------------------------------------------*/
-function J2SObjInit(loc, inits) {
+export function J2SObjInit(loc, inits) {
    return new ast.J2SObjInit(loc, 
       Symbol("object") /* type */, 
       null /* hint */,
@@ -188,7 +194,7 @@ function J2SObjInit(loc, inits) {
 /*---------------------------------------------------------------------*/
 /*    J2SDataPropertyInit ...                                          */
 /*---------------------------------------------------------------------*/
-function J2SDataPropertyInit(loc, name, val) {
+export function J2SDataPropertyInit(loc, name, val) {
    return new ast.J2SDataPropertyInit(loc, 
       name, 
       val);
@@ -197,7 +203,7 @@ function J2SDataPropertyInit(loc, name, val) {
 /*---------------------------------------------------------------------*/
 /*    J2SPragma ...                                                    */
 /*---------------------------------------------------------------------*/
-function J2SPragma(loc, lang, vars, vals, expr) {
+export function J2SPragma(loc, lang, vars, vals, expr) {
    return new ast.J2SPragma(loc, 
       Symbol("any") /* type */, 
       null /* hint */,
@@ -211,7 +217,7 @@ function J2SPragma(loc, lang, vars, vals, expr) {
 /*---------------------------------------------------------------------*/
 /*    J2SFun ...                                                       */
 /*---------------------------------------------------------------------*/
-function J2SFun(loc, name, params, body) {
+export function J2SFun(loc, name, params, body) {
    if (configUtype) { 
       return new ast.J2SFun(loc, 
       	 Symbol("unknown") /* type */, 
@@ -269,7 +275,7 @@ function J2SFun(loc, name, params, body) {
 /*---------------------------------------------------------------------*/
 /*    J2SMethod ...                                                    */
 /*---------------------------------------------------------------------*/
-function J2SMethod(loc, name, params, body, self) {
+export function J2SMethod(loc, name, params, body, self) {
    if (configUtype) { 
       return new ast.J2SFun(loc, 
       	 Symbol("unknown") /* type */, 
@@ -327,7 +333,7 @@ function J2SMethod(loc, name, params, body, self) {
 /*---------------------------------------------------------------------*/
 /*    J2SBlock ...                                                     */
 /*---------------------------------------------------------------------*/
-function J2SBlock(loc, endloc, nodes) {
+export function J2SBlock(loc, endloc, nodes) {
    return new ast.J2SBlock(loc, 
       nodes, endloc);
 }
@@ -335,7 +341,7 @@ function J2SBlock(loc, endloc, nodes) {
 /*---------------------------------------------------------------------*/
 /*    J2SStmtExpr ...                                                  */
 /*---------------------------------------------------------------------*/
-function J2SStmtExpr(loc, expr) {
+export function J2SStmtExpr(loc, expr) {
    return new ast.J2SStmtExpr(loc, 
       expr);
 }
@@ -343,7 +349,7 @@ function J2SStmtExpr(loc, expr) {
 /*---------------------------------------------------------------------*/
 /*    J2SSeq ...                                                       */
 /*---------------------------------------------------------------------*/
-function J2SSeq(loc, nodes) {
+export function J2SSeq(loc, nodes) {
    return new ast.J2SSeq(loc, 
       nodes);
 }
@@ -351,7 +357,7 @@ function J2SSeq(loc, nodes) {
 /*---------------------------------------------------------------------*/
 /*    J2SReturn ...                                                    */
 /*---------------------------------------------------------------------*/
-function J2SReturn(loc, expr) {
+export function J2SReturn(loc, expr) {
    return new ast.J2SReturn(loc, 
       false /* exit */, 
       true /* tail */,
@@ -362,7 +368,7 @@ function J2SReturn(loc, expr) {
 /*---------------------------------------------------------------------*/
 /*    J2SDecl ...                                                      */
 /*---------------------------------------------------------------------*/
-function J2SDecl(loc, id, binder = "let", _scmid = false) {
+export function J2SDecl(loc, id, binder = "let", _scmid = false) {
    if (configCtype) { 
       return new ast.J2SDecl(loc, 
       	 id /* id */, 
@@ -429,7 +435,7 @@ function J2SDecl(loc, id, binder = "let", _scmid = false) {
 /*---------------------------------------------------------------------*/
 /*    J2SDeclParam ...                                                 */
 /*---------------------------------------------------------------------*/
-function J2SDeclParam(loc, id, utype) {
+export function J2SDeclParam(loc, id, utype) {
    if (configCtype) { 
       return new ast.J2SDecl(loc, 
       	 id /* id */, 
@@ -496,7 +502,7 @@ function J2SDeclParam(loc, id, utype) {
 /*---------------------------------------------------------------------*/
 /*    J2SDeclInitScope ...                                             */
 /*---------------------------------------------------------------------*/
-function J2SDeclInitScope(loc, id, val, scope, binder = "let") {
+export function J2SDeclInitScope(loc, id, val, scope, binder = "let") {
    if (configCtype) { 
       return new ast.J2SDeclInit(loc, 
       	 id, 
@@ -566,14 +572,14 @@ function J2SDeclInitScope(loc, id, val, scope, binder = "let") {
 /*---------------------------------------------------------------------*/
 /*    J2SDeclInit ...                                                  */
 /*---------------------------------------------------------------------*/
-function J2SDeclInit(loc, id, val, binder = "let") {
+export function J2SDeclInit(loc, id, val, binder = "let") {
    return J2SDeclInitScope(loc, id, val, "local", binder);
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SVarDecls ...                                                  */
 /*---------------------------------------------------------------------*/
-function J2SVarDecls(loc, decls) {
+export function J2SVarDecls(loc, decls) {
    return new ast.J2SVarDecls(loc, 
       decls);
 }
@@ -581,7 +587,7 @@ function J2SVarDecls(loc, decls) {
 /*---------------------------------------------------------------------*/
 /*    J2SLetBlock ...                                                  */
 /*---------------------------------------------------------------------*/
-function J2SLetBlock(loc, endloc, decls, nodes, rec = false) {
+export function J2SLetBlock(loc, endloc, decls, nodes, rec = false) {
    return new ast.J2SLetBlock(loc, 
       nodes /* nodes */,
       endloc /* endloc */,
@@ -593,7 +599,7 @@ function J2SLetBlock(loc, endloc, decls, nodes, rec = false) {
 /*---------------------------------------------------------------------*/
 /*    J2SArray ...                                                     */
 /*---------------------------------------------------------------------*/
-function J2SArray(loc, exprs) {
+export function J2SArray(loc, exprs) {
    return new ast.J2SArray(loc, 
       Symbol("array") /* type */, 
       null /* hint */,
@@ -605,7 +611,7 @@ function J2SArray(loc, exprs) {
 /*---------------------------------------------------------------------*/
 /*    J2SAssig ...                                                     */
 /*---------------------------------------------------------------------*/
-function J2SAssig(loc, lhs, rhs) {
+export function J2SAssig(loc, lhs, rhs) {
    return new ast.J2SAssig(loc, 
       Symbol("any") /* type */, 
       null /* hint */,
@@ -616,7 +622,7 @@ function J2SAssig(loc, lhs, rhs) {
 /*---------------------------------------------------------------------*/
 /*    J2SLiteralValue ...                                              */
 /*---------------------------------------------------------------------*/
-function J2SLiteralValue(loc, val) {
+export function J2SLiteralValue(loc, val) {
    return new ast.J2SLiteralValue(loc, 
       Symbol("any") /* type */, 
       null /* hint */,
@@ -627,52 +633,15 @@ function J2SLiteralValue(loc, val) {
 /*---------------------------------------------------------------------*/
 /*    J2SImportName ...                                                */
 /*---------------------------------------------------------------------*/
-function J2SImportName(loc, name, alias) {
+export function J2SImportName(loc, name, alias) {
    return new ast.J2SImportName(loc, name, alias);
 }
 
 /*---------------------------------------------------------------------*/
 /*    J2SImport ...                                                    */
 /*---------------------------------------------------------------------*/
-function J2SImport(loc, path, names) {
+export function J2SImport(loc, path, names) {
    return new ast.J2SImport(loc, path, false, 
       new J2SUndefined(loc), 
       names, false, false);
 }
-
-/*---------------------------------------------------------------------*/
-/*    exports                                                          */
-/*---------------------------------------------------------------------*/
-exports.J2SNull = J2SNull;
-exports.J2SUndefined = J2SUndefined;
-exports.J2SString = J2SString;
-exports.J2SNumber = J2SNumber;
-exports.J2SBool = J2SBool;
-exports.J2SRef = J2SRef;
-exports.J2SUnresolvedRef = J2SUnresolvedRef;
-exports.J2SHopRef = J2SHopRef;
-exports.J2SThis = J2SThis;
-exports.J2SAccess = J2SAccess;
-exports.J2SCall = J2SCall;
-exports.J2SBinary = J2SBinary;
-exports.J2SCond = J2SCond;
-exports.J2SObjInit = J2SObjInit;
-exports.J2SDataPropertyInit = J2SDataPropertyInit;
-exports.J2SPragma = J2SPragma;
-exports.J2SFun = J2SFun;
-exports.J2SMethod = J2SMethod;
-exports.J2SReturn = J2SReturn;
-exports.J2SBlock = J2SBlock;
-exports.J2SLetBlock = J2SLetBlock;
-exports.J2SStmtExpr = J2SStmtExpr;
-exports.J2SSeq = J2SSeq;
-exports.J2SDecl = J2SDecl;
-exports.J2SDeclParam = J2SDeclParam;
-exports.J2SDeclInitScope = J2SDeclInitScope;
-exports.J2SDeclInit = J2SDeclInit;
-exports.J2SVarDecls = J2SVarDecls;
-exports.J2SArray = J2SArray;
-exports.J2SAssig = J2SAssig;
-exports.J2SLiteralValue = J2SLiteralValue;
-exports.J2SImportName = J2SImportName;
-exports.J2SImport = J2SImport;

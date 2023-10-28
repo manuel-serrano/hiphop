@@ -3,20 +3,34 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sat Apr 23 07:33:07 2022 (serrano)                */
-/*    Copyright   :  2018-22 Manuel Serrano                            */
+/*    Last change :  Wed Oct 25 08:24:01 2023 (serrano)                */
+/*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
 /*=====================================================================*/
+"use strict"
 "use hopscript"
 
-const hopc = require(hop.hopc);
-const ast = require(hopc.ast);
-const astutils = require("./astutils.js");
-const parser = new hopc.Parser();
-const hhaccess = require("./_hhaccess.hop");
+/*---------------------------------------------------------------------*/
+/*    imports                                                          */
+/*---------------------------------------------------------------------*/
+//const hopc = require(hop.hopc);
+import { Parser, ast } from "@hop/hopc";
+//const ast = require(hopc.ast);
+//const astutils = require("./astutils.js");
+import * as astutils from "./astutils.js";
+//const hhaccess = require("./_hhaccess.hop");
+import { hhaccess } from "./hhaccess.js";
 import * as error from "../lib/error.js";
 
+/*---------------------------------------------------------------------*/
+/*    parser                                                           */
+/*---------------------------------------------------------------------*/
+export const parser = new Parser();
+
+/*---------------------------------------------------------------------*/
+/*    global variables                                                 */
+/*---------------------------------------------------------------------*/
 const hhname = "__hh_module";
 let hhmodulePath;
 
@@ -37,7 +51,7 @@ function consumeID(val) {
 /*---------------------------------------------------------------------*/
 /*    setHHModulePath ...                                              */
 /*---------------------------------------------------------------------*/
-function setHHModulePath(path) {
+export function setHHModulePath(path) {
    hhmodulePath = path;
 }   
    
@@ -408,7 +422,7 @@ function parseMachineModule(token, declaration, ctor) {
    }
 
    const { vars, vals } = parseModuleVarlist.call(this);
-   
+
    if (this.peekToken().type === this.ID 
        && this.peekToken().value === "implements") {
       this.consumeAny();
@@ -420,7 +434,7 @@ function parseMachineModule(token, declaration, ctor) {
    
    const stmts = parseHHBlock.call(this, false);
    let mod;
-   
+
    if (vars.length !== 0) {
       const decls = 
          vars.map(tok => astutils.J2SDeclInit(tok.location, tok.value, astutils.J2SUndefined(loc), "let"));
@@ -1219,13 +1233,13 @@ function parseLoopeach(token) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseExec ...                                                    */
+/*    parseAsync ...                                                    */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
 /*       | exec [ident] block                                          */
 /*           [kill block] [suspend block] [resume block]               */
 /*---------------------------------------------------------------------*/
-function parseExec(token) {
+function parseAsync(token) {
    const loc = token.location;
    const tag = tagInit("async", loc);
    let inits = [locInit(loc), tag];
@@ -1340,17 +1354,17 @@ function parseRun(token) {
    while (this.peekToken().type != this.RBRACE) {
       switch (this.peekToken().type) {
 	 case this.MUL:
-	    const d = this.consumeAny();
+	    const dm = this.consumeAny();
 	    inits.push(astutils.J2SDataPropertyInit(
-			   d.location, astutils.J2SString(d.location, "autocomplete"),
-			   astutils.J2SBool(d.location, true)));
+			   dm.location, astutils.J2SString(dm.location, "autocomplete"),
+			   astutils.J2SBool(dm.location, true)));
 	    break;
 	    
 	 case this.PLUS:
-	    const d = this.consumeAny();
+	    const dp = this.consumeAny();
 	    inits.push(astutils.J2SDataPropertyInit(
-			   d.location, astutils.J2SString(d.location, "autocompletestrict"),
-			   astutils.J2SBool(d.location, true)));
+			   dp.location, astutils.J2SString(dp.location, "autocompletestrict"),
+			   astutils.J2SBool(dp.location, true)));
 	    break;
 	    
 	 case this.ID:
@@ -1426,13 +1440,13 @@ function parseRun(token) {
       astutils.J2SUnresolvedRef(loc, "__frame"));
    const ablock = astutils.J2SBlock(
       loc, loc, exprs);
-   const tag = tagInit("hop", loc);
+   const taghop = tagInit("hop", loc);
    const appl = astutils.J2SDataPropertyInit(
       loc, 
       astutils.J2SString(loc, "apply"),
       astutils.J2SMethod(loc, "runfun", [], ablock, self(loc)));
    const attrs = astutils.J2SObjInit(
-      loc, [locInit(loc), tag, appl]);
+      loc, [locInit(loc), taghop, appl]);
    const atom = astutils.J2SCall(loc, hhref(loc, "ATOM"), null,
       [attrs].concat(axs));
    const seqattrs = astutils.J2SObjInit(loc, 
@@ -1674,7 +1688,7 @@ function parseStmt(token, declaration) {
 	    case "every":
 	       return parseEvery.call(this, next);
 	    case "async":
-	       return parseExec.call(this, next);
+	       return parseAsync.call(this, next);
 	    case "run":
 	       return parseRun.call(this, next);
 	       
@@ -1730,7 +1744,7 @@ function parseHiphopValue(token, declaration, conf) {
 	 return hhwrapExpr(token, val);
       }
    }
-   
+
    const next = this.peekToken();
 
    if (next.type === this.ID && next.value === "machine") {
@@ -1783,9 +1797,8 @@ function parseHiphop(token, declaration, conf) {
 /*---------------------------------------------------------------------*/
 /*    script ...                                                       */
 /*---------------------------------------------------------------------*/
-function script(attrs) {
+export function script(attrs) {
    if (attrs.type !== "module") {
-      console.log(attrs['%location']);
       throw new TypeError(`wrong script type "${attrs.type || "inline"} (should be "module")"`,
 	 attrs['%location']?.filename || "inline",
          attrs['%location']?.pos || -1);
@@ -1800,9 +1813,6 @@ function script(attrs) {
 parser.addPlugin("@hop/hiphop", parseHiphop);
 parser.addPlugin("hiphop", parseHiphop);
 
-exports.parser = parser;
-exports.parse = parser.parse.bind(parser);
-exports.parseString = parser.parseString.bind(parser);
-exports.script = script;
-exports.setHHModulePath = setHHModulePath;
+export const parse = parser.parse.bind(parser);
+export const parseString = parser.parseString.bind(parser);
 
