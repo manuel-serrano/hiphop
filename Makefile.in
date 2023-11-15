@@ -1,11 +1,11 @@
 #* Generated file, don't edit
 #*=====================================================================*/
-#*    serrano/prgm/project/hiphop/hiphop/Makefile.in                   */
+#*    serrano/prgm/project/hiphop/1.3.x/Makefile.in                    */
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Mon Nov 28 12:35:26 2022 (serrano)                */
-#*    Copyright   :  2006-22 Manuel Serrano                            */
+#*    Last change :  Wed Nov 15 13:53:35 2023 (serrano)                */
+#*    Copyright   :  2006-23 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
 #*=====================================================================*/
@@ -30,7 +30,10 @@ HOPBUILDARCH=@HOPBUILDARCH@
 HOPSODIR=@SODIR@
 HOPSHAREDIR=@HOPSHAREDIR@
 
+HIPHOPBUILDID=@HIPHOPBUILDID@
+
 HIPHOPLIBDIR=$(LIBDIR)/$(HZ)/$(HZVERSION)
+HIPHOPNPMDIR=hiphop-$(HZVERSION)-$(HIPHOPBUILDID)
 
 HOP = @HOP@
 HOPC = @HOPC@ --js-plugins
@@ -74,6 +77,17 @@ do: $(SOFILES) lib/config.@SO@ ChangeLog
 #*    nodejs                                                           */
 #*---------------------------------------------------------------------*/
 nodejs: $(NODEJSFILES)
+
+#*---------------------------------------------------------------------*/
+#*    npm                                                              */
+#*---------------------------------------------------------------------*/
+.PHONY: npm
+npm:
+	mkdir -p npm/$(HIPHOPNPMDIR)
+	mkdir -p npm/$(HIPHOPNPMDIR)/lib
+	cp package.json npm/$(HIPHOPNPMDIR)
+	cp -r lib npm/$(HIPHOPNPMDIR)
+	(cd npm; tar cvfz $(HIPHOPNPMDIR).tgz hiphop-$(HZVERSION)-$(HIPHOPBUILDID))
 
 #*---------------------------------------------------------------------*/
 #*    .suffixes                                                        */
@@ -187,6 +201,10 @@ uninstall:
 #*---------------------------------------------------------------------*/
 clean-nodejs: 
 	rm -f $(NODEJSFILES)
+
+
+clean-npm:
+	rm -rf npm
 
 clean: clean-nodejs
 	rm -rf lib/*.so

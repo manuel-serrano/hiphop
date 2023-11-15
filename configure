@@ -1,11 +1,11 @@
 #!/bin/bash
 #*=====================================================================*/
-#*    serrano/prgm/project/hiphop/hiphop/configure                     */
+#*    serrano/prgm/project/hiphop/1.3.x/configure                      */
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Wed Dec 21 06:54:01 2022 (serrano)                */
-#*    Copyright   :  2018-22 Manuel Serrano                            */
+#*    Last change :  Wed Nov 15 13:58:42 2023 (serrano)                */
+#*    Copyright   :  2018-23 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
 #*=====================================================================*/
@@ -19,6 +19,7 @@ license=`grep license package.json | awk '{ print $2 }' | sed 's/[",]//g'`
 date=`date +'%d %B %Y'`
 minor=
 bglversion=latest
+hiphopbuildid=
 
 license=gpl
 
@@ -117,6 +118,13 @@ while : ; do
 done
 
 #*---------------------------------------------------------------------*/
+#*    buildid                                                          */
+#*---------------------------------------------------------------------*/
+if [ "$hiphopbuildid " = " " ]; then
+  hiphopbuildid=`git rev-parse --short HEAD`
+fi
+
+#*---------------------------------------------------------------------*/
 #*    default paths                                                    */
 #*---------------------------------------------------------------------*/
 if [ "$etcdir " = " " ]; then
@@ -175,6 +183,7 @@ for deb in arch/debian/makedeb.sh arch/debian/makedebremote.sh; do
           -e "s|@WEBLETSDIR@|$webletsdir|" \
           -e "s|@NMODULESDIR@|$nodemodulesdir|" \
           -e "s|@MINOR@|$minorversion|" \
+          -e "s|@HIPHOPBUILDID@|$hiphopbuildid|g" \
   	>> $deb  
   chmod a+rx $deb
 done
@@ -192,6 +201,7 @@ cat $brew.in \
         -e "s|@WEBLETSDIR@|$webletsdir|" \
         -e "s|@NMODULESDIR@|$nodemodulesdir|" \
         -e "s|@MINOR@|$minorversion|" \
+        -e "s|@HIPHOPBUILDID@|$hiphopbuildid|g" \
 	>> $brew  
 chmod a+rx $brew
  
@@ -221,6 +231,7 @@ for path in docker/Dockerfile .travis.yml etc/hopjs-hiphop.el doc/doc.json arch/
           -e "s|@HFLAGS@|$hflags|g" \
           -e "s|@SODIR@|$sodir|g" \
           -e "s|@SO@|$hopso|g" \
+          -e "s|@HIPHOPBUILDID@|$hiphopbuildid|g" \
   	  >> $path
 done
 
@@ -239,6 +250,7 @@ echo "** Configuration summary **"
 echo 
 echo "Release:"
 echo "  hiphop release number... $version"
+echo "  hiphop build id......... $hiphopbuildid"
 echo "  hop command............. $hop $hopversion$hopminorversion"
 echo "  hopc command............ $hopc"
 echo "  hflags ................. $hflags"
