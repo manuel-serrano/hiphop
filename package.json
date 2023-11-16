@@ -9,7 +9,7 @@
       "url": "https://github.com/manuel-serrano/hiphop"
    },
    "bin": { 
-      "hhc" : "./bin/hhc.sh" 
+      "hhc" : "./bin/hhc.mjs" 
    },
    "engines": { 
       "hop": ">=3.4.0" ,
@@ -19,6 +19,10 @@
    "main": "lib/hiphop.js",
    "types": "lib/hiphop.d.ts",
    "type": "module",
+   "dependencies": {
+     "@hop/hop": "^1.0.0",
+     "@hop/hopc": "^1.0.0"
+   },
    "server": "lib/hiphop.js",
    "client": [
       "lib/hiphop.js",

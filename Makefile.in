@@ -87,7 +87,7 @@ npm:
 	mkdir -p npm/$(HIPHOPNPMDIR)/lib
 	cp package.json npm/$(HIPHOPNPMDIR)
 	cp -r lib npm/$(HIPHOPNPMDIR)
-	(cd npm; tar cvfz $(HIPHOPNPMDIR).tgz hiphop-$(HZVERSION)-$(HIPHOPBUILDID))
+	(cd npm; tar cvfz $(HIPHOPNPMDIR).tgz $(HIPHOPNPMDIR))
 
 #*---------------------------------------------------------------------*/
 #*    .suffixes                                                        */
