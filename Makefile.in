@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Wed Nov 15 13:53:35 2023 (serrano)                */
+#*    Last change :  Fri Nov 17 08:27:03 2023 (serrano)                */
 #*    Copyright   :  2006-23 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -82,12 +82,21 @@ nodejs: $(NODEJSFILES)
 #*    npm                                                              */
 #*---------------------------------------------------------------------*/
 .PHONY: npm
-npm:
+
+npm-sans-rm:
 	mkdir -p npm/$(HIPHOPNPMDIR)
 	mkdir -p npm/$(HIPHOPNPMDIR)/lib
+	mkdir -p npm/$(HIPHOPNPMDIR)/bin
 	cp package.json npm/$(HIPHOPNPMDIR)
 	cp -r lib npm/$(HIPHOPNPMDIR)
+	cp -r preprocessor npm/$(HIPHOPNPMDIR)
+	echo "#!/usr/bin/env node" > npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
+	echo "import * as hhc from \"../lib/hhc.js\"" >> npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
+	chmod a+rx npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
 	(cd npm; tar cvfz $(HIPHOPNPMDIR).tgz $(HIPHOPNPMDIR))
+
+npm: npm-sans-rm
+	(cd npm; rm -rf $(HIPHOPNPMDIR))
 
 #*---------------------------------------------------------------------*/
 #*    .suffixes                                                        */
@@ -201,7 +210,6 @@ uninstall:
 #*---------------------------------------------------------------------*/
 clean-nodejs: 
 	rm -f $(NODEJSFILES)
-
 
 clean-npm:
 	rm -rf npm
