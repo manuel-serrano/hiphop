@@ -3,7 +3,7 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module prg() {
+const prg = hiphop module() {
    in A; in B; out O;
 	    
    await( A.now );
@@ -11,4 +11,4 @@ hiphop module prg() {
    emit O();
 }
 
-exports.prg = new hh.ReactiveMachine( prg, "awaitseq" );
+export const mach = new hh.ReactiveMachine(prg, "awaitseq");

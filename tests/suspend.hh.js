@@ -3,7 +3,7 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module prg() {
+const prg = hiphop module() {
    in I; out J, O;
    suspend( I.now ) {
       loop {
@@ -14,4 +14,4 @@ hiphop module prg() {
    emit J();
 }   
 
-exports.prg = new hh.ReactiveMachine( prg, "SUSPEND" );
+export const mach = new hh.ReactiveMachine(prg, "SUSPEND");

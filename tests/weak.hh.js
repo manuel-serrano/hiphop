@@ -3,7 +3,7 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module m() {
+const prg = hiphop module() {
    in S; out O, F, W;
    weakabort( S.now ) {
       loop {
@@ -15,4 +15,4 @@ hiphop module m() {
    emit F();
 }
 
-exports.prg = new hh.ReactiveMachine( m, "wabort" );
+export const mach = new hh.ReactiveMachine(prg, "wabort");

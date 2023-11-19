@@ -3,7 +3,7 @@
 
 import * as hh from "@hop/hiphop";
 
-const mach = new hh.ReactiveMachine(
+export const mach = new hh.ReactiveMachine(
    hiphop module() {
       in L;
       T1: fork {

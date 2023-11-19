@@ -23,6 +23,12 @@
      "@hop/hop": "^1.0.0",
      "@hop/hopc": "^1.0.0"
    },
+   "devDependencies": {
+      "mocha": "^10.2.0"
+   },
+   "scripts": {
+      "test": "NODE_OPTIONS=\"--experimental-loader ./lib/hiphop-hook.mjs\" mocha --exit tests/**/*.test.js"
+   },
    "server": "lib/hiphop.js",
    "client": [
       "lib/hiphop.js",

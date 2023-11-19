@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/hiphop/preprocessor/parser.js        */
+/*    serrano/prgm/project/hiphop/1.3.x/preprocessor/parser.js         */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Oct 25 08:24:01 2023 (serrano)                */
+/*    Last change :  Sun Nov 19 08:24:56 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -14,13 +14,10 @@
 /*---------------------------------------------------------------------*/
 /*    imports                                                          */
 /*---------------------------------------------------------------------*/
-//const hopc = require(hop.hopc);
-import { Parser, ast } from "@hop/hopc";
-//const ast = require(hopc.ast);
-//const astutils = require("./astutils.js");
+const hhaccess = require("./_hhaccess.hop");
+/* import { hhaccess } from "./hhaccess.js";                           */
 import * as astutils from "./astutils.js";
-//const hhaccess = require("./_hhaccess.hop");
-import { hhaccess } from "./hhaccess.js";
+import { Parser, ast } from "@hop/hopc";
 import * as error from "../lib/error.js";
 
 /*---------------------------------------------------------------------*/
@@ -1691,7 +1688,6 @@ function parseStmt(token, declaration) {
 	       return parseAsync.call(this, next);
 	    case "run":
 	       return parseRun.call(this, next);
-	       
 	    default:
 	       if (this.peekToken().type === this.COLUMN) {
 		  return parseTrap.call(this, next);

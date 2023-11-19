@@ -7,7 +7,7 @@ import * as hh from "@hop/hiphop";
 
 let glob = 5;
 
-hiphop module prg() {
+const prg = hiphop module() {
    in RESS; in S; out O; out OT; in T;
    fork {
       suspend(S.now) {
@@ -32,21 +32,22 @@ hiphop module prg() {
    emit OT(T.nowval);
 }
 
-const machine = new hh.ReactiveMachine(prg, "exec");
-machine.debug_emitted_func = console.log;
+export const mach = new hh.ReactiveMachine(prg, "exec");
+mach.outbuf = "";
+mach.debug_emitted_func = val => mach.outbuf += val;
 
-machine.react()
-machine.inputAndReact("S")
-machine.inputAndReact("S")
-machine.inputAndReact("S")
-machine.inputAndReact("S")
-machine.react()
-machine.react()
-machine.inputAndReact("S")
+mach.react()
+mach.inputAndReact("S")
+mach.inputAndReact("S")
+mach.inputAndReact("S")
+mach.inputAndReact("S")
+mach.react()
+mach.react()
+mach.inputAndReact("S")
 
 setTimeout(function() {
-   machine.react()
-   machine.inputAndReact("RESS")
-   machine.inputAndReact("S")
-   machine.react()
+   mach.react()
+   mach.inputAndReact("RESS")
+   mach.inputAndReact("S")
+   mach.react()
 }, 2000);

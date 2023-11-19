@@ -6,7 +6,7 @@ import * as hh from "@hop/hiphop";
 let s1 = true;
 let s2 = false;
 
-hiphop module prg() {
+hiphop module prgif2() {
    out O1, O2;
    loop {
       if(${ s1 }) emit O1();
@@ -15,9 +15,10 @@ hiphop module prg() {
    }
 }
 
-let m = new hh.ReactiveMachine(prg);
-m.debug_emitted_func = console.log
+export const mach = new hh.ReactiveMachine(prgif2);
+mach.outbuf = "";
+mach.debug_emitted_func = val => mach.outbuf += val;
 
-m.react()
+mach.react()
 s1 = false; // didnt change anyting
-m.react()
+mach.react()

@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/hiphop/preprocessor/hhaccess.js      */
+/*    serrano/prgm/project/hiphop/1.3.x/preprocessor/hhaccess.js       */
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Sat Oct 28 11:34:14 2023 (serrano)                */
+/*    Last change :  Sun Nov 19 08:18:20 2023 (serrano)                */
 /*    Copyright   :  2023 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Patching the AST built by the Hop parser.                        */
@@ -15,7 +15,7 @@
 /*    imports                                                          */
 /*---------------------------------------------------------------------*/
 import * as hop from "@hop/hop";
-import { ast, list, generate } from "@hop/hopc";
+import { ast, list } from "@hop/hopc";
 
 let _hhaccess = undefined;
 

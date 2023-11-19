@@ -14,23 +14,27 @@ hiphop module prg() {
    } par {
       loop {
 	 emit A(1);
-	 host { console.log(A.nowval) }
+	 host { mach.outbuf += A.nowval + "\n"; }
 	 yield;
       }
    } par {
       loop {
 	 emit A(2);
-	 host { console.log(A.nowval) }
+	 host { mach.outbuf += A.nowval + "\n"; }
 	 yield;
       }
    }
 }
 
-let machine = new hh.ReactiveMachine(prg, "error2");
+export const mach = new hh.ReactiveMachine(prg, "error2");
 
-machine.debug_emitted_func = console.log;
-machine.react()
-machine.react()
-machine.react()
-machine.react()
-machine.react()
+mach.outbuf = "";
+mach.debug_emitted_func = val => mach.outbuf += "emit=" + val + "\n";
+console.error("ICI========", mach.react);
+mach.react()
+mach.react()
+mach.react()
+mach.react()
+mach.react()
+console.error("LA========");
+console.log("out=", mach.outbuf);
