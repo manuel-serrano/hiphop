@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sun Nov 19 08:24:56 2023 (serrano)                */
+/*    Last change :  Sun Nov 19 11:41:04 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -14,8 +14,7 @@
 /*---------------------------------------------------------------------*/
 /*    imports                                                          */
 /*---------------------------------------------------------------------*/
-const hhaccess = require("./_hhaccess.hop");
-/* import { hhaccess } from "./hhaccess.js";                           */
+import { hhaccess } from "./hhaccess.js";
 import * as astutils from "./astutils.js";
 import { Parser, ast } from "@hop/hopc";
 import * as error from "../lib/error.js";
