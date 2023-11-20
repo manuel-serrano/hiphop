@@ -1,9 +1,9 @@
 ;*=====================================================================*/
-;*    .../prgm/project/hiphop/hiphop/preprocessor/_hhaccess.hop        */
+;*    serrano/prgm/project/hiphop/1.3.x/preprocessor/_hhaccess.hop     */
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Nov 13 10:52:14 2018                          */
-;*    Last change :  Sat Oct 28 09:51:19 2023 (serrano)                */
+;*    Last change :  Mon Nov 20 17:27:06 2023 (serrano)                */
 ;*    Copyright   :  2018-23 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    Patching the AST built by the native parser                      */
@@ -277,9 +277,8 @@
 			   (utype 'any)
 			   (loc loc)))
 	     (nenv (cons arguments (append ldecls env1)))
-	     (bdenv (if (isa? thisp J2SDecl) (cons thisp nenv) nenv))
-	     (nwenv (append decls params bdenv)))
-	 (collect-accessor* body nwenv))))
+	     (bdenv (if (isa? thisp J2SDecl) (cons thisp nenv) nenv)))
+	 (collect-accessor* body bdenv))))
       
 ;*---------------------------------------------------------------------*/
 ;*    collect-let* ...                                                 */

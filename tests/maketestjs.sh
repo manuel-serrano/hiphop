@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Nov 17 12:47:55 2023                          */
-#*    Last change :                                                    */
+#*    Last change :  Mon Nov 20 17:40:33 2023 (serrano)                */
 #*    Copyright   :  2023 Manuel Serrano                               */
 #*    -------------------------------------------------------------    */
 #*    A simple tool to build the macho tests                           */
@@ -23,7 +23,7 @@ echo "import { basename } from 'path';" >> $base.test.js;
 echo "" >> $base.test.js
 echo "describe(basename(fileURLToPath(import.meta.url)), () => {" >> $base.test.js;
 echo "   it('react', () => {" >> $base.test.js;
-echo "      assert.ok(!batch(mach, fileURLToPath(import.meta.url)));" >> $base.test.js;
+echo "      assert.equal(batch(mach, fileURLToPath(import.meta.url)), false);" >> $base.test.js;
 echo "   })" >> $base.test.js;
 echo "});" >> $base.test.js;
 

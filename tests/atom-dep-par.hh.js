@@ -29,12 +29,10 @@ hiphop module prg() {
 export const mach = new hh.ReactiveMachine(prg, "error2");
 
 mach.outbuf = "";
-mach.debug_emitted_func = val => mach.outbuf += "emit=" + val + "\n";
-console.error("ICI========", mach.react);
+mach.debug_emitted_func = val => mach.outbuf += "[ '" + val + "' ]\n";
+
 mach.react()
 mach.react()
 mach.react()
 mach.react()
 mach.react()
-console.error("LA========");
-console.log("out=", mach.outbuf);

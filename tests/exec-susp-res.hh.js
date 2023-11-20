@@ -12,15 +12,15 @@ const prg = hiphop module() {
    fork {
       suspend(S.now) {
 	 async (T) {
-	    console.log("Oi.");
+	    mach.outbuf += "Oi.\n";
 	    setTimeout(function(self) {
-		  console.log("Oi timeout.");
+		  mach.outbuf += "Oi timeout.\n";
 	       	  self.notify(glob++, false);
 	       }, 1000, this);
 	 } suspend {
-	    console.log("suspended.");
+	    mach.outbuf += "suspended.\n";
 	 } resume {
-	    console.log("resumed.");
+	    mach.outbuf += "resumed.\n";
 	 }
       }
       emit OT(T.nowval);
@@ -34,7 +34,9 @@ const prg = hiphop module() {
 
 export const mach = new hh.ReactiveMachine(prg, "exec");
 mach.outbuf = "";
-mach.debug_emitted_func = val => mach.outbuf += val;
+mach.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
 mach.react()
 mach.inputAndReact("S")

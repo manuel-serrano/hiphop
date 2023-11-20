@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sun Nov 19 11:41:04 2023 (serrano)                */
+/*    Last change :  Mon Nov 20 15:20:48 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -767,7 +767,7 @@ function parseModuleSiglist() {
 /*    parseHop ...                                                     */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | hop statement                                               */
+/*       | host statement                                              */
 /*---------------------------------------------------------------------*/
 function parseAtom(token) {
    
