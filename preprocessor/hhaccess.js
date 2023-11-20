@@ -1,9 +1,10 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/1.3.x/preprocessor/hhaccess.js       */
+/*    serrano/prgm/project/hiphop/1.3.x/preprocessor/_hhaccess.js      */
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Sun Nov 19 11:40:10 2023 (serrano)                */
+/*    Last change :  Sun Nov 19 11:39:56 2023 (serrano)                */
+/*    Copyright   :  2023 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the hop port (see _hhaccess.js)      */
 /*    -------------------------------------------------------------    */
@@ -15,5 +16,4 @@
 /*---------------------------------------------------------------------*/
 /*    imports                                                          */
 /*---------------------------------------------------------------------*/
-export const hhaccess = require("./_hhaccess.hop");
-
+export { hhaccess } from "./_hhaccess.hop";
