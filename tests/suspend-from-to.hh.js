@@ -8,27 +8,27 @@ hiphop module prg() {
    yield;
    suspend from( I.now ) to( O.now ) {
       loop {
-	 hop { console.log( "ploup!" ) }
+	 hop { mach.outbuf += "ploup!\n"; }
 	 yield;
       }
    }
 }
 
-const m = new hh.ReactiveMachine( prg );
-m.debug_emitted_func = console.log;
+export const mach = new hh.ReactiveMachine( prg );
+mach.debug_emitted_func = v => mach.outbuf += v + "\n";
 
-m.react();
-m.react();
-console.log( "--" );
-m.inputAndReact( "I" );
-m.react();
-m.react();
-m.react();
-console.log( "--" );
-m.inputAndReact( "O" );
-m.react();
-m.react();
-m.react();
-console.log( "--" );
-m.inputAndReact( "I" );
-m.react();
+mach.react();
+mach.react();
+mach.outbuf += "--";
+mach.inputAndReact( "I" );
+mach.react();
+mach.react();
+mach.react();
+mach.outbuf += "--";
+mach.inputAndReact( "O" );
+mach.react();
+mach.react();
+mach.react();
+mach.outbuf += "--";
+mach.inputAndReact( "I" );
+mach.react();

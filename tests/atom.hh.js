@@ -4,7 +4,7 @@
 import * as hh from "@hop/hiphop";
 
 function func() {
-   console.log( "atom works!" );
+   mach.outbuf += "atom works!\n";
 }
 
 hiphop module prg() {

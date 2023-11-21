@@ -3,7 +3,7 @@
 
 import * as hh from "@hop/hiphop";
 
-const machine = new hh.ReactiveMachine(
+export const mach = new hh.ReactiveMachine(
    hiphop module() {
       inout A; inout B;
       do {
@@ -17,9 +17,9 @@ const machine = new hh.ReactiveMachine(
       } every( A.now )
    } );
 
-machine.react();
-machine.react();
-machine.react();
+mach.react();
+mach.react();
+mach.react();
 //console.log( machine.pretty_print() );
 
 const machine2 = new hh.ReactiveMachine(

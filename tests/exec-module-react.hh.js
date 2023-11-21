@@ -9,13 +9,16 @@ hiphop module M1() {
    }
 }
 
-hiphop machine m() {
+hiphop mach m() {
    inout a, b;
    run M1() { b from a };
 }
 
-m.addEventListener("a", e => console.log("a=", e.nowval));
-m.addEventListener("b", e => console.log("b=", e.nowval));
+mach.outbuf = "";
+mach.addEventListener("a", e => mach.outbuf += ("a=", e.nowval) + "\n");
+mach.addEventListener("b", e => mach.outbuf += ("b=", e.nowval) + "\n");
 
-m.react();
-m.react();
+mach.react();
+mach.react();
+
+export { mach }

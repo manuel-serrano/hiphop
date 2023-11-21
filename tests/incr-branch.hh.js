@@ -18,19 +18,22 @@ function add_emit( machine ) {
    machine.getElementById( "par" ).appendChild( hiphop emit O( 1 ) );
 }
 
-const machine = new hh.ReactiveMachine( prg, "incr-branch" );
-machine.debug_emitted_func = console.log
+export const mach = new hh.ReactiveMachine( prg, "incr-branch" );
+mach.outbuf = "";
+mach.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
-machine.react()
-machine.react()
-machine.react()
-machine.react()
-add_emit( machine );
-machine.react()
-machine.react()
-machine.react()
-add_emit( machine );
-add_emit( machine );
-add_emit( machine );
-machine.react()
-machine.react()
+mach.react()
+mach.react()
+mach.react()
+mach.react()
+add_emit( mach );
+mach.react()
+mach.react()
+mach.react()
+add_emit( mach );
+add_emit( mach );
+add_emit( mach );
+mach.react()
+mach.react()

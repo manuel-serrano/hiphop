@@ -1,6 +1,6 @@
 "use hopscript"
 
-import toogle from "./toogle.js";
+import toogle from "./toggle.js";
 const machine = toogle.prg;
 machine.debug_emitted_func = console.log
 

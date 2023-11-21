@@ -7,9 +7,9 @@ hiphop module prg() {
    loop {
       signal L;
 
-      emit L( "foo bar" );
+      emit L("foo bar");
       yield;
-      host { console.log( "atom works! value of L is", L.nowval ) }
+      host { mach.outbuf += "atom works! value of L is " + L.nowval + "\n"; }
    }
 }
 

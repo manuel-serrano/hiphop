@@ -25,14 +25,14 @@ hiphop module prg() {
    emit Z();
 }
 
-const m = new hh.ReactiveMachine(prg);
+export const mach = new hh.ReactiveMachine(prg);
 
-m.addEventListener("Y", function(evt) {
+mach.addEventListener("Y", function(evt) {
    console.log("Y emitted");
 });
 
-m.addEventListener("Z", function(evt) {
+mach.addEventListener("Z", function(evt) {
    console.log("Z emitted");
 });
 
-m.react();
+mach.react();

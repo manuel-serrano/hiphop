@@ -2,22 +2,23 @@
 "use hopscript";
 
 import * as hh from "@hop/hiphop";
-const mach = new hh.ReactiveMachine(
+export const mach = new hh.ReactiveMachine(
    hiphop module() {
       inout S;
       every (S.now) {
-	 host { console.log("every") };
+	 host { mach.outbuf += ("every") + "\n" };
 	 async () {
-	    console.log("start", this.id);
+	    mach.outbuf += ("start", this.id) + "\n";
 	    setTimeout(this.notify.bind(this), 500);
 	 } kill {
-	    console.log("killed", this.id);
+	    mach.outbuf += ("killed", this.id) + "\n";
 	 }
       }
    });
 
+mach.outbuf = "";
 mach.react();
-console.log('----');
+mach.outbuf += ('----') + "\n";
 mach.inputAndReact("S");
-console.log('----');
+mach.outbuf += ('----') + "\n";
 setTimeout(() => mach.inputAndReact("S"), 200);

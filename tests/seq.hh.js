@@ -4,8 +4,10 @@ import * as hh from "@hop/hiphop";
 
 hiphop module t() {
    in n;
-   host { console.log( "1", n.nowval ) }
-   host { console.log( "2" ) }
+   host { mach.outbuf +=  "1 " + n.nowval + "\n"; }
+   host { mach.outbuf += "2\n"; }
 }
 
-new hh.ReactiveMachine( t ).react( {n: 34} );
+export const mach = new hh.ReactiveMachine( t );
+mach.outbuf = "";
+mach.react( {n: 34} );

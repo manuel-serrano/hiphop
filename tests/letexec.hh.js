@@ -3,14 +3,14 @@
 
 import * as hh from "@hop/hiphop";
 
-const m = new hh.ReactiveMachine(
+export const mach = new hh.ReactiveMachine(
    hiphop module() {
       inout G = 6;
       signal S = 5;
 
       async () {
-	 console.log(S.nowval, G.nowval);
+	 mach.outbuf += (S.nowval, G.nowval) + "\n";
       }
    })
 
-m.react();
+mach.react();

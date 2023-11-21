@@ -12,10 +12,11 @@ hiphop module prg() {
    }
 }
 
-const machine = new hh.ReactiveMachine( prg, "exec" );
+export const mach = new hh.ReactiveMachine( prg, "exec" );
 
-machine.addEventListener( "O", function( evt ) {
-   console.log( "O=" + evt.nowval.val + " emitted!" );
+mach.addEventListener( "O", function( evt ) {
+   mach.outbuf += ( "O=" + evt.nowval.val + " emitted!" ) + "\n";
 } );
 
-machine.react();
+mach.outbuf = "";
+mach.react();

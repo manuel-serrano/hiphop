@@ -16,8 +16,11 @@ hiphop module setinterval() {
    }
 };
    
-const mach = new hh.ReactiveMachine( setinterval );
+export const mach = new hh.ReactiveMachine( setinterval );
 
-mach.debug_emitted_func = console.log;
+mach.outbuf = "";
+mach.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
 mach.react();

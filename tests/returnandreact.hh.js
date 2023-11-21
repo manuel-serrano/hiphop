@@ -7,7 +7,7 @@ function foo( cb ) {
    cb( 4 );
 }
 
-const m = new hh.ReactiveMachine(
+export const mach = new hh.ReactiveMachine(
    hiphop module() {
       out S;
       async (S) {
@@ -15,6 +15,6 @@ const m = new hh.ReactiveMachine(
       }
    } );
 
-m.debug_emitted_func = console.log
-m.react()
+mach.debug_emitted_func = console.log
+mach.react()
 

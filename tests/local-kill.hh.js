@@ -3,7 +3,7 @@
 
 import * as hh from "@hop/hiphop";
 
-const mach = new hh.ReactiveMachine(
+export const mach = new hh.ReactiveMachine(
    hiphop module() {
       inout A;
       T: fork {
@@ -11,10 +11,10 @@ const mach = new hh.ReactiveMachine(
 	    async () {
 	       setTimeout( this.notify.bind( this ), 100 );
 	    } kill {
-	       console.log( "killed" );
+	       mach.outbuf += ( "killed" ) + "\n";
 	    }
 
-	    host { console.log( 'tick 10s' ) }
+	    host { mach.outbuf += ( 'tick 10s' ) + "\n" }
 	 }
       } par {
 	 async () {
@@ -24,8 +24,11 @@ const mach = new hh.ReactiveMachine(
       }
 
       emit A();
-      host { console.log( "end" ) } } );
+      host { mach.outbuf += ( "end" ) + "\n" } } );
 
-mach.debug_emitted_func = console.log;
+mach.outbuf = "";
+mach.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
 mach.react();

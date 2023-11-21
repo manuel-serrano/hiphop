@@ -4,7 +4,7 @@
 
 import * as hh from "@hop/hiphop";
 
-const mach = new hh.ReactiveMachine(
+export const mach = new hh.ReactiveMachine(
    hiphop module() {
       T: fork {
 	 async () {

@@ -7,7 +7,7 @@ hiphop module M() {
 }
 
 import * as hh from "@hop/hiphop";
-const m = new hh.ReactiveMachine( M );
+export const mach = new hh.ReactiveMachine( M );
 
 // test that default arguments are correctly overriden
-m.react( {a: 33} );
+mach.react( {a: 33} );

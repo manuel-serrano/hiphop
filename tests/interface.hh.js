@@ -17,9 +17,10 @@ hiphop module M1() implements I1 {
    run M2() { Z as D, * }
 }
 
-const m = new hh.ReactiveMachine(M1);
+export const mach = new hh.ReactiveMachine(M1);
+mach.outbuf = "";
 
-m.addEventListener("A", v => console.log("got A", v.signalValue));
-m.addEventListener("Z", v => console.log("got Z", v.signalValue));
+mach.addEventListener("A", v => mach.outbuf += ("got A", v.signalValue) + "\n");
+mach.addEventListener("Z", v => mach.outbuf += ("got Z", v.signalValue) + "\n");
 
-m.react();
+mach.react();

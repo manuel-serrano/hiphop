@@ -4,7 +4,7 @@
 import * as hh from "@hop/hiphop";
 
 function zoom_in_cb() {
-   console.log( "********* ZOOOOOOOOOOOOOOOOOM ************" );
+   mach.outbuf += "********* ZOOOOOOOOOOOOOOOOOM ************\n";
 }
 
 hiphop module prg() {
@@ -19,14 +19,17 @@ hiphop module prg() {
    }
 }
 
-const m = new hh.ReactiveMachine( prg );
-m.debug_emitted_func = console.log
+export const mach = new hh.ReactiveMachine( prg );
+mach.outbuf = "";
+mach.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
-m.react()
-m.inputAndReact( "ZOOM_IN" )
-m.inputAndReact( "ZOOM_IN" )
-m.inputAndReact( "ZOOM_LOCK_TOOGLE" )
-m.inputAndReact( "ZOOM_IN" )
-m.inputAndReact( "ZOOM_IN" )
-m.inputAndReact( "ZOOM_LOCK_TOOGLE" )
-m.inputAndReact( "ZOOM_IN" )
+mach.react()
+mach.inputAndReact( "ZOOM_IN" )
+mach.inputAndReact( "ZOOM_IN" )
+mach.inputAndReact( "ZOOM_LOCK_TOOGLE" )
+mach.inputAndReact( "ZOOM_IN" )
+mach.inputAndReact( "ZOOM_IN" )
+mach.inputAndReact( "ZOOM_LOCK_TOOGLE" )
+mach.inputAndReact( "ZOOM_IN" )

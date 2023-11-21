@@ -3,27 +3,28 @@
 
 import * as hh from "@hop/hiphop";
 
-const m = new hh.ReactiveMachine(
+const mach = new hh.ReactiveMachine(
    hiphop module() {
       inout S, R, E;
       suspend from( S.now ) to( R.now ) emit E() {
 	 loop {
-	    hop { console.log( "not suspended!" ) }
+	    hop { mach.outbuf += "not suspended!\n"; }
 	    yield;
 	 }
       }
    } );
 
-m.debug_emitted_func = emitted => {
-   console.log( emitted );
-   console.log( "---------------------" );
+mach.outbuf = "";
+mach.debug_emitted_func = emitted => {
+   mach.outbuf += emitted + "\n";
+   mach.outbuf += "---------------------\n";
 };
 
-m.react()
-m.react()
-m.inputAndReact( "S" );
-m.react()
-m.react()
-m.inputAndReact( "R" );
-m.react()
-m.react()
+mach.react()
+mach.react()
+mach.inputAndReact( "S" );
+mach.react()
+mach.react()
+mach.inputAndReact( "R" );
+mach.react()
+mach.react()

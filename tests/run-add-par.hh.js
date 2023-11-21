@@ -21,18 +21,18 @@ hiphop module run2() {
    }
 }
 
-const m = new hh.ReactiveMachine( run2, "run2" );
-m.debug_emitted_func = console.log
+export const mach = new hh.ReactiveMachine( run2, "run2" );
+mach.outbuf = "";
+mach.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
-//console.log( m.pretty_print() );
-console.log( "m.inputAndReact(S)" );
-m.inputAndReact( "S" )
+mach.outbuf += ( "m.inputAndReact(S)" ) + "\n";
+mach.inputAndReact( "S" )
 
-//m.react();
-m.getElementById( "par" ).appendChild( hiphop run m1() { S, U, A as Z } );
+mach.getElementById( "par" ).appendChild( hiphop run m1() { S, U, A as Z } );
 
-console.log( "==================== ADD RUN PARALLEL ==================" );
+mach.outbuf += ( "==================== ADD RUN PARALLEL ==================" ) + "\n";
 
-//console.log(m.pretty_print());
-console.log( "m.inputAndReact(U)" );
-m.inputAndReact( "U" )
+mach.outbuf += ( "m.inputAndReact(U)" ) + "\n";
+mach.inputAndReact( "U" )

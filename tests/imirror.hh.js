@@ -26,7 +26,7 @@ hiphop module Main() {
    }
 }
 
-const m = new hh.ReactiveMachine(Main);
-m.addEventListener("OK", v => console.log("got OK"));
+export const mach = new hh.ReactiveMachine(Main);
+mach.addEventListener("OK", v => mach.outbuf += "got OK\n");
 
-m.react();
+mach.react();

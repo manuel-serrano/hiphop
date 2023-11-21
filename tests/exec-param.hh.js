@@ -8,14 +8,17 @@ hiphop module prg() {
 	 
    emit IN( ${5} );
    async (){
-      console.log( "receive " + IN.nowval );
+      mach.outbuf += ( "receive " + IN.nowval ) + "\n";
       this.notify( undefined, false );
    }
 }
 
-const machine = new hh.ReactiveMachine( prg, "" );
-machine.debug_emitted_func = console.log
+export const mach = new hh.ReactiveMachine( prg, "" );
+mach.outbuf = "";
+mach.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
-machine.inputAndReact( "IN", 5 );
-machine.inputAndReact( "IN", 5 );
-machine.inputAndReact( "IN", 5 );
+mach.inputAndReact( "IN", 5 );
+mach.inputAndReact( "IN", 5 );
+mach.inputAndReact( "IN", 5 );

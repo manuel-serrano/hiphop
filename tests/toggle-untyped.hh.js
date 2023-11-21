@@ -27,7 +27,7 @@ hiphop module prg() {
       emit STATE1( ${false} );
       emit STATE2( ${true} );
       emit STATE2( ${false} );
-      if( S.pre ) {
+      if (S.pre) {
 	 emit TOOGLE( ${true} );
       } else {
 	 emit TOOGLE( ${false} );
@@ -37,4 +37,4 @@ hiphop module prg() {
    }
 }
 
-export const mach = new hh.ReactiveMachine( prg, "toogle" );
+export const mach = new hh.ReactiveMachine(prg, "toogle");

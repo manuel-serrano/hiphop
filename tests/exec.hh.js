@@ -19,15 +19,18 @@ hiphop module prg() {
    }
 }
 
-const machine = new hh.ReactiveMachine(prg, "exec");
-machine.debug_emitted_func = console.log
+export const mach = new hh.ReactiveMachine(prg, "exec");
+mach.outbuf = "";
+mach.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
-machine.react()
-machine.react()
-machine.react()
-console.log(".......");
+mach.react()
+mach.react()
+mach.react()
+mach.outbuf += ".......\n";
 setTimeout(function() {
-   machine.react()
-   machine.react()
+   mach.react()
+   mach.react()
 }, 5000);
 

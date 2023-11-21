@@ -2,7 +2,7 @@
 
 import * as hh from "@hop/hiphop";
 
-const m = new hh.ReactiveMachine(
+export const mach = new hh.ReactiveMachine(
    hiphop module() {
       out S;
       loop {
@@ -13,6 +13,7 @@ const m = new hh.ReactiveMachine(
       }
    } );
 
-m.addEventListener( "S", function ( evt ) { console.log( { type: evt.type, nowval: evt.nowval } ); } );
-m.react();
-m.react();
+mach.outbuf = "";
+mach.addEventListener( "S", function ( evt ) { mach.outbuf += ( { type: evt.type, nowval: evt.nowval } ) + "\n"; } );
+mach.react();
+mach.react();

@@ -5,18 +5,19 @@ import * as hh from "@hop/hiphop";
 
 const pauseModule = hiphop module() { yield }
 
-const m = new hh.ReactiveMachine(
+export const mach = new hh.ReactiveMachine(
    hiphop module() {
       loop {
-	 hop { console.log( ">>> start" ) }
+	 hop { mach.outbuf += ( ">>> start" ) + "\n" }
 	 if( 1 ) {
 	    run ${pauseModule}() {};
 	 } else {
 	    yield;
 	 }
-	 hop{ console.log( ">>> end" ) }
+	 hop{ mach.outbuf += ( ">>> end" ) + "\n" }
       }
    } );
 
-m.react();
-setTimeout( () => m.react(), 200 );
+mach.outbuf = "";
+mach.react();
+setTimeout( () => mach.react(), 200 );

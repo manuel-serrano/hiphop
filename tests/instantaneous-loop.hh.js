@@ -3,6 +3,7 @@
 
 import * as hh from "@hop/hiphop";
 
+export let mach = undefined;
 try {
    const prg = hiphop module() {
       out O;
@@ -15,12 +16,12 @@ try {
       }
    }
 
-   let m = new hh.ReactiveMachine( prg, "instloop" );
+   mach = new hh.ReactiveMachine( prg, "instloop" );
 
-   m.react();
-   m.react();
-   m.react();
-   m.react();
+   mach.react();
+   mach.react();
+   mach.react();
+   mach.react();
 } catch ( e ) {
    console.log( e.message );
 }

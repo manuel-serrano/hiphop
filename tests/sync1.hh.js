@@ -20,10 +20,10 @@ hiphop module prg() {
    }
 }
 
-const machine = new hh.ReactiveMachine( prg, "sync1" );
-machine.debug_emitted_func = console.log;
+export const mach = new hh.ReactiveMachine( prg, "sync1" );
+mach.debug_emitted_func = console.log;
 
-machine.react()
-machine.react()
-machine.react()
-machine.react()
+mach.react()
+mach.react()
+mach.react()
+mach.react()

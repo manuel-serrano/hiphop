@@ -14,11 +14,11 @@ function makePar(x, y) {
 hiphop module main() {
    "myseq" {
       loop {
-        host { console.log("a") }
+        host { mach.outbuf += "a" }
 	yield;
-        host { console.log("b") }
+        host { mach.outbuf += "b" }
 	yield;
-        host { console.log("c") }
+        host { mach.outbuf += "c" }
 	yield;
       }
    }
@@ -30,7 +30,7 @@ M.react();
 
 const seq = M.getElementById("myseq");
 
-seq.appendChild(makePar(() => console.log("p1"), () => console.log("p2")));
+seq.appendChild(makePar(() => mach.outbuf += "p1", () => mach.outbuf += "p2"));
 
 M.react();
 M.react();

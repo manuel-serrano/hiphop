@@ -12,10 +12,10 @@ hiphop module prg() {
    }
 }
 
-const machine = new hh.ReactiveMachine( prg, "emiterror" );
+export const mach = new hh.ReactiveMachine( prg, "emiterror" );
 
 try {
-   machine.react();
+   mach.react();
 } catch( e ) {
    console.log( e.message );
 }

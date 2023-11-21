@@ -41,34 +41,37 @@ hiphop module prg() {
    }
 }
 
-const machine = new hh.ReactiveMachine( prg, "" );
-machine.debug_emitted_func = console.log;
+const mach = new hh.ReactiveMachine( prg, "" );
+mach.outbuf = "";
+mach.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
-//console.log(machine.ast.pretty_print());
+//mach.outbuf += (machine.ast.pretty_print()) + "\n";
 
-machine.react()
-machine.react()
+mach.react()
+mach.react()
 
-console.log( "add 1" );
-machine.getElementById( "par" ).appendChild( make_atom2( 1 ) );
-machine.react()
-machine.react()
-
-
-console.log( "add 2" );
-machine.getElementById( "par" ).appendChild( make_atom( 2 ) );
-//console.error(machine.ast.pretty_print());
-machine.react()
-//console.error(machine.ast.pretty_print());
+mach.outbuf += ( "add 1" ) + "\n";
+mach.getElementById( "par" ).appendChild( make_atom2( 1 ) );
+mach.react()
+mach.react()
 
 
-machine.react()
-machine.react()
+mach.outbuf += ( "add 2" ) + "\n";
+mach.getElementById( "par" ).appendChild( make_atom( 2 ) );
+//console.error(mach.ast.pretty_print());
+mach.react()
+//console.error(mach.ast.pretty_print());
 
-console.log("add 3");
-machine.getElementById( "par" ).appendChild( make_atom3( 3 ) );
-machine.react()
-machine.react()
-machine.react()
 
-//console.log(machine.ast.pretty_print());
+mach.react()
+mach.react()
+
+mach.outbuf += ("add 3") + "\n";
+mach.getElementById( "par" ).appendChild( make_atom3( 3 ) );
+mach.react()
+mach.react()
+mach.react()
+
+//mach.outbuf += (mach.ast.pretty_print()) + "\n";

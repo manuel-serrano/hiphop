@@ -13,7 +13,8 @@ export const mach = new hh.ReactiveMachine(
 	    yield;
 	 }
       }
-      hop { console.log( "exit trap" ) }
+      hop { mach.outbuf += "exit trap\n"; }
    } );
 
+mach.outbuf = "";
 mach.react();

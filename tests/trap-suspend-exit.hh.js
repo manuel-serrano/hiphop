@@ -10,8 +10,8 @@ hiphop module prg() {
    }
 }
 
-const machine = new hh.ReactiveMachine( prg, "TEST" );
+export const mach = new hh.ReactiveMachine( prg, "TEST" );
 
-machine.debug_emitted_func = console.log;
-machine.react();
-machine.react();
+mach.debug_emitted_func = v => mach.oubuf += v + "\n";
+mach.react();
+mach.react();

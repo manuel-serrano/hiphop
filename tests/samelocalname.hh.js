@@ -6,22 +6,22 @@ import * as hh from "@hop/hiphop";
 hiphop module prg() {
    in SAME = 1;
    emit SAME( 2 );
-   hop { console.log( "1:", SAME.nowval ) }
+   hop { mach.outbuf += ( "1:", SAME.nowval ) + "\n" }
    {
       signal S1=5, SAME=10;
-      hop { console.log( "before2:", SAME.nowval ); }
-      hop { console.log( "before2bis:", SAME.nowval ); }
+      hop { mach.outbuf += ( "before2:", SAME.nowval ) + "\n"; }
+      hop { mach.outbuf += ( "before2bis:", SAME.nowval ) + "\n"; }
       {
 	 signal SAME=100;
-	 hop { console.log( "2:", SAME.nowval ); }
+	 hop { mach.outbuf += ( "2:", SAME.nowval ) + "\n"; }
       }
 
-      hop { console.log( "after2:", SAME.nowval ); }
+      hop { mach.outbuf += ( "after2:", SAME.nowval ) + "\n"; }
    }
 
-   hop { console.log( "3:", SAME.nowval ) }
+   hop { mach.outbuf += ( "3:", SAME.nowval ) + "\n" }
 }
 
-const m = new hh.ReactiveMachine( prg );
-
-m.react();
+export const mach = new hh.ReactiveMachine( prg );
+mach.outbuf = "";
+mach.react();

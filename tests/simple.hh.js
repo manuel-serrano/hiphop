@@ -84,43 +84,48 @@ hiphop module prg5() {
    }
 }
 
-const machine = new hh.ReactiveMachine( prg, "FOO" );
-machine.debug_emitted_func = console.log
+export const mach = new hh.ReactiveMachine( prg, "FOO" );
+mach.outbuf = "";
+mach.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
-console.log( "will react" );
-machine.react();
-console.log( "will react" );
-machine.react();
-console.log( "will react" );
-machine.react();
-console.log( "will react" );
-machine.react();
-console.log( "will react" );
-machine.react();
-console.log( "will react" );
-machine.react();
-console.log( "will react" );
-machine.react();
-console.log( "will react STOP" );
-machine.inputAndReact( "STOP", undefined );
-console.log( "will react" );
-machine.react();
-console.log( "will react" );
-machine.react();
-console.log( "will react" );
-machine.react();
-console.log( "will react" );
-machine.react();
-console.log( "will react STOP" );
-machine.inputAndReact( "STOP", undefined )
-console.log( "will react" );
-machine.inputAndReact( "AIN", undefined )
-console.log( "will react" );
-machine.react();
+mach.outbuf += "will react" + "\n";
+mach.react();
+mach.outbuf += "will react" + "\n";
+mach.react();
+mach.outbuf += "will react" + "\n";
+mach.react();
+mach.outbuf += "will react" + "\n";
+mach.react();
+mach.outbuf += "will react" + "\n";
+mach.react();
+mach.outbuf += "will react" + "\n";
+mach.react();
+mach.outbuf += "will react" + "\n";
+mach.react();
+mach.outbuf += "will react STOP" + "\n";
+mach.inputAndReact( "STOP", undefined );
+mach.outbuf += "will react" + "\n";
+mach.react();
+mach.outbuf += "will react" + "\n";
+mach.react();
+mach.outbuf += "will react" + "\n";
+mach.react();
+mach.outbuf += "will react" + "\n";
+mach.react();
+mach.outbuf += "will react STOP" + "\n";
+mach.inputAndReact( "STOP", undefined )
+mach.outbuf += "will react" + "\n";
+mach.inputAndReact( "AIN", undefined )
+mach.outbuf += "will react" + "\n";
+mach.react();
 
 const m2 = new hh.ReactiveMachine( prg2, "2" );
-m2.debug_emitted_func = console.log
-console.log( "m2" )
+m2.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
+mach.outbuf += "m2\n";
 m2.react();
 m2.react();
 m2.react();
@@ -128,8 +133,10 @@ m2.react();
 m2.react();
 
 const m3 = new hh.ReactiveMachine( prg3, "3" );
-m3.debug_emitted_func = console.log
-console.log( "m3" )
+m3.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
+mach.outbuf += "m3\n";
 m3.react();
 m3.react();
 m3.react();
@@ -137,8 +144,10 @@ m3.react();
 m3.react();
 
 const m4 = new hh.ReactiveMachine( prg4, "4" );
-m4.debug_emitted_func = console.log
-console.log( "m4" )
+m4.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
+mach.outbuf += "m4\n";
 m4.react()
 m4.react()
 m4.react()
@@ -146,8 +155,10 @@ m4.react()
 m4.react()
 
 const m5 = new hh.ReactiveMachine( prg5, "5" );
-m5.debug_emitted_func = console.log
-console.log( "m5" )
+m5.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
+mach.outbuf += "m5\n";
 m5.react()
 m5.react()
 m5.react()

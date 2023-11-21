@@ -26,6 +26,9 @@ hiphop machine mach() {
    }
 }
 
-mach.addEventListener("O", evt => console.log(evt.nowval));
+mach.outbuf = "";
+mach.addEventListener("O", evt => mach.outbuf += evt.nowval + "\n");
 mach.react();
 mach.react();
+
+export { mach };

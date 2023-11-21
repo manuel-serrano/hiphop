@@ -11,9 +11,9 @@ hiphop module prg() {
       fork {
 	 abort(R.now) {
 	    async (T) {
-	       console.log("Oi.");
+	       mach.outbuf += ("Oi.") + "\n";
 	       setTimeout(function(self) {
-		  console.log("Oi timeout.");
+		  mach.outbuf += ("Oi timeout.") + "\n";
 		  self.notify(glob++ , false);
 		 }, 1000, this);
 	    }
@@ -25,20 +25,23 @@ hiphop module prg() {
    } every (R.now)
 }
 
-const machine = new hh.ReactiveMachine(prg, "exec");
-machine.debug_emitted_func = console.log
+export const mach = new hh.ReactiveMachine(prg, "exec");
+mach.outbuf = "";
+mach.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
-machine.react()
+mach.react()
 
 setTimeout(function() {
-   machine.inputAndReact("R")
+   mach.inputAndReact("R")
 }, 500);
 
 setTimeout(function() {
-   machine.react()
+   mach.react()
 }, 1100);
 
 setTimeout(function() {
-   machine.react()
+   mach.react()
 }, 2000);
 

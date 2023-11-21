@@ -7,18 +7,18 @@ hiphop module prg() {
    inout A, B;
    EXIT: fork {
       await( A.now );
-      hop { console.log( "A" ) }
+      hop { mach.outbuf += "A"; }
       break EXIT;
    } par {
       await( B.now );
-      hop { console.log( "B" ) }
+      hop { mach.outbuf += "B"; }
       break EXIT;
    }
 
-   hop { console.log( "end" ) } ;
+   hop { mach.outbuf += "end"; }
 }
 
-const m = new hh.ReactiveMachine( prg );
+export const mach = new hh.ReactiveMachine( prg );
 
-m.react();
-m.inputAndReact( "B" );
+mach.react();
+mach.inputAndReact( "B" );

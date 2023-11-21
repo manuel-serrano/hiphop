@@ -21,13 +21,13 @@ hiphop module prg() {
    }
 }
 
-const machine = new hh.ReactiveMachine( prg, "sync-err" );
+export const mach = new hh.ReactiveMachine( prg, "sync-err" );
 
 try {
-   console.log( machine.react() );
-   console.log( machine.react() );
-   console.log( machine.react() );
-   console.log( machine.react() );
+   console.log( mach.react() );
+   console.log( mach.react() );
+   console.log( mach.react() );
+   console.log( mach.react() );
 } catch( e ) {
    console.log( e.message );
 }
