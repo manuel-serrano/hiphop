@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Mon Nov 20 15:20:48 2023 (serrano)                */
+/*    Last change :  Tue Nov 21 05:39:37 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -228,7 +228,7 @@ function parseHHCondExpression(iscnt, isrun) {
 function parseValueApply(loc) {
    const { expr: expr, accessors } = parseHHExpression.call(this);
    let init;
-   if (typeof expr === "J2SDollar") {
+   if (typeof expr === "J2SDollar" || expr?.clazz === "J2SDollar") {
       init = astutils.J2SDataPropertyInit(
 	 loc,
 	 astutils.J2SString(loc, "value"),
@@ -303,7 +303,7 @@ function parseDelay(loc, tag, action = "apply", id = false) {
       
       let inits;
 
-      if (typeof expr === "J2SUnresolvedRef") {
+      if (typeof expr === "J2SUnresolvedRef" || expr?.clazz === "J2SUnresolvedRef") {
 	 inits = [
 	    astutils.J2SDataPropertyInit(
 	       loc, astutils.J2SString(loc, "immediate"),
@@ -1405,7 +1405,7 @@ function parseRun(token) {
    this.consumeToken(this.RBRACE);
 
    // run expression
-   switch (typeof module) {
+   switch (module?.clazz ?? typeof module) {
       case "J2SDollar":
 	 inits.push(astutils.J2SDataPropertyInit(
 		       loc, astutils.J2SString(loc, "module"),

@@ -15,7 +15,8 @@ const prg = hiphop module() {
 	    mach.outbuf += "Oi.\n";
 	    setTimeout(function(self) {
 		  mach.outbuf += "Oi timeout.\n";
-	       	  self.notify(glob++, false);
+	       self.notify(glob++, false);
+	       mach?.done();
 	       }, 1000, this);
 	 } suspend {
 	    mach.outbuf += "suspended.\n";
@@ -38,18 +39,20 @@ mach.debug_emitted_func = val => {
    mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
 }
 
-mach.react()
-mach.inputAndReact("S")
-mach.inputAndReact("S")
-mach.inputAndReact("S")
-mach.inputAndReact("S")
-mach.react()
-mach.react()
-mach.inputAndReact("S")
+mach.react();
+mach.inputAndReact("S");
+mach.inputAndReact("S");
+mach.inputAndReact("S");
+mach.inputAndReact("S");
+mach.react();
+mach.react();
+mach.inputAndReact("S");
 
 setTimeout(function() {
-   mach.react()
-   mach.inputAndReact("RESS")
-   mach.inputAndReact("S")
-   mach.react()
+   mach.react();
+   mach.inputAndReact("RESS");
+   mach.inputAndReact("S");
+   mach.react();
+	       console.error("DONE=", mach?.done);
+   mach?.done();
 }, 2000);
