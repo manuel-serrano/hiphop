@@ -18,7 +18,7 @@ hiphop module prg() {
 }
 
 const m = new hh.ReactiveMachine(prg, "variable");
-exports.prg = prg;
+export const mach = prg;
 
 m.react()
 m.inputAndReact("sig", 0);

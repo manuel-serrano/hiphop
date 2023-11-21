@@ -127,4 +127,4 @@ hiphop module BUTTON() {
    }
 }
 
-exports.prg = new hh.ReactiveMachine( BUTTON, "BUTTON" );
+export const mach = new hh.ReactiveMachine(BUTTON, "BUTTON");

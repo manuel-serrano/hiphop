@@ -11,4 +11,4 @@ hiphop module prg() {
    }
 }
 
-exports.prg = new hh.ReactiveMachine( prg, "await3" );
+export const mach = new hh.ReactiveMachine(prg, "await3");

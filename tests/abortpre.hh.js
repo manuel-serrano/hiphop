@@ -17,4 +17,4 @@ hiphop module prg() {
 
 //console.error(prg.pretty_print())
 
-exports.prg = new hh.ReactiveMachine(prg, "abortpre");
+export const mach = new hh.ReactiveMachine(prg, "abortpre");

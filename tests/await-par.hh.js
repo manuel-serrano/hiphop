@@ -15,4 +15,4 @@ hiphop module prg() {
    emit O();
 }
 
-exports.prg = new hh.ReactiveMachine( prg, "awaitpar" );
+export const mach = new hh.ReactiveMachine(prg, "awaitpar");

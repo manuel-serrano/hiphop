@@ -17,4 +17,4 @@ hiphop module main() {
    run sub() { S, U, A as W, B as Z };
 } 
 
-exports.prg = new hh.ReactiveMachine(main, "run2");
+export const mach = new hh.ReactiveMachine(main, "run2");

@@ -15,4 +15,4 @@ hiphop module m() {
    emit F();
 }
 
-exports.prg = new hh.ReactiveMachine( m, "wabortimmediate" )
+export const mach = new hh.ReactiveMachine( m, "wabortimmediate" )

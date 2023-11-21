@@ -10,4 +10,4 @@ hiphop module prg() {
    } every( I.now )
 }
 
-exports.prg = new hh.ReactiveMachine( prg, "loopeach" );
+export const mach = new hh.ReactiveMachine( prg, "loopeach" );

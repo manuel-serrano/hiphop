@@ -4,7 +4,7 @@
 import * as hh from "@hop/hiphop";
 
 function foo( evt ) {
-   console.log( "foo called by", evt.type, "with value", evt.nowval );
+   match.outbuf += "foo called by " + evt.type + " with value " + evt.nowval;
 }
 
 hiphop module prg() {
@@ -13,7 +13,7 @@ hiphop module prg() {
    emit O( I.nowval );
 }
 
-const m = new hh.ReactiveMachine( prg, "awaitvalued" );
-m.addEventListener( "O", foo );
+export const mach = new hh.ReactiveMachine( prg, "awaitvalued" );
+mach.outbuf = "";
+mach.addEventListener( "O",foo);
 
-exports.prg = m;

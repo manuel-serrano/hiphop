@@ -14,4 +14,4 @@ hiphop machine prg() {
    }
 }
 
-exports.prg = prg;
+export const mach = prg;

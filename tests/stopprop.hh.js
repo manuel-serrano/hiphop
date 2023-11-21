@@ -26,4 +26,4 @@ m.addEventListener( "O", function( evt ) {
    console.log( "third", evt.type );
 });
 
-exports.prg = m;
+export const mach = m;

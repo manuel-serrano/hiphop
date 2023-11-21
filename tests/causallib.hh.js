@@ -29,12 +29,12 @@ hiphop module prog() {
     }
 }
 
-let machine = new hh.ReactiveMachine( prog );
+export const mach = new hh.ReactiveMachine( prog );
 
 try{
-    machine.react('A','B');
-    machine.react('A');
-    machine.react('B');
+    mach.react('A','B');
+    mach.react('A');
+    mach.react('B');
 } catch( e ) { 
     console.log( "causality error" );
 }

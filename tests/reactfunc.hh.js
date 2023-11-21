@@ -41,4 +41,4 @@ m.addEventListener( "O11", bar );
 m.addEventListener( "O2", foo2 )
 m.addEventListener( "O2", bar2 );
 
-exports.prg = m;
+export const mach = m;

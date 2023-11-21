@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/hiphop/preprocessor/astutils.js      */
+/*    serrano/prgm/project/hiphop/1.3.x/preprocessor/astutils.js       */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Wed Oct 25 11:53:23 2023 (serrano)                */
+/*    Last change :  Tue Nov 21 11:17:49 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -502,13 +502,13 @@ export function J2SDeclParam(loc, id, utype) {
 /*---------------------------------------------------------------------*/
 /*    J2SDeclInitScope ...                                             */
 /*---------------------------------------------------------------------*/
-export function J2SDeclInitScope(loc, id, val, scope, binder = "let") {
+export function J2SDeclInitScope(loc, id, val, scope, binder = "let", ronly) {
    if (configCtype) { 
       return new ast.J2SDeclInit(loc, 
       	 id, 
       	 false /* _scmid */, 
       	 declKey++ /* key */,
-      	 true /* writable */, 
+      	 !ronly /* writable */, 
       	 scope /* scope */,
       	 0 /* usecnt */, 
       	 false /* useinloop */,
@@ -530,7 +530,7 @@ export function J2SDeclInitScope(loc, id, val, scope, binder = "let") {
       	 id, 
       	 false /* _scmid */, 
       	 declKey++ /* key */,
-      	 true /* writable */, 
+      	 !ronly /* writable */, 
       	 scope /* scope */,
       	 0 /* usecnt */, 
       	 false /* useinloop */,
@@ -551,7 +551,7 @@ export function J2SDeclInitScope(loc, id, val, scope, binder = "let") {
       	 id, 
       	 false /* _scmid */, 
       	 declKey++ /* key */,
-      	 true /* writable */, 
+      	 !ronly /* writable */, 
       	 scope /* scope */,
       	 0 /* usecnt */, 
       	 false /* useinloop */,
@@ -572,8 +572,8 @@ export function J2SDeclInitScope(loc, id, val, scope, binder = "let") {
 /*---------------------------------------------------------------------*/
 /*    J2SDeclInit ...                                                  */
 /*---------------------------------------------------------------------*/
-export function J2SDeclInit(loc, id, val, binder = "let") {
-   return J2SDeclInitScope(loc, id, val, "local", binder);
+export function J2SDeclInit(loc, id, val, binder = "let", ronly) {
+   return J2SDeclInitScope(loc, id, val, "local", binder, ronly);
 }
 
 /*---------------------------------------------------------------------*/

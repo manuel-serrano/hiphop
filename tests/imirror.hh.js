@@ -8,7 +8,9 @@ hiphop module M1() implements Intf {
    if (I.now) emit O();
 }
 
-hiphop module M2 implements mirror Intf { out OK } {
+hiphop module M2() implements mirror Intf {
+   out OK;
+   
    emit I();
    if (O.now) emit OK();
 }

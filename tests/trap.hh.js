@@ -13,4 +13,4 @@ hiphop module prg() {
    emit C();
 }
 
-exports.prg = new hh.ReactiveMachine( prg, "trapsimple" );
+export const mach = new hh.ReactiveMachine( prg, "trapsimple" );

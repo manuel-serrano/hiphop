@@ -2,12 +2,12 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module example( I, O ) {
+hiphop module example(I, O) {
    loop {
-      if( now( O ) ) emit I();
+      if (now(O)) emit I();
       emit O();
       yield;
    }
 }
 
-exports.prg = new hh.ReactiveMachine( example, "presentemit" );
+export const mach = new hh.ReactiveMachine(example, "presentemit");

@@ -56,4 +56,4 @@ const m = new hh.ReactiveMachine( prg, "Foo" );
 
 m.addEventListener( "Time", print_time );
 
-exports.prg = m;
+export const mach = m;

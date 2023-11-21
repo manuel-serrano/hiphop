@@ -9,11 +9,11 @@ hiphop module sub() {
 
 hiphop module main( O, S ) {
    T: {
-      run sub();
+      run sub() {};
    }
 }
 
 prg = new hh.ReactiveMachine( main, "abort-error" );
-exports.prg = prg;
+export const mach = prg;
 
 

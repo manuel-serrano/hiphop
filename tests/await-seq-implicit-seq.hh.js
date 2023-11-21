@@ -11,4 +11,4 @@ hiphop module prg() {
    emit O();
 }
 
-exports.prg = new hh.ReactiveMachine( prg, "awaitseq" );
+export const mach = new hh.ReactiveMachine(prg, "awaitseq");

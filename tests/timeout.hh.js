@@ -9,17 +9,17 @@ hiphop module prg() {
       signal __internal=-1;
 
       loop {
-	 if(__internal.preval === -1) {
-	    emit __internal(X.nowval + 5);
-	 }
-	 if(__internal.nowval === 0) {
-	    break T;
-	 }
-	 async () {
+         if(__internal.preval === -1) {
+            emit __internal(X.nowval + 5);
+         }
+         if(__internal.nowval === 0) {
+            break T;
+         }
+         async () {
             setTimeout(this.notify.bind(this), 500);
-	 }
-	 emit Y();
-	 emit __internal(__internal.preval - 1);
+         }
+         emit Y();
+         emit __internal(__internal.preval - 1);
       }
    }
    emit Z();

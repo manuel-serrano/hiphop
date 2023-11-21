@@ -4,7 +4,7 @@ import * as hh from "@hop/hiphop";
 
 try {
    hiphop module prg( I, O ) {
-      every( immediate count( 2, now( I ) ) ) {
+      every immediate count( 2, now( I ) ) {
 	 emit O();
       }
    }
