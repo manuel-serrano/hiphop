@@ -4,17 +4,16 @@
 import * as hh from "@hop/hiphop";
 
 function foo( evt ) {
-   console.log( "foo called by", evt.type, "with value", evt.nowval );
+   mach.outbuf += ( "foo called by", evt.type, "with value", evt.nowval ) + "\n";
 }
 
 function foo2( evt ) {
-   console.log( "foo2 called by", evt.type, "with value", evt.nowval );
+   mach.outbuf += ( "foo2 called by", evt.type, "with value", evt.nowval ) + "\n";
 }
 
 function foo3( evt ) {
-   console.log( "foo3 called by", evt.type, "with value", evt.nowval );
+   mach.outbuf += ( "foo3 called by", evt.type, "with value", evt.nowval ) + "\n";
 }
-
 
 hiphop module prg() {
    in I; out O;
@@ -24,25 +23,28 @@ hiphop module prg() {
    }
 }
 
-const m = new hh.ReactiveMachine( prg, "awaitvalued2" );
-m.debug_emitted_func = console.log;
+export const mach = new hh.ReactiveMachine( prg, "awaitvalued2" );
+mach.outbuf = "";
+mach.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
-m.addEventListener( "O", foo );
+mach.addEventListener( "O", foo );
 
-console.log( ";" )
-m.react();
+mach.outbuf += ( ";" ) + "\n"
+mach.react();
 
-m.addEventListener( "O", foo2 );
+mach.addEventListener( "O", foo2 );
 
-console.log( "I(34)" )
-m.inputAndReact( "I", 34 );
+mach.outbuf += ( "I(34)" ) + "\n"
+mach.inputAndReact( "I", 34 );
 
-m.addEventListener( "O", foo3 );
+mach.addEventListener( "O", foo3 );
 
-console.log( "I(34)" );
-m.inputAndReact( "I", 34 );
+mach.outbuf += ( "I(34)" ) + "\n";
+mach.inputAndReact( "I", 34 );
 
-m.removeEventListener( "O", foo3 );
+mach.removeEventListener( "O", foo3 );
 
-console.log( "I(15)" );
-m.inputAndReact( "I", 15 );
+mach.outbuf += ( "I(15)" ) + "\n";
+mach.inputAndReact( "I", 15 );

@@ -3,7 +3,7 @@
 
 import * as hh from "@hop/hiphop";
 
-const mach = new hh.ReactiveMachine(
+export const mach = new hh.ReactiveMachine(
    hiphop module() {
       inout S, R, E;
       suspend from( S.now ) to( R.now ) emit E() {

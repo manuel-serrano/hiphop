@@ -91,9 +91,11 @@ hiphop module RR() {
       if (Nok2.now) emit PrevNok1();
    }
 }
-const machine = new hh.ReactiveMachine(RR);
+
+export const mach = new hh.ReactiveMachine(RR);
+mach.outbuf = "";
 try {
-    machine.react();
+    mach.react();
 } catch( e ) { 
-    console.log( "causality error" );
+    mach.outbuf += ( "causality error" ) + "\n";
 }

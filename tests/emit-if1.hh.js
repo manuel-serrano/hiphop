@@ -11,13 +11,16 @@ hiphop module prg() {
    }
 }
 
-const m = new hh.ReactiveMachine( prg );
-m.debug_emitted_func = console.log;
+export const mach = new hh.ReactiveMachine( prg );
+mach.outbuf = "";
+mach.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
-m.react()
-m.react()
-m.inputAndReact( "B" )
-m.react()
-m.inputAndReact( "B" )
-m.inputAndReact( "B" )
+mach.react()
+mach.react()
+mach.inputAndReact( "B" )
+mach.react()
+mach.inputAndReact( "B" )
+mach.inputAndReact( "B" )
 

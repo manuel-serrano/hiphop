@@ -7,7 +7,8 @@ hiphop module sub() {
    break T;
 }
 
-hiphop module main( O, S ) {
+hiphop module main() {
+   out O, S;
    T: {
       run sub() {};
    }

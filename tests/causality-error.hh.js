@@ -2,7 +2,9 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module example(I, O) {
+hiphop module example() {
+   in I;
+   out O;
    loop {
       if (now(O)) emit I();
       emit O();

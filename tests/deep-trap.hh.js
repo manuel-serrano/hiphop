@@ -8,11 +8,12 @@ hiphop module prg() {
       t2: {
 	 break t2;
       }
-      hop { console.log( "first level" ) };
+      hop { mach.outbuf += ( "first level" ) + "\n" };
    }
-   hop { console.log( "top level" ) };
+   hop { mach.outbuf += ( "top level" ) + "\n" };
 }
 
-const m = new hh.ReactiveMachine( prg );
+export const mach = new hh.ReactiveMachine( prg );
 
-m.react();
+mach.outbuf = "";
+mach.react();

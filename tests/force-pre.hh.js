@@ -3,7 +3,9 @@
 
 import * as hh from "@hop/hiphop";
 
-export let mach; 
+export let mach = new hh.ReactiveMachine(hiphop module () {});
+mach.outbuf = "";
+
 try {
    hiphop module prg() {
       out O = 0;
@@ -11,5 +13,5 @@ try {
    }
    mach = new hh.ReactiveMachine(prg);
 } catch( e ) {
-   console.log( "error: self update" );
+   mach.outbuf += ( "error: self update" ) + "\n";
 }

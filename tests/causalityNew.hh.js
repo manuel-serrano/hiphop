@@ -10,10 +10,11 @@ hiphop module example() {
    emit O();
 }
 
-let machine = new hh.ReactiveMachine(example, {CausalityErrorTrace:"deep", sweep:false} );
+export const mach = new hh.ReactiveMachine(example, {CausalityErrorTrace:"deep", sweep:false} );
+mach.outbuf = "";
 
 try {
-    machine.react();
+    mach.react();
 } catch( e ) { 
-    console.log( "causality error" );
+    mach.outbuf += ( "causality error" ) + "\n";
 }

@@ -30,16 +30,15 @@ hiphop module prg() {
 	 run ${prg2()}() { artist as artist, * };
       } par {
 	 every(artist.now) {
-	    host { console.log("***ARTIST***", artist.nowval) };
+	    host { mach.outbuf += ("***ARTIST***", artist.nowval) + "\n" };
 	 }
       } par {
 	 every(playlist.now) {
-	    host { console.log("***PLAYLIST***", playlist.nowval) };
+	    host { mach.outbuf += ("***PLAYLIST***", playlist.nowval) + "\n" };
 	 }
       }
    }
 }
 
-const m = new hh.ReactiveMachine(prg)
-//console.log(m.ast.pretty_print());
-m.react();
+export const mach = new hh.ReactiveMachine(prg)
+mach.react();

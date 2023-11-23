@@ -1,10 +1,13 @@
 "use hopscript"
 
-import p18 from "./p18.js";
-const machine = p18.prg;
-let state = machine.save();
+export { mach } from "./p18.hh.js";
+import { mach as machine } from "./p18.hh.js";
 
-machine.debug_emitted_func = console.log
+let state = machine.save();
+machine.outbuf = "";
+machine.debug_emitted_func = val => {
+   machine.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
 machine.react()
 

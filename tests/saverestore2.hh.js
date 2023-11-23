@@ -1,7 +1,12 @@
 "use hopscript"
 
-import valuepre1 from "./valuepre1.js";
-const machine = valuepre1.prg;
+export { mach } from "./valuepre1.hh.js";
+import { mach as machine } from "./valuepre1.hh.js";
+
+machine.outbuf = "";
+machine.debug_emitted_func = val => {
+   machine.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 machine.debug_emitted_func = console.log
 
 let state1 = machine.save();

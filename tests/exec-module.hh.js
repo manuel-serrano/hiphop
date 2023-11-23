@@ -18,16 +18,16 @@ hiphop module main() {
    run M1() { a };
 }
 
-const m = new ReactiveMachine(main, "exec-module");
+export const mach = new ReactiveMachine(main, "exec-module");
 
-m.addEventListener( "a", e => console.log( "a=", e.nowval ) );
-m.addEventListener( "b", e => console.log( "b=", e.nowval ) );
+mach.addEventListener( "a", e => mach.outbuf += ( "a=", e.nowval ) + "\n" );
+mach.addEventListener( "b", e => mach.outbuf += ( "b=", e.nowval ) + "\n" );
 
-m.react();
-m.react();
-m.react();
-m.react();
-m.react();
-m.react();
-m.react();
-m.react();
+mach.react();
+mach.react();
+mach.react();
+mach.react();
+mach.react();
+mach.react();
+mach.react();
+mach.react();

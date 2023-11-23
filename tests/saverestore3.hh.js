@@ -1,8 +1,12 @@
 "use hopscript"
 
-import toogle from "./toggle.js";
-const machine = toogle.prg;
-machine.debug_emitted_func = console.log
+export { mach } from "./toggle.hh.js";
+import { mach as machine } from "./toggle.hh.js";
+machine = toogle.prg;
+machine.outbuf = "";
+machine.debug_emitted_func = val => {
+   machine.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
 let state1 = machine.save();
 let state2 = null;

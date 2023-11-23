@@ -3,18 +3,22 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop machine mach() {
+hiphop module prog() {
    inout toogle;
    
    suspend toggle( toogle.now ) {
       loop {
-	 hop { console.log( "plop" ); }
+	 hop { mach.outbuf += ( "plop" ) + "\n"; }
 	 yield;
       }
    }
 }
 
-mach.debug_emitted_func = console.log;
+export const mach = new hh.ReactiveMachine(prog);
+mach.outbuf = "";
+mach.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
 mach.react();
 mach.react();

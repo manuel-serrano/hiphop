@@ -1,12 +1,14 @@
 "use @hop/hiphop";
 "use hopscript";
 
+import * as hh from "@hop/hiphop";
+
 hiphop module mod(n) {
    out O;
    emit O(n);
 }
     
-hiphop machine mach() {
+hiphop module prg() {
    out O combine (x, y) => x + y;
    fork {
       run mod(10) { * };
@@ -15,5 +17,7 @@ hiphop machine mach() {
    }
 }
 
-mach.addEventListener("O", evt => console.log(evt.nowval));
+export const mach = new hh.ReactiveMachine(prg);
+mach.outbuf = "";
+mach.addEventListener("O", evt => mach.outbuf += (evt.nowval) + "\n");
 mach.react();

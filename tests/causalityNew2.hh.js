@@ -15,9 +15,11 @@ hiphop module prg() {
    }
 }
 
-const machine = new hh.ReactiveMachine( prg );
+export const mach = new hh.ReactiveMachine( prg );
+mach.outbuf = "";
+
 try {
-    machine.react();
+    mach.react();
 } catch( e ) { 
-    console.log( "causality error" );
+    mach.outbuf += ( "causality error" ) + "\n";
 }

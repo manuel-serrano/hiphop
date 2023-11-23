@@ -24,13 +24,13 @@ hiphop module main() {
    }
 }
 
-const M = new hh.ReactiveMachine(main, "appendseqchild");
+export const mach = new hh.ReactiveMachine(main, "appendseqchild");
 
-M.react();
+mach.react();
 
-const seq = M.getElementById("myseq");
+const seq = mach.getElementById("myseq");
 
 seq.appendChild(makePar(() => mach.outbuf += "p1", () => mach.outbuf += "p2"));
 
-M.react();
-M.react();
+mach.react();
+mach.react();
