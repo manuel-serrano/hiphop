@@ -2,7 +2,6 @@
 
 export { mach } from "./toggle.hh.js";
 import { mach as machine } from "./toggle.hh.js";
-machine = toogle.prg;
 machine.outbuf = "";
 machine.debug_emitted_func = val => {
    machine.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");

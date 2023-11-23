@@ -13,14 +13,14 @@ export const mach = new hh.ReactiveMachine(
 	       emit B();
 	    }
 	 }
-	 host { console.log( "weakabort terminated 1." ); }
+	 host { mach.outbuf += ( "weakabort terminated 1." ) + "\n"; }
       } every( A.now )
    } );
 
 mach.react();
 mach.react();
 mach.react();
-//console.log( machine.pretty_print() );
+//mach.outbuf += ( machine.pretty_print() ) + "\n";
 
 const machine2 = new hh.ReactiveMachine(
    hiphop module() {
@@ -32,7 +32,7 @@ const machine2 = new hh.ReactiveMachine(
 	       emit B();
 	    }
 	 }
-	 host { console.log( "weakabort terminated 2." ); }
+	 host { mach.outbuf += ( "weakabort terminated 2." ) + "\n"; }
       } every( A.now )
    } );
 
@@ -40,7 +40,7 @@ machine2.react();
 machine2.react();
 machine2.react();
 machine2.react();
-//console.log( machine2.pretty_print() );
+//mach.outbuf += ( machine2.pretty_print() ) + "\n";
 
 const machine3 = new hh.ReactiveMachine(
    hiphop module() {
@@ -53,7 +53,7 @@ const machine3 = new hh.ReactiveMachine(
 	    yield;
 	    emit B();
 	 }
-	 host { console.log( "weakabort terminated 3." ); }
+	 host { mach.outbuf += ( "weakabort terminated 3." ) + "\n"; }
       } every( A.now )
    } );
 

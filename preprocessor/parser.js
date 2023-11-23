@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Nov 21 14:09:41 2023 (serrano)                */
+/*    Last change :  Thu Nov 23 10:16:38 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -118,7 +118,7 @@ function tokenLocation(token) {
 /*---------------------------------------------------------------------*/
 function tokenValueError(token) {
    return error.SyntaxError("unexpected token `" + token.value + "'",
-			     tokenLocation(token));
+			    tokenLocation(token));
 }
 
 
@@ -389,12 +389,10 @@ function parseHHBlock(consume = true) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseMachineModule ...                                           */
+/*    parseModule ...                                                  */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
 /*       | MODULE [ident] (sig-or-vdecl, ...)                          */
-/*           [implements dollarexpr, ...] block                        */
-/*       | MACHINE [ident] (sig-or-vdecl, ...)                         */
 /*           [implements dollarexpr, ...] block                        */
 /*    intf ::= [mirror] ident | [mirror] $dollar                       */
 /*    sig-or-vdecl ::= signal | vdecl                                  */
@@ -403,7 +401,7 @@ function parseHHBlock(consume = true) {
 /*    direction ::= in | out | inout                                   */
 /*    combine ::= combine expr                                         */
 /*---------------------------------------------------------------------*/
-function parseMachineModule(token, declaration, ctor) {
+function parseModule(token, declaration, ctor) {
    const loc = token.location;
    const tag = tagInit(ctor.toLowerCase(), loc);
    let id;
@@ -474,7 +472,7 @@ function parseMachineModule(token, declaration, ctor) {
       
       const val = astutils.J2SCall(loc, hhref(loc, "SEQUENCE"), 
          null,
-         [sattrs, atom].concat(stmts));
+         [sattrs].concat(stmts));
       
       const ret = astutils.J2SReturn(loc, val);
       
@@ -1824,7 +1822,7 @@ function parseStmt(token, declaration) {
 	    case "hop":
 	       return parseAtom.call(this, next);
 	    case "module":
-	      return parseMachineModule.call(this, next, declaration, "MODULE");
+	      return parseModule.call(this, next, declaration, "MODULE");
 	    case "halt":
 	       return parseHalt.call(this, next);
 	    case "fork":
@@ -1902,12 +1900,9 @@ function parseHiphopValue(token, declaration, conf) {
 
    const next = this.peekToken();
 
-   if (next.type === this.ID && next.value === "machine") {
+   if (next.type === this.ID && next.value === "module") {
       this.consumeAny();
-      return wrapVarDecl(parseMachineModule.call(this, next, declaration, "MACHINE"));
-   } else if (next.type === this.ID && next.value === "module") {
-      this.consumeAny();
-      return wrapVarDecl(parseMachineModule.call(this, next, declaration, "MODULE"));
+      return wrapVarDecl(parseModule.call(this, next, declaration, "MODULE"));
    } else if (next.type === this.ID && next.value === "interface") {
       this.consumeAny();
       return wrapVarDecl(parseInterface.call(this, next, declaration));

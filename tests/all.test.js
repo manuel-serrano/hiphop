@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 21 07:42:24 2023                          */
-/*    Last change :  Tue Nov 21 17:58:36 2023 (serrano)                */
+/*    Last change :  Thu Nov 23 09:54:06 2023 (serrano)                */
 /*    Copyright   :  2023 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing driver.                                                  */
@@ -18,7 +18,7 @@ import * as assert from 'assert';
 import { batch } from '../lib/batch.js';
 import { fileURLToPath } from 'node:url'
 import { basename, dirname, join } from 'path';
-import { readdirSync } from 'fs';
+import { existsSync, readdirSync } from 'fs';
 
 /*---------------------------------------------------------------------*/
 /*    tests ...                                                        */
@@ -60,8 +60,18 @@ function main(argv) {
    globalThis.describe("all.test.js", () => {
       tests.forEach(async f => {
 	 globalThis.it(basename(f), async () => {
-	    const m = await import(f);
-	    assert.equal(batch(m.mach, dir + "/" + f), false);
+	    let error = true; // 
+	    try {
+	       const m = await import(f);
+	       error = batch(m.mach, dir + "/" + f);
+	    } catch (e) {
+	       if (existsSync(join(dirname(f), basename(f).replace(/[.]hh[.]js$/, ".err")))) {
+		  error = false;
+	       } else {
+		  error = e;
+	       }
+	    }
+	    assert.equal(error , false);
 	 });
       })
    });
