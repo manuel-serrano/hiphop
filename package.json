@@ -27,7 +27,7 @@
       "mocha": "^10.2.0"
    },
    "scripts": {
-      "test": "NODE_OPTIONS=\"--experimental-loader ./lib/hiphop-hook.mjs\" mocha --exit tests/**/*.test.js"
+      "test": "NODE_OPTIONS=\"--no-warning --experimental-loader ./lib/hiphop-hook.mjs\" mocha --exit tests/**/*.test.js"
    },
    "server": "lib/hiphop.js",
    "client": [
