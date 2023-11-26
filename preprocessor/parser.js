@@ -472,7 +472,7 @@ function parseModule(token, declaration, ctor) {
       
       const val = astutils.J2SCall(loc, hhref(loc, "SEQUENCE"), 
          null,
-         [sattrs].concat(stmts));
+         [sattrs, atom].concat(stmts));
       
       const ret = astutils.J2SReturn(loc, val);
       
@@ -1414,14 +1414,17 @@ function parseRun(token) {
       loc, astutils.J2SString(loc, "module"),
       expr.fun));
 	      
-   const runattrs = astutils.J2SObjInit(loc, inits);
-   const run = astutils.J2SCall(loc, hhref(loc, "RUN"), null, [runattrs]);
-      	 
    const param = astutils.J2SDecl(loc, "__frame", "param");
    const frame = astutils.J2SDataPropertyInit(
       loc, 
       astutils.J2SString(loc, "%frame"),	
       astutils.J2SUnresolvedRef(loc, "__frame"));
+   
+   inits.push(frame);
+   
+   const runattrs = astutils.J2SObjInit(loc, inits);
+   const run = astutils.J2SCall(loc, hhref(loc, "RUN"), null, [runattrs]);
+      	 
    const ablock = astutils.J2SBlock(
       loc, loc, exprs);
    const taghop = tagInit("hop", loc);
@@ -1442,8 +1445,6 @@ function parseRun(token) {
    const block = astutils.J2SBlock(loc, loc, [ret]);
    const fun = astutils.J2SFun(loc, "runfun", [param], block);
    const arg = astutils.J2SArray(loc, finits);
-   
-   inits.push(frame);
    
    return astutils.J2SCall(
       loc, fun, [astutils.J2SUndefined(loc)], 
