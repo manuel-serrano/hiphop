@@ -6,24 +6,24 @@ HipHop
 The `"hiphop"` module contains utilities for creating and running
 HipHop reactive machines.
 
-Use `require( "hiphop" )` to use it.
-
-
+Use `import * as hiphop from "@hop/hiphop"` to use it.
 Creating HipHop reactive machines
 ---------------------------------
 
-### new hiphop.ReactiveMachine( hhprgm, options ) ###
+### new hiphop.ReactiveMachine(hhprgm, options) ###
 [:server@glyphicon glyphicon-tag constructor]
 
 ```hopscript
-const hh = require( "hiphop" );
-const m = new hh.ReactiveMachine( require( "prgm.hh.js" ) );
+import { ReactiveMachine } from "@hop/hiphop";
+import { mod } from "./prgm.hh.js";
+
+const m = new ReactiveMachine(mod);
 ```
 
 Running HipHop reactive machines
 --------------------------------
 
-### mach.react( sigset ) ###
+### mach.react(sigset) ###
 [:@glyphicon glyphicon-tag function]
 
 The `react` function machine reactions. If called with no argument,
@@ -46,10 +46,10 @@ m.react();
 // proceed to 4 reactions, with first the signal O emitded with value 24,
 // P with value 53, then a second reaction with only o emitted with value 56,
 // ...
-m.react( { O: 24, P: 53 } );
-m.react( { O: 56 } );
-m.react( { O: 77 } );
-m.react( { P: 10 } );
+m.react({ O: 24, P: 53 });
+m.react({ O: 56 });
+m.react({ O: 77 });
+m.react({ P: 10 });
 ```
 
 After a reaction, each output signal of the main program module is
@@ -62,38 +62,61 @@ of the machine `m` and `O` with value `2` at the second reaction, checking
 { nowval: 2, preval: 1, now: true, pre: true }
 ```
 
-### mach.input( sigset ) ###
+### mach.init(values) ###
+[:@glyphicon glyphicon-tag function]
+
+Set the value of the machine's main module parameters. Can only be executed
+once, and before the machine first reaction.
+
+```hopscript
+import { ReactiveMachine } from "@hop/hiphop";
+
+hiphop module Main(id) {
+   in I; out O;
+   host { console.log(">>>", id) }
+   await(I.now);
+   host { console.log("<<<", id) }
+}
+
+const mach = new ReactiveMachine(Main);
+
+mach.init(1);
+mach.react();
+mach.react();
+```
+
+### mach.input(sigset) ###
 [:@glyphicon glyphicon-tag function]
 
 The `input` function emits signal in the machine but does not
 triggers the reaction. For instance,
 
 ```hopscript
-m.input( { O: 24 } );
-m.input( { P: 53 } )
+m.input({ O: 24 });
+m.input({ P: 53 })
 m.react();
 ```
 
 Is equivalent to
 
 ```hopscript
-m.react( { O: 24, P: 53 } )
+m.react({ O: 24, P: 53 })
 m.react();
 ```
 
-### mach.bindEvent( event, obj ) ###
+### mach.bindEvent(event, obj) ###
 [:@glyphicon glyphicon-tag function]
 
 A shortcut for:
 
 ```hopscript
-obj.addEventListener( event, e => mach.react( { [ event ]: e.value } ) );
+obj.addEventListener(event, e => mach.react({ [ event ]: e.value }));
 ```
 
 Interfacing with HipHop reactive machines
 -----------------------------------------
 
-### mach.addEventListener( signame, listener ) ###
+### mach.addEventListener(signame, listener) ###
 [:@glyphicon glyphicon-tag function]
 
 Associate a listener to the machine event `signame`.
@@ -113,10 +136,10 @@ Example:
 ${ <span class="label label-info">reactfunc.js</span> }
 
 ```hopscript
-${ doc.include( "../tests/reactfunc.hh.js" ) }
+${ doc.include("../tests/reactfunc.hh.js") }
 ```
 
-### mach.removeEventListener( signame, listener ) ###
+### mach.removeEventListener(signame, listener) ###
 [:@glyphicon glyphicon-tag function]
 
 Remove the listener from the machine.
@@ -128,18 +151,18 @@ Dynamic programs
 HipHop `fork` and `sequence` statements can be modified in between two
 reactions using the function `appendChild`.
 
-### mach.getElementById( id ) ###
+### mach.getElementById(id) ###
 
 Returns the HipHop `fork` or `sequence` labeld with `id`.
 
-### mach.appendChild( node, hhstmt ) ###
+### mach.appendChild(node, hhstmt) ###
 [:@glyphicon glyphicon-tag function]
 
 Append a child to a statement. If `node` is a `fork` construct, the
 child is added as a new parallel branch. If node is a sequence, the
 child is added after the node children.
 
-### mach.removeChild( node, child ) ###
+### mach.removeChild(node, child) ###
 [:@glyphicon glyphicon-tag function]
 
 Remove a child.
@@ -149,7 +172,7 @@ Example:
 ${ <span class="label label-info">appendseqchild.js</span> }
 
 ```hopscript
-${ doc.include( "../tests/appendseqchild.hh.js" ) }
+${ doc.include("../tests/appendseqchild.hh.js") }
 ```
 
 
@@ -168,14 +191,14 @@ ${ <span class="label label-info">batch.js</span> }
 "use hopscript"
 "use strict"
 
-const hh = require( "hiphop" );
-let Lisinopril = require( "./Lisinopril.hh.js", "hiphop" );
+import * as hh from "@hop/hiphop;
+import { Lisinopril } from "./Lisinopril.hh.js;
 
 try {
-   new hh.ReactiveMachine( Lisinopril, "Lisinopril" ).batch();
-} catch( e ) {
-   console.log( e.message );
-   process.exit( 1 );
+   new hh.ReactiveMachine(Lisinopril, "Lisinopril").batch();
+} catch(e) {
+   console.log(e.message);
+   process.exit(1);
 }
 ```
 
@@ -193,7 +216,7 @@ directory contains many `.in` files that can be used as examples.).
 Evaluating Expression
 ---------------------
 
-### hiphop.eval( string ) ###
+### hiphop.eval(string) ###
 [:@glyphicon glyphicon-tag function]
 
 The `eval` function evaluates a string denoting an HipHop statement.
@@ -204,8 +227,8 @@ Example:
 "use hopscript"
 "use strict"
 
-const hh = require( "hiphop" );
+import * as hh from "@hop/hiphop;
 
-const prgm = hh.eval( "hiphop machine() { hop { console.log( 'hello' ) } } );
-const mach = new hh.ReactiveMachine( prgm );
+const prgm = hh.eval("hiphop machine() { hop { console.log('hello') } });
+const mach = new hh.ReactiveMachine(prgm);
 ```
