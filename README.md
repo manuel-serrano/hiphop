@@ -25,7 +25,9 @@ The tutorial chapter presents a complete HipHop.js example. Here we
 merely show how to execute the `hello world` HipHop.js program,
 assuming a Node.js/NPM installation. Let us consider that program
 stored in a file named `hello.hh.js`, `.hh.js` being the suffix of
-HipHop source files.
+HipHop source files. This program waits for two events `A` and `B`
+to be received. It then emits itself the event `O`. Each time the
+`R` event is received, the program returns to its initial state.
 
 ```javascript
 import { ReactiveMachine } from "@hop/hiphop";
