@@ -7,6 +7,8 @@ __Hiphop.js__ is JavaScript DSL for easing the programming of asynchronous
 applications. It executes on unmodified JavaScript engines, let them run
 on server-side or client-side. 
 
+See [HipHop.js](http://hop.inria.fr/hiphop) for a complete documentation.
+
 Installation
 ------------
 
