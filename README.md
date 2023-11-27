@@ -73,7 +73,7 @@ nodejs hello.hh.js
    name.
    
    With this method, the program `hello.hh.js` will first be silently compiled
-   into a `._hello.mjs` and '._hello.mjs.map` files. These are the files
+   into a `._hello.mjs` and `._hello.mjs.map` files. These are the files
    that Nodejs will use for executing.
    
    2. The explict way: the file `hello.hh.js` can be compiled in advance and
