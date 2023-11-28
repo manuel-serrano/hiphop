@@ -1,10 +1,10 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/hiphop/modules/timeout.hh.js         */
+/*    serrano/prgm/project/hiphop/1.3.x/modules/timeout.hh.js          */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Mon May 23 20:19:58 2022 (serrano)                */
-/*    Copyright   :  2022 Manuel Serrano                               */
+/*    Last change :  Mon Nov 27 18:37:24 2023 (serrano)                */
+/*    Copyright   :  2022-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop timeout module.                                           */
 /*=====================================================================*/
@@ -64,7 +64,7 @@ hiphop module timeout(duration) implements Timeout {
    done: {
       do {
 	 suspend toggle (pause.now) {
-	    run ${sleep}(duration) { * };
+	    run sleep(duration) { * };
             break done;
 	 }
       } every (reset.now);

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Nov 23 10:16:38 2023 (serrano)                */
+/*    Last change :  Mon Nov 27 08:22:32 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1306,12 +1306,42 @@ function parseAsync(token) {
    return astutils.J2SCall(loc, hhref(loc, "EXEC"), null,
 			    [attrs].concat(accessors));
 }
+
+/*---------------------------------------------------------------------*/
+/*    parseRunFunExpression ...                                        */
+/*---------------------------------------------------------------------*/
+function parseRunFunExpression(loc, expr, parent) {
+   if (!(expr instanceof ast.J2SCall) && expr?.clazz !== "J2SCall" && (typeof expr) !== "J2SCall") {
+      // Nodejs and Hop do not represent the AST with the same data
+      // structure. This is why we have to make several check here
+      throw error.SyntaxError("wrong run expression token `"
+	 + (expr instanceof ast.J2SNode ? expr.generate() : typeof expr)
+	 + "'", loc);
+   } else if (!(expr instanceof ast.J2SBindExit) && expr?.clazz !== "J2SBindExit" && (typeof expr) !== "J2SBindExit") {
+      return 
+   } else {
+      return { expr, parent };
+   }
+}
+
+/*---------------------------------------------------------------------*/
+/*    parseRunFun ...                                                  */
+/*---------------------------------------------------------------------*/
+function parseRunFun(next) {
+   if (next.type !== this.ID) {
+      throw tokenTypeError(this.consumeAny());
+   } else {
+      const token = this.consumeAny();
+      const loc = normalizeLoc(token.location);
+      return astutils.J2SUnresolvedRef(loc, token.value);
+   }
+}
    
 /*---------------------------------------------------------------------*/
 /*    parseRun ...                                                     */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | run expr(expr, ...) { sigalias, ... }                       */
+/*       | run id(expr, ...) { sigalias, ... }                         */
 /*    dollarexpr ::= $dollar | hhexpr                                  */
 /*    sigalias ::= ident | ident to ident | ident from ident | *       */
 /*---------------------------------------------------------------------*/
@@ -1320,16 +1350,180 @@ function parseRun(token) {
    const next = this.peekToken();
    const tag = tagInit("run", loc);
    let inits = [locInit(loc), tag];
+   let exprs = [], axs = [], finits = [];
+   
+   // module expression
+   const fun = parseRunFun.call(this, next);
+	 
+   // variables
+   this.consumeToken(this.LPAREN);
+   
+   for (let idx = 0; this.peekToken().type != this.RPAREN; idx++) {
+      const { expr, accessors } = parseHHExpression.call(this);
+      const loc = normalizeLoc(expr.loc);
+      const assig = astutils.J2SStmtExpr(loc,
+	 astutils.J2SAssig(
+	    loc,
+	    astutils.J2SAccess(
+	       loc,
+	       astutils.J2SUnresolvedRef(
+		  loc, "__frame"),
+	       astutils.J2SNumber(
+		  loc, idx)),
+	    expr));
+      const init = astutils.J2SUndefined(loc);
+
+      finits.push(init);
+      exprs.push(assig);
+      axs = axs.concat(accessors);
+      
+      if (this.peekToken().type === this.COMMA) {
+	 this.consumeAny();
+      }
+   }
+
+   this.consumeToken(this.RPAREN);
+	 
+   // sigaliases
+   this.consumeToken(this.LBRACE);
+   
+   while (this.peekToken().type != this.RBRACE) {
+      switch (this.peekToken().type) {
+	 case this.MUL:
+	    const dm = this.consumeAny();
+	    inits.push(astutils.J2SDataPropertyInit(
+			   dm.location, astutils.J2SString(dm.location, "autocomplete"),
+			   astutils.J2SBool(dm.location, true)));
+	    break;
+	    
+	 case this.PLUS:
+	    const dp = this.consumeAny();
+	    inits.push(astutils.J2SDataPropertyInit(
+			   dp.location, astutils.J2SString(dp.location, "autocompletestrict"),
+			   astutils.J2SBool(dp.location, true)));
+	    break;
+	    
+	 case this.ID:
+	    const a = this.consumeAny();
+	    
+	    switch (this.peekToken().type) {
+	       case this.COMMA:
+	       case this.RBRACE:
+		  inits.push(astutils.J2SDataPropertyInit(
+				 a.location, astutils.J2SString(a.location, a.value),
+				 astutils.J2SString(a.location, "")));
+		  break;
+		  
+	       case this.ID:
+		  const tok = this.consumeToken(this.ID);
+		  const as = this.consumeToken(this.ID);
+
+		  switch (tok.value) {
+		     case "from": 
+		     case "to": 
+		     case "as": 
+			inits.push(astutils.J2SDataPropertyInit(
+				      a.location, astutils.J2SString(as.location, as.value),
+				      astutils.J2SString(a.location, a.value)));
+		     	break;
+		     
+		     default: 
+			throw tokenTypeError(tok);
+		  }
+	    }
+	    break;
+	    
+	    default:
+	       throw tokenTypeError(this.consumeAny());
+      }
+      
+      if (this.peekToken().type === this.COMMA) {
+	 this.consumeAny();
+      }
+   }
+      
+   this.consumeToken(this.RBRACE);
+
+   // run expression
+   inits.push(astutils.J2SDataPropertyInit(
+      loc, astutils.J2SString(loc, "module"),
+      fun));
+/*                                                                     */
+/*    switch (module?.clazz ?? typeof module) {                        */
+/*       case "J2SDollar":                                             */
+/* 	 inits.push(astutils.J2SDataPropertyInit(                      */
+/* 	    loc, astutils.J2SString(loc, "module"),                    */
+/* 	    module.node));                                             */
+/* 	 break;                                                        */
+/* 	                                                               */
+/*       case "J2SUnresolvedRef":                                      */
+/* 	 inits.push(astutils.J2SDataPropertyInit(                      */
+/* 	    normalizeLoc(module.loc),                                  */
+/* 	    astutils.J2SString(loc, "module"),                         */
+/* 	    astutils.J2SCall(loc, hhref(loc, "getModule"),             */
+/* 			     null,                                     */
+/* 			     [astutils.J2SString(loc, module.id),      */
+/* 			      location(normalizeLoc(module.loc))])));  */
+/* 	 break;                                                        */
+/*                                                                     */
+/*       default:                                                      */
+/* 	 throw error.SyntaxError("RUN: bad module", tokenLocation(token)); */
+/*    }                                                                */
+   
+   const runattrs = astutils.J2SObjInit(loc, inits);
+   const run = astutils.J2SCall(loc, hhref(loc, "RUN"), null, [runattrs]);
+      	 
+   const param = astutils.J2SDecl(loc, "__frame", "param");
+   const frame = astutils.J2SDataPropertyInit(
+      loc, 
+      astutils.J2SString(loc, "%frame"),	
+      astutils.J2SUnresolvedRef(loc, "__frame"));
+   const ablock = astutils.J2SBlock(
+      loc, loc, exprs);
+   const taghop = tagInit("hop", loc);
+   const appl = astutils.J2SDataPropertyInit(
+      loc, 
+      astutils.J2SString(loc, "apply"),
+      astutils.J2SMethod(loc, "runfun", [], ablock, self(loc)));
+   const attrs = astutils.J2SObjInit(
+      loc, [locInit(loc), taghop, appl]);
+   const atom = astutils.J2SCall(loc, hhref(loc, "ATOM"), null,
+      [attrs].concat(axs));
+   const seqattrs = astutils.J2SObjInit(loc, 
+      [locInit(loc), tagInit("run", loc)]);
+   const seq = astutils.J2SCall(
+      loc, hhref(loc, "SEQUENCE"),
+      null, [seqattrs, atom, run]);
+   const ret = astutils.J2SReturn(loc, seq);
+   const block = astutils.J2SBlock(loc, loc, [ret]);
+   const fun = astutils.J2SFun(loc, "runfun", [param], block);
+   const arg = astutils.J2SArray(loc, finits);
+   
+   inits.push(frame);
+   
+   return astutils.J2SCall(
+      loc, fun, [astutils.J2SUndefined(loc)], 
+      [arg]);
+}
+
+/*---------------------------------------------------------------------*/
+/*    parseRun ...                                                     */
+/*    -------------------------------------------------------------    */
+/*    stmt ::= ...                                                     */
+/*       | run expr(expr, ...) { sigalias, ... }                       */
+/*    dollarexpr ::= $dollar | hhexpr                                  */
+/*    sigalias ::= ident | ident to ident | ident from ident | *       */
+/*---------------------------------------------------------------------*/
+function parseRunNew(token) {
+   const loc = normalizeLoc(token.location);
+   const tag = tagInit("run", loc);
+   let inits = [locInit(loc), tag];
    let exprs = [], finits = [];
    
    // module expression
-   const { expr, accessors: axs } = parseHHExpression.call(this);
-
-   if (!expr instanceof ast.J2SCall && expr?.clazz !== "J2SCall") {
-      return error.SyntaxError("wrong run expression token `" + modExpr.generate() + "'",
-			       loc);
-   }
-
+   const { expr: funexpr, accessors: axs } = parseHHExpression.call(this);
+   const { expr, parent } = parseRunFunExpression(loc, funexpr, false);
+   
    for (let args = expr.args, idx = 0; args; args = args.cdr, idx++) {
       const expr = args.car;
       const loc = normalizeLoc(expr.loc);
@@ -1350,9 +1544,12 @@ function parseRun(token) {
    }
 
    // sigaliases
+#:tprint("PEEK0=", this.peekToken().type);
    this.consumeToken(this.LBRACE);
+#:tprint("PEEK1=", this.peekToken().type);
    
-   while (this.peekToken().type != this.RBRACE) {
+   while (this.peekToken().type !== this.RBRACE) {
+#:tprint("PEEK=", this.peekToken().type);
       switch (this.peekToken().type) {
 	 case this.MUL:
 	    const dm = this.consumeAny();

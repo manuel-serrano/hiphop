@@ -115,7 +115,7 @@
 
 <HHAsyncResume> --> | resume <HHBlock>
 
-<HHRun> --> run <HHDollarIdent> ( <HHRunExpressions> ) { <HHRunSigs> }
+<HHRun> --> run <Ident> ( <HHRunExpressions> ) { <HHRunSigs> }
 
 <HHRunExpressions> --> | | <HHExpression>, ... <HHExpression>
 

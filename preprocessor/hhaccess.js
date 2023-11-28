@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Mon Nov 20 14:58:02 2023 (serrano)                */
+/*    Last change :  Mon Nov 27 17:48:49 2023 (serrano)                */
 /*    Copyright   :  2023 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -257,7 +257,7 @@ ast.J2SAccess.prototype.collectAxs = function(env) {
 /*    ast.J2SFun.collectAxs ...                                        */
 /*---------------------------------------------------------------------*/
 ast.J2SFun.prototype.collectAxs = function(env) {
-   const env0 = ast.j2sfunExpressionp(this) ? [decl].concat(env) : env;
+   const env0 = ast.j2sfunExpressionp(this) ? [this.decl].concat(env) : env;
    const decls = collectVars(this.body);
    const envl = decls.concat(list.list2array(this.params), env0);
    const ldecls = collectLets(this.body.nodes);
@@ -310,7 +310,7 @@ ast.J2SVarDecls.prototype.collectVars = function() {
 /*    ast.J2SDecl.collectVars ...                                      */
 /*---------------------------------------------------------------------*/
 ast.J2SDecl.prototype.collectVars = function() {
-   return ast.j2sVarp(d) ? [ this ] : [];
+   return ast.j2sVarp(this) ? [ this ] : [];
 }
    
 /*---------------------------------------------------------------------*/

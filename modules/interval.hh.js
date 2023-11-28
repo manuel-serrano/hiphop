@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/hiphop/modules/interval.hh.js        */
+/*    serrano/prgm/project/hiphop/1.3.x/modules/interval.hh.js         */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Tue Feb 14 14:42:12 2023 (serrano)                */
+/*    Last change :  Mon Nov 27 18:33:29 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop interval module.                                          */
@@ -61,7 +61,7 @@ hiphop module basicInterval(duration, step) {
    
    abort (elapsed.nowval >= duration) {
       loop {
-	 run ${timeout}(duration, step || 100, elapsed.nowval) { * };
+	 run timeout(duration, step || 100, elapsed.nowval) { * };
       }
    }
    emit state("finished");
