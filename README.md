@@ -16,6 +16,15 @@ The HipHop.js installation depends on the JavaScript host
 (see Installation chapter). The easiest way to install it is when using 
 `npm`. For that system, the installation is:
 
+Until HipHop reaches a stable state (which is expected to happen in January
+2024), use the following to install it.
+
+```
+npm install https://http://www-sop.inria.fr/members/Manuel.Serrano/sotfware/npmx/hop.tgz https://http://www-sop.inria.fr/members/Manuel.Serrano/sotfware/npmx/hopc.tgz https://http://www-sop.inria.fr/members/Manuel.Serrano/sotfware/npmx/readlines.tgz https://http://www-sop.inria.fr/members/Manuel.Serrano/sotfware/npmx/hiphop.tgz
+```
+
+When HipHop is officially release, the installation procedure will be:
+
 ```
 npm install hiphop
 ```
