@@ -23,7 +23,7 @@ Until HipHop reaches a stable state (which is expected to happen in January
 npm install https://http://www-sop.inria.fr/members/Manuel.Serrano/sotfware/npmx/hop.tgz https://http://www-sop.inria.fr/members/Manuel.Serrano/sotfware/npmx/hopc.tgz https://http://www-sop.inria.fr/members/Manuel.Serrano/sotfware/npmx/readlines.tgz https://http://www-sop.inria.fr/members/Manuel.Serrano/sotfware/npmx/hiphop.tgz
 ```
 
-When HipHop is officially release, the installation procedure will be:
+When HipHop is officially released in 2024, the installation procedure is:
 
 ```
 npm install hiphop
