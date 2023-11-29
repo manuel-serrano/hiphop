@@ -12,7 +12,6 @@
 /*---------------------------------------------------------------------*/
 /*    es6 module                                                       */
 /*---------------------------------------------------------------------*/
-export { version, CAUSALITY_JSON };
-       
-const version = "@VERSION@@MINOR@";
-const CAUSALITY_JSON = "hiphop.causality.json";
+export const version = "@VERSION@@MINOR@";
+export const CAUSALITY_JSON = "hiphop.causality.json";
+export const sweep = false;
