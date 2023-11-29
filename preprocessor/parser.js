@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Mon Nov 27 08:22:32 2023 (serrano)                */
+/*    Last change :  Tue Nov 28 10:17:35 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1353,7 +1353,7 @@ function parseRun(token) {
    let exprs = [], axs = [], finits = [];
    
    // module expression
-   const fun = parseRunFun.call(this, next);
+   const exprFun = parseRunFun.call(this, next);
 	 
    // variables
    this.consumeToken(this.LPAREN);
@@ -1447,7 +1447,16 @@ function parseRun(token) {
    // run expression
    inits.push(astutils.J2SDataPropertyInit(
       loc, astutils.J2SString(loc, "module"),
-      fun));
+      exprFun));
+
+   const param = astutils.J2SDecl(loc, "__frame", "param");
+   const frame = astutils.J2SDataPropertyInit(
+      loc, 
+      astutils.J2SString(loc, "%frame"),	
+      astutils.J2SUnresolvedRef(loc, "__frame"));
+   
+   inits.push(frame);
+   
 /*                                                                     */
 /*    switch (module?.clazz ?? typeof module) {                        */
 /*       case "J2SDollar":                                             */
@@ -1473,11 +1482,6 @@ function parseRun(token) {
    const runattrs = astutils.J2SObjInit(loc, inits);
    const run = astutils.J2SCall(loc, hhref(loc, "RUN"), null, [runattrs]);
       	 
-   const param = astutils.J2SDecl(loc, "__frame", "param");
-   const frame = astutils.J2SDataPropertyInit(
-      loc, 
-      astutils.J2SString(loc, "%frame"),	
-      astutils.J2SUnresolvedRef(loc, "__frame"));
    const ablock = astutils.J2SBlock(
       loc, loc, exprs);
    const taghop = tagInit("hop", loc);
@@ -1498,8 +1502,6 @@ function parseRun(token) {
    const block = astutils.J2SBlock(loc, loc, [ret]);
    const fun = astutils.J2SFun(loc, "runfun", [param], block);
    const arg = astutils.J2SArray(loc, finits);
-   
-   inits.push(frame);
    
    return astutils.J2SCall(
       loc, fun, [astutils.J2SUndefined(loc)], 
@@ -1544,12 +1546,9 @@ function parseRunNew(token) {
    }
 
    // sigaliases
-#:tprint("PEEK0=", this.peekToken().type);
    this.consumeToken(this.LBRACE);
-#:tprint("PEEK1=", this.peekToken().type);
    
    while (this.peekToken().type !== this.RBRACE) {
-#:tprint("PEEK=", this.peekToken().type);
       switch (this.peekToken().type) {
 	 case this.MUL:
 	    const dm = this.consumeAny();

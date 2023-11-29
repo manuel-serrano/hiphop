@@ -13,11 +13,12 @@ hiphop module prg() {
    emit C(123);
 }
 
-const m = new ReactiveMachine(prg,{ dumpNets: true });
-m.addEventListener("C", e => console.log("got C: ", e.nowval));
-m.addEventListener("B", e => console.log("got B: ", e.nowval));
-console.log("1");
-m.react({});
-console.log("2");
-m.react({A:111});
-console.log("3");
+export const mach = new ReactiveMachine(prg);
+mach.outbuf = "";
+mach.addEventListener("C", e => mach.outbuf += ("got C: " + e.nowval));
+mach.addEventListener("B", e => mach.outbuf +=("got B: "+ e.nowval));
+mach.outbuf += ("1");
+mach.react({});
+mach.outbuf += ("2");
+mach.react({A:111});
+mach.outbuf += ("3");

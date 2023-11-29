@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Tue Nov 21 07:55:54 2023 (serrano)                */
+#*    Last change :  Wed Nov 29 06:23:34 2023 (serrano)                */
 #*    Copyright   :  2006-23 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -200,7 +200,7 @@ install-nodejs install-local:
 
 install-sitelisp:
 	mkdir -p $(DESTDIR)$(HOPSHAREDIR)/hiphop/site-lisp
-	cp etc/hopjs-hiphop.el $(DESTDIR)$(HOPSHAREDIR)/hiphop/site-lisp
+	cp etc/hiphop.el $(DESTDIR)$(HOPSHAREDIR)/hiphop/site-lisp
 	chmod -R a+rx $(DESTDIR)$(HOPSHAREDIR)/hiphop
 
 uninstall:

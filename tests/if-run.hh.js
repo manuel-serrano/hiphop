@@ -12,7 +12,7 @@ export const mach = new hh.ReactiveMachine(
       loop {
 	 host { mach.outbuf += ( ">>> start" ) + "\n" };
 	 if( 1 ) {
-	    run ${pauseModule}() {};
+	    run pauseModule() {};
 	 } else {
 	    yield;
 	 }

@@ -15,13 +15,15 @@ function Timer(timeout) {
       }
    }
 }
-    
+
+const GT = Timer(gameTimeout);
+
 hiphop module prg() {
    out O;
    signal tmt;
    
    fork {
-      run ${Timer(gameTimeout)}() { * };
+      run GT() { * };
    } par {
       await (tmt.now);
       emit O(tmt.nowval);

@@ -23,11 +23,13 @@ function prg2() {
    }
 }
 
+const PRG2 = prg2();
+
 hiphop module prg() {
    inout artist, playlist, exit;
    abort(exit.now) {
       fork {
-	 run ${prg2()}() { artist as artist, * };
+	 run PRG2() { artist as artist, * };
       } par {
 	 every(artist.now) {
 	    host { mach.outbuf += ("***ARTIST***", artist.nowval) + "\n" };

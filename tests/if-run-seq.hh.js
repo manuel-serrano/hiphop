@@ -8,13 +8,13 @@ const pauseModule = hiphop module() { yield }
 export const mach = new hh.ReactiveMachine(
    hiphop module() {
       loop {
-	 hop { mach.outbuf += ( ">>> start" ) + "\n" }
+	 host { mach.outbuf += ( ">>> start" ) + "\n" }
 	 if( 1 ) {
-	    run ${pauseModule}() {};
+	    run pauseModule() {};
 	 } else {
 	    yield;
 	 }
-	 hop{ mach.outbuf += ( ">>> end" ) + "\n" }
+	 host { mach.outbuf += ( ">>> end" ) + "\n" }
       }
    } );
 
