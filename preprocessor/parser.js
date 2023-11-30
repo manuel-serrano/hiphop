@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/1.3.x/preprocessor/parser.js         */
+/*    serrano/prgm/project/hiphop/1.3.x/preprocessor/NEW.js            */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Nov 28 10:17:35 2023 (serrano)                */
+/*    Last change :  Thu Nov 30 06:40:46 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -80,10 +80,10 @@ function location(loc) {
 	 loc,
 	 astutils.J2SString(loc, "filename"),
 	 astutils.J2SString(loc, loc.cdr.car)),
-	astutils.J2SDataPropertyInit(
-	   loc,
-	   astutils.J2SString(loc, "pos"),
-	   astutils.J2SNumber(loc, loc.cdr.cdr.car))]);
+       astutils.J2SDataPropertyInit(
+	  loc,
+	  astutils.J2SString(loc, "pos"),
+	  astutils.J2SNumber(loc, loc.cdr.cdr.car))]);
 }
 
 /*---------------------------------------------------------------------*/
@@ -110,7 +110,11 @@ function tagInit(tag, loc) {
 /*    tokenLocation ...                                                */
 /*---------------------------------------------------------------------*/
 function tokenLocation(token) {
-   return { filename: token.filename, pos: token.pos };
+   if ("loc" in token) {
+      return { filename: token.loc.filename, pos: token.loc.offset };
+   } else {
+      return { filename: token.filename, pos: token.pos };
+   }
 }
 
 /*---------------------------------------------------------------------*/
@@ -120,7 +124,6 @@ function tokenValueError(token) {
    return error.SyntaxError("unexpected token `" + token.value + "'",
 			    tokenLocation(token));
 }
-
 
 /*---------------------------------------------------------------------*/
 /*    tokenTypeError ...                                               */
@@ -171,6 +174,26 @@ function hhwrapDecl(token, stmt) {
 /*---------------------------------------------------------------------*/
 function hhwrapExpr(token, expr) {
    return expr;
+}
+
+/*---------------------------------------------------------------------*/
+/*    parseDollarIdentName ...                                         */
+/*    -------------------------------------------------------------    */
+/*    $name ::= ident | ${stmt}                                        */
+/*---------------------------------------------------------------------*/
+function parseDollarIdentName() {
+   switch (this.peekToken().type) {
+      case this.ID: {
+	 const token = this.consumeAny();
+	 return astutils.J2SString(token.location, token.value);
+      }
+      case this.DOLLAR: {
+	 return this.parseDollarExpression();
+      }
+      default: {
+	 return tokenTypeError(this.peekToken());
+      }
+   }
 }
    
 /*---------------------------------------------------------------------*/
@@ -651,31 +674,24 @@ function parseModuleSiglist(interfacep) {
 
    function parseSignalModule(token) {
       const loc = token.location;
-      let name, direction;
+      let signame = parseDollarIdentName.call(this);
+      let direction;
 
       if (token.type === this.in) {
-	 let t = this.consumeToken(this.ID);
 	 direction = "IN"
-	 name = t.value;
       } else if (token.type === this.ID) {
 	 switch (token.value) {
 	    case "out": {
-	       let t = this.consumeToken(this.ID);
 	       direction = "OUT"
-	       name = t.value;
 	       break;
 	    }
 	    case "inout": {
-	       let t = this.consumeToken(this.ID);
 	       direction = "INOUT"
-	       name = t.value;
 	       break;
 	    }
 	    default: {
 	       direction = "INOUT"
-	       name = token.value;
 	    }
-
 	 }
       } else {
 	 throw tokenTypeError(token)
@@ -688,7 +704,7 @@ function parseModuleSiglist(interfacep) {
       const id = astutils.J2SDataPropertyInit(
 	 loc,
 	 astutils.J2SString(loc, "name"),
-	 astutils.J2SString(loc, name));
+	 signame);
 
       const inits = [locInit(loc), dir, id];
       let accessors = [];
