@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 21 07:42:24 2023                          */
-/*    Last change :  Fri Dec  1 17:31:34 2023 (serrano)                */
+/*    Last change :  Sat Dec  2 12:02:43 2023 (serrano)                */
 /*    Copyright   :  2023 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing driver.                                                  */
@@ -28,7 +28,7 @@ let tests = [];
 /*---------------------------------------------------------------------*/
 /*    main ...                                                         */
 /*---------------------------------------------------------------------*/
-function main(argv) {
+async function main(argv) {
    const dir = dirname(fileURLToPath(import.meta.url));
    
    // MOCHA compatible conditional declarations.
@@ -64,7 +64,7 @@ function main(argv) {
 	    let error = true; // 
 	    try {
 	       const m = await import(f);
-	       error = batch(m.mach, f);
+	       error = await batch(m.mach, f);
 	    } catch (e) {
 	       if (existsSync(join(dirname(f), basename(f).replace(/[.]hh[.]js$/, ".err")))) {
 		  error = false;

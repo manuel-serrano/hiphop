@@ -3,16 +3,16 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module prg() {
+hiphop module prg(resolve) {
    inout X = 1, Y, Z;
    T: {
-      signal __internal=-1;
+      signal __internal = -1;
 
       loop {
-         if(__internal.preval === -1) {
+         if (__internal.preval === -1) {
             emit __internal(X.nowval + 5);
          }
-         if(__internal.nowval === 0) {
+         if (__internal.nowval === 0) {
             break T;
          }
          async () {
@@ -23,16 +23,20 @@ hiphop module prg() {
       }
    }
    emit Z();
+   host { resolve(false); }
 }
 
 export const mach = new hh.ReactiveMachine(prg);
+mach.outbuf = "";
+mach.batchPromise = new Promise((res, rej) => mach.init(res));
+mach.debug_emitted_func = val => val;
 
 mach.addEventListener("Y", function(evt) {
-   console.log("Y emitted");
+   mach.outbuf += "Y emitted\n";
 });
 
 mach.addEventListener("Z", function(evt) {
-   console.log("Z emitted");
+   mach.outbuf += "Z emitted\n";
 });
 
 mach.react();

@@ -1,11 +1,10 @@
 "use @hop/hiphop";
 "use hopscript"
 
-
 import * as hh from "@hop/hiphop";
 
 export const mach = new hh.ReactiveMachine(
-   hiphop module() {
+   hiphop module(resolve) {
       T: fork {
 	 async () {
 	    setTimeout(this.notify.bind(this), 500);
@@ -15,10 +14,12 @@ export const mach = new hh.ReactiveMachine(
       	 async () {
 	    setTimeout(this.notify.bind(this), 1000);
 	 } kill {
-	    mach.outbuf = ("been killed");
+	    mach.outbuf = ("been killed\n");
 	 }
       }
+      host { resolve(false); }
    });
 
 mach.outbuf = "";
+mach.batchPromise = new Promise((res, rej) => mach.init(res));
 mach.react();
