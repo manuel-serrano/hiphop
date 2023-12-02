@@ -8,12 +8,12 @@ export const mach = new hh.ReactiveMachine(
       loop {
 	 signal L = 2;
 
-	 emit S( L.nowval );
+	 emit S(L.nowval);
 	 yield;
       }
    } );
 
 mach.outbuf = "";
-mach.addEventListener( "S", function ( evt ) { mach.outbuf += ( { type: evt.type, nowval: evt.nowval } ) + "\n"; } );
+mach.addEventListener( "S", function (evt) { mach.outbuf += `{ type: '${evt.type}', nowval: ${evt.nowval} }` + "\n" });
 mach.react();
 mach.react();

@@ -2,6 +2,7 @@
 "use hopscropt";
 
 import * as hh from "@hop/hiphop";
+import { format } from "util";
 
 hiphop module prg() {
    inout A, B;
@@ -11,7 +12,7 @@ hiphop module prg() {
 export const mach = new hh.ReactiveMachine( prg );
 mach.outbuf = "";
 mach.debug_emitted_func = val => {
-   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+   mach.outbuf += format(val) + "\n";
 }
 
 mach.react()

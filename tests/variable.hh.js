@@ -12,7 +12,7 @@ hiphop module prg() {
 	 host { v = sig.nowval + 1 }
       }
 
-      host { mach.outbuf += ("v=" + v) + "\n" }
+      host { mach.outbuf += ("v= " + v) + "\n" }
       yield;
    }
 }

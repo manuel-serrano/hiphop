@@ -9,26 +9,26 @@ export const mach = new hh.ReactiveMachine(
       T: fork {
 	 loop {
 	    async () {
-	       setTimeout( this.notify.bind( this ), 100 );
+	       setTimeout( this.notify.bind(this), 100);
 	    } kill {
-	       mach.outbuf += ( "killed" ) + "\n";
+	       mach.outbuf += ("killed") + "\n";
 	    }
 
-	    host { mach.outbuf += ( 'tick 10s' ) + "\n" }
+	    host { mach.outbuf += ('tick 10s') + "\n" }
 	 }
       } par {
 	 async () {
-	    setTimeout( this.notify.bind( this ), 10 );
+	    setTimeout(this.notify.bind(this), 10);
 	 }
 	 break T;
       }
 
       emit A();
-      host { mach.outbuf += ( "end" ) + "\n" } } );
+      host { mach.outbuf += ("end") + "\n" } } );
 
 mach.outbuf = "";
-mach.debug_emitted_func = val => {
-   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
-}
+mach.debug_emitted_func = emitted => {
+   mach.outbuf += format(emitted) + "\n";
+};
 
 mach.react();
