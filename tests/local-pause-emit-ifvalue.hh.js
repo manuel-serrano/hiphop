@@ -9,11 +9,11 @@ hiphop module prg() {
 
       yield;
       emit L();
-      if( !L.nowval ) hop { mach.outbuf += ( "L:", L.nowval ) + "\n" }
+      if (!L.nowval) host { mach.outbuf += ("L: " + L.nowval) + "\n" }
    }
 }
 
-export const mach = new hh.ReactiveMachine( prg )
+export const mach = new hh.ReactiveMachine(prg);
 mach.outbuf = "";
 mach.react();
 mach.react();

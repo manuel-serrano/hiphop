@@ -2,6 +2,7 @@
 "use hopscript";
 
 import * as hh from "@hop/hiphop";
+import { format } from "util";
 
 export const mach = new hh.ReactiveMachine(
    hiphop module() {
@@ -17,7 +18,7 @@ export const mach = new hh.ReactiveMachine(
 	       clearTimeout(tmt);
 	    }
 
-	    hop { mach.outbuf += ('tick 10s') + "\n" }
+	    host { mach.outbuf += ('tick 10s') + "\n" }
 	 }
       } par {
 	 async () {
@@ -30,7 +31,8 @@ export const mach = new hh.ReactiveMachine(
    });
 
 mach.outbuf = "";
-mach.debug_emitted_func = val => {
-   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
-}
+mach.debug_emitted_func = emitted => {
+   mach.outbuf += format(emitted) + "\n";
+};
+
 mach.react();

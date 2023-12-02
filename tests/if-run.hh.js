@@ -11,7 +11,7 @@ export const mach = new hh.ReactiveMachine(
    hiphop module() {
       loop {
 	 host { mach.outbuf += (">>> start") + "\n" };
-	 if( 1 ) {
+	 if (1) {
 	    run pauseModule() {};
 	 } else {
 	    yield;
@@ -22,4 +22,4 @@ export const mach = new hh.ReactiveMachine(
 
 mach.outbuf = "";
 mach.react();
-setTimeout(() => mach.react(), 200);
+mach.react();

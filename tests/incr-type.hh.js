@@ -19,7 +19,7 @@ function IncrementTimeInPlace(t) {
    let minutes = t.minutes;
    let seconds = t.seconds;
 
-   mach.outbuf += ("foo " + `Time({"hours":${t.hours},"minutes":${t.minutes},"seconds":${t.seconds},"ampm":${t.ampm}})`);
+   mach.outbuf += ("foo " + `{ hours: ${t.hours}, minutes: ${t.minutes}, seconds: ${t.seconds}, ampm: ${t.ampm} }` + "\n");
    if(t.seconds == 3) {
       seconds = 0;
       if(t.minutes == 3) {
@@ -41,7 +41,7 @@ function IncrementTimeInPlace(t) {
 function print_time(evt) {
    mach.outbuf += (evt.nowval.hours
       + ":" + evt.nowval.minutes
-      + ":" + evt.nowval.seconds);
+      + ":" + evt.nowval.seconds + "\n");
 }
 
 
