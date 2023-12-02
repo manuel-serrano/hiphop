@@ -2,6 +2,7 @@
 "use hopscript";
 
 import * as hh from "@hop/hiphop";
+import { format } from "util";
 
 hiphop module prg() {
    out O;
@@ -21,7 +22,10 @@ hiphop module prg() {
 }
 
 export const mach = new hh.ReactiveMachine( prg, "sync1" );
-mach.debug_emitted_func = console.log;
+mach.outbuf = "";
+mach.debug_emitted_func = emitted => {
+   mach.outbuf += format(emitted) + "\n";
+};
 
 mach.react()
 mach.react()

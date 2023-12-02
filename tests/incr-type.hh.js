@@ -1,7 +1,10 @@
 "use @hop/hiphop";
 "use hopscript";
 
-function WatchTimeType( h, m, s, ampm ) {
+import * as hh from "@hop/hiphop";
+import { format } from "util";
+
+function WatchTimeType(h, m, s, ampm) {
    this.hours = h;
    this.minutes = m;
    this.seconds = s;
@@ -9,19 +12,19 @@ function WatchTimeType( h, m, s, ampm ) {
 }
 
 
-const WatchTime = new WatchTimeType( 0, 0, 0, false );
+const WatchTime = new WatchTimeType(0, 0, 0, false);
 
-function IncrementTimeInPlace( t ) {
+function IncrementTimeInPlace(t) {
    let hours = t.hours;
    let minutes = t.minutes;
    let seconds = t.seconds;
 
-   console.log( "foo", t );
-   if( t.seconds == 3 ) {
+   mach.outbuf += ("foo " + `Time({"hours":${t.hours},"minutes":${t.minutes},"seconds":${t.seconds},"ampm":${t.ampm}})`);
+   if(t.seconds == 3) {
       seconds = 0;
-      if( t.minutes == 3 ) {
+      if(t.minutes == 3) {
 	 minutes = 0;
-	 if( t.hours == 3 ) {
+	 if(t.hours == 3) {
 	    hours = 0;
 	 } else {
 	    hours++;
@@ -32,28 +35,27 @@ function IncrementTimeInPlace( t ) {
    } else {
       seconds++;
    }
-   return new WatchTimeType( hours, minutes, seconds, t.ampm );
+   return new WatchTimeType(hours, minutes, seconds, t.ampm);
 }
 
-function print_time( evt ) {
-   console.log( evt.nowval.hours
-		+ ":" + evt.nowval.minutes
-		+ ":" + evt.nowval.seconds );
+function print_time(evt) {
+   mach.outbuf += (evt.nowval.hours
+      + ":" + evt.nowval.minutes
+      + ":" + evt.nowval.seconds);
 }
 
-
-import * as hh from "@hop/hiphop";
 
 hiphop module prg() {
    in I; out Time=WatchTime;
    loop {
-      emit Time( IncrementTimeInPlace( Time.preval ) );
+      emit Time(IncrementTimeInPlace(Time.preval));
       yield;
    }
 }
 
-const m = new hh.ReactiveMachine( prg, "Foo" );
+const m = new hh.ReactiveMachine(prg, "Foo");
 
-m.addEventListener( "Time", print_time );
+m.addEventListener("Time", print_time);
+m.outbuf = "";
 
 export const mach = m;

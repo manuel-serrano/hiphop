@@ -15,9 +15,10 @@ export const mach = new hh.ReactiveMachine(
       	 async () {
 	    setTimeout(this.notify.bind(this), 1000);
 	 } kill {
-	    console.log("been killed");
+	    mach.outbuf = ("been killed");
 	 }
       }
    });
 
+mach.outbuf = "";
 mach.react();

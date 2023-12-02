@@ -10,16 +10,16 @@ const pauseModule = hiphop module() {
 export const mach = new hh.ReactiveMachine(
    hiphop module() {
       loop {
-	 host { mach.outbuf += ( ">>> start" ) + "\n" };
+	 host { mach.outbuf += (">>> start") + "\n" };
 	 if( 1 ) {
 	    run pauseModule() {};
 	 } else {
 	    yield;
 	 }
-	 host { mach.outbuf += ( ">>> end" ) + "\n" }
+	 host { mach.outbuf += (">>> end") + "\n" }
       }
    } )
 
 mach.outbuf = "";
 mach.react();
-setTimeout( () => mach.react(), 200 );
+setTimeout(() => mach.react(), 200);

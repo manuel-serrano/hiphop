@@ -15,15 +15,18 @@ hiphop module prg() {
       }
    } par {
       loop {
-	 await immediate( L.now );
+	 await immediate(L.now);
 	 emit O();
 	 yield;
       }
    }
 }
 
-export const mach = new hh.ReactiveMachine( prg, "sync2" );
-mach.debug_emitted_func = console.log;
+export const mach = new hh.ReactiveMachine(prg, "sync2");
+mach.outbuf = "";
+mach.debug_emitted_func = val => {
+   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+}
 
 mach.react()
 mach.react()

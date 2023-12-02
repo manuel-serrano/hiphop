@@ -2,14 +2,15 @@
 "use hopscript";
 
 import * as hh from "@hop/hiphop";
+import { format } from "util";
 
 hiphop module prg() {
    in T; out O, OT;
    fork {
       async (T) {
-	 console.log("Oi.");
+	 mach.outbuf += ("Oi.") + "\n";
 	 setTimeout(function(self) {
-	    console.log("Oi timeout.");
+	    mach.outbuf += ("Oi timeout.") + "\n";
 	    self.notify(5, false);
 	 }, 3000, this);
       }
@@ -22,7 +23,7 @@ hiphop module prg() {
 export const mach = new hh.ReactiveMachine(prg, "exec");
 mach.outbuf = "";
 mach.debug_emitted_func = val => {
-   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+   mach.outbuf += format(val) + "\n";
 }
 
 mach.react()

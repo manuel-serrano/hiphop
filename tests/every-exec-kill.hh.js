@@ -8,10 +8,10 @@ export const mach = new hh.ReactiveMachine(
       every (S.now) {
 	 host { mach.outbuf += ("every") + "\n" };
 	 async () {
-	    mach.outbuf += ("start", this.id) + "\n";
+	    mach.outbuf += ("start " + this.id) + "\n";
 	    setTimeout(this.notify.bind(this), 500);
 	 } kill {
-	    mach.outbuf += ("killed", this.id) + "\n";
+	    mach.outbuf += ("killed " + this.id) + "\n";
 	 }
       }
    });

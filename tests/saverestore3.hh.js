@@ -2,9 +2,11 @@
 
 export { mach } from "./toggle.hh.js";
 import { mach as machine } from "./toggle.hh.js";
+import { format } from "util";
+
 machine.outbuf = "";
 machine.debug_emitted_func = val => {
-   machine.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+   machine.outbuf += format(val) + "\n";
 }
 
 let state1 = machine.save();

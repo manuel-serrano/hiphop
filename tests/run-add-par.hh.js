@@ -2,6 +2,7 @@
 "use hopscript";
 
 import * as hh from "@hop/hiphop";
+import { format } from "util";
 
 hiphop module m1() {
    inout S, U, W, Z;
@@ -21,18 +22,18 @@ hiphop module run2() {
    }
 }
 
-export const mach = new hh.ReactiveMachine( run2, "run2" );
+export const mach = new hh.ReactiveMachine(run2, "run2");
 mach.outbuf = "";
 mach.debug_emitted_func = val => {
-   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+   mach.outbuf += format(val) + "\n";
 }
 
-mach.outbuf += ( "m.inputAndReact(S)" ) + "\n";
+mach.outbuf += ("m.inputAndReact(S)") + "\n";
 mach.inputAndReact( "S" )
 
 mach.getElementById( "par" ).appendChild( hiphop run m1() { S, U, A as Z } );
 
-mach.outbuf += ( "==================== ADD RUN PARALLEL ==================" ) + "\n";
+mach.outbuf += ("==================== ADD RUN PARALLEL ==================") + "\n";
 
-mach.outbuf += ( "m.inputAndReact(U)" ) + "\n";
-mach.inputAndReact( "U" )
+mach.outbuf += ("m.inputAndReact(U)") + "\n";
+mach.inputAndReact("U")

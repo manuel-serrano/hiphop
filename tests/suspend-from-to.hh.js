@@ -2,6 +2,7 @@
 "use hopscript";
 
 import * as hh from "@hop/hiphop";
+import { format } from "util";
 
 hiphop module prg() {
    inout I; inout O;
@@ -15,20 +16,23 @@ hiphop module prg() {
 }
 
 export const mach = new hh.ReactiveMachine( prg );
-mach.debug_emitted_func = v => mach.outbuf += v + "\n";
+mach.outbuf = "";
+mach.debug_emitted_func = emitted => {
+   mach.outbuf += format(emitted) + "\n";
+}
 
 mach.react();
 mach.react();
-mach.outbuf += "--";
+mach.outbuf += "--\n";
 mach.inputAndReact( "I" );
 mach.react();
 mach.react();
 mach.react();
-mach.outbuf += "--";
+mach.outbuf += "--\n";
 mach.inputAndReact( "O" );
 mach.react();
 mach.react();
 mach.react();
-mach.outbuf += "--";
+mach.outbuf += "--\n";
 mach.inputAndReact( "I" );
 mach.react();

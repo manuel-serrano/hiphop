@@ -12,12 +12,13 @@ hiphop module prg() {
 	 host { v = sig.nowval + 1 }
       }
 
-      host { mach.outbuf += ("v=", v) + "\n" }
+      host { mach.outbuf += ("v=" + v) + "\n" }
       yield;
    }
 }
 
 export const mach = new hh.ReactiveMachine(prg, "variable");
+mach.outbuf = "";
 
 mach.react()
 mach.inputAndReact("sig", 0);

@@ -11,19 +11,19 @@ hiphop module prg() {
    }
 }
 
-const m = new hh.ReactiveMachine( prg, "foo" );
+export const mach = new hh.ReactiveMachine( prg, "foo" );
+mach.outbuf = "";
 
-m.addEventListener( "O", function( evt ) {
-   console.log( "first", evt.type );
+mach.addEventListener( "O", function( evt ) {
+   mach.outbuf += ("first " + evt.type + "\n");
 });
 
-m.addEventListener( "O", function( evt ) {
+mach.addEventListener( "O", function( evt ) {
    evt.stopPropagation();
-   console.log( "second", evt.type );
+   mach.outbuf += ("second " + evt.type + "\n");
 });
 
-m.addEventListener( "O", function( evt ) {
-   console.log( "third", evt.type );
+mach.addEventListener( "O", function( evt ) {
+   mach.outbuf += ("third " + evt.type + "\n");
 });
 
-export const mach = m;

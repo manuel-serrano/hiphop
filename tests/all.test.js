@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 21 07:42:24 2023                          */
-/*    Last change :  Thu Nov 23 09:54:06 2023 (serrano)                */
+/*    Last change :  Fri Dec  1 17:31:34 2023 (serrano)                */
 /*    Copyright   :  2023 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing driver.                                                  */
@@ -37,9 +37,10 @@ function main(argv) {
 	 console.log(name);
 	 thunk();
       };
-      globalThis.it = function(name, thunk) {
-	 console.log("  " + name);
-	 thunk();
+      globalThis.it = async function(name, thunk) {
+	 const r = await thunk();
+	 console.log("  " + name + "...", !r ? "ok" : "error");
+	 
       }
       tests = [];
    }
@@ -63,7 +64,7 @@ function main(argv) {
 	    let error = true; // 
 	    try {
 	       const m = await import(f);
-	       error = batch(m.mach, dir + "/" + f);
+	       error = batch(m.mach, f);
 	    } catch (e) {
 	       if (existsSync(join(dirname(f), basename(f).replace(/[.]hh[.]js$/, ".err")))) {
 		  error = false;

@@ -14,4 +14,4 @@
 /*---------------------------------------------------------------------*/
 export const version = "@VERSION@@MINOR@";
 export const CAUSALITY_JSON = "hiphop.causality.json";
-export const sweep = false;
+export const sweep = true;

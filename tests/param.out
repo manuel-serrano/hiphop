@@ -1,3 +1,2 @@
-PARAM> O;
---- Output:
-O[ 10 ]
+PARAM> ;
+--- Output: O(10)
