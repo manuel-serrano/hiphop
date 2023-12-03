@@ -18,8 +18,8 @@ hiphop module prg() {
 
 export const mach = new hh.ReactiveMachine(prg);
 mach.outbuf = "";
-mach.addEventListener("a", e => mach.outbuf += ("a=", e.nowval) + "\n");
-mach.addEventListener("b", e => mach.outbuf += ("b=", e.nowval) + "\n");
+mach.addEventListener("a", e => mach.outbuf += ("a= " + e.nowval) + "\n");
+mach.addEventListener("b", e => mach.outbuf += ("b= " + e.nowval) + "\n");
 
 mach.react();
 mach.react();

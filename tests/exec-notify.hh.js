@@ -13,13 +13,11 @@ hiphop module prg(resolve) {
 	 this.notify(5, false);
       }
    } par {
-      host { mach.outbuf += "waiting T...\n"; }
       await (T.now);
-      host { mach.outbuf += "T received.\n"; }
       emit O(tick);
    } par {
       loop {
-	 host { tick++; }
+	 host { mach.outbuf += "tick " + tick++ + "\n"; }
 	 yield;
       }
    }

@@ -7,7 +7,8 @@ import { format } from "util";
 let glob = 5;
 
 hiphop module prg(resolve) {
-   in R; out O; out OT; in T;
+   in R; out O; out OT; in T; in E;
+   fork {
    do {
       fork {
 	 abort(R.now) {
@@ -16,15 +17,18 @@ hiphop module prg(resolve) {
 	       setTimeout(function(self) {
 		  mach.outbuf += ("Oi timeout.") + "\n";
 		  self.notify(glob++ , false);
-		 }, 1000, this);
+		 }, 100, this);
 	    }
 	 }
 	 emit OT(T.nowval);
       } par {
 	 emit O();
       }
-   } every (R.now)
-   host { resolve(false); }
+   } every (R.now);
+   } par {
+      await (E.now);
+      host { resolve(false); }
+   }
 }
 
 export const mach = new hh.ReactiveMachine(prg, "exec");
@@ -42,9 +46,9 @@ setTimeout(function() {
 
 setTimeout(function() {
    mach.react()
-}, 1100);
+}, 1000);
 
 setTimeout(function() {
-   mach.react()
-}, 2000);
+   mach.react({E: true})
+}, 1500);
 

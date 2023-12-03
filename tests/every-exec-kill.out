@@ -1,7 +1,9 @@
 ----
 every
-start 2
+start
 ----
 every
-killed 2
-start 3
+killed
+start
+--- Output: S
+--- Output:

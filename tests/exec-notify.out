@@ -1,9 +1,10 @@
 exec> ;
-waiting T...
+tick 0
 in async, emitting T
 []
 exec> ;
-T received.
+tick 1
 [ 'O(2)' ]
 exec> ;
+tick 2
 []

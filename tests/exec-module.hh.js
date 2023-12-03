@@ -19,9 +19,10 @@ hiphop module main() {
 }
 
 export const mach = new ReactiveMachine(main, "exec-module");
+mach.outbuf = "";
 
-mach.addEventListener( "a", e => mach.outbuf += ( "a=", e.nowval ) + "\n" );
-mach.addEventListener( "b", e => mach.outbuf += ( "b=", e.nowval ) + "\n" );
+mach.addEventListener( "a", e => mach.outbuf += ( "a= " + e.nowval ) + "\n" );
+mach.addEventListener( "b", e => mach.outbuf += ( "b= " + e.nowval ) + "\n" );
 
 mach.react();
 mach.react();

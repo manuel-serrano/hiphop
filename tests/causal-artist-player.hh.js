@@ -11,10 +11,10 @@ function prg2() {
 	 async (candidateArtist) {
 	    setTimeout(() => this.notify("leartiste"), 90);
 	 }
-	       async (candidatePlaylist) {
+	 async (candidatePlaylist) {
 	    setTimeout(() => this.notify("laplaylist"), 50);
 	 }
-	 if(candidatePlaylist.nowval) {
+	 if (candidatePlaylist.nowval) {
 	    emit playlist(candidatePlaylist.nowval);
 	    emit artist(candidateArtist.nowval);
 	    break found;
@@ -25,22 +25,26 @@ function prg2() {
 
 const PRG2 = prg2();
 
-hiphop module prg() {
+hiphop module prg(resolve) {
    inout artist, playlist, exit;
-   abort(exit.now) {
+   abort (exit.now) {
       fork {
-	 run PRG2() { artist as artist, * };
+	 run PRG2() { * };
       } par {
-	 every(artist.now) {
-	    host { mach.outbuf += ("***ARTIST***", artist.nowval) + "\n" };
+	 every (artist.now) {
+	    host { mach.outbuf += ("***ARTIST*** " + artist.nowval) + "\n" };
 	 }
       } par {
-	 every(playlist.now) {
-	    host { mach.outbuf += ("***PLAYLIST***", playlist.nowval) + "\n" };
+	 every (playlist.now) {
+	    host { mach.outbuf += ("***PLAYLIST*** " + playlist.nowval) + "\n" };
 	 }
       }
    }
+   host { resolve(false); }
 }
 
-export const mach = new hh.ReactiveMachine(prg)
+export const mach = new hh.ReactiveMachine(prg);
+mach.outbuf = "";
+mach.batchPromise = new Promise((res, rej) => mach.init(res));
 mach.react();
+setTimeout(() => mach.react({exit: true}), 200);
