@@ -2,8 +2,9 @@
 "use hopscript";
 
 import * as hh from "@hop/hiphop";
+import { format } from "util";
 
-hiphop module setinterval() {
+hiphop module setinterval(resolve) {
    inout A, Tick;
    fork {
       abort count( 3, Tick.now ) {
@@ -14,13 +15,15 @@ hiphop module setinterval() {
 	 }
       }
    }
+   host { resolve(false); }
 };
    
 export const mach = new hh.ReactiveMachine( setinterval );
 
 mach.outbuf = "";
 mach.debug_emitted_func = val => {
-   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+   mach.outbuf += format(val) + "\n";
 }
+mach.batchPromise = new Promise((res, rej) => mach.init(res));
 
 mach.react();

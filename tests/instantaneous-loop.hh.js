@@ -17,12 +17,13 @@ try {
    }
 
    mach = new hh.ReactiveMachine( prg, "instloop" );
+   mach.outbuf = "";
 
    mach.react();
    mach.react();
    mach.react();
    mach.react();
-} catch ( e ) {
-   console.log( e.message );
+} catch (e) {
+   mach.outbuf += e.message;
 }
 

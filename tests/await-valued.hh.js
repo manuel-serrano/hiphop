@@ -5,7 +5,7 @@ import * as hh from "@hop/hiphop";
 import { format } from "util";
 
 function foo( evt ) {
-   mach.outbuf += "foo called by " + evt.type + " with value " + evt.nowval;
+   mach.outbuf += "foo called by " + evt.type + " with value " + evt.nowval + "\n";
 }
 
 hiphop module prg() {
@@ -16,5 +16,5 @@ hiphop module prg() {
 
 export const mach = new hh.ReactiveMachine(prg, "awaitvalued");
 mach.outbuf = "";
-mach.addEventListener( "O",foo);
+mach.addEventListener( "O", foo);
 

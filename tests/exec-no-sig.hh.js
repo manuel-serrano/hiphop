@@ -3,27 +3,33 @@
 
 import * as hh from "@hop/hiphop";
 
-hiphop module prg() {
+hiphop module prg(resolve) {
    out O, OT;
    fork {
       async () {
-	 console.log("Oi.");
+	 mach.outbuf += "Oi.\n";
 	 setTimeout(() => {
-	    console.log("Oi timeout.");
+	    mach.outbuf += "Oi timeout.\n";
 	    this.notify(5, false);
-	 }, 3000);
+	 }, 1000);
       }
       emit OT();
    } par {
       emit O();
    }
+   host { resolve(false); }
 }
 
 export const mach = new hh.ReactiveMachine(prg, "exec");
 mach.outbuf = "";
+mach.debug_emitted_func = emitted => {
+   mach.outbuf += format(emitted) + "\n";
+};
+
 mach.debug_emitted_func = val => {
    mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
 }
+mach.batchPromise = new Promise((res, rej) => mach.init(res));
 
 mach.react();
 mach.react();
@@ -32,5 +38,5 @@ mach.outbuf +=  ".......\n";
 setTimeout(function() {
    mach.react()
    mach.react()
-}, 5000);
+}, 2000);
 

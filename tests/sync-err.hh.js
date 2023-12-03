@@ -22,12 +22,13 @@ hiphop module prg() {
 }
 
 export const mach = new hh.ReactiveMachine( prg, "sync-err" );
+mach.outbuf = "";
 
 try {
-   console.log( mach.react() );
-   console.log( mach.react() );
-   console.log( mach.react() );
-   console.log( mach.react() );
+   mach.outbuf += mach.react() + "\n";
+   mach.outbuf += mach.react() + "\n";
+   mach.outbuf += mach.react() + "\n";
+   mach.outbuf += mach.react() + "\n";
 } catch( e ) {
-   console.log( e.message );
+   mach.outbuf += e.message + "\n";
 }

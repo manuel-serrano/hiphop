@@ -2,6 +2,7 @@
 "use hopscript";
 
 import * as hh from "@hop/hiphop";
+import { format } from "util";
 
 const gameTimeout = 100;
 
@@ -18,7 +19,7 @@ function Timer(timeout) {
 
 const GT = Timer(gameTimeout);
 
-hiphop module prg() {
+hiphop module prg(resolve) {
    out O;
    signal tmt;
    
@@ -28,14 +29,13 @@ hiphop module prg() {
       await (tmt.now);
       emit O(tmt.nowval);
    }
+   host { resolve(false); }
 }
 
 export const mach = new hh.ReactiveMachine(prg);
 mach.outbuf = "";
-mach.debug_emitted_func = val => {
-   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
-}
-mach.outbuf = "";
+mach.debug_emitted_func = val => val;
+mach.batchPromise = new Promise((res, rej) => mach.init(res));
 mach.addEventListener("O", evt => mach.outbuf += evt.nowval + "\n");
 mach.react();
 mach.react();

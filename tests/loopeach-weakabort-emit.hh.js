@@ -17,6 +17,7 @@ export const mach = new hh.ReactiveMachine(
       } every( A.now )
    } );
 
+mach.outbuf = "";
 mach.react();
 mach.react();
 mach.react();

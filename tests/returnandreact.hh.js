@@ -9,16 +9,18 @@ function foo(cb) {
 }
 
 export const mach = new hh.ReactiveMachine(
-   hiphop module() {
+   hiphop module(resolve) {
       out S;
       async (S) {
          setTimeout(this.notify.bind(this), 100, 5);
       }
+      host { resolve(false); }
    } );
 
 mach.outbuf = "";
 mach.debug_emitted_func = val => {
    mach.outbuf += format(val) + "\n";
 }
+mach.batchPromise = new Promise((res, rej) => mach.init(res));
 mach.react()
 

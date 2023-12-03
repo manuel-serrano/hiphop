@@ -9,8 +9,9 @@ export const mach = new hh.ReactiveMachine(
       signal S = 5;
 
       async () {
-	 mach.outbuf += (S.nowval, G.nowval) + "\n";
+	 mach.outbuf += (S.nowval + " " + G.nowval) + "\n";
       }
    })
 
+mach.outbuf = "";
 mach.react();
