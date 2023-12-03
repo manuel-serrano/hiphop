@@ -2,37 +2,38 @@
 "use hopscript";
 
 import * as hh from "@hop/hiphop";
+import { format } from "util";
 
 hiphop module prg() {
    inout A, B, C;
    
    fork {
       loop {
-	 if( B.nowval > 3 ) emit A();
+	 if (B.nowval > 3) emit A();
 	 yield;
       }
    } par {
       loop {
-	 if( C.now ) {
-	    emit B( 4 );
+	 if (C.now) {
+	    emit B(4);
 	 } else {
-	    emit B( 3 );
+	    emit B(3);
 	 }
 	 yield;
       }
    }
 }
 
-export const mach = new hh.ReactiveMachine( prg );
+export const mach = new hh.ReactiveMachine(prg);
 mach.outbuf = "";
 mach.debug_emitted_func = val => {
-   mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
+   mach.outbuf += ("O=" + evt.nowval.val + " emitted!") + "\n";
 }
 
 mach.react()
 mach.react()
-mach.inputAndReact( "C" )
+mach.inputAndReact("C")
 mach.react()
-mach.inputAndReact( "C" )
-mach.inputAndReact( "C" )
+mach.inputAndReact("C")
+mach.inputAndReact("C")
 
