@@ -1,0 +1,9 @@
+exec> ;
+waiting T...
+in async, emitting T
+[]
+exec> ;
+T received.
+[ 'O(2)' ]
+exec> ;
+[]

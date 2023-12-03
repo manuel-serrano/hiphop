@@ -12,7 +12,7 @@ hiphop module prg(resolve) {
 	 setTimeout(function(self) {
 	    mach.outbuf += ("Oi timeout.") + "\n";
 	    self.notify(5, false);
-	 }, 1000, this);
+	 }, 100, this);
       }
       emit OT(T.nowval);
    } par {
@@ -35,5 +35,5 @@ mach.outbuf += ".......\n";
 setTimeout(function() {
    mach.react()
    mach.react()
-}, 2000);
+}, 1000);
 

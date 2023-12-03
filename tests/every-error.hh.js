@@ -6,7 +6,7 @@ export let mach = new hh.ReactiveMachine(hiphop module () {});
 mach.outbuf = "";
 
 try {
-   hiphop module prg( I, O ) {
+   const prg = hiphop module( I, O ) {
       every immediate count( 2, now( I ) ) {
 	 emit O();
       }

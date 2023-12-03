@@ -26,8 +26,8 @@ hiphop module prg() {
 
 export const mach = new hh.ReactiveMachine(prg);
 mach.outbuf = "";
-mach.debug_emitted_func = val => {
-   mach.outbuf += ("O=" + evt.nowval.val + " emitted!") + "\n";
+mach.debug_emitted_func = emitted => {
+   mach.outbuf += format(emitted) + "\n";
 }
 
 mach.react()
