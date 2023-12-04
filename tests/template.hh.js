@@ -22,7 +22,7 @@ hiphop module prg() {
    host { mach.outbuf += `16:HHW$$${1233}0-0${3999}1d11\n` }
 }
 
-export const mach = new hh.ReactiveMachine( prg, "template" );
+export const mach = new hh.ReactiveMachine(prg, "template");
 mach.outbuf = "";
 
    
