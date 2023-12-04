@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Wed Nov 29 06:23:34 2023 (serrano)                */
+#*    Last change :  Mon Dec  4 07:36:42 2023 (serrano)                */
 #*    Copyright   :  2006-23 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -94,7 +94,7 @@ npm-sans-rm:
 	echo "#!/usr/bin/env node" > npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
 	echo "import * as hhc from \"../lib/hhc.js\"" >> npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
 	chmod a+rx npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
-	(cd npm; tar cvfz $(HIPHOPNPMDIR).tgz $(HIPHOPNPMDIR))
+	(cd npm; tar --exclude="*.so" -zcvf $(HIPHOPNPMDIR).tgz $(HIPHOPNPMDIR))
 
 npm: npm-sans-rm
 	(cd npm; rm -rf $(HIPHOPNPMDIR))
