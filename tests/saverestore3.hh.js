@@ -1,41 +1,78 @@
-"use hopscript"
+"use @hop/hiphop";
+"use hopscript";
 
-export { mach } from "./toggle.hh.js";
-import { mach as machine } from "./toggle.hh.js";
+import * as hh from "@hop/hiphop";
 import { format } from "util";
 
-machine.outbuf = "";
-machine.debug_emitted_func = val => {
-   machine.outbuf += format(val) + "\n";
+function bool_and(x, y) {
+   return x && y
 }
 
-let state1 = machine.save();
+function bool_or(x, y) {
+   return x || y
+}
+
+function plus(x, y) {
+   return x + y
+}
+
+hiphop module prg() {
+   inout SEQ=1 combine plus;
+   inout STATE1=false combine bool_or;
+   inout STATE2=false combine bool_and;
+   inout S;
+   inout TOOGLE;
+		
+   loop {
+      emit SEQ(SEQ.preval + 1);
+      emit STATE1(true);
+      emit STATE1(false);
+      emit STATE2(true);
+      emit STATE2(false);
+      if(S.pre) {
+	 emit TOOGLE(true);
+      } else {
+	 emit TOOGLE(false);
+	 emit S();
+      }
+      yield;
+   }
+}
+
+export const mach = new hh.ReactiveMachine(prg, "toogle");
+
+mach.outbuf = "";
+mach.debug_emitted_func = val => {
+   mach.outbuf += format(val) + "\n";
+}
+
+let state1 = mach.save();
 let state2 = null;
 let state3 = null;
 
-machine.react()
-state2 = machine.save();
+mach.react()
+state2 = mach.save();
 
-machine.react()
-state3 = machine.save();
+mach.react()
+state3 = mach.save();
 
-machine.react()
+mach.react()
 
-machine.restore(state1);
-machine.react()
-machine.react()
+mach.restore(state1);
+mach.react()
+mach.react()
 
-machine.restore(state1);
-machine.react()
-machine.react()
+mach.restore(state1);
+mach.react()
+mach.react()
 
-machine.restore(state2);
-machine.react()
-machine.react()
+mach.restore(state2);
+mach.react()
+mach.react()
 
-machine.restore(state3);
-machine.react()
-machine.react()
+mach.restore(state3);
+mach.react()
+mach.react()
 
-machine.restore(state1);
-machine.react()
+mach.restore(state1);
+mach.react()

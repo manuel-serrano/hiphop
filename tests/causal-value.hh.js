@@ -6,18 +6,18 @@ import * as hh from "@hop/hiphop";
 hiphop module prg() {
    out O1; out O2;
    out OUTER = 0;
-   host { mach.outbuf += ( "dans atom" ) + "\n" }
-   emit O1( (mach.outbuf += ("emit o1") + "\n", OUTER.nowval) );
-   host { mach.outbuf += ( "apres atom" ) + "\n" }
-   emit OUTER( 1 );
-   emit O2( OUTER.nowval );
+   host { mach.outbuf += ("dans atom") + "\n" }
+   emit O1((mach.outbuf += ("emit o1") + "\n", OUTER.nowval));
+   host { mach.outbuf += ("apres atom") + "\n" }
+   emit OUTER(1);
+   emit O2(OUTER.nowval);
 }
 
-export const mach = new hh.ReactiveMachine( prg, "TEST" );
+export const mach = new hh.ReactiveMachine(prg, {name: "TEST", verbose: -1});
 mach.outbuf = "";
 
 try {
    mach.react();
-} catch( e ) {
-    mach.outbuf += ( "causality error" ) + "\n";
+} catch(e) {
+    mach.outbuf += ("causality error") + "\n";
 }

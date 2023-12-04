@@ -6,15 +6,15 @@ import * as hh from "@hop/hiphop";
 hiphop module example() {
    in I; out O;
       
-   if(  I.now ) emit I();
+   if (I.now) emit I();
    emit O();
 }
 
-export const mach = new hh.ReactiveMachine(example, {CausalityErrorTrace:"deep", sweep:false} );
+export const mach = new hh.ReactiveMachine(example, { verbose: -1, sweep:false });
 mach.outbuf = "";
 
 try {
     mach.react();
 } catch( e ) { 
-    mach.outbuf += ( "causality error" ) + "\n";
+   mach.outbuf += "causality error\n";
 }

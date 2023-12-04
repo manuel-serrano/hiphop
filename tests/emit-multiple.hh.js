@@ -9,11 +9,15 @@ hiphop module prg() {
    emit A(), B();
 }
 
-export const mach = new hh.ReactiveMachine( prg );
+export const mach = new hh.ReactiveMachine(prg);
 mach.outbuf = "";
 mach.debug_emitted_func = val => {
    mach.outbuf += format(val) + "\n";
 }
 
-mach.react()
-mach.react()
+try {
+   mach.react()
+   mach.react()
+} catch(e) {
+   mach.outbuf += e.msg;
+}

@@ -23,5 +23,5 @@ mach.react();
 mach.outbuf += ('----') + "\n";
 mach.inputAndReact("S");
 mach.outbuf += ('----') + "\n";
-setTimeout((() => mach.inputAndReact("S")), 200);
+setTimeout((() => mach.inputAndReact("S")), 100);
 

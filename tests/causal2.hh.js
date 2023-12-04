@@ -14,7 +14,7 @@ hiphop module prg() {
    }
 }
 
-export const mach = new hh.ReactiveMachine(prg);
+export const mach = new hh.ReactiveMachine(prg, { verbose: -1 });
 mach.outbuf = "";
 
 try {

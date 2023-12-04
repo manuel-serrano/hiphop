@@ -55,5 +55,5 @@ setTimeout(function() {
    mach.inputAndReact("RESS");
    mach.inputAndReact("S");
    mach.react();
-}, 1000);
+}, 100);
 

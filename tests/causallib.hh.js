@@ -8,12 +8,12 @@ hiphop module mymod() {
    in A; in B; in R; out O;
    do{
       fork {
-	 await( A.now );
+	 await (A.now);
       } par {
-	 await( B.now );
+	 await (B.now);
       }
       emit O();
-   } every( R.now )
+   } every(R.now)
 }
 
 
@@ -29,12 +29,13 @@ hiphop module prog() {
     }
 }
 
-export const mach = new hh.ReactiveMachine( prog );
+export const mach = new hh.ReactiveMachine(prog, { verbose: -1});
+mach.outbuf = "";
 
 try{
     mach.react('A','B');
     mach.react('A');
     mach.react('B');
-} catch( e ) { 
-    console.log( "causality error" );
+} catch(e) { 
+    mach.outbuf += "causality error\n";
 }

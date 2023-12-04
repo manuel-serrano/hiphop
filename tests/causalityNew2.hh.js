@@ -7,19 +7,19 @@ hiphop module prg() {
    inout B;
    signal V_S_C, V_S_i;
 
-   if(  V_S_C.now  ) { 
+   if (V_S_C.now) { 
       ;
    }
-   if( B.now  ) { 
+   if (B.now) { 
       emit V_S_C();
    }
 }
 
-export const mach = new hh.ReactiveMachine( prg );
+export const mach = new hh.ReactiveMachine(prg, { verbose: -1 });
 mach.outbuf = "";
 
 try {
     mach.react();
-} catch( e ) { 
-    mach.outbuf += ( "causality error" ) + "\n";
+} catch( e) { 
+   mach.outbuf += "causality error\n";
 }

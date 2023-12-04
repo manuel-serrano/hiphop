@@ -11,12 +11,12 @@ try {
       loop {
 	 signal L;
 
-	 emit L( "foo bar" );
-	 emit O( L.nowval );
+	 emit L("foo bar");
+	 emit O(L.nowval);
       }
    }
 
-   mach = new hh.ReactiveMachine( prg, "instloop" );
+   mach = new hh.ReactiveMachine(prg, "instloop");
    mach.outbuf = "";
 
    mach.react();
@@ -24,6 +24,6 @@ try {
    mach.react();
    mach.react();
 } catch (e) {
-   mach.outbuf += e.message;
+   mach.outbuf += e.message + "\n";
 }
 

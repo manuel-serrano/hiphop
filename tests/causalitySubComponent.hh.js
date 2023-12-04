@@ -92,7 +92,7 @@ hiphop module RR() {
    }
 }
 
-export const mach = new hh.ReactiveMachine(RR);
+export const mach = new hh.ReactiveMachine(RR, { verbose: -1 });
 mach.outbuf = "";
 try {
     mach.react();

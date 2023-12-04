@@ -16,7 +16,7 @@ hiphop module prg(resolve) {
             break T;
          }
          async () {
-            setTimeout(this.notify.bind(this), 500);
+            setTimeout(this.notify.bind(this), 10);
          }
          emit Y();
          emit __internal(__internal.preval - 1);

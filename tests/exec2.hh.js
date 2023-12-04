@@ -6,7 +6,7 @@ import * as hh from "@hop/hiphop";
 hiphop module prg(resolve) {
    out O;
    async (O) {
-      setTimeout(() => this.notify(5), 1000);
+      setTimeout(() => this.notify(5), 100);
    }
    host { resolve(false); }
 }
