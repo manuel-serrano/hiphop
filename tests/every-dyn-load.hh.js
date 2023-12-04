@@ -8,12 +8,12 @@ import { format } from "util";
 function make_atom(i) {
    return hiphop do {
       hop { mach.outbuf += ("branch " + i) + "\n" };
-   } every( G0.now )
+   } every(G0.now)
 }
 
 function make_atom2(i) {
    return hiphop loop {
-      await immediate( G0.now );
+      await immediate(G0.now);
       hop { mach.outbuf += ("branch " + i) + "\n" };
       yield;
    }
@@ -21,7 +21,7 @@ function make_atom2(i) {
 
 function make_atom3(i) {
    return hiphop {
-      every immediate( G0.now ) {
+      every immediate(G0.now) {
 	 hop { mach.outbuf += ("branch " + i) + "\n" }
       }
    }
@@ -47,8 +47,6 @@ mach.outbuf = "";
 mach.debug_emitted_func = val => {
    mach.outbuf += format(val) + "\n";
 }
-
-//mach.outbuf += (machine.ast.pretty_print()) + "\n";
 
 mach.react()
 mach.react()
