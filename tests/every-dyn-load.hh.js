@@ -42,7 +42,7 @@ hiphop module prg() {
    }
 }
 
-export const mach = new hh.ReactiveMachine(prg, { name: "every-dyn-load", noSweep: true });
+export const mach = new hh.ReactiveMachine(prg, { name: "every-dyn-load", sweep: false });
 mach.outbuf = "";
 mach.debug_emitted_func = val => {
    mach.outbuf += format(val) + "\n";
