@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/1.3.x/preprocessor/NEW.js            */
+/*    .../FOO/node_modules/@hop/hiphop/preprocessor/parser.js          */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Nov 30 06:40:46 2023 (serrano)                */
+/*    Last change :  Tue Dec  5 11:23:48 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -970,13 +970,13 @@ function parseFork(token) {
 function parseEmitSustain(token, command) {
    
    function parseSignalEmit(loc) {
-      const id = this.consumeToken(this.ID);
-      const locid = id.location;
+      const locid = this.peekToken().location;
+      const signame = parseDollarIdentName.call(this);
       const tag = tagInit(command.toLowerCase(), loc);
       let inits = [locInit(locid), tag, astutils.J2SDataPropertyInit(
 	 locid,
-	 astutils.J2SString(locid, id.value),
-	 astutils.J2SString(locid, id.value))];
+	 astutils.J2SString(locid, "signame"),
+	 signame)];
       let accessors = [];
 
       const lparen = this.consumeToken(this.LPAREN);
@@ -994,7 +994,7 @@ function parseEmitSustain(token, command) {
       
       return astutils.J2SCall(
 	 loc, hhref(loc, command), null,
-	 [astutils.J2SObjInit(locid, inits)].concat(accessors));
+	 [astutils.J2SObjInit(loc, inits)].concat(accessors));
    }
 
    const loc = token.location;
