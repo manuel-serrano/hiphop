@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    .../FOO/node_modules/@hop/hiphop/preprocessor/parser.js          */
+/*    serrano/prgm/project/hiphop/1.3.x/preprocessor/parser.js         */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Dec  5 11:23:48 2023 (serrano)                */
+/*    Last change :  Tue Dec  5 11:36:11 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -188,7 +188,7 @@ function parseDollarIdentName() {
 	 return astutils.J2SString(token.location, token.value);
       }
       case this.DOLLAR: {
-	 return this.parseDollarExpression();
+	 return this.parsePrimaryDollar();
       }
       default: {
 	 return tokenTypeError(this.peekToken());
