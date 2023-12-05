@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Mon Nov 27 17:48:49 2023 (serrano)                */
+/*    Last change :  Tue Dec  5 15:15:56 2023 (serrano)                */
 /*    Copyright   :  2023 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -20,6 +20,11 @@ import * as hop from "@hop/hop";
 import { ast, list } from "@hop/hopc";
 
 let _hhaccess = undefined;
+
+/*---------------------------------------------------------------------*/
+/*    gensym ...                                                       */
+/*---------------------------------------------------------------------*/
+let gensym = 0;
 
 /*---------------------------------------------------------------------*/
 /*    hhaccess ...                                                     */
@@ -75,7 +80,7 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
 	 new ast.J2SDataPropertyInit(
 	    {loc: loc,
 	     name: new ast.J2SString({loc: loc, val: "signame"}),
-	     val: new ast.J2SString({loc: loc, val: name})}),
+	     val: name}),
 	 new ast.J2SDataPropertyInit(
 	    {loc: loc,
 	     name: new ast.J2SString({loc: loc, val: "pre"}),
@@ -100,18 +105,21 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
    }
 
    function accessor(loc, obj, field) {
-      const id = obj.id;
+      const name = obj instanceof ast.J2SUnresolvedRef
+	 ? new ast.J2SString({loc: loc, val: obj.id})
+	 : obj;
+
       switch (field.val) {
 	 case "signame":
-	    return sigaccess(loc, id, false, false);
+	    return sigaccess(loc, name, false, false);
 	 case "now":
-	    return sigaccess(loc, id, false, false);
+	    return sigaccess(loc, name, false, false);
 	 case "nowval":
-	    return sigaccess(loc, id, false, true);
+	    return sigaccess(loc, name, false, true);
 	 case "pre":
-	    return sigaccess(loc, id, true, false);
+	    return sigaccess(loc, name, true, false);
 	 case "preval":
-	    return sigaccess(loc, id, true, true);
+	    return sigaccess(loc, name, true, true);
       }
    }
 
@@ -122,18 +130,34 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
 
       accessors.push(accessor(loc, obj, field));
 
-      const id = obj.id;
-      return new ast.J2SDeclInit(
-	 {loc: loc,
-	  id: id,
-	  writable: false,
-	  vtype: "any",
-	  binder: "let-opt",
-	  scopt: "letblock",
-	  val: new ast.J2SAccess(
-	     {loc: loc,
-	      obj: new ast.J2SUnresolvedRef({loc: loc, id: "this"}),
-	      field: new ast.J2SString({loc: loc, val: id})})});
+      if (obj instanceof ast.J2SUnresolvedRef) {
+	 const id = obj.id;
+	 return new ast.J2SDeclInit(
+	    {loc: loc,
+	     id: id,
+	     writable: false,
+	     vtype: "any",
+	     binder: "let-opt",
+	     scopt: "letblock",
+	     val: new ast.J2SAccess(
+		{loc: loc,
+		 obj: new ast.J2SUnresolvedRef({loc: loc, id: "this"}),
+		 field: new ast.J2SString({loc: loc, val: id})})});
+      } else {
+	 const id = "g" + (loc?.offset || gensym++);
+	 ax.obj = new ast.J2SUnresolvedRef({loc: loc, id: id});
+	 return new ast.J2SDeclInit(
+	    {loc: loc,
+	     id: id,
+	     writable: false,
+	     vtype: "any",
+	     binder: "let-opt",
+	     scopt: "letblock",
+	     val: new ast.J2SAccess(
+		{loc: loc,
+		 obj: new ast.J2SUnresolvedRef({loc: loc, id: "this"}),
+		 field: obj})});
+      }
    }
 
    function deleteDuplicates(v) {
@@ -231,19 +255,22 @@ function findDecl(ref, env) {
 ast.J2SAccess.prototype.collectAxs = function(env) {
    const obj = this.obj;
    const field = this.field;
+   const fieldname = field instanceof ast.J2SString ? field.val : "";
    const axobj = collectAxs(obj, env);
    const axfd = collectAxs(field, env);
+   
+   if (fieldname === "signame"
+      || fieldname === "now" || fieldname === "nowval"
+      || fieldname === "pre" || fieldname === "preval") {
+      if (obj instanceof ast.J2SUnresolvedRef && !findDecl(obj, env)) {
+	 const id = obj.id;
 
-   if (obj instanceof ast.J2SUnresolvedRef
-      && field instanceof ast.J2SString
-      && !findDecl(obj, env)) {
-      const id = obj.id;
-      const val = field.val;
-
-      if (val === "signame"
-	 || val === "now" || val === "nowval"
-	 || val === "pre" || val === "preval"
-	 && reserved.indexOf(id) < 0) {
+	 if (reserved.indexOf(id) < 0) {
+	    return [this].concat(axobj, axfd);
+	 } else {
+	    return axobj.concat(axfd);
+	 }
+      } else if (obj instanceof ast.J2SDollar) {
 	 return [this].concat(axobj, axfd);
       } else {
 	 return axobj.concat(axfd);
