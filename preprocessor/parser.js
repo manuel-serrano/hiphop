@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Dec  6 08:29:14 2023 (serrano)                */
+/*    Last change :  Wed Dec  6 11:57:49 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1351,8 +1351,7 @@ function parseRunFun(next) {
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
 /*       | run id(expr, ...) { sigalias, ... }                         */
-/*    dollarexpr ::= $dollar | hhexpr                                  */
-/*    sigalias ::= ident | ident to ident | ident from ident | *       */
+/*    sigalias ::= ident | ident as ident | *                          */
 /*---------------------------------------------------------------------*/
 function parseRun(token) {
    const loc = normalizeLoc(token.location);
@@ -1394,64 +1393,82 @@ function parseRun(token) {
    this.consumeToken(this.RPAREN);
 	 
    // sigaliases
-   this.consumeToken(this.LBRACE);
-   
-   while (this.peekToken().type != this.RBRACE) {
-      switch (this.peekToken().type) {
-	 case this.MUL:
-	    const dm = this.consumeAny();
-	    inits.push(astutils.J2SDataPropertyInit(
-			   dm.location, astutils.J2SString(dm.location, "autocomplete"),
-			   astutils.J2SBool(dm.location, true)));
-	    break;
-	    
-	 case this.PLUS:
-	    const dp = this.consumeAny();
-	    inits.push(astutils.J2SDataPropertyInit(
-			   dp.location, astutils.J2SString(dp.location, "autocompletestrict"),
-			   astutils.J2SBool(dp.location, true)));
-	    break;
-	    
-	 case this.ID:
-	    const a = this.consumeAny();
-	    
+   switch (this.peekToken().type) {
+      case this.LBRACE: {
+	 this.consumeToken(this.LBRACE);
+	 
+	 while (this.peekToken().type != this.RBRACE) {
 	    switch (this.peekToken().type) {
-	       case this.COMMA:
-	       case this.RBRACE:
+	       case this.MUL:
+		  const dm = this.consumeAny();
 		  inits.push(astutils.J2SDataPropertyInit(
-				 a.location, astutils.J2SString(a.location, a.value),
-				 astutils.J2SString(a.location, "")));
+		     dm.location, astutils.J2SString(dm.location, "autocomplete"),
+		     astutils.J2SBool(dm.location, true)));
+		  break;
+		  
+	       case this.PLUS:
+		  const dp = this.consumeAny();
+		  inits.push(astutils.J2SDataPropertyInit(
+		     dp.location, astutils.J2SString(dp.location, "autocompletestrict"),
+		     astutils.J2SBool(dp.location, true)));
 		  break;
 		  
 	       case this.ID:
-		  const tok = this.consumeToken(this.ID);
-		  const as = this.consumeToken(this.ID);
-
-		  switch (tok.value) {
-		     case "from": 
-		     case "to": 
-		     case "as": 
+		  const a = this.consumeAny();
+		  
+		  switch (this.peekToken().type) {
+		     case this.COMMA:
+		     case this.RBRACE:
 			inits.push(astutils.J2SDataPropertyInit(
-				      a.location, astutils.J2SString(as.location, as.value),
-				      astutils.J2SString(a.location, a.value)));
-		     	break;
-		     
-		     default: 
-			throw tokenTypeError(tok);
+			   a.location, astutils.J2SString(a.location, a.value),
+			   astutils.J2SString(a.location, "")));
+			break;
+			
+		     case this.ID:
+			const tok = this.consumeToken(this.ID);
+			const as = this.consumeToken(this.ID);
+
+			switch (tok.value) {
+			   case "from": 
+			   case "to": 
+			   case "as": 
+			      inits.push(astutils.J2SDataPropertyInit(
+				 a.location, astutils.J2SString(as.location, as.value),
+				 astutils.J2SString(a.location, a.value)));
+		     	      break;
+			      
+			   default: 
+			      throw tokenTypeError(tok);
+			}
 		  }
+		  break;
+		  
+	       default:
+		  throw tokenTypeError(this.consumeAny());
 	    }
-	    break;
 	    
-	    default:
-	       throw tokenTypeError(this.consumeAny());
+	    if (this.peekToken().type === this.COMMA) {
+	       this.consumeAny();
+	    }
+	 }
+	 
+	 this.consumeToken(this.RBRACE);
+	 break;
       }
-      
-      if (this.peekToken().type === this.COMMA) {
-	 this.consumeAny();
+
+      case this.DOLLAR: {
+	 const loc = this.peekToken().location;
+	 const aliases = this.parsePrimaryDollar();
+	 inits.push(astutils.J2SDataPropertyInit(
+	    loc, astutils.J2SString(loc, "aliases"),
+	    aliases));
+	 break;
+      }
+
+      default: {
+	 return tokenTypeError(this.peekToken());
       }
    }
-      
-   this.consumeToken(this.RBRACE);
 
    // run expression
    inits.push(astutils.J2SDataPropertyInit(

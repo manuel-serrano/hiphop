@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Tue Dec  5 15:15:56 2023 (serrano)                */
+/*    Last change :  Wed Dec  6 13:20:10 2023 (serrano)                */
 /*    Copyright   :  2023 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -20,6 +20,16 @@ import * as hop from "@hop/hop";
 import { ast, list } from "@hop/hopc";
 
 let _hhaccess = undefined;
+
+/*---------------------------------------------------------------------*/
+/*    reservedFields ...                                               */
+/*---------------------------------------------------------------------*/
+const reservedFields = new Map();
+
+["clazz", "loc", "endloc", "type", "duplicate", "generate", "profid",
+ "protocol", "range", "hint", "cache", "ronly", "cmap", "utype", "lbl",
+ "mode", "id", "rec", "op"]
+   .forEach(k => reservedFields.set(k, true));
 
 /*---------------------------------------------------------------------*/
 /*    gensym ...                                                       */
@@ -104,32 +114,32 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
 			       args: list.list(attr)});
    }
 
-   function accessor(loc, obj, field) {
+   function accessor(loc, obj, field, pre, val) {
       const name = obj instanceof ast.J2SUnresolvedRef
 	 ? new ast.J2SString({loc: loc, val: obj.id})
-	 : obj;
+	 : obj.field;
 
       switch (field.val) {
 	 case "signame":
-	    return sigaccess(loc, name, false, false);
+	    return sigaccess(loc, name, pre, val);
 	 case "now":
-	    return sigaccess(loc, name, false, false);
+	    return sigaccess(loc, name, pre, val);
 	 case "nowval":
-	    return sigaccess(loc, name, false, true);
+	    return sigaccess(loc, name, pre, val);
 	 case "pre":
-	    return sigaccess(loc, name, true, false);
+	    return sigaccess(loc, name, pre, val);
 	 case "preval":
-	    return sigaccess(loc, name, true, true);
+	    return sigaccess(loc, name, pre, val);
       }
    }
 
-   function accessGeneralDecl(ax) {
+   function accessGeneralDecl(ax, pre, val) {
       const loc = ax.loc;
       const obj = ax.obj;
       const field = ax.field;
 
-      accessors.push(accessor(loc, obj, field));
-
+      accessors.push(accessor(loc, obj, field, pre, val));
+      
       if (obj instanceof ast.J2SUnresolvedRef) {
 	 const id = obj.id;
 	 return new ast.J2SDeclInit(
@@ -153,30 +163,50 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
 	     vtype: "any",
 	     binder: "let-opt",
 	     scopt: "letblock",
-	     val: new ast.J2SAccess(
-		{loc: loc,
-		 obj: new ast.J2SUnresolvedRef({loc: loc, id: "this"}),
-		 field: obj})});
+	     val: obj});
       }
    }
 
    function deleteDuplicates(v) {
       const res = [];
       for (let i = v.length - 1; i >= 0; i--) {
-	 const id = v[i].obj.id;
-	 const j = v.findIndex(a => a.obj.id === id);
-	 if (i === j) res.push(v[i]);
+	 if (v[i].obj instanceof ast.J2SUnresolvedRef) {
+	    const id = v[i].obj.id;
+	    const j = v.findIndex(a => a.obj.id === id);
+	    if (i === j) res.push(v[i]);
+	 } else {
+	    res.push(v[i]);
+	 }
       }
       return res;
    }
    const loc = node.loc;
 
    if (axs.length > 0) {
+      let pre = false;
+      let val = false;
+
+      // compute all the dependencies
+      axs.forEach(({loc, obj, field}) => {
+	 switch (field.val) {
+	    case "nowval":
+	       val = true;
+	       break;
+	    case "pre":
+	       pre = true;
+	       break;
+	    case "preval":
+	       val = true;
+	       pre = true;
+	 }
+      });
+
       return new ast.J2SLetBlock(
 	 {loc: loc,
 	  endloc: loc,
 	  rec: false,
-	  decls: list.array2list(deleteDuplicates(axs).map(accessGeneralDecl)),
+	  decls: list.array2list(deleteDuplicates(axs)
+	     .map(ax => accessGeneralDecl(ax, pre, val))),
 	  mode: "hopscript",
 	  nodes: list.list(node)});
    } else {
@@ -212,13 +242,13 @@ function collectLets(nodes) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    collectAxs ...                                                   */
+/*    collectAxs..                                                   */
 /*---------------------------------------------------------------------*/
 function collectAxs(node, env) {
    if (node instanceof ast.J2SNode) {
       return node.collectAxs(env);
    } else if (list.pairp(node)) {
-      return Array.prototype.concat.apply([], list.list2array(list.map(n => collectAxs(n, env), node)));
+      return list.list2array(node).flatMap(n => collectAxs(n, env));
    } else {
       return [];
    }
@@ -231,7 +261,9 @@ ast.J2SNode.prototype.collectAxs = function(env) {
    let res = [];
 
    for(let k in this) {
-      res = res.concat(collectAxs(this[k], env));
+      if (!reservedFields.get(k)) {
+	 res = res.concat(collectAxs(this[k], env));
+      }
    }
 
    return res;
@@ -258,7 +290,7 @@ ast.J2SAccess.prototype.collectAxs = function(env) {
    const fieldname = field instanceof ast.J2SString ? field.val : "";
    const axobj = collectAxs(obj, env);
    const axfd = collectAxs(field, env);
-   
+
    if (fieldname === "signame"
       || fieldname === "now" || fieldname === "nowval"
       || fieldname === "pre" || fieldname === "preval") {
@@ -270,7 +302,9 @@ ast.J2SAccess.prototype.collectAxs = function(env) {
 	 } else {
 	    return axobj.concat(axfd);
 	 }
-      } else if (obj instanceof ast.J2SDollar) {
+      } else if (obj instanceof ast.J2SAccess
+	 && obj.obj instanceof ast.J2SUnresolvedRef
+	 && obj.obj.id === "this") {
 	 return [this].concat(axobj, axfd);
       } else {
 	 return axobj.concat(axfd);
@@ -295,13 +329,24 @@ ast.J2SFun.prototype.collectAxs = function(env) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    ast.J2SReturn.collectAxs ...                                     */
+/*---------------------------------------------------------------------*/
+ast.J2SReturn.prototype.collectAxs = function(env) {
+   if (this.expr) {
+      return collectVars(this.expr, env);
+   } else {
+      return [];
+   }
+}
+
+/*---------------------------------------------------------------------*/
 /*    collectVars ...                                                  */
 /*---------------------------------------------------------------------*/
 function collectVars(node) {
    if (node instanceof ast.J2SNode) {
       return node.collectVars();
    } else if (list.pairp(node)) {
-      return Array.prototype.concat.apply([], list.list2array(list.map(collectVars, node)));
+      return list.list2array(node).flatMap(collectVars);
    } else {
       return [];
    }
@@ -313,11 +358,27 @@ function collectVars(node) {
 ast.J2SNode.prototype.collectVars = function() {
    let res = [];
 
-   for(let k in this) {
-      res = res.concat(collectVars(this[k]), res);
-   }
+   Object.keys(this).forEach(k => {
+      if (!reservedFields.get(k)) {
+	 res = res.concat(collectVars(this[k]));
+      }
+   });
 
    return res;
+}
+
+/*---------------------------------------------------------------------*/
+/*    ast.J2SLiteralValue.collectVars ...                              */
+/*---------------------------------------------------------------------*/
+ast.J2SLiteralValue.prototype.collectVars = function() {
+   return [];
+}
+
+/*---------------------------------------------------------------------*/
+/*    ast.J2SDataPropertyInit.collectVars ...                          */
+/*---------------------------------------------------------------------*/
+ast.J2SDataPropertyInit.prototype.collectVars = function() {
+   return this.val.collectVars();
 }
 
 /*---------------------------------------------------------------------*/
@@ -366,4 +427,15 @@ ast.J2SFun.prototype.collectVars = function() {
 /*---------------------------------------------------------------------*/
 ast.J2SDollar.prototype.collectVars = function() {
    return [];
+}
+
+/*---------------------------------------------------------------------*/
+/*    ast.J2SReturn.collectVars ...                                    */
+/*---------------------------------------------------------------------*/
+ast.J2SReturn.prototype.collectVars = function() {
+   if (this.expr) {
+      return this.expr.collectVars();
+   } else {
+      return [];
+   }
 }
