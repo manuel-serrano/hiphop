@@ -15,4 +15,6 @@ const prg = hiphop module() {
 export const mach = new hh.ReactiveMachine(prg, "DELAY");
 mach.outbuf = "";
 
-
+mach.react();
+mach.react({S: true});
+mach.react({T: {len: 54}});

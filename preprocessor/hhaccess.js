@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Wed Dec  6 13:20:10 2023 (serrano)                */
+/*    Last change :  Wed Dec  6 19:38:36 2023 (serrano)                */
 /*    Copyright   :  2023 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -114,31 +114,35 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
 			       args: list.list(attr)});
    }
 
-   function accessor(loc, obj, field, pre, val) {
-      const name = obj instanceof ast.J2SUnresolvedRef
-	 ? new ast.J2SString({loc: loc, val: obj.id})
-	 : obj.field;
+   function accessor(loc, obj, field, env) {
+      if (obj instanceof ast.J2SUnresolvedRef) {
+	 const name = new ast.J2SString({loc: loc, val: obj.id});
+	 const axs = env[obj.id];
+	 return sigaccess(loc, name, axs.pre, axs.val);
+      } else {
+	 const name = obj.field;
 
-      switch (field.val) {
-	 case "signame":
-	    return sigaccess(loc, name, pre, val);
-	 case "now":
-	    return sigaccess(loc, name, pre, val);
-	 case "nowval":
-	    return sigaccess(loc, name, pre, val);
-	 case "pre":
-	    return sigaccess(loc, name, pre, val);
-	 case "preval":
-	    return sigaccess(loc, name, pre, val);
+	 switch (field.val) {
+	    case "signame":
+	       return sigaccess(loc, name, pre, val);
+	    case "now":
+	       return sigaccess(loc, name, pre, val);
+	    case "nowval":
+	       return sigaccess(loc, name, pre, val);
+	    case "pre":
+	       return sigaccess(loc, name, pre, val);
+	    case "preval":
+	       return sigaccess(loc, name, pre, val);
+	 }
       }
    }
 
-   function accessGeneralDecl(ax, pre, val) {
+   function accessGeneralDecl(ax, env) {
       const loc = ax.loc;
       const obj = ax.obj;
       const field = ax.field;
 
-      accessors.push(accessor(loc, obj, field, pre, val));
+      accessors.push(accessor(loc, obj, field, env));
       
       if (obj instanceof ast.J2SUnresolvedRef) {
 	 const id = obj.id;
@@ -183,21 +187,27 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
    const loc = node.loc;
 
    if (axs.length > 0) {
-      let pre = false;
-      let val = false;
+      const axEnv = {};
 
       // compute all the dependencies
       axs.forEach(({loc, obj, field}) => {
-	 switch (field.val) {
-	    case "nowval":
-	       val = true;
-	       break;
-	    case "pre":
-	       pre = true;
-	       break;
-	    case "preval":
-	       val = true;
-	       pre = true;
+	 if (obj instanceof ast.J2SUnresolvedRef) {
+	    let axs = axEnv[obj.id];
+	    if (!axs) {
+	       axs = { val: false, pre: false };
+	       axEnv[obj.id] = axs;
+	    }
+	    switch (field.val) {
+	       case "nowval":
+		  axs.val = true;
+		  break;
+	       case "pre":
+		  axs.pre = true;
+		  break;
+	       case "preval":
+		  axs.val = true;
+		  axs.pre = true;
+	    }
 	 }
       });
 
@@ -206,7 +216,7 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
 	  endloc: loc,
 	  rec: false,
 	  decls: list.array2list(deleteDuplicates(axs)
-	     .map(ax => accessGeneralDecl(ax, pre, val))),
+	     .map(ax => accessGeneralDecl(ax, axEnv))),
 	  mode: "hopscript",
 	  nodes: list.list(node)});
    } else {
@@ -333,7 +343,7 @@ ast.J2SFun.prototype.collectAxs = function(env) {
 /*---------------------------------------------------------------------*/
 ast.J2SReturn.prototype.collectAxs = function(env) {
    if (this.expr) {
-      return collectVars(this.expr, env);
+      return collectAxs(this.expr, env);
    } else {
       return [];
    }

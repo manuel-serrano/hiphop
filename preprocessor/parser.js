@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Dec  6 11:57:49 2023 (serrano)                */
+/*    Last change :  Wed Dec  6 19:41:27 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1253,10 +1253,10 @@ function parseLoopeach(token) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseAsync ...                                                    */
+/*    parseAsync ...                                                   */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | exec [ident] block                                          */
+/*       | async ([ident]) block                                       */
 /*           [kill block] [suspend block] [resume block]               */
 /*---------------------------------------------------------------------*/
 function parseAsync(token) {
