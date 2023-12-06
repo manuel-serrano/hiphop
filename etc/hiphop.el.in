@@ -4,7 +4,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Wed Nov 29 10:27:00 2023 (serrano)                */
+;*    Last change :  Wed Dec  6 07:55:53 2023 (serrano)                */
 ;*    Copyright   :  2018-23 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
@@ -74,7 +74,7 @@ Set this to nil if you don't want a modeline indicator."
    (cons "\\<\\(?:fork\\|par\\|in\\|out\\|inout\\)\\>" 'font-lock-keyword-face)
    (cons "\\(?:loop\\|every\\|while\\|do\\|abort\\|weakabort\\|run\\|signal\\|module\\|interface\\|emit\\|sustain\\)\\>" 'font-lock-keyword-face)
    (cons "\\<\\(?:async\\|kill\\|suspend\\|resume\\)\\>" 'font-lock-face-hiphop-async)
-   (list "[ \t]*\\([A-Za-z0-9_$]+\\):" 1 'font-lock-face-hiphop-label)
+   (list "^[ \t]*\\([A-Za-z0-9_$]+\\):" 1 'font-lock-face-hiphop-label)
    (list "break \\([A-Za-z0-9_$]+\\)" 1 'font-lock-face-hiphop-label)
    (cons "\\(?:now\\|pre\\|nowval\\|preval\\)\\>" 'font-lock-face-hiphop-values)
    (list (concat "\\s-*\\(?:module\\|interface\\)\\s-+\\([A-Za-z0-9_$]+\\)") 1 'font-lock-function-name-face))

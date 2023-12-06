@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Dec  5 16:31:39 2023 (serrano)                */
+/*    Last change :  Wed Dec  6 08:29:14 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -881,9 +881,13 @@ function parseSequence(token, tagname, id, consume) {
  	   locInit(loc), tag])
       : astutils.J2SObjInit(loc, [locInit(loc), tag]);
 
-   return astutils.J2SCall(loc, hhref(loc, "SEQUENCE"), 
-			    null,
-			    [attrs].concat(body));
+   if (body.length === 1 && !id) {
+      return body[0];
+   } else {
+      return astutils.J2SCall(loc, hhref(loc, "SEQUENCE"), 
+			      null,
+			      [attrs].concat(body));
+   }
 }
 
 /*---------------------------------------------------------------------*/
@@ -927,13 +931,19 @@ function parseFork(token) {
       const expr = this.parseExpression();
       this.consumeToken(this.RBRACE);
       return astutils.J2SCall(loc, hhref(loc, "FORK"), 
-			       null,
-			       [attrs].concat(expr));
+			      null,
+			      [attrs].concat(expr));
    } else {
-      body.push(astutils.J2SCall(loc, hhref(loc, "SEQUENCE"),
-				   null,
-				   [astutils.J2SObjInit(loc, [locInit(loc), tag])]
-   .concat(parseHHBlock.call(this))));
+      const block = parseHHBlock.call(this);
+
+      if (block.length === 1) {
+	 body.push(block[0]);
+      } else {
+	 body.push(astutils.J2SCall(loc, hhref(loc, "SEQUENCE"),
+				    null,
+				    [astutils.J2SObjInit(loc, [locInit(loc), tag])]
+				       .concat(block)));
+      }
 
       while (isIdToken(this, this.peekToken(), "par")) {
       	 body.push(parseSequence.call(this, this.consumeAny(), "par", false, true));
