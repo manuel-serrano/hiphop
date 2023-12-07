@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/hiphop/modules/http.hh.js            */
+/*    serrano/prgm/project/hiphop/1.3.x/modules/http.hh.js             */
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Tue Jan 11 18:12:15 2022                          */
-/*    Last change :  Fri Sep 15 16:15:44 2023 (serrano)                */
+/*    Last change :  Thu Dec  7 14:55:48 2023 (serrano)                */
 /*    Copyright   :  2022-23 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HTTP HipHop module.                                              */
@@ -16,8 +16,9 @@
 /*---------------------------------------------------------------------*/
 import * as http from "http";
 import * as https from "https";
+import { parse } from "url";
 
-export { request, HttpRequest };
+export { httpRequest, HttpRequest };
 
 /*---------------------------------------------------------------------*/
 /*    debug ...                                                        */
@@ -36,16 +37,16 @@ function debug_url(protocol, options) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    Http ...                                                         */
+/*    HttpRequest ...                                                  */
 /*---------------------------------------------------------------------*/
 hiphop interface HttpRequest {
-   out result;
+   out response;
 }
 
 /*---------------------------------------------------------------------*/
 /*    request ...                                                      */
 /*---------------------------------------------------------------------*/
-hiphop module request(protocol, options, payload = undefined) implements HttpRequest {
+hiphop module httpRequest(requestOrUrl, payload = undefined) implements HttpRequest {
    let state = "active";
    let buf = "";
    let req = false;
@@ -53,13 +54,20 @@ hiphop module request(protocol, options, payload = undefined) implements HttpReq
    let res = undefined;
    let self;
    
-   async (result) {
-      const proto = (protocol === "https" ? https : http);
+   async (response) {
+      let request;
+      
+      if (typeof requestOrUrl === "string") {
+	 request = parse(requestOrUrl);
+      } else {
+	 request = requestOrUrl;
+      }
+      const proto = ((request?.protocol === "https:" ?? request?.protocol === "https") ? https : http);
       self = this;
-      req = proto.request(options, _res => {
+      req = proto.request(request, _res => {
        	 res = _res;
        	 if (debug()) {
-	    console.error("*** HTTP_DEBUG [" + debug_url(protocol, options) + "]",
+	    console.error("*** HTTP_DEBUG [" + debug_url(protocol, request) + "]",
 	       "statusCode: " + res.statusCode);
        	 }
        	 if (res.statusCode !== 200) {
@@ -70,7 +78,7 @@ hiphop module request(protocol, options, payload = undefined) implements HttpReq
 	       res.buffer = buf;
 	       
 	       if (debug()) {
-	    	  console.error("*** HTTP_DEBUG [" + debug_url(protocol, options) + "]",
+	    	  console.error("*** HTTP_DEBUG [" + debug_url(protocol, request) + "]",
 		     "buf: [" + buf + "]");
 	       }
 
@@ -92,7 +100,7 @@ hiphop module request(protocol, options, payload = undefined) implements HttpReq
 
       req.on('error', error => {
        	 if (debug()) {
-	    console.error("*** HTTP_DEBUG [" + debug_url(protocol, options) + "]",
+	    console.error("*** HTTP_DEBUG [" + debug_url(protocol, request) + "]",
 	       "error: " + error);
 	 }
        	 if (state === "active") self.notify("error");
