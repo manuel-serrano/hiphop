@@ -1,6 +1,6 @@
-${ var doc = require( "hopdoc" ) }
-${ var path = require( "path" ) }
-${ var ROOT = path.dirname( module.filename ) }
+${ var doc = require("hopdoc") }
+${ var path = require("path") }
+${ var ROOT = path.dirname(module.filename) }
 
 Signals enable HipHop components to communicate with one
 another. They also implement outside world communications. A signal is
@@ -89,26 +89,26 @@ The following example illustrates the various values of `now`, `pre`, `nowval`,
 and `preval` along instants.
 
 ```hiphop
-${ doc.include( ROOT + "/../../tests/npnvpv.hh.js" ) }
+${ doc.include(ROOT + "/../../tests/npnvpv.hh.js") }
 ```
 
 When executed with the following input signals:
 
 ```
-${ doc.include( ROOT + "/../../tests/npnvpv.in" ) }
+${ doc.include(ROOT + "/../../tests/npnvpv.in") }
 ```
 
 It generates the following output:
 
 ```
-${ doc.include( ROOT + "/../../tests/npnvpv.out" ) }
+${ doc.include(ROOT + "/../../tests/npnvpv.out") }
 ```
 
 
 Test, Await, and Emit
 =====================
 
-### if( expr ) { ... } [else { ... }] ###
+### if (expr) { ... } [else { ... }] ###
 [:@glyphicon glyphicon-tag syntax]
 
 [Formal syntax](./syntax.html#HHIf)
@@ -119,13 +119,13 @@ conditional construct. The value of a signal can be checked too. The
 API. For instance, the presence of a signal can be checked with:
 
 ```hiphop
-if( !SIG.now ) { hop { console.log( "signal not emitted in reaction" ) } }
+if(!SIG.now) { hop { console.log("signal not emitted in reaction") } }
 ```
 
 A particular value of a signal can be checked. For instance:
 
 ```hiphop
-if( SIG.nowval > 10 && SIG.nowval < 100 ) { hop { console.log( "signal in range" ) } }
+if(SIG.nowval > 10 && SIG.nowval < 100) { hop { console.log("signal in range") } }
 ```
 
 ### await delay ###
@@ -143,16 +143,16 @@ can be:
  specified, the waiting starts during the same reaction. Otherwise it only
  starts one reaction later. That is the form `await expr` is equivalent to `{
 yield; await immediate expr }`. 
- * `count( counter, expression )`, this waits for expression to be true
+ * `count(counter, expression)`, this waits for expression to be true
  `counter` times.
 
-### emit signal( [ value ] ) ###
+### emit signal([ value ]) ###
 [:@glyphicon glyphicon-tag syntax]
 
 [Formal syntax](./syntax.html#HHEmit)
 
 The `emit` form emit the value in the instant. The form `emit sig1()` emits
-a signal without value. The form `emit sig2( val )` emits a signal with
+a signal without value. The form `emit sig2(val)` emits a signal with
 a value. 
 
 ${ <span class="label label-warning">Note:</span> } If a valued signal
@@ -161,7 +161,7 @@ declared with a combinaison function that is a Hop function that
 __must__ be commutative and associative. It is up to the Hop program
 to check and satisfy this requirement.
 
-### sustain signal( [ value ] ) ###
+### sustain signal([ value ]) ###
 [:@glyphicon glyphicon-tag syntax]
 
 [Formal syntax](./syntax.html#HHSustain)
@@ -170,14 +170,14 @@ Similar to `emit` but the emission is repeated at each instant. The
 statement  
 
 ```hiphop
-sustain sig( expr )
+sustain sig(expr);
 ```
 
 is equivalent to
 
 ```hiphop
 loop {
-   sustain sig( expr );
+   emit sig(expr);
    yield;
 }
 ```
@@ -192,7 +192,7 @@ distinct reactions and that emits `O` right after `B` is received.
 ${ <span class="label label-info">await-seq.hh.js</span> }
 
 ```hiphop
-${ doc.include( ROOT + "/../../tests/await-seq.hh.js" ) }
+${ doc.include(ROOT + "/../../tests/await-seq.hh.js") }
 ```
 
 A module that waits the event `I` to be present in three distinctive instants.
@@ -200,7 +200,7 @@ A module that waits the event `I` to be present in three distinctive instants.
 ${ <span class="label label-info">await-count.hh.js</span> }
 
 ```hiphop
-${ doc.include( ROOT + "/../../tests/await-count.hh.js" ) }
+${ doc.include(ROOT + "/../../tests/await-count.hh.js") }
 ```
 
 A module using Hop variable inside HipHop statements. 
@@ -208,5 +208,5 @@ A module using Hop variable inside HipHop statements.
 ${ <span class="label label-info">variable.hh.js</span> }
 
 ```hiphop
-${ doc.include( ROOT + "/../../tests/variable.hh.js" ) }
+${ doc.include(ROOT + "/../../tests/variable.hh.js") }
 ```

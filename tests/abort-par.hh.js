@@ -8,14 +8,14 @@ const prg = hiphop module() {
    signal L;
    
    fork {
-      abort( L.now ) {
+      abort (L.now) {
 	 loop {
 	    emit O();
 	    yield;
 	 }
       }
    } par {
-      await( I.now );
+      await (I.now);
       emit L();
    }
 }

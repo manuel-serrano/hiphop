@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Wed Dec  6 19:38:36 2023 (serrano)                */
+/*    Last change :  Thu Dec  7 13:23:18 2023 (serrano)                */
 /*    Copyright   :  2023 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -124,15 +124,15 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
 
 	 switch (field.val) {
 	    case "signame":
-	       return sigaccess(loc, name, pre, val);
+	       return sigaccess(loc, name, false, false);
 	    case "now":
-	       return sigaccess(loc, name, pre, val);
+	       return sigaccess(loc, name, false, false);
 	    case "nowval":
-	       return sigaccess(loc, name, pre, val);
+	       return sigaccess(loc, name, false, true);
 	    case "pre":
-	       return sigaccess(loc, name, pre, val);
+	       return sigaccess(loc, name, true, false);
 	    case "preval":
-	       return sigaccess(loc, name, pre, val);
+	       return sigaccess(loc, name, true, true);
 	 }
       }
    }

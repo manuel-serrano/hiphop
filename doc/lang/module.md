@@ -44,18 +44,6 @@ Compiles a module. Compiling a module is optional and serves only the
 purpose of running preliminary checks such as signal names resolution.
 
 
-HipHop Machine
-==============
-
-This syntax is a shorthand for declaring a module, creating a machine, and
-loading that module into the machine.
-
-### machine [ident]() [implements [mirror] intf, ...] { ... } ###
-[:@glyphicon glyphicon-tag syntax]
-
-[Formal syntax](./syntax.html#HHMachine)
-
-
 HipHop Interface
 ================
 

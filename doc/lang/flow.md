@@ -1,6 +1,6 @@
-${ var doc = require( "hopdoc" ) }
-${ var path = require( "path" ) }
-${ var ROOT = path.dirname( module.filename ) }
+${ var doc = require("hopdoc") }
+${ var path = require("path") }
+${ var ROOT = path.dirname(module.filename) }
 
 Sequence, Yield, and Parallelism
 ================================
@@ -34,7 +34,7 @@ with the first as it waits for an event the first branch is to emit.
 ${ <span class="label label-info">parallel-unary.hh.js</span> }
 
 ```hiphop
-${ doc.include( ROOT + "/../../tests/parallel-unary.hh.js" ) }
+${ doc.include(ROOT + "/../../tests/parallel-unary.hh.js") }
 ```
 
 
@@ -74,23 +74,24 @@ Example:
 ${ <span class="label label-info">sync1.hh.js</span> }
 
 ```hiphop
-${ doc.include( ROOT + "/../../tests/sync1.hh.js" ) }
+${ doc.include(ROOT + "/../../tests/sync1.hh.js") }
 ```
 
-### every( test ) { ... } ###
+### every (test) { ... } ###
 [:@glyphicon glyphicon-tag syntax]
 
 [Formal syntax](./syntax.html#HHEvery)
 
-A loop executed each time the `test` is true:
+A loop executed each time the `test` is true. Abort the execution of 
+the body when `test` is true.
 
 ${ <span class="label label-info">every1.hh.js</span> }
 
 ```hiphop
-${ doc.include( ROOT + "/../../tests/every1.hh.js" ) }
+${ doc.include(ROOT + "/../../tests/every1.hh.js") }
 ```
 
-### do { ... } every( test ) ###
+### do { ... } every (test) ###
 [:@glyphicon glyphicon-tag syntax]
 
 [Formal syntax](./syntax.html#HHDo)
@@ -100,6 +101,13 @@ Execute the `do`'s body and loop when `test` is true.
 ${ <span class="label label-info">loopeach.hh.js</span> }
 
 ```hiphop
-${ doc.include( ROOT + "/../../tests/loopeach.hh.js" ) }
+${ doc.include(ROOT + "/../../tests/loopeach.hh.js") }
 ```
+
+### abort (test) { ... } ###
+[:@glyphicon glyphicon-tag syntax]
+
+[Formal syntax](./syntax.html#HHAbort)
+
+Execute the `abort`'s body and abort the execution when `test` is true.
 

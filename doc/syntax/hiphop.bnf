@@ -3,7 +3,6 @@
 <HHExprStatement> --> hiphop <HHStatement>
 
 <HHStatement> --> <HHHost>
-  | <HHMachine>
   | <HHModule>
   | <HHInterface>
   | <HHSeq>
@@ -34,8 +33,6 @@
 <HHBlock> --> {}
   | { <HHStatement> }
   | { <HHStatement> ... <HHStatement> }
-
-<HHMachine> --> machine <HHMachineModule>
 
 <HHModule> --> module <HHMachineModule>
 
@@ -72,6 +69,11 @@
   | <Identifier>.nowval
   | <Identifier>.preval
   | <Identifier>.signame
+  | this[<Expression>].now
+  | this[<Identifier>].pre
+  | this[<Identifier>].nowval
+  | this[<Identifier>].preval
+  | this[<Identifier>].signame
 
 <HHDelay> --> ( <HHExpression> )
   | count( <HHExpression>, <HHExpression> )
@@ -88,12 +90,16 @@
 <HHSeq> --> [ <String> ] <HHBlock>
 
 <HHFork> --> fork [ <String> ] <HHBlock> [ par <HHBlock> ... par <HHBlock> ]
+  | fortk <HHDollarExpression>
 
-<HHEmit> --> emit <Identifier>()
-  | emit <Identifier>( <HHExpression> )
+<HHSignalName> --> <Identifier>
+  | <HHDollarExpression>
+  
+<HHEmit> --> emit <HHSignalName>()
+  | emit <HHSignalName> ( <HHExpression> )
 
-<HHSustain> --> sustain <Identifier>()
-  | sustain <Identifier>( <HHExpression> )
+<HHSustain> --> sustain <HHSignalName>()
+  | sustain <HHSignalName> ( <HHExpression> )
 
 <HHAbort> --> abort <HHDelay> <HHBlock>
 
@@ -107,7 +113,7 @@
 
 <HHLoop> --> loop <HHBlock>
 
-<HHAsync> --> async ( [ <Identifier> ] ) HHBLock <HHAsyncKill> <HHAsyncSuspend> <HHAsyncResume>
+<HHAsync> --> async ( [ <HHSignalName> ] ) HHBLock <HHAsyncKill> <HHAsyncSuspend> <HHAsyncResume>
 
 <HHAsyncKill> --> | kill <HHBlock>
 
@@ -116,6 +122,7 @@
 <HHAsyncResume> --> | resume <HHBlock>
 
 <HHRun> --> run <Ident> ( <HHRunExpressions> ) { <HHRunSigs> }
+  | run <Ident> ( <HHRunExpressions> ) <HHDollarExpression>
 
 <HHRunExpressions> --> | | <HHExpression>, ... <HHExpression>
 
@@ -123,8 +130,6 @@
 
 <HHRunSig> --> <Identifier>
   | <Identifier> as <Identifier>
-  | <Identifier> from <Identifier>
-  | <Identifier> to <Identifier>
   | *
   | +
 
