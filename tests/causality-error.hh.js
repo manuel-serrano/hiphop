@@ -6,10 +6,21 @@ hiphop module example() {
    in I;
    out O;
    loop {
-      if (now(O)) emit I();
+      if (O.now) emit I();
       emit O();
       yield;
    }
 }
 
-export const mach = new hh.ReactiveMachine(example, "presentemit");
+export const mach = new hh.ReactiveMachine(example, {name: "causality-error", verbose: -1});
+mach.outbuf = "";
+
+try {
+   mach.react();
+   mach.react();
+   mach.react();
+   mach.react();
+   mach.react();
+} catch (e) {
+   mach.outbuf += "*** CAUSALITY ERROR\n";
+}
