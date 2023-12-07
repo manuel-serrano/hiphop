@@ -1,7 +1,8 @@
 HipHop: Reactive Web programming
 ================================
 
-[![Travis](https://api.travis-ci.com/manuel-serrano/hiphop.svg)](https://travis-ci.com/manuel-serrano/hiphop/builds)
+![example workflow]
+(https://github.com/github/docs/actions/workflows/hiphop.yml/badge.svg?branch=feature-1)
 
 __Hiphop.js__ is JavaScript DSL for easing the programming of asynchronous
 applications. It executes on unmodified JavaScript engines, let them run
