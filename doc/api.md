@@ -24,7 +24,7 @@ const m = new ReactiveMachine(mod);
 Running HipHop reactive machines
 --------------------------------
 
-### mach.react(... sigset) ###
+### mach.react(sigset) ###
 [:@glyphicon glyphicon-tag function]
 
 The `react` function machine reactions. If called with no argument,
@@ -63,7 +63,7 @@ of the machine `m` and `O` with value `2` at the second reaction, checking
 { nowval: 2, preval: 1, now: true, pre: true }
 ```
 
-Each `sigset` passed to `react` is used on a new reaction. 
+
 ### mach.init(values) ###
 [:@glyphicon glyphicon-tag function]
 
