@@ -70,18 +70,18 @@ executed in two ways.
   that, simply invokes Node.js as follows:
   
 ```
-nodejs --enable-source-maps --no-warnings --experimental-loader ./node_modules/@hop/hiphoplib/hiphop-hook.mjs hello.hh.js
+nodejs --enable-source-maps --no-warnings --loader ./node_modules/@hop/hiphoplib/hiphop-hook.mjs hello.hh.js
 ```
 
 Alternatively, this can be decomposed using the shell variable environment
 `NODE_OPTIONS`:
 
 ```
-export NODE_OPTIONS="--enable-source-maps --no-warnings --experimental-loader ./node_modules/@hop/hiphoplib/hiphop-hook.mjs"
+export NODE_OPTIONS="--enable-source-maps --no-warnings --loader ./node_modules/@hop/hiphoplib/hiphop-hook.mjs"
 nodejs hello.hh.js
 ```
 
-   On future versions of Nodejs, the option `--experimental-loader` is likely
+   On future versions of Nodejs, the option `--loader` is likely
    to be renamed. Please check your setting for accomodating the future new
    name.
    
