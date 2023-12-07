@@ -12,7 +12,7 @@
       "hhc" : "./bin/hhc.mjs" 
    },
    "engines": { 
-      "hop": ">=3.4.0" ,
+      "hop": ">=3.7.0" ,
       "node": ">=18.13.0" 
    },
    "os": [ "darwin", "linux" ],
@@ -28,7 +28,8 @@
       "mocha": "^10.2.0"
    },
    "scripts": {
-      "test": "NODE_OPTIONS=\"--enable-source-maps --no-warnings --experimental-loader ./lib/hiphop-hook.mjs\" mocha --exit tests/**/*.test.js"
+     "test": "NODE_OPTIONS=\"--enable-source-maps --no-warnings --experimental-loader ./lib/hiphop-hook.mjs\" mocha --exit tests/**/*.test.js",
+     "prepare": "node etc/configure.js package.json lib/config.js.in > lib/config.js"
    },
    "server": "lib/hiphop.js",
    "client": [

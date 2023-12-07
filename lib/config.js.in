@@ -13,5 +13,6 @@
 /*    es6 module                                                       */
 /*---------------------------------------------------------------------*/
 export const version = "@VERSION@@MINOR@";
+export const buildid = "@HIPHOPBUILDID@";
 export const CAUSALITY_JSON = "hiphop.causality.json";
 export const sweep = true;
