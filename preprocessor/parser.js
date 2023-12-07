@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Dec  6 19:41:27 2023 (serrano)                */
+/*    Last change :  Thu Dec  7 08:20:59 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -263,7 +263,7 @@ function parseHHCondExpression(iscnt, isrun) {
 function parseValueApply(loc) {
    const { expr: expr, accessors } = parseHHExpression.call(this);
    let init;
-   if (typeof expr === "J2SDollar" || expr?.clazz === "J2SDollar") {
+   if (typeof expr === "J2SDollar" || expr?.$class === "J2SDollar") {
       init = astutils.J2SDataPropertyInit(
 	 loc,
 	 astutils.J2SString(loc, "value"),
@@ -336,7 +336,7 @@ function parseDelay(loc, tag, action = "apply", id = false, immediate = false) {
       
       let inits;
 
-      if (typeof expr === "J2SUnresolvedRef" || expr?.clazz === "J2SUnresolvedRef") {
+      if (typeof expr === "J2SUnresolvedRef" || expr?.$class === "J2SUnresolvedRef") {
 	 inits = [
 	    astutils.J2SDataPropertyInit(
 	       loc, astutils.J2SString(loc, "immediate"),
@@ -1320,13 +1320,13 @@ function parseAsync(token) {
 /*    parseRunFunExpression ...                                        */
 /*---------------------------------------------------------------------*/
 function parseRunFunExpression(loc, expr, parent) {
-   if (!(expr instanceof ast.J2SCall) && expr?.clazz !== "J2SCall" && (typeof expr) !== "J2SCall") {
+   if (!(expr instanceof ast.J2SCall) && expr?.$class !== "J2SCall" && (typeof expr) !== "J2SCall") {
       // Nodejs and Hop do not represent the AST with the same data
       // structure. This is why we have to make several check here
       throw error.SyntaxError("wrong run expression token `"
 	 + (expr instanceof ast.J2SNode ? expr.generate() : typeof expr)
 	 + "'", loc);
-   } else if (!(expr instanceof ast.J2SBindExit) && expr?.clazz !== "J2SBindExit" && (typeof expr) !== "J2SBindExit") {
+   } else if (!(expr instanceof ast.J2SBindExit) && expr?.$class !== "J2SBindExit" && (typeof expr) !== "J2SBindExit") {
       return 
    } else {
       return { expr, parent };
