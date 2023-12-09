@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Tue Jan 11 18:12:15 2022                          */
-/*    Last change :  Thu Dec  7 14:55:48 2023 (serrano)                */
+/*    Last change :  Sat Dec  9 16:04:43 2023 (serrano)                */
 /*    Copyright   :  2022-23 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HTTP HipHop module.                                              */
@@ -67,7 +67,8 @@ hiphop module httpRequest(requestOrUrl, payload = undefined) implements HttpRequ
       req = proto.request(request, _res => {
        	 res = _res;
        	 if (debug()) {
-	    console.error("*** HTTP_DEBUG [" + debug_url(protocol, request) + "]",
+	    console.error("*** HTTP_DEBUG ["
+	       + debug_url(request?.protocol ?? "http", request) + "]",
 	       "statusCode: " + res.statusCode);
        	 }
        	 if (res.statusCode !== 200) {
@@ -78,7 +79,8 @@ hiphop module httpRequest(requestOrUrl, payload = undefined) implements HttpRequ
 	       res.buffer = buf;
 	       
 	       if (debug()) {
-	    	  console.error("*** HTTP_DEBUG [" + debug_url(protocol, request) + "]",
+	    	  console.error("*** HTTP_DEBUG ["
+		     + debug_url(request?.protocol ?? "http", request) + "]",
 		     "buf: [" + buf + "]");
 	       }
 
@@ -100,7 +102,8 @@ hiphop module httpRequest(requestOrUrl, payload = undefined) implements HttpRequ
 
       req.on('error', error => {
        	 if (debug()) {
-	    console.error("*** HTTP_DEBUG [" + debug_url(protocol, request) + "]",
+	    console.error("*** HTTP_DEBUG ["
+	       + debug_url(request?.protocol ?? "http", request) + "]",
 	       "error: " + error);
 	 }
        	 if (state === "active") self.notify("error");
