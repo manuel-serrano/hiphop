@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Thu Dec  7 13:23:18 2023 (serrano)                */
+/*    Last change :  Sat Dec  9 18:21:30 2023 (serrano)                */
 /*    Copyright   :  2023 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -16,10 +16,7 @@
 /*---------------------------------------------------------------------*/
 /*    imports                                                          */
 /*---------------------------------------------------------------------*/
-import * as hop from "@hop/hop";
 import { ast, list } from "@hop/hopc";
-
-let _hhaccess = undefined;
 
 /*---------------------------------------------------------------------*/
 /*    reservedFields ...                                               */
@@ -40,22 +37,6 @@ let gensym = 0;
 /*    hhaccess ...                                                     */
 /*---------------------------------------------------------------------*/
 export function hhaccess(node, iscnt, hhname, accessors) {
-   if (hop.engine === "hop") {
-      if (!_hhaccess) {
-	 _hhaccess = require("./_hhaccess.hop");
-      }
-   } else {
-      if (!_hhaccess) {
-	 _hhaccess = hhaccessNode;
-      }
-   }
-   return _hhaccess(node, iscnt, hhname, accessors);
-}
-
-/*---------------------------------------------------------------------*/
-/*    hhaccessNode ...                                                 */
-/*---------------------------------------------------------------------*/
-function hhaccessNode(node, iscnt, hhname, accessors) {
    const venv = collectVars(node);
    const lenv = collectLets(list.list(node));
    const axs = collectAxs(node, venv.concat(lenv));
