@@ -1,0 +1,14 @@
+{
+   "name": "@hop/hiphop/http",
+   "version": "1.3.0",
+   "description": "Exemple of asynchronous orchestration",
+   "license" : "GPL-3.0-or-later",
+   "main": "http.hh.js",
+   "type": "module",
+   "dependencies": {
+     "@hop/hiphop": "https://www-sop.inria.fr/members/Manuel.Serrano/software/npmx/hiphop.tgz"
+   },
+   "scripts": {
+     "test": "NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./node_modules/@hop/hiphop/lib/hiphop-hook.mjs\" nodejs http.hh.js"
+   }
+}
