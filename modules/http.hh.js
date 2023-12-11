@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Tue Jan 11 18:12:15 2022                          */
-/*    Last change :  Sat Dec  9 16:04:43 2023 (serrano)                */
+/*    Last change :  Sun Dec 10 09:29:53 2023 (serrano)                */
 /*    Copyright   :  2022-23 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HTTP HipHop module.                                              */
@@ -41,75 +41,120 @@ function debug_url(protocol, options) {
 /*---------------------------------------------------------------------*/
 hiphop interface HttpRequest {
    out response;
+   out tick;
 }
 
 /*---------------------------------------------------------------------*/
 /*    request ...                                                      */
 /*---------------------------------------------------------------------*/
-hiphop module httpRequest(requestOrUrl, payload = undefined) implements HttpRequest {
+hiphop module httpRequest(requestOrUrl, optionsOrPayload = undefined, payload = undefined) implements HttpRequest {
+   // the call might be one of:
+   //   url: string
+   //   url: string, options: object
+   //   url: string, payload: string
+   //   url: string, options: object, payload: string
+   //   request: object
+   //   request: object, options: object
+   //   request: object, payload: string
+   //   request: object, options: object, payload: string
+   
    let state = "active";
    let buf = "";
    let req = false;
    let ended = false;
-   let res = undefined;
    let self;
    
    async (response) {
-      let request;
-      
-      if (typeof requestOrUrl === "string") {
-	 request = parse(requestOrUrl);
-      } else {
-	 request = requestOrUrl;
-      }
-      const proto = ((request?.protocol === "https:" ?? request?.protocol === "https") ? https : http);
+      let request, options;
       self = this;
-      req = proto.request(request, _res => {
-       	 res = _res;
-       	 if (debug()) {
-	    console.error("*** HTTP_DEBUG ["
-	       + debug_url(request?.protocol ?? "http", request) + "]",
-	       "statusCode: " + res.statusCode);
-       	 }
-       	 if (res.statusCode !== 200) {
-	    self.notify(res);
-       	 } else {
-	    res.on('data', d => buf += d.toString());
-	    res.on('end', () => {
-	       res.buffer = buf;
-	       
-	       if (debug()) {
-	    	  console.error("*** HTTP_DEBUG ["
-		     + debug_url(request?.protocol ?? "http", request) + "]",
-		     "buf: [" + buf + "]");
-	       }
+      buf = "";
 
-	       if (state === "active") {
-		  self.notify(res);
-	       } else {
-		  ended = true;
-		  req = false;
-	       };
-	    });
-       	 }
-      });
-
-      if (typeof(payload) === "string") {
-       	 req.write(payload);
-      } else if (typeof(payload) === "function") {
-       	 req.write(payload());
+      // request
+      switch (typeof requestOrUrl) {
+	 case "string": request = parse(requestOrUrl); break; 
+	 case "object": request = requestOrUrl; break;
+	 default: throw `httpRequest, bad requestOrUrl argument "${requestOrUrl}"`
       }
 
-      req.on('error', error => {
-       	 if (debug()) {
-	    console.error("*** HTTP_DEBUG ["
-	       + debug_url(request?.protocol ?? "http", request) + "]",
-	       "error: " + error);
-	 }
-       	 if (state === "active") self.notify("error");
-      });
+      // options
+      switch (typeof optionsOrPayload) {
+	 case "object": options = optionsOrPayload; break;
+	 case "string": options = {}; payload = optionsOrPayload; break;
+	 case "function": options = optionsOrPayload(); break;
+	 case "undefined": options = {}; break;
+	 default: throw `httpRequest, bad optionsOrPayload argument "${optionsOrPayload}"`
+      }
 
-      req.end();
+      // payload
+      switch (typeof payload) {
+	 case "string":
+	    if (typeof payload !== "undefined") {
+	       throw `httpRequest, bad options/payload arguments "${optionsOrPayload}/${payload}"`
+	    }
+	 case "function":
+	    if (typeof payload !== "undefined") {
+	       throw `httpRequest, bad options/payload arguments "${optionsOrPayload}/${payload}"`
+	    } else {
+	       payload = payload();
+	    }
+	    break;
+	 case "undefined":
+	    break;
+	 default:
+	    throw `httpRequest, bad payload argument "${payload}"`;
+      }
+
+      function run(request) {
+	 const proto = ((request.protocol === "https:") ? https : http);
+	 req = proto.request(request, res => {
+       	    if (debug()) {
+	       console.error("*** HTTP_DEBUG ["
+		  + debug_url(request?.protocol ?? "http", request) + "]",
+			     "statusCode: " + res.statusCode);
+       	    }
+	    
+	    if (res.statusCode === 200) {
+	       res.on('data', d => {
+		  res.buffer += d.toString();
+		  self.react({[tick.signame]: res});
+		  //self.notify(res);
+	       });
+	       res.on('end', () => {
+		  if (debug()) {
+	    	     console.error("*** HTTP_DEBUG ["
+			+ debug_url(request?.protocol ?? "http", request) + "]",
+				   "buf: [" + res.buffer + "]");
+		  }
+
+		  if (state === "active") {
+		     self.notify(res);
+		  } else {
+		     ended = true;
+		     req = false;
+		  };
+	       });
+       	    } else {
+	       self.notify(res);
+	    }
+	 });
+
+	 if (typeof(payload) !== "undefined") {
+       	    req.write(payload);
+	 }
+
+	 req.on('error', error => {
+       	    if (debug()) {
+	       console.error("*** HTTP_DEBUG ["
+		  + debug_url(request?.protocol ?? "http", request) + "]",
+			     "error: " + error);
+	    }
+       	    if (state === "active") self.notify("error");
+	 });
+
+	 req.end();
+      }
+
+      run(request);
    } suspend {
       state = "suspend";
    } resume {
