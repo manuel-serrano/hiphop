@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Tue Jan 11 18:12:15 2022                          */
-/*    Last change :  Sun Dec 10 09:29:53 2023 (serrano)                */
+/*    Last change :  Mon Dec 11 20:15:22 2023 (serrano)                */
 /*    Copyright   :  2022-23 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HTTP HipHop module.                                              */
@@ -41,7 +41,7 @@ function debug_url(protocol, options) {
 /*---------------------------------------------------------------------*/
 hiphop interface HttpRequest {
    out response;
-   out tick;
+   inout pulse;
 }
 
 /*---------------------------------------------------------------------*/
@@ -116,7 +116,7 @@ hiphop module httpRequest(requestOrUrl, optionsOrPayload = undefined, payload = 
 	    if (res.statusCode === 200) {
 	       res.on('data', d => {
 		  res.buffer += d.toString();
-		  self.react({[tick.signame]: res});
+		  self.react({[pulse.signame]: res});
 		  //self.notify(res);
 	       });
 	       res.on('end', () => {
