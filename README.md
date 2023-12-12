@@ -26,7 +26,7 @@ npm install https://www-sop.inria.fr/members/Manuel.Serrano/software/npmx/hiphop
 When HipHop is officially released in 2024, the installation procedure is:
 
 ```
-npm install hiphop
+npm install @hop/hiphop
 ```
 
 Getting started

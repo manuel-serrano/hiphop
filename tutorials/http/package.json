@@ -1,11 +1,10 @@
 {
-   "name": "@hop/hiphop/http",
+   "name": "@hop/hiphop-tutorial-async",
    "version": "1.3.0",
-   "description": "Exemple of asynchronous orchestration",
+   "description": "Example of asynchronous orchestration",
    "license" : "GPL-3.0-or-later",
    "main": "http.hh.js",
    "type": "module",
-   "files": ["step1.hh.js"],
    "dependencies": {
      "@hop/hiphop": "https://www-sop.inria.fr/members/Manuel.Serrano/software/npmx/hiphop.tgz"
    },
