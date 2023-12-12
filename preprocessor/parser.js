@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Dec  7 08:20:59 2023 (serrano)                */
+/*    Last change :  Tue Dec 12 11:20:39 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -191,7 +191,7 @@ function parseDollarIdentName() {
 	 return this.parsePrimaryDollar();
       }
       default: {
-	 return tokenTypeError(this.peekToken());
+	 throw tokenTypeError(this.peekToken());
       }
    }
 }
@@ -1466,7 +1466,7 @@ function parseRun(token) {
       }
 
       default: {
-	 return tokenTypeError(this.peekToken());
+	 throw tokenTypeError(this.peekToken());
       }
    }
 

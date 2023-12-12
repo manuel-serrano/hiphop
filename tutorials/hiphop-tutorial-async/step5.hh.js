@@ -2,6 +2,7 @@ import { ReactiveMachine } from "@hop/hiphop";
 import * as http from "http";
 import * as https from "https";
 import { parse } from "url";
+import { timeout, Timeout } from "@hop/hiphop/modules/timeout.hh.js";
 
 // the interface of the program, when a URL is fetched
 // the "response" event is emitted
@@ -9,7 +10,6 @@ hiphop interface HttpRequest {
    out response;
 }
 
-// the main HipHop program
 hiphop module httpGetOrchestration(URL) implements HttpRequest {
    let req = false;
    let self;
@@ -23,10 +23,12 @@ hiphop module httpGetOrchestration(URL) implements HttpRequest {
 
       // spawns the JavaScript http request
       req = proto.request(request, res => {
+	 res.content = "";
+	 
 	 // if the we have content to read
 	 if (res.statusCode === 200) {
 	    res.on('data', d => {
-	       res.buffer += d.toString();
+	       res.content += d.toString();
 	    });
 	    res.on('end', () => {
 	       if (state === "active") {
@@ -46,7 +48,6 @@ hiphop module httpGetOrchestration(URL) implements HttpRequest {
       });
 
      req.end();
-   }
    } suspend {
       state = "suspend";
    } resume {
@@ -66,21 +67,27 @@ hiphop module httpGetOrchestration(URL) implements HttpRequest {
 }
 
 // Dealing with Redirection
-hiphop module httpGetRedirection(url, redirect) implements HttpRequest {
-   let rep;
-   run httpRequest(url) { rep as response };
-   if (response.nowval.statusCode === 301 && redirect <= 10) {
-      run httpGetRedirection(response.nowval.headers.location, redirect + 1);
-   } else {
-      emit response(rep.nowval);
+hiphop module httpGetRedirection(URL, redirect) implements HttpRequest {
+   signal rep;
+   exit: loop {
+      run httpGetOrchestration(URL) { rep as response };
+      if (rep.nowval.statusCode === 301 && redirect <= 10) {
+	 host {
+	    URL = rep.nowval.headers.location;
+	    redirect++;
+	 }
+      } else {
+	 emit response(rep.nowval);
+	 break exit;
+      }
    }
 }
 
-hiphop module httpGetTimeout(url,redirect) implements HttpRequest {
+hiphop module httpGetTimeout(URL,redirect) implements HttpRequest {
    signal Timeout;
 
    exit: fork {
-      run getHttpRedirection(url, redirect) { * };
+      run httpGetRedirection(URL, redirect) { * };
       break exit;
    } par {
       run timeout(2000) { * };
@@ -92,7 +99,7 @@ hiphop module httpGetTimeout(url,redirect) implements HttpRequest {
 const mach = new ReactiveMachine(httpGetTimeout);
 // add a listener so that we see the result of the request
 mach.addEventListener("response", v => {
-   console.log("response=", v.nowval.statusCode);
+   console.log("response=", v.nowval.content);
 });
 
 // initialize the machine

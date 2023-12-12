@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Tue Jan 11 18:12:15 2022                          */
-/*    Last change :  Tue Dec 12 10:15:12 2023 (serrano)                */
+/*    Last change :  Tue Dec 12 11:36:10 2023 (serrano)                */
 /*    Copyright   :  2022-23 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HTTP HipHop module.                                              */
@@ -50,7 +50,6 @@ hiphop module httpRequest(requestOrUrl, optionsOrPayload = undefined, payload = 
    async (response) {
       self = this;
       let request, options;
-      res.buf = "";
 
       // request
       switch (typeof requestOrUrl) {
@@ -90,13 +89,23 @@ hiphop module httpRequest(requestOrUrl, optionsOrPayload = undefined, payload = 
       function run(request) {
 	 const proto = ((request.protocol === "https:") ? https : http);
 	 req = proto.request(request, res => {
+	    res.content = "";
 	    if (res.statusCode === 200) {
+	       const contentLength = res.rawHeaders?.contentLength ?? Number.MAX_SAFE_INTEGER;
 	       res.on('data', d => {
-		  res.buffer += d.toString();
+		  res.content += d.toString();
 		  self.react({[pulse.signame]: res});
+
+		  if (res.content.length >= contentLength) {
+		     self.notify(res);
+		     ended = true;
+		     req = false;
+		     state = "complete";
+		  }
 	       });
 	       res.on('end', () => {
 		  if (state === "active") {
+		     state = "complete";
 		     self.notify(res);
 		  } else {
 		     ended = true;

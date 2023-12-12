@@ -46,7 +46,6 @@ hiphop module httpGetOrchestration(URL) implements HttpRequest {
       });
 
      req.end();
-   }
    } suspend {
       state = "suspend";
    } resume {
