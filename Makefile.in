@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Tue Dec 12 08:17:22 2023 (serrano)                */
+#*    Last change :  Tue Dec 12 09:46:22 2023 (serrano)                */
 #*    Copyright   :  2006-23 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -101,7 +101,7 @@ npm-sans-rm:
 
 npm-hiphop-tutorial-async-sans-rm:
 	mkdir -p npm
-	cp -r tutorials/http npm/hiphop-tutorial-async-$(HZVERSION)-$(HIPHOPBUILDID)
+	cp -r tutorials/hiphop-tutorial-async npm/hiphop-tutorial-async-$(HZVERSION)-$(HIPHOPBUILDID)
 	(cd npm; tar --exclude="*.so" -zcvf hiphop-tutorial-async-$(HZVERSION)-$(HIPHOPBUILDID).tgz hiphop-tutorial-async-$(HZVERSION)-$(HIPHOPBUILDID))
 
 npm-hiphop-tutorial-async: npm-hiphop-tutorial-async-sans-rm

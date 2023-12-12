@@ -54,6 +54,7 @@ lib/nodejs/parallelmap.js
 lib/nodejs/queue.js
 lib/nodejs/signal.js
 lib/nodejs/sweep.js
+etc/hiphop.el.in
 tests/TEST
 tests/node_modules
 npm

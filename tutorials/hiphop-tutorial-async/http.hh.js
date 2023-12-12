@@ -51,4 +51,4 @@ mach.react({});
 mach.react({URL: "https://www.inria.fr"});
 
 // npm install
-// node --enable-source-maps --no-warnings --loader ./node_modules/@hop/hiphop/lib/hiphop-hook.mjs ./http.hh.js
+// node --enable-source-maps --no-warnings --loader ./node_modules/@hop/hiphop/lib/hiphop-loader.mjs ./http.hh.js

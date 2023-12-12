@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Tue Jan 11 18:12:15 2022                          */
-/*    Last change :  Tue Dec 12 05:40:25 2023 (serrano)                */
+/*    Last change :  Tue Dec 12 08:19:33 2023 (serrano)                */
 /*    Copyright   :  2022-23 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HTTP HipHop module.                                              */
@@ -19,22 +19,6 @@ import * as https from "https";
 import { parse } from "url";
 
 export { httpRequest, HttpRequest };
-
-/*---------------------------------------------------------------------*/
-/*    debug ...                                                        */
-/*---------------------------------------------------------------------*/
-function debug() {
-   return process.env.HIPHOP_DEBUG && process.env.HIPHOP_DEBUG.indexOf("http") >= 0;
-}
-
-/*---------------------------------------------------------------------*/
-/*    debug_url ...                                                    */
-/*---------------------------------------------------------------------*/
-function debug_url(protocol, options) {
-   return protocol + "://" + options.hostname
-      + ":" + (options.port || 80)
-      +  options.path;
-}
 
 /*---------------------------------------------------------------------*/
 /*    HttpRequest ...                                                  */
@@ -64,8 +48,8 @@ hiphop module httpRequest(requestOrUrl, optionsOrPayload = undefined, payload = 
    let self;
    
    async (response) {
-      let request, options;
       self = this;
+      let request, options;
       res.buf = "";
 
       // request
@@ -106,24 +90,12 @@ hiphop module httpRequest(requestOrUrl, optionsOrPayload = undefined, payload = 
       function run(request) {
 	 const proto = ((request.protocol === "https:") ? https : http);
 	 req = proto.request(request, res => {
-       	    if (debug()) {
-	       console.error("*** HTTP_DEBUG ["
-		  + debug_url(request?.protocol ?? "http", request) + "]",
-			     "statusCode: " + res.statusCode);
-       	    }
-	    
 	    if (res.statusCode === 200) {
 	       res.on('data', d => {
 		  res.buffer += d.toString();
 		  self.react({[pulse.signame]: res});
 	       });
 	       res.on('end', () => {
-		  if (debug()) {
-	    	     console.error("*** HTTP_DEBUG ["
-			+ debug_url(request?.protocol ?? "http", request) + "]",
-				   "buf: [" + res.buffer + "]");
-		  }
-
 		  if (state === "active") {
 		     self.notify(res);
 		  } else {
@@ -141,11 +113,6 @@ hiphop module httpRequest(requestOrUrl, optionsOrPayload = undefined, payload = 
 	 }
 
 	 req.on('error', error => {
-       	    if (debug()) {
-	       console.error("*** HTTP_DEBUG ["
-		  + debug_url(request?.protocol ?? "http", request) + "]",
-			     "error: " + error);
-	    }
        	    if (state === "active") self.notify("error");
 	 });
 

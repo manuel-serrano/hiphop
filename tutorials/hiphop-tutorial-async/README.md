@@ -32,3 +32,17 @@ Step 1: Using Basic async
 
 
 The source code [step1.hh.js](./step1.hh.js)
+
+
+Step 2: Reading the response content
+------------------------------------
+
+The source code [step2.hh.js](./step2.hh.js)
+
+In this step we improve the JavaScript implement of the `async` form
+so that when a response is received, the content of the response is
+read and the user client is notified with the response and its
+content. 
+
+Step 3: Orchestrating the request
+---------------------------------

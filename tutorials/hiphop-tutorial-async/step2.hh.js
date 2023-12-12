@@ -16,15 +16,27 @@ hiphop module step0(url) implements HttpRequest {
 
    // start an asynchronous form
    async (response) {
+      self = this;
       let request = parse(URL.nowval);
       const proto = ((req.protocol === "https:") ? https : http);
 
       // spawns the JavaScript http request
       req = proto.request(request, res => {
-	 // proceed to a new HipHop reaction with the signal
-	 // "response" being emitted with the value "res"
-	 self.notify(res)
+	 // if the we have content to read
+	 if (res.statusCode === 200) {
+	    res.on('data', d => {
+	       res.buffer += d.toString();
+	    });
+	    res.on('end', () => {
+	       self.notify(res);
+	    });
+       	 } else {
+	    // notify the status code
+	    self.notify(res);
+	 }
       });
+
+      req.end();
    }
 }
 

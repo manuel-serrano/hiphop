@@ -73,14 +73,14 @@ executed in two ways.
   that, simply invokes Node.js as follows:
   
 ```
-nodejs --enable-source-maps --no-warnings --loader ./node_modules/@hop/hiphoplib/hiphop-hook.mjs hello.hh.js
+nodejs --enable-source-maps --no-warnings --loader ./node_modules/@hop/hiphoplib/hiphop-loader.mjs hello.hh.js
 ```
 
 Alternatively, this can be decomposed using the shell variable environment
 `NODE_OPTIONS`:
 
 ```
-export NODE_OPTIONS="--enable-source-maps --no-warnings --loader ./node_modules/@hop/hiphoplib/hiphop-hook.mjs"
+export NODE_OPTIONS="--enable-source-maps --no-warnings --loader ./node_modules/@hop/hiphoplib/hiphop-loader.mjs"
 nodejs hello.hh.js
 ```
 
