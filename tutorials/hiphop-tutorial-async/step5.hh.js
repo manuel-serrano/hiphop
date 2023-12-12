@@ -10,9 +10,10 @@ hiphop interface HttpRequest {
 }
 
 // the main HipHop program
-hiphop module httpGetContent(URL) implements HttpRequest {
+hiphop module httpGetTimeout(URL) implements HttpRequest {
    let req = false;
    let self;
+   let state = "active";
 
    // start an asynchronous form
    async (response) {
@@ -28,7 +29,9 @@ hiphop module httpGetContent(URL) implements HttpRequest {
 	       res.buffer += d.toString();
 	    });
 	    res.on('end', () => {
-	       self.notify(res);
+	       if (state === "active") {
+		  self.notify(res);
+	       }
 	    });
        	 } else {
 	    // notify the status code
@@ -37,15 +40,33 @@ hiphop module httpGetContent(URL) implements HttpRequest {
       });
 
       req.on('error', error => {
-	 self.notify("error");
+       	 if (state === "active") {
+	    self.notify("error");
+	 }
       });
-      
-      req.end();
+
+     req.end();
    }
+   } suspend {
+      state = "suspend";
+   } resume {
+      if (ended) {
+       	 self.notify(res);
+      } else {
+	 state = "active";
+      }
+   } kill {
+      if (req) {
+       	 req.destroy();
+       	 req = false;
+	 state = "dead";
+      }
+   }
+   
 }
 
 // prepare the HipHop machine 
-const mach = new ReactiveMachine(httpGetContent);
+const mach = new ReactiveMachine(httpGetTimeout);
 // add a listener so that we see the result of the request
 mach.addEventListener("response", v => {
    console.log("response=", v.nowval.statusCode);

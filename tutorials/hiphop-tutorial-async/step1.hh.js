@@ -9,16 +9,16 @@ hiphop interface HttpRequest {
    out response;
 }
 
-// the main HipHop program
-hiphop module step0(url) implements HttpRequest {
+// the HipHop program
+hiphop module httpGet(URL) implements HttpRequest {
    let req = false;
    let self;
 
    // start an asynchronous form
    async (response) {
       self = this;
-      let request = parse(URL.nowval);
-      const proto = ((req.protocol === "https:") ? https : http);
+      let request = parse(URL);
+      const proto = ((request.protocol === "https:") ? https : http);
 
       // spawns the JavaScript http request
       req = proto.request(request, res => {
@@ -27,12 +27,16 @@ hiphop module step0(url) implements HttpRequest {
 	 self.notify(res)
       });
       
+      req.on('error', error => {
+	 self.notify("error");
+      });
+      
       req.end();
    }
 }
 
 // prepare the HipHop machine 
-const mach = new ReactiveMachine(prg);
+const mach = new ReactiveMachine(httpGet);
 // add a listener so that we see the result of the request
 mach.addEventListener("response", v => {
    console.log("response=", v.nowval.statusCode);

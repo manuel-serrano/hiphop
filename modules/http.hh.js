@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Tue Jan 11 18:12:15 2022                          */
-/*    Last change :  Tue Dec 12 08:19:33 2023 (serrano)                */
+/*    Last change :  Tue Dec 12 10:15:12 2023 (serrano)                */
 /*    Copyright   :  2022-23 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HTTP HipHop module.                                              */
@@ -113,7 +113,9 @@ hiphop module httpRequest(requestOrUrl, optionsOrPayload = undefined, payload = 
 	 }
 
 	 req.on('error', error => {
-       	    if (state === "active") self.notify("error");
+       	    if (state === "active") {
+	       self.notify("error");
+	    }
 	 });
 
 	 req.end();
