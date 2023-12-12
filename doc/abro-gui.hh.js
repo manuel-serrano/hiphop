@@ -1,6 +1,7 @@
-"use @hop/hiphop";
+import { Service } from "@hop";
+import { ReactiveMachine } from "@hop/hiphop";
 
-service abro() {
+function abro() {
    return <html>
      <head>
        <script type="module" lang="@hop/hiphop">
@@ -27,4 +28,6 @@ service abro() {
        <button onclick=~{prg.react("R")}>R</button>
      </body>
    </html>
-}   
+}
+
+new Hop.Service(abro, "abro");
