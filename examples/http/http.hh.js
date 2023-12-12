@@ -44,9 +44,9 @@ export const mach = new ReactiveMachine(prg);
 mach.addEventListener("response", v => {
    console.log("response=", v.nowval.statusCode, v.nowval.buffer);
 });
-/* mach.addEventListener("pulse", v => {                               */
-/*    console.log("pulse=", v.nowval.statusCode, v.nowval.buffer.length); */
-/* });                                                                 */
+mach.addEventListener("pulse", v => {
+   console.log("pulse=", v.nowval.statusCode, v.nowval.buffer.length);
+});
 mach.react({});
 mach.react({URL: "https://www.inria.fr"});
 

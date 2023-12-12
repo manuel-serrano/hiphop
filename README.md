@@ -58,7 +58,10 @@ const HelloWorld = hiphop module() {
 
 const m = new ReactiveMachine(prg, "ABRO");
 m.addEventListener("O", e => console.log("got: ", e));
-m.react({ A: 1 }, { B: 2 }, { R: true }, { A: 3, B: 4 });
+m.react({ A: 1 });
+m.react({ B: 2 });
+m.react({ R: true });
+m.react({ A: 3, B: 4 });
 ```
 
 This program uses the HipHop.js syntactic extension (marked by the
@@ -100,6 +103,3 @@ nodejs --enable-source-maps hello.mjs
    This the most reliable way as it depends on no experimental Nodejs feature.
    
 The two methods produce equivalent results.
-
-
-

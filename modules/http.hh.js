@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Tue Jan 11 18:12:15 2022                          */
-/*    Last change :  Mon Dec 11 20:15:22 2023 (serrano)                */
+/*    Last change :  Tue Dec 12 05:40:25 2023 (serrano)                */
 /*    Copyright   :  2022-23 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HTTP HipHop module.                                              */
@@ -59,7 +59,6 @@ hiphop module httpRequest(requestOrUrl, optionsOrPayload = undefined, payload = 
    //   request: object, options: object, payload: string
    
    let state = "active";
-   let buf = "";
    let req = false;
    let ended = false;
    let self;
@@ -67,7 +66,7 @@ hiphop module httpRequest(requestOrUrl, optionsOrPayload = undefined, payload = 
    async (response) {
       let request, options;
       self = this;
-      buf = "";
+      res.buf = "";
 
       // request
       switch (typeof requestOrUrl) {
@@ -117,7 +116,6 @@ hiphop module httpRequest(requestOrUrl, optionsOrPayload = undefined, payload = 
 	       res.on('data', d => {
 		  res.buffer += d.toString();
 		  self.react({[pulse.signame]: res});
-		  //self.notify(res);
 	       });
 	       res.on('end', () => {
 		  if (debug()) {
