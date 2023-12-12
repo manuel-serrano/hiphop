@@ -46,10 +46,10 @@ and with value, the argument passed to `notify`.
 
 The benefits HipHop brings are the following:
 
-  * An `async` form can be interrupted, suspended, and resumed as
-  any HipHop computation.
-  * An `async` form can execute in parallel with other HipHop computations.
-  * An `async` form can be synchronized with other forms, let them be other
+  * an `async` form can be interrupted, suspended, and resumed as
+  any HipHop computation;
+  * an `async` form can execute in parallel with other HipHop computations;
+  * an `async` form can be synchronized with other forms, let them be other
   `async` forms or arbitrary HipHop statements.
 
 
