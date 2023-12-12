@@ -20,13 +20,15 @@ When HipHop is officially released in 2024, the installation procedure is:
 npm install hiphop-tutorial-async
 ```
 
-Each step of this tutorial can be then executed with:
+The steps of this tutorial can be then executed with:
 
-```
-npm run step-NUMBER
-```
+  1. `npm run step1`
+  2. `npm run step2`
+  
 
-Step 0: Using Basic async
+
+Step 1: Using Basic async
 -------------------------
 
 
+The source code [step1.hh.js](./step1.hh.js)
