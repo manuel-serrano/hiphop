@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Sat Dec  9 18:21:30 2023 (serrano)                */
+/*    Last change :  Wed Dec 13 14:19:26 2023 (serrano)                */
 /*    Copyright   :  2023 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -233,7 +233,7 @@ function collectLets(nodes) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    collectAxs..                                                   */
+/*    collectAxs ...                                                   */
 /*---------------------------------------------------------------------*/
 function collectAxs(node, env) {
    if (node instanceof ast.J2SNode) {
@@ -285,6 +285,7 @@ ast.J2SAccess.prototype.collectAxs = function(env) {
    if (fieldname === "signame"
       || fieldname === "now" || fieldname === "nowval"
       || fieldname === "pre" || fieldname === "preval") {
+      // a direct form ident.access
       if (obj instanceof ast.J2SUnresolvedRef && !findDecl(obj, env)) {
 	 const id = obj.id;
 
@@ -296,6 +297,7 @@ ast.J2SAccess.prototype.collectAxs = function(env) {
       } else if (obj instanceof ast.J2SAccess
 	 && obj.obj instanceof ast.J2SUnresolvedRef
 	 && obj.obj.id === "this") {
+	 // a stagged form this[field].access
 	 return [this].concat(axobj, axfd);
       } else {
 	 return axobj.concat(axfd);
