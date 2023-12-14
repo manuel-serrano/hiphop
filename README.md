@@ -56,7 +56,7 @@ const HelloWorld = hiphop module() {
    } every (R.now)
 }
 
-const m = new ReactiveMachine(prg, "ABRO");
+const m = new ReactiveMachine(HelloWorld, "ABRO");
 m.addEventListener("O", e => console.log("got: ", e));
 m.react({ A: 1 });
 m.react({ B: 2 });
