@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Tue Nov 21 11:17:49 2023 (serrano)                */
+/*    Last change :  Thu Dec 14 08:45:46 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -246,6 +246,64 @@ export function J2SFun(loc, name, params, body) {
       	 body);
    } else {
       return new ast.J2SFun(loc, 
+      	 Symbol("unknown") /* type */, 
+      	 null /* hint */,
+      	 undefined /* range */, 
+      	 Symbol("unknown") /* rtype */,
+      	 undefined /* rrange */, 
+      	 "this" /* idthis */,
+      	 false /* idgen */, 
+      	 "normal" /* mode */,
+      	 false /* decl */, 
+      	 false /* need_bind_exit_return */,
+      	 false /* new-target */,
+      	 false /* vararg */, 
+      	 name /* name */,
+      	 false /* generator */, 
+      	 true /* optimize */,
+      	 false /* thisp */, 
+      	 false /* argumentsp */,
+      	 params, /* params */
+      	 3 /* constrsize */, 
+      	 false /* src */,
+      	 false /* _method */, 
+      	 false /* ismethodof */,
+      	 body);
+   }
+}
+
+/*---------------------------------------------------------------------*/
+/*    J2SArrow ...                                                     */
+/*---------------------------------------------------------------------*/
+export function J2SArrow(loc, name, params, body) {
+   if (configUtype) { 
+      return new ast.J2SArrow(loc, 
+      	 Symbol("unknown") /* type */, 
+      	 null /* hint */,
+      	 undefined /* range */, 
+      	 Symbol("unknown") /* rtype */,
+      	 Symbol("unknown") /* rutype */,
+      	 undefined /* rrange */, 
+      	 "this" /* idthis */,
+      	 false /* idgen */, 
+      	 "normal" /* mode */,
+      	 false /* decl */, 
+      	 false /* need_bind_exit_return */,
+      	 "no" /* new-target */,
+      	 false /* vararg */, 
+      	 name /* name */,
+      	 false /* generator */, 
+      	 true /* optimize */,
+      	 false /* thisp */, 
+      	 false /* argumentsp */,
+      	 params, /* params */
+      	 3 /* constrsize */, 
+      	 false /* src */,
+      	 false /* _method */, 
+      	 false /* ismethodof */,
+      	 body);
+   } else {
+      return new ast.J2SArrow(loc, 
       	 Symbol("unknown") /* type */, 
       	 null /* hint */,
       	 undefined /* range */, 

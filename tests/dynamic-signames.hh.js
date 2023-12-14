@@ -3,12 +3,28 @@
 
 import { ReactiveMachine } from "@hop/hiphop";
 
+let outbuf = "";
+
+function foo() {
+   outbuf += "in foo\n";
+   return "BBB";
+}
+
+function bar() {
+   outbuf += "in bar\n";
+   return "BBB";
+}
+
 hiphop module prg() {
-   host { ; }
+   in AAA, BBB;
+
+   if (AAA.now && this[bar()].now) {
+      host { mach.outbuf += (outbuf + "yep "+ AAA.nowval + ", " + this[foo()].nowval + "\n"); }
+   }
 }
 
 export const mach = new ReactiveMachine(prg);
+mach.outbuf = "";
 
-// the parser used to fail because after the parsing of the template
-// `red` the parser cursor was positioned after the ']' character.
-mach[`red`] = { init: () => [], combine: (x, y) => x };
+mach.react({AAA: 1, BBB: 2});
+ 

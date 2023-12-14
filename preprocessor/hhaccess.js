@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Wed Dec 13 14:19:26 2023 (serrano)                */
+/*    Last change :  Thu Dec 14 08:11:08 2023 (serrano)                */
 /*    Copyright   :  2023 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -40,20 +40,40 @@ export function hhaccess(node, iscnt, hhname, accessors) {
    const venv = collectVars(node);
    const lenv = collectLets(list.list(node));
    const axs = collectAxs(node, venv.concat(lenv));
+   const signames = accessorsSigname(axs);
 
    if (axs.length === 0) {
-      return node;
+      return { expr: node, signames };
    } else if (node instanceof ast.J2SExpr) {
       const loc = node.loc;
       const ret = new ast.J2SReturn({loc: loc, expr: node});
       const stmt = nodeAccessors(ret, axs, iscnt, hhname, accessors);
-      const be = new ast.J2SBindExit({loc: loc, lbl: false, stmt: stmt});
-      ret.from = be;
+      const expr = new ast.J2SBindExit({loc: loc, lbl: false, stmt: stmt});
+      ret.from = expr;
 
-      return be;
+      return { expr, signames };
    } else {
-      return nodeAccessors(node, axs, iscnt, hhname, accessors);
+      const expr = nodeAccessors(node, axs, iscnt, hhname, accessors);
+      return { expr, signames };
    }
+}
+
+/*---------------------------------------------------------------------*/
+/*    accessorsSigname ...                                             */
+/*    -------------------------------------------------------------    */
+/*    Returns the list of dynamic signal names (i.e., those            */
+/*    using the this[expr] form) and modity the the accessors          */
+/*    to prepare the variable bindings.                                */
+/*---------------------------------------------------------------------*/
+function accessorsSigname(axs) {
+   return axs.map(ax => {
+      if (ax.obj instanceof ast.J2SAccess) {
+	 const id = "g" + (ax.loc?.offset || gensym++);
+	 const field = ax.obj.field;
+	 ax.obj.field = new ast.J2SUnresolvedRef({loc: ax.loc, id: id});
+	 return { id, field }
+      }
+   }).filter(n => n);
 }
 
 /*---------------------------------------------------------------------*/
@@ -138,17 +158,17 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
 		{loc: loc,
 		 obj: new ast.J2SUnresolvedRef({loc: loc, id: "this"}),
 		 field: new ast.J2SString({loc: loc, val: id})})});
-      } else {
-	 const id = "g" + (loc?.offset || gensym++);
-	 ax.obj = new ast.J2SUnresolvedRef({loc: loc, id: id});
-	 return new ast.J2SDeclInit(
-	    {loc: loc,
-	     id: id,
-	     writable: false,
-	     vtype: "any",
-	     binder: "let-opt",
-	     scopt: "letblock",
-	     val: obj});
+/*       } else {                                                      */
+/* 	 const id = "g" + (loc?.offset || gensym++);                   */
+/* 	 ax.obj = new ast.J2SUnresolvedRef({loc: loc, id: id});        */
+/* 	 return new ast.J2SDeclInit(                                   */
+/* 	    {loc: loc,                                                 */
+/* 	     id: id,                                                   */
+/* 	     writable: false,                                          */
+/* 	     vtype: "any",                                             */
+/* 	     binder: "let-opt",                                        */
+/* 	     scopt: "letblock",                                        */
+/* 	     val: obj});                                               */
       }
    }
 
@@ -197,7 +217,8 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
 	  endloc: loc,
 	  rec: false,
 	  decls: list.array2list(deleteDuplicates(axs)
-	     .map(ax => accessGeneralDecl(ax, axEnv))),
+	     .map(ax => accessGeneralDecl(ax, axEnv))
+	     .filter(a => a)),
 	  mode: "hopscript",
 	  nodes: list.list(node)});
    } else {
