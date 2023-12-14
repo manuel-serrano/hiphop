@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Tue Dec 12 09:46:22 2023 (serrano)                */
+#*    Last change :  Thu Dec 14 07:06:16 2023 (serrano)                */
 #*    Copyright   :  2006-23 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -87,11 +87,13 @@ npm-sans-rm:
 	mkdir -p npm/$(HIPHOPNPMDIR)
 	mkdir -p npm/$(HIPHOPNPMDIR)/lib
 	mkdir -p npm/$(HIPHOPNPMDIR)/bin
+	mkdir -p npm/$(HIPHOPNPMDIR)/etc
 	cp package.json npm/$(HIPHOPNPMDIR)
 	cp -r lib npm/$(HIPHOPNPMDIR)
 	cp -r preprocessor npm/$(HIPHOPNPMDIR)
 	cp -r modules npm/$(HIPHOPNPMDIR)
 	cp -r tests npm/$(HIPHOPNPMDIR)
+	cp -r etc/configure.js npm/$(HIPHOPNPMDIR)/etc
 	echo "#!/usr/bin/env node" > npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
 	echo "import * as hhc from \"../lib/hhc.js\"" >> npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
 	chmod a+rx npm/$(HIPHOPNPMDIR)/bin/hhc.mjs

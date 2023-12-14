@@ -28,7 +28,7 @@
    },
    "scripts": {
      "test": "HIPHOP_RESOLVE=\"./lib/hiphop.js\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit tests/**/*.test.js",
-     "prepare": "node etc/configure.js package.json lib/config.js.in > lib/config.js"
+     "prepare": "node etc/configure.js package.json lib/config.js.in lib/config.js"
    },
    "server": "lib/hiphop.js",
    "client": [
