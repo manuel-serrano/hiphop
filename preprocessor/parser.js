@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Dec 14 08:09:48 2023 (serrano)                */
+/*    Last change :  Thu Dec 14 13:08:28 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1478,6 +1478,10 @@ function parseRun(token) {
 			      inits.push(astutils.J2SDataPropertyInit(
 				 a.location, astutils.J2SString(as.location, as.value),
 				 astutils.J2SString(a.location, a.value)));
+			      if (this.peekToken().type !== this.COMMA
+				 && this.peekToken().type !== this.RBRACE) {
+				 throw tokenTypeError(this.consumeAny());
+			      }
 		     	      break;
 			      
 			   default: 
