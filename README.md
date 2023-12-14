@@ -102,12 +102,12 @@ reactive machine and its HipHop execution is interleaved with the
 JavaScript execution.
 
 ```mermaid
-flowchart LR;
-    A[javascript] --> B[mach.react()]
+flowchart LR
+    A[javascript] --> B[mach.react]
     B --> C[javascript]
-    C --> D[mach.react()]
+    C --> D[mach.react]
     D --> E[javascript]
-    E --> F[mach.react()];
+    E --> F[mach.react]
     F --> A
 ```    
 

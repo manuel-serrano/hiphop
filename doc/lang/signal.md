@@ -26,7 +26,7 @@ via an [interface declaration](./module.html##Interface) or inside an
 HipHop statement, with the [signal](./syntax.html#HHSignal) construct.
 
 ### signal [direction] ident [= value], ..., interface, ... ###
-[:@glyphicon glyphicon-tag syntax]
+<!-- [:@glyphicon glyphicon-tag syntax] -->
 
 [Formal syntax](./syntax.html#HHSignal)
 
