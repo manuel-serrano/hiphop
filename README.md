@@ -55,13 +55,6 @@ const HelloWorld = hiphop module() {
       emit O();
    } every (R.now)
 }
-
-const m = new ReactiveMachine(HelloWorld, "ABRO");
-m.addEventListener("O", e => console.log("got: ", e));
-m.react({ A: 1 });
-m.react({ B: 2 });
-m.react({ R: true });
-m.react({ A: 3, B: 4 });
 ```
 
 This program uses the HipHop.js syntactic extension (marked by the
@@ -103,3 +96,30 @@ nodejs --enable-source-maps hello.mjs
    This the most reliable way as it depends on no experimental Nodejs feature.
    
 The two methods produce equivalent results.
+
+In order to be executed, a HipHop program has be loaded into a
+reactive machine and its HipHop execution is interleaved with the
+JavaScript execution.
+
+```mermaid
+flowchart LR;
+    A[javascript] --> B[mach.react()]
+    B --> C[javascript]
+    C --> D[mach.react()]
+    D --> E[javascript]
+    E --> F[mach.react()];
+    F --> A
+```    
+
+In the following we create a machine and we proceed to 4
+reactive steps.
+
+```
+const m = new ReactiveMachine(HelloWorld, "ABRO");
+m.addEventListener("O", e => console.log("got: ", e));
+m.react({ A: 1 });
+m.react({ B: 2 });
+m.react({ R: true });
+m.react({ A: 3, B: 4 });
+```
+
