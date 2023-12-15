@@ -1,6 +1,6 @@
-${ var doc = require("hopdoc") }
+<!-- ${ var doc = require("hopdoc") }
 ${ var path = require("path") }
-${ var ROOT = path.dirname(module.filename) }
+${ var ROOT = path.dirname(module.filename) } -->
 
 Signals enable HipHop components to communicate with one
 another. They also implement outside world communications. A signal is
@@ -30,13 +30,13 @@ HipHop statement, with the [signal](./syntax.html#HHSignal) construct.
 
 [Formal syntax](./syntax.html#HHSignal)
 
-[Example](../test/samelocalname.hh.js)
+[Example](../../test/samelocalname.hh.js)
 
 Variable Declarations
 =====================
 
 ### let ident [= value], ..., ###
-[:@glyphicon glyphicon-tag syntax]
+<!-- [:@glyphicon glyphicon-tag syntax] -->
 
 [Formal syntax](./syntax.html#HHLet)
 
@@ -58,19 +58,19 @@ correspond to signal access. Notice that these detections are only
 executed within the syntactic context of an HipHop expression:
 
 ### signal.now ###
-[:@glyphicon glyphicon-tag syntax]
+<!-- [:@glyphicon glyphicon-tag syntax] -->
 
 A predicate that is true if and only if `signal` has been emitted
 during the reaction.
  
 ### signal.pre ###
-[:@glyphicon glyphicon-tag syntax]
+<!-- [:@glyphicon glyphicon-tag syntax] -->
 
 A predicate that is true if and only if `signal` has been emitted
 during the _previous_ reaction.
  
 ### signal.nowval ###
-[:@glyphicon glyphicon-tag syntax]
+<!-- [:@glyphicon glyphicon-tag syntax] -->
 
 The current value of the signal. Note that values are preserved from
 reaction to reaction so if a signal is emitted during reaction r1 and
@@ -79,7 +79,7 @@ return the same value as reaction i1, although `signal.now` at
 reaction i1 + 1 will be false.
  
 ### signal.preval ###
-[:@glyphicon glyphicon-tag syntax]
+<!-- [:@glyphicon glyphicon-tag syntax] -->
 
 The previous value of the signal. The previous value corresponds to
 the value of the previous signal emission. Notice that the previous
@@ -110,7 +110,7 @@ Test, Await, and Emit
 =====================
 
 ### if (expr) { ... } [else { ... }] ###
-[:@glyphicon glyphicon-tag syntax]
+<!-- [:@glyphicon glyphicon-tag syntax] -->
 
 [Formal syntax](./syntax.html#HHIf)
 
@@ -130,7 +130,7 @@ if(SIG.nowval > 10 && SIG.nowval < 100) { hop { console.log("signal in range") }
 ```
 
 ### await delay ###
-[:@glyphicon glyphicon-tag syntax]
+<!-- [:@glyphicon glyphicon-tag syntax] -->
 
 [Formal syntax](./syntax.html#HHAwait)
 
@@ -148,7 +148,7 @@ yield; await immediate expr }`.
  `counter` times.
 
 ### emit signal([ value ]) ###
-[:@glyphicon glyphicon-tag syntax]
+<!-- [:@glyphicon glyphicon-tag syntax] -->
 
 [Formal syntax](./syntax.html#HHEmit)
 
@@ -163,7 +163,7 @@ __must__ be commutative and associative. It is up to the Hop program
 to check and satisfy this requirement.
 
 ### sustain signal([ value ]) ###
-[:@glyphicon glyphicon-tag syntax]
+<!-- [:@glyphicon glyphicon-tag syntax] -->
 
 [Formal syntax](./syntax.html#HHSustain)
 

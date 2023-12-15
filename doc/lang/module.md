@@ -1,6 +1,6 @@
-${ var doc = require( "hopdoc" ) }
+<!-- ${ var doc = require( "hopdoc" ) }
 ${ var path = require( "path" ) }
-${ var ROOT = path.dirname( module.filename ) }
+${ var ROOT = path.dirname( module.filename ) } -->
 
 HipHop Module
 =============
@@ -15,7 +15,7 @@ signal and trap scopes. That is:
   * trap labels are only visible inside a module .
 
 ### module [ident]( arg, ... ) [implements [mirror] intf, ...] { ... } ###
-[:@glyphicon glyphicon-tag syntax]
+<!-- [:@glyphicon glyphicon-tag syntax] -->
 
 [Formal syntax](./syntax.html#HHModule)
 
@@ -53,7 +53,7 @@ The interface declaration is all similar to a module declaration but an
 interface contains no body.
 
 ### interface [ident] [extends intf, ...] { ... } ###
-[:@glyphicon glyphicon-tag syntax]
+<!-- [:@glyphicon glyphicon-tag syntax] -->
 
 [Formal syntax](./syntax.html#HHInterface)
 
@@ -86,7 +86,7 @@ A module can be executed either because it is directly loaded into a
 via the run syntactif form.
 
 ### run module(arg, ...) { sig, ...} ###
-[:@glyphicon glyphicon-tag syntax]
+<!-- [:@glyphicon glyphicon-tag syntax] -->
 
 [Formal syntax](./syntax#HHRun). 
 

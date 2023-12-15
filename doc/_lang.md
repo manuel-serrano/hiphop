@@ -1,13 +1,10 @@
-${ var doc = require( "hopdoc" ) }
+<!-- ${ var doc = require( "hopdoc" ) }
 ${ var path = require( "path" ) }
-${ var ROOT = path.dirname( module.filename ) }
+${ var ROOT = path.dirname( module.filename ) } -->
 
-HipHop is a DSL embedded in the HopScript language. HipHop modules
-_must_ contain the following header declaration:
+> [!NOTE]
+> HipHop requires the program to use ECMAScript modules.
 
-```hopscript
-"use hiphop"
-```
 
 The HipHop syntax extends the JavaScript syntax with one single
 expression rule:
@@ -16,15 +13,22 @@ expression rule:
   hiphop <HHstatement>
 ```
 
-Its complete formal syntax is given in Section [Formal Syntax](./00-syntax.html#formal-syntax). Once defined, a HipHop program must be _loaded_ into
-a HipHop [reactive machine](./00-machine.html) that can execute this
-program by running _reactions_.
+HipHop syntax is described in this [document][syntax/hiphop.bnf].
+
+Once defined, a HipHop program must be _loaded_ into a HipHop
+[reactive machine](./api.md) that can execute this program by
+running _reactions_.
 
 ### Example ###
 
-${ <span class="label label-info">abro.js</span> }
+[Example 1](../../test/abro.hh.js)
 
-```hiphop
-${ doc.include( ROOT + "/../tests/abro.hh.js" ) }
-```
 
+Table of contents
+-----------------
+
+  1. [Lang](./lang/lang.md)
+  2. [Signals](./lang/signal.md)
+  5. [Module](./lang/module.md)
+  3. [Flow](./lang/flow.md)
+  4. [Async](./lang/async.md)
