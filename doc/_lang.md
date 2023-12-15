@@ -2,7 +2,10 @@
 ${ var path = require( "path" ) }
 ${ var ROOT = path.dirname( module.filename ) } -->
 
-> [!NOTE]
+The HipHop Programming Language
+===============================
+
+> [!WARNING]
 > HipHop requires the program to use ECMAScript modules.
 
 

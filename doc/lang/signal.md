@@ -2,6 +2,9 @@
 ${ var path = require("path") }
 ${ var ROOT = path.dirname(module.filename) } -->
 
+HipHop signals
+==============
+
 Signals enable HipHop components to communicate with one
 another. They also implement outside world communications. A signal is
 identified by its name. It can be local, i.e., defined locally inside
@@ -19,7 +22,7 @@ JavaScript but it _must_ be associative and commutative.
 
 
 Signal Declarations
-===================
+-------------------
 
 Signals are declared in [module signatures](./module.html), possibly
 via an [interface declaration](./module.html##Interface) or inside an
@@ -33,7 +36,7 @@ HipHop statement, with the [signal](./syntax.html#HHSignal) construct.
 [Example](../../test/samelocalname.hh.js)
 
 Variable Declarations
-=====================
+---------------------
 
 ### let ident [= value], ..., ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
@@ -47,7 +50,7 @@ for producing an emission value, or for running asynchronous  computation.
 
 
 Using Signals in Expressions
-============================
+----------------------------
 
 Signals presence (has a signal been emitted or not during the
 reaction) and signal values can be used in HipHop JavaScript
@@ -89,25 +92,19 @@ reaction.
 The following example illustrates the various values of `now`, `pre`, `nowval`,
 and `preval` along instants.
 
-```hiphop
-${ doc.include(ROOT + "/../../tests/npnvpv.hh.js") }
-```
+[Example](../../test/npnvpv.hh.js)
 
 When executed with the following input signals:
 
-```
-${ doc.include(ROOT + "/../../tests/npnvpv.in") }
-```
+[Example](/../../tests/npnvpv.in)
 
 It generates the following output:
 
-```
-${ doc.include(ROOT + "/../../tests/npnvpv.out") }
-```
+[Example](/../../tests/npnvpv.out)
 
 
 Test, Await, and Emit
-=====================
+---------------------
 
 ### if (expr) { ... } [else { ... }] ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
@@ -120,13 +117,13 @@ conditional construct. The value of a signal can be checked too. The
 API. For instance, the presence of a signal can be checked with:
 
 ```hiphop
-if(!SIG.now) { hop { console.log("signal not emitted in reaction") } }
+if(!SIG.now) { host { console.log("signal not emitted in reaction") } }
 ```
 
 A particular value of a signal can be checked. For instance:
 
 ```hiphop
-if(SIG.nowval > 10 && SIG.nowval < 100) { hop { console.log("signal in range") } }
+if(SIG.nowval > 10 && SIG.nowval < 100) { host { console.log("signal in range") } }
 ```
 
 ### await delay ###
@@ -185,29 +182,18 @@ loop {
 
 
 Examples
-========
+--------
 
 A module waiting sequentially for `A` and `B` to be emitted during
 distinct reactions and that emits `O` right after `B` is received.
 
-${ <span class="label label-info">await-seq.hh.js</span> }
-
-```hiphop
-${ doc.include(ROOT + "/../../tests/await-seq.hh.js") }
-```
+[await-seq.hh.js](../../tests/await-seq.hh.js)
 
 A module that waits the event `I` to be present in three distinctive instants.
 
-${ <span class="label label-info">await-count.hh.js</span> }
-
-```hiphop
-${ doc.include(ROOT + "/../../tests/await-count.hh.js") }
-```
+[await-count.hh.js](../../tests/await-count.hh.js)
 
 A module using Hop variable inside HipHop statements. 
 
-${ <span class="label label-info">variable.hh.js</span> }
+[variable.hh.js](../../tests/variable.hh.js)
 
-```hiphop
-${ doc.include(ROOT + "/../../tests/variable.hh.js") }
-```
