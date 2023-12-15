@@ -1,7 +1,7 @@
 "use @hop/hiphop"
 "use hopscript"
 
-import * as hh from "@host/hiphost";
+import * as hh from "@hop/hiphop";
 import { format } from "util";
 
 hiphop module prg() {
