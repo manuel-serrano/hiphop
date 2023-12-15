@@ -52,7 +52,7 @@ hiphop module M() {
 }
 ```
 
-[samelocalname.hh.js](../../test/samelocalname.hh.js)
+Example: [samelocalname.hh.js](../../test/samelocalname.hh.js)
 
 Variable Declarations
 ---------------------
@@ -111,10 +111,16 @@ reaction.
 The following example illustrates the various values of `now`, `pre`, `nowval`,
 and `preval` along instants.
 
-[npnvpv.hh.js](../../test/npnvpv.hh.js)
+Example: [npnvpv.hh.js](../../test/npnvpv.hh.js)
 
 When executed with the following [input](/../../test/npnvpv.in) signals.
 It generates the following [output](/../../test/npnvpv.out).
+
+### signal.signame ###
+<!-- [:@glyphicon glyphicon-tag syntax] -->
+
+Returns the JavaScript name of a signal. This is useful when dealing
+with `async` forms (see [async documentation](./async.md)).
 
 
 Test, Await, and Emit
