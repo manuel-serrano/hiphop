@@ -33,7 +33,7 @@ HipHop statement, with the [signal](./syntax.html#HHSignal) construct.
 
 [Formal syntax](./syntax.html#HHSignal)
 
-[Example](../../test/samelocalname.hh.js)
+[samelocalname.hh.js](../../test/samelocalname.hh.js)
 
 Variable Declarations
 ---------------------
@@ -92,15 +92,10 @@ reaction.
 The following example illustrates the various values of `now`, `pre`, `nowval`,
 and `preval` along instants.
 
-[Example](../../test/npnvpv.hh.js)
+[npnvpv.hh.js](../../test/npnvpv.hh.js)
 
-When executed with the following input signals:
-
-[Example](/../../tests/npnvpv.in)
-
-It generates the following output:
-
-[Example](/../../tests/npnvpv.out)
+When executed with the following [input](/../../test/npnvpv.in) signals.
+It generates the following [output](/../../test/npnvpv.out).
 
 
 Test, Await, and Emit
@@ -187,13 +182,13 @@ Examples
 A module waiting sequentially for `A` and `B` to be emitted during
 distinct reactions and that emits `O` right after `B` is received.
 
-[await-seq.hh.js](../../tests/await-seq.hh.js)
+[await-seq.hh.js](../../test/await-seq.hh.js)
 
 A module that waits the event `I` to be present in three distinctive instants.
 
-[await-count.hh.js](../../tests/await-count.hh.js)
+[await-count.hh.js](../../test/await-count.hh.js)
 
 A module using Hop variable inside HipHop statements. 
 
-[variable.hh.js](../../tests/variable.hh.js)
+[variable.hh.js](../../test/variable.hh.js)
 
