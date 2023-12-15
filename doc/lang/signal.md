@@ -28,10 +28,29 @@ Signals are declared in [module signatures](./module.html), possibly
 via an [interface declaration](./module.html##Interface) or inside an
 HipHop statement, with the [signal](./syntax.html#HHSignal) construct.
 
-### signal [direction] ident [= value], ..., interface, ... ###
+### signal [direction] ident [= value] [combine function] ... ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
 [Formal syntax](./syntax.html#HHSignal)
+
+See the [module documentation](./module.md) for module signals.
+
+The `signal` form enables to define local signals whose visibility is
+restricted to the block that define them.  Example:
+
+```hiphop
+hiphop module M() {
+  in S1; // module bound signal
+  yield;
+  signal L; // local signal only visible in the current block
+  fork {
+    await (S1.now);
+    emit L(true);
+  par {
+    await (L.now);
+  }
+}
+```
 
 [samelocalname.hh.js](../../test/samelocalname.hh.js)
 
