@@ -30,6 +30,7 @@ HipHop statement, with the [signal](./syntax.html#HHSignal) construct.
 
 [Formal syntax](./syntax.html#HHSignal)
 
+[Example](../test/samelocalname.hh.js)
 
 Variable Declarations
 =====================

@@ -127,3 +127,5 @@ m.react({ R: true });
 m.react({ A: 3, B: 4 });
 ```
 
+> [!NOTE]
+> HipHop requires the program to use ECMAScript modules.
