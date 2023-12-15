@@ -7,7 +7,10 @@ __Hiphop.js__ is JavaScript DSL for easing the programming of asynchronous
 applications. It executes on unmodified JavaScript engines, let them run
 on server-side or client-side. 
 
-See [HipHop.js](http://hop.inria.fr/hiphop) for a complete documentation.
+See [HipHop.js](http://hop.inria.fr/hiphop) for the complete 
+generic documentation.
+
+The documentation of this commit can be found [here](./doc/README.md).
 
 Installation
 ------------
@@ -32,13 +35,13 @@ npm install @hop/hiphop
 Getting started
 ---------------
 
-The tutorial chapter presents a complete HipHop.js example. Here we
-merely show how to execute the `hello world` HipHop.js program,
-assuming a Node.js/NPM installation. Let us consider that program
-stored in a file named `hello.hh.js`, `.hh.js` being the suffix of
-HipHop source files. This program waits for two events `A` and `B`
-to be received. It then emits itself the event `O`. Each time the
-`R` event is received, the program returns to its initial state.
+In this introduction we merely show how to execute the `hello world`
+HipHop.js program, assuming a Node.js/NPM installation. We
+consider a program stored in a file named `hello.hh.js`, `.hh.js`
+being the suffix of HipHop source files. This program waits for two
+events `A` and `B` to be received. It then emits itself the event
+`O`. Each time the `R` event is received, the program returns to its
+initial state.
 
 ```javascript
 import { ReactiveMachine } from "@hop/hiphop";
@@ -57,10 +60,10 @@ const HelloWorld = hiphop module() {
 }
 ```
 
-This program uses the HipHop.js syntactic extension (marked by the
-`hiphop` keyword). These syntactic extensions have to be compiled down
-to plain JavaScript before being executed. This compilation can be
-executed in two ways. 
+The `HelloWorld` program uses the HipHop.js syntactic extension
+(marked by the `hiphop` keyword). This syntactic extension has to be
+compiled down to plain JavaScript before being executed. This
+compilation can be executed in two ways.
 
   1. The easiest way: just asks Nodejs to compile the file on the file. For 
   that, simply invokes Node.js as follows:
@@ -77,9 +80,8 @@ export NODE_OPTIONS="--enable-source-maps --no-warnings --loader ./node_modules/
 nodejs hello.hh.js
 ```
 
-   On future versions of Nodejs, the option `--loader` is likely
-   to be renamed. Please check your setting for accomodating the future new
-   name.
+   In the future, the Nodejs' option `--loader` might be renamed. 
+   Please check your setting for accomodating the future new name.
    
    With this method, the program `hello.hh.js` will first be silently compiled
    into a `._hello.mjs` and `._hello.mjs.map` files. These are the files
@@ -93,13 +95,15 @@ nodejs node_module/@hop/hiphop/bin/hhc.mjs hello.hh.js -o hello.mjs
 nodejs --enable-source-maps hello.mjs
 ```
 
-   This the most reliable way as it depends on no experimental Nodejs feature.
+   This the most reliable way as it does not depend on any experimental 
+   Nodejs feature.
    
 The two methods produce equivalent results.
 
-In order to be executed, a HipHop program has be loaded into a
-reactive machine and its HipHop execution is interleaved with the
-JavaScript execution.
+Once compiled, in order to be executed, a HipHop program has be loaded
+into a reactive machine and executed from within JavaScript. 
+Actually the HipHop execution is interleaved with the JavaScript execution. 
+
 
 ```mermaid
 flowchart LR
@@ -109,10 +113,10 @@ flowchart LR
     D --> E[javascript]
     E --> F[mach.react]
     F --> A
-```    
+```
 
-In the following we create a machine and we proceed to 4
-reactive steps.
+To execute the `HelloWorld` HipHop program from within a JavaScript module,
+we create a machine and we proceed to 4 reactive steps.
 
 ```
 const m = new ReactiveMachine(HelloWorld, "ABRO");
