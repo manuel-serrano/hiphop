@@ -7,7 +7,7 @@ ${ const pkg = require( "../package.json" ) } -->
 
 ## License ##
 
-This software is released under the [https://apache.org/licenses/LICENSE-2.0](Apache 2.0 license).
+This software is released under the [Apache 2.0 license](https://apache.org/licenses/LICENSE-2.0).
 
 
 ## NPM installation ##
