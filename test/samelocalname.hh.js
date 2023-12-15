@@ -4,7 +4,7 @@
 import * as hh from "@host/hiphost";
 import { format } from "util";
 
-hiphost module prg() {
+hiphop module prg() {
    in SAME = 1;
    emit SAME( 2 );
    
