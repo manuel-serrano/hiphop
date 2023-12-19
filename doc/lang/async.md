@@ -56,15 +56,12 @@ Async JavaScript API
 JavaScript asynchronous blocks can use several functions to notify
 the reactive machine that their state have changed.
 
-Inside the body of an `async` form, `this` is bound to the instance
-of the currently executing asynchronous block. The current machine
-executing that statement is retrieved with `this.machine`. 
+Inside the body of an `async` form, `this` is bound to the reactive
+machine executing asynchronous block. New reactions can be triggered
+from within the `async` JavaScript block. Example:
 
-New reactions can be spawned from with a. `async` block. Example:
+&#x2605; [setinterval.hh.js](../../test/setinterval.hh.js)
 
-```hiphop
-${ doc.include( ROOT + "/../../tests/setinterval.hh.js" ) }
-```
 
 ### async.notify( value, [ react = true ] ) ###
 [:@glyphicon glyphicon-tag function]
