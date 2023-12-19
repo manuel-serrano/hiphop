@@ -17,13 +17,9 @@ in the main HipHop program.
 
 ### Example of Dynamically Generated Interfaces ###
 
-When interfaces are to be generated dynamically, the XML interface
-must be used.
-
-&#x2605; [imirrodyn.hh.js](../test/imirrodyn.hh.js)
-
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-[[main page]](./README.md) | [[language]](../lang.md) | [[license]](../license.md)
+[[main page]](../README.md) | [[documentation]](./README.md) | [[license]](./license.md)
+
 
 
