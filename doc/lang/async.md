@@ -34,7 +34,7 @@ and emit the signal `O` with the value `5`.
 Inside the asynchronous block, the JavaScript `this` object is
 a descriptor of the asynchronous computation.
 
-&#x2605; [exec2.hh.js](../../test/exec2.hh.js" )
+&#x2605; [exec2.hh.js](../../test/exec2.hh.js)
 
 ### Kill, suspend, and resume ###
 
@@ -47,7 +47,7 @@ suspended or resumed.
 The following example shows a JavaScript `setTimeout` that is stopped
 when the HipHop `async` statement is aborted.
 
-&#x2605; [exec2.hh.js](../../test/local-kill2.hh.js" )
+&#x2605; [exec2.hh.js](../../test/local-kill2.hh.js)
 
 
 Async JavaScript API
