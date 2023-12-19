@@ -1,3 +1,6 @@
+import * as hh from "@hop/hiphop";
+import { format } from "util";
+
 export const mach = new hh.ReactiveMachine(
    hiphop module(resolve) {
       inout A;
