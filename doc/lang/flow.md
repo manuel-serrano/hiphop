@@ -41,8 +41,8 @@ This example uses two nested `fork` constructs. The second is synchronized
 with the first as it waits for an event the first branch is to emit.
 
 
-Loops
------
+Loop
+----
 
 Loops are so central HipHop program control flow that HipHop proposes
 several loop constructs.
@@ -55,41 +55,6 @@ several loop constructs.
 Implements an infinite loop
 
 &#x2605; Example: [sync1.hh.js](../../test/sync1.hh.js)
-
-
-### every (test) { ... } ###
-<!-- [:@glyphicon glyphicon-tag syntax] -->
-
-&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHEvery)
-
-A loop executed each time the `test` is true. Abort the execution of 
-the body when `test` is true.
-
-${ <span class="label label-info">every1.hh.js</span> }
-
-```hiphop
-${ doc.include(ROOT + "/../../tests/every1.hh.js") }
-```
-
-### do { ... } every (test) ###
-<!-- [:@glyphicon glyphicon-tag syntax] -->
-
-&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHDo)
-
-Execute the `do`'s body and loop when `test` is true.
-
-${ <span class="label label-info">loopeach.hh.js</span> }
-
-```hiphop
-${ doc.include(ROOT + "/../../tests/loopeach.hh.js") }
-```
-
-### abort (test) { ... } ###
-<!-- [:@glyphicon glyphicon-tag syntax] -->
-
-&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHAbort)
-
-Execute the `abort`'s body and abort the execution when `test` is true.
 
 
 Lexical Escapes
@@ -131,6 +96,132 @@ This example shows that several threads can decide to exit from a `fork`/`par`.
 
 &#x2605; Example: [p18.hh.js](../../test/p18.hh.js)
 
+
+Derived Forms
+-------------
+
+### every delay { ... } ###
+<!-- [:@glyphicon glyphicon-tag syntax] -->
+
+&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHEvery)
+
+A loop executed each time the delay is true. Abort the execution of 
+the body when delay is true. Delays are documented [here](./signal#test-await-and-emit).
+
+&#x2605; Example: [every1.hh.js](../../test/every1.hh.js)
+
+All the delay forms can be used with `every`.
+&#x2605; Example: [every-delay.hh.js](../../test/every-delay.hh.js)
+
+
+
+The form `every` is a derived form. The form:
+
+```javascript
+every (expr) {
+   ... body ...
+}
+```
+is equivalent to
+
+```javascript
+await (expr);
+loop {
+  continue: fork {
+    ... body ...
+  } par {
+    await (expr);
+	break continue;
+  }
+}
+```
+
+### do { ... } every delay ###
+<!-- [:@glyphicon glyphicon-tag syntax] -->
+
+&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHDo)
+
+Execute the `do`'s body and loop when `test` is true.
+
+&#x2605; Example: [loopeach.hh.js](../../test/loopeach.hh.js)
+
+The form `do`/`every` is a dericed form. The form:
+
+```javascript
+do { 
+ ...
+} every (expr);
+```
+
+is equivalent to:
+
+```javascript
+loop {
+  ... body ...
+  await (expr);
+}
+```
+
+### abort delay { ... } ###
+<!-- [:@glyphicon glyphicon-tag syntax] -->
+
+&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHAbort)
+
+Execute the `abort`'s body and abort the execution when delay` is true.
+
+&#x2605; Example: [abort-par.hh.js](../../test/abort-par.hh.js)
+
+&#x2605; Example: [abortpre.hh.js](../../test/abortpre.hh.js)
+
+The form:
+
+```javascript
+abort (expr) { ... body ... }
+
+```
+
+is equivalent to
+
+```javascript
+exit: fork {
+  ... body ... 
+} par {
+  await (expr);
+  break exit;
+}
+```
+
+### weakabort delay { ... } ###
+<!-- [:@glyphicon glyphicon-tag syntax] -->
+
+&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHAbort)
+
+Execute the `weakabort`'s body and abort the execution when delay` is true
+at the end of the reaction
+
+&#x2605; Example: [loopeach-weakabort-emit.hh.js](../../test/loopeach-weakabort-emit.hh.js)
+
+&#x2605; Example: [weak2.hh.js](../../test/weak2.hh.js)
+
+&#x2605; Example: [weak-immediate.hh.js](../../test/weak-immediate.hh.js)
+
+The form:
+
+```javascript
+abort (expr) { ... body ... }
+
+```
+
+is equivalent to
+
+```javascript
+exit: fork {
+  ... body ... 
+} par {
+  await (expr);
+  break exit;
+}
+```
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 [[main page]](./README.md) | [[language]](../_lang.md) | [[license]](../license.md)

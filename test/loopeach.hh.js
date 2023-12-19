@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 
 hiphop module prg() {
@@ -10,4 +7,4 @@ hiphop module prg() {
    } every( I.now )
 }
 
-export const mach = new hh.ReactiveMachine( prg, "loopeach" );
+export const mach = new hh.ReactiveMachine(prg, "loopeach");
