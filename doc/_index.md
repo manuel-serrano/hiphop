@@ -78,4 +78,4 @@ the third reaction the signal `R` is emitted, and finally, at
 the forth reaction, both signals `A` and `B` are emitted.
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-[[main page]](./README.md) | [[license]](./license.md)
+[[main page]](../README.md) | [[documentation]](./README.md) | [[license]](./license.md)

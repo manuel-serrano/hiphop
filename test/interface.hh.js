@@ -1,8 +1,4 @@
-"use @hop/hiphop";
-"use hopscript"
-
 import * as hh from "@hop/hiphop";
-
 
 hiphop interface I1 { inout A, B, C; };
 hiphop interface I2 extends I1 { inout D; };

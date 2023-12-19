@@ -259,5 +259,5 @@ ${ doc.include( ROOT + "/../../tests/imirrordyn.hh.js" ) }
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-[[main page]](./README.md) | [[language]](../lang.md) | [[license]](./license.md)
+[[main page]](./README.md) | [[language]](../lang.md) | [[license]](../license.md)
 

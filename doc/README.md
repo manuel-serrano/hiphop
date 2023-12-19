@@ -11,3 +11,6 @@
   6. [Dev](./dev.md)
   7. [Syntax](./syntax/hiphop.bnf)
   
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+[[main page]](../README.md) | [[language]](./lang.md) | [[license]](./license.md)
