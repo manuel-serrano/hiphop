@@ -1,5 +1,5 @@
 ![http://hop.inria.fr/hiphop](./logo.svg) HipHop.js: Synchronous Multitier JavaScript Reactive Programming
-----------------------------------------------------------------
+=============================================================================
 
 
 
