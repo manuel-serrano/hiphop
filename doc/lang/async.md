@@ -24,6 +24,10 @@ specified with the `async` call, the JavaScript code will have the possibility
 to emit a signal whose name is `ident` when the asynchronous block
 completes or simply progresses.
 
+The `async` statement blocks until its JavaScript body invokes the
+`this.notify` method.
+
+
 ### Example ###
 
 This example spawns a JavaScript timer that will complete no sooner
@@ -62,15 +66,22 @@ from within the `async` JavaScript block. Example:
 
 &#x2605; [setinterval.hh.js](../../test/setinterval.hh.js)
 
+This example uses the expression `Tick.signame` that is a JavaScript
+expression that evaluates to the HipHop internal name of the signal
+`Tick`.
+
 
 ### async.notify( value, [ react = true ] ) ###
-[:@glyphicon glyphicon-tag function]
+<!-- [:@glyphicon glyphicon-tag function] -->
 
 This function notifies the reactive machine that the `async` form has
-completed.
+completed and it emits the event that was associated with the form. 
 
-This function notifies the reactive machine that the `async` form has
-completed and it emits the event that was associated with the form. How and 
+> [!NOTE]
+> Notifying the termination of the `async` form is not equivalent to trigger
+> a new reaction. It tells HipHop to execute the next statement in sequence.
+
+How and 
 when the machine is notified depends of `value`'s type. Two cases are
 considered:
 
