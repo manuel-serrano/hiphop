@@ -26,12 +26,12 @@ Signal Declarations
 
 Signals are declared in [module signatures](./module.md), possibly
 via an [interface declaration](./module.md##hiphop-interfaces) or inside an
-HipHop statement, with the [signal](./syntax/syntax.md#HHSignal) construct.
+HipHop statement, with the [signal](./syntax/hiphop.bnf#HHSignal) construct.
 
 ### signal [direction] ident [= value] [combine function] ... ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2606; Formal syntax](./syntax/syntax.md#HHSignal)
+[&#x2606; Formal syntax](./syntax/syntax.bnf#HHSignal)
 
 See the [module documentation](./module.md) for module signals.
 
@@ -60,7 +60,7 @@ Variable Declarations
 ### let ident [= value], ..., ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2606; Formal syntax](./syntax.html#HHLet)
+[&#x2606; Formal syntax](./syntax/syntax.bnf#HHLet)
 
 Along with signals, HipHop supports local Hop variables. They are
 local variable carrying Hop values. These variable can be used in all the
@@ -77,7 +77,7 @@ Signals presence (has a signal been emitted or not during the
 reaction) and signal values can be used in HipHop JavaScript
 expressions. For that, HipHop analyses Hop expressions and detect
 signal accesses. It recognizes
-[four syntactic constructs](./syntax/syntax.md#HHExpression) that
+[four syntactic constructs](./syntax/hiphop.bnf#HHExpression) that
 correspond to signal access. Notice that these detections are only
 executed within the syntactic context of an HipHop expression:
 
@@ -131,7 +131,7 @@ Test, Await, and Emit
 ### if (expr) { ... } [else { ... }] ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2606; Formal syntax](./syntax.html#HHIf)
+[&#x2606; Formal syntax](./syntax/hiphop.bnf#HHIf)
 
 The presence or absence of a signal can be checked with the `if`
 conditional construct. The value of a signal can be checked too. The
@@ -148,10 +148,11 @@ A particular value of a signal can be checked. For instance:
 if(SIG.nowval > 10 && SIG.nowval < 100) { host { console.log("signal in range") } }
 ```
 
-### await delay ###
+### await [immediate] (expr) ###
+### await count(expr, expr) ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2606; Formal syntax](./syntax.html#HHAwait)
+[&#x2606; Formal syntax](./syntax/syntax.bnf#HHAwait)
 
 It is frequent for a program to wait for one or several signals to be
 emitted. This can be acheived with the `await` construct, which waits
@@ -165,11 +166,26 @@ can be:
 yield; await immediate expr }`. 
  * `count(counter, expression)`, this waits for expression to be true
  `counter` times.
+ 
+The form:
+
+```javascript
+await (expr);
+```
+
+is equivalent to
+
+```javascript
+yield;
+await immeidate (expr);
+```
+
+
 
 ### emit signal([ value ]) ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2606; Formal syntax](./syntax.html#HHEmit)
+[&#x2606; Formal syntax](./syntax/syntax.bnf#HHEmit)
 
 The `emit` form emit the value in the instant. The form `emit sig1()` emits
 a signal without value. The form `emit sig2(val)` emits a signal with
@@ -185,10 +201,10 @@ a value.
 ### sustain signal([ value ]) ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2606; Formal syntax](./syntax.html#HHSustain)
+[&#x2606; Formal syntax](./syntax/syntax.bnf#HHSustain)
 
 Similar to `emit` but the emission is repeated at each instant. The
-statement  
+statement
 
 ```javascript
 sustain sig(expr);

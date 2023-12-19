@@ -1,13 +1,10 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 
 const prg = hiphop module() {
    in A; in B; out O;
 	    
-   await(A.now);
-   await(B.now);
+   await (A.now);
+   await (B.now);
    emit O();
 }
 
