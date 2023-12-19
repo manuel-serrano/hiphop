@@ -27,7 +27,7 @@ modules](./stdmod.md).
 
 ### Example ###
 
-[Example 1](../test/abro.hh.js)
+&#x2605 [The abro example](../test/abro.hh.js)
 
 
 Table of contents

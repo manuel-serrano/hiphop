@@ -10,7 +10,7 @@ They are syntactic constructs that facilitate code re-use. There is
 two ways to use a module:
 
   * to [load](./.api.md) it into a reactive machine;
-  * to _run_ it from another module via the `run` statement
+  * to [run](#run) it from another module via the `run` statement
 
 Modules are lexically scoped and each module introduces it own signal
 and trap scopes. That is:
@@ -22,14 +22,23 @@ and trap scopes. That is:
 ### module [ident](arg, ...) [implements [mirror] intf, ...] { sigdecl... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[Formal syntax](../syntax/syntax.md#HHModule)
+[&#x2604 Formal syntax](../syntax/syntax.md#HHModule)
+
+If the optional `ident` is specified a JavaScript constant named
+`ident` is automatically declared and bound to the HipHop module.
+That is, the two following forms are equivalent:
+
+```javascript
+const M0 = hiphop module () { ... };
+hiphop module M0() { ... };
+```
 
 Modules parameters (`arg`, ...) are equivalent to variables declared
-with `var` or `let` forms. They denotes Hop values that can be used in
+with `var` or `let` forms. They denote Hop values that can be used in
 any expressions of the module.  They are passed to the module with the
 `run` form.
 
-Modules body constist of HipHop
+Module bodies constist of HipHop
 [statements](../syntax/syntax.md#HHStatement). The arguments, which are
 signal declarations, constitute its interface. Module arguments are
 either _input_ signals, _output_ signals, or _input/output_
@@ -43,10 +52,10 @@ module M1(x) {
 }
 ```
 
-These signals in addition to the ones declared in the optional
-interfaces (`intf`, ...) form the module interface. For that 
-module to be executed, this signals have to be bound the
-signal in the caller scope (the scope of the corresponding
+These signals, in addition to the ones declared in the optional
+interfaces (`intf`, ...), form the module interface. For a
+module to be executed, its signals have to be bound the
+caller signals in its scope (the scope of the corresponding
 `run` form).
 
 For instance, the `M1` module can be used in the following
@@ -64,7 +73,7 @@ In that example, the `M2`'s `myS` signal is bound to
 the `M1`'s `S`, `myT` to `T` and `M2`'s signal `U` is
 bound to `M1`'s signal `U`.
 
-&#x2605 Example: [run2.hh.js](../../test/run2.hh.js)
+&#x2605; Example: [run2.hh.js](../../test/run2.hh.js)
 
 See [`run`](#running-modules) for a complete description
 of the `run` form.
@@ -89,7 +98,16 @@ interface contains no body.
 ### interface [ident] [extends intf, ...] { ... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[Formal syntax](../syntax/syntax.md#HHInterface)
+[&#x2604 Formal syntax](../syntax/syntax.md#HHInterface)
+
+If the optional `ident` is specified a JavaScript constant named
+`ident` is automatically declared and bound to the HipHop interface.
+That is, the two following forms are equivalent:
+
+```javascript
+const I0 = hiphop interface { in I, out O };
+hiphop interface I0 { in I, out O };
+```
 
 Here is an example of interface declaration and use to define a module:
 
@@ -286,4 +304,6 @@ ${ doc.include( ROOT + "/../../tests/imirrordyn.hh.js" ) }
 ```
 
 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+[[main page]](./README.md) | [[language]](../lang.md) | [[license]](./license.md)
 
