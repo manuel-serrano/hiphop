@@ -41,41 +41,8 @@ This example uses two nested `fork` constructs. The second is synchronized
 with the first as it waits for an event the first branch is to emit.
 
 
-Lexical Escapes
-===============
-
-HipHop supports an escape mechanism by the means for the `exit`/`break`
-constructs. They enable a program to abort an ongoing computation.
-
-### exit ###
-<!-- [:@glyphicon glyphicon-tag syntax] -->
-
-&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHExit)
-
-An _exit_ is syntactically similar to a JavaScript label. it must
-be followed by a HipHop statement. This statement can be interrupted 
-by _breaking_ to that exit form.
-
-### break lbl ###
-<!-- [:@glyphicon glyphicon-tag syntax] -->
-
-&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHBreak)
-
-Abort the execution of the current statement and continue the execution
-after the statement that follows that break label. The `break` form 
-can be used to abord an execution thread when used to escape a `fork`/`par`
-form.
-
-&#x2605; Example: [timeout.hh.js](../../test/timeout.hh.js)
-
-&#x2605; Example: [trap-par.hh.js](../../test/trap-par.hh.js)
-
-&#x2605; Example: [trap-await-parallel.hh.js](../../test/trap-await-parallel.hh.js)
-
-&#x2605; Example: [p18.hh.js](../../test/p18.hh.js)
-
 Loops
-=====
+-----
 
 Loops are so central HipHop program control flow that HipHop proposes
 several loop constructs.
@@ -87,13 +54,8 @@ several loop constructs.
 
 Implements an infinite loop
 
-Example:
+&#x2605; Example: [sync1.hh.js](../../ttest/sync1.hh.js).
 
-${ <span class="label label-info">sync1.hh.js</span> }
-
-```hiphop
-${ doc.include(ROOT + "/../../tests/sync1.hh.js") }
-```
 
 ### every (test) { ... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
@@ -128,4 +90,48 @@ ${ doc.include(ROOT + "/../../tests/loopeach.hh.js") }
 &#x2606; [Formal syntax](../syntax/hiphop.bnf#HHAbort)
 
 Execute the `abort`'s body and abort the execution when `test` is true.
+
+
+Lexical Escapes
+---------------
+
+HipHop supports an escape mechanism by the means for the `exit`/`break`
+constructs. They enable a program to abort an ongoing computation.
+
+### lbl ###
+<!-- [:@glyphicon glyphicon-tag syntax] -->
+
+&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHExit)
+
+An _exit_ is syntactically similar to a JavaScript label. it must
+be followed by a HipHop statement. This statement can be interrupted 
+by _breaking_ to that exit form.
+
+### break lbl ###
+<!-- [:@glyphicon glyphicon-tag syntax] -->
+
+&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHBreak)
+
+Abort the execution of the current statement and continue the execution
+after the statement that follows that break label. The `break` form 
+can be used to abord an execution thread when used to escape a `fork`/`par`
+form.
+
+&#x2605; Example: [timeout.hh.js](../../test/timeout.hh.js)
+
+This example shows how to exit a `loop`.
+
+&#x2605; Example: [trap-par.hh.js](../../test/trap-par.hh.js)
+
+This example shows how to exit a `fork`/`par`.
+
+&#x2605; Example: [trap-await-parallel.hh.js](../../test/trap-await-parallel.hh.js)
+
+This example shows that several threads can decide to exit from a `fork`/`par`.
+
+&#x2605; Example: [p18.hh.js](../../test/p18.hh.js)
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+[[main page]](./README.md) | [[language]](../_lang.md) | [[license]](../license.md)
 
