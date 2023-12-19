@@ -8,6 +8,13 @@ HipHop reactive machines.
 
 Use `import * as hiphop from "@hop/hiphop"` to use it.
 
+Once defined, a HipHop program must be _loaded_ into a HipHop
+[reactive machine](./api.md) that can execute this program by
+running _reactions_. A reactive machine is an instance of the
+JavaScript `ReactiveMachine` class which is exported by the
+`@hop/hiphop` module.
+
+
 Creating HipHop reactive machines
 ---------------------------------
 

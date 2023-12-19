@@ -10,28 +10,35 @@ The HipHop Programming Language
 
 
 The HipHop syntax extends the JavaScript syntax with one single
-expression rule:
+statement:
 
 ```ebnf
   hiphop <HHstatement>
 ```
 
-HipHop syntax is described in this [document][syntax/hiphop.bnf].
+The `hiphop` tag is to be followd by a HipHop statement, whose
+syntax is described in this [bnf grammar](syntax/hiphop.bnf).
 
-Once defined, a HipHop program must be _loaded_ into a HipHop
-[reactive machine](./api.md) that can execute this program by
-running _reactions_.
+This chapter documents the HipHop programming language.  The
+connection with JavaScript is described in chapter [api](./api.md) and
+the standard HipHop modules are described in chapter [standard
+modules](./stdmod.md).
+
 
 ### Example ###
 
-[Example 1](../../test/abro.hh.js)
+[Example 1](../test/abro.hh.js)
 
 
 Table of contents
 -----------------
 
-  1. [Lang](./lang/lang.md)
-  2. [Signals](./lang/signal.md)
-  5. [Module](./lang/module.md)
-  3. [Flow](./lang/flow.md)
-  4. [Async](./lang/async.md)
+  1. [Modules](./lang/module.md), _how to define HipHop modulse._
+  2. [Signals](./lang/signal.md), _how to deal with signals._
+  3. [Flow](./lang/flow.md), _the various HipHop statements._
+  4. [Async](./lang/async.md), _the `async` form to orchestrate JavaScript asynchronous operations._
+  5. [BNF](./syntax/hiphop.bnf), _the full HipHop programming language syntax._
+
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - 
+[[main page]](./index.md) | [[license]](./license.md)

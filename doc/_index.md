@@ -61,7 +61,7 @@ blocs the execution of the current thread until the condition is
 satisfied. For instance, the statement `await (A.now)` blocs the
 first thread of the `fork` statement until the signal `A` is emitted.
 
-To be executed, a HipHop program has to be loaded into a _reactive machine_.
+To be executed, a HipHop program has to be loaded into a [_reactive machine_](./api.md).
 This is done with the expression `new ReactiveMachine(abro)`, which creates
 a new reactive machine and loads the `abro` into it.
 
@@ -76,3 +76,6 @@ the signal `A` emitted with the associated value 1. For the second
 reaction, the program is sent the signal `B` with value 2. At
 the third reaction the signal `R` is emitted, and finally, at
 the forth reaction, both signals `A` and `B` are emitted.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - 
+[[main page]](./index.md) | [[license]](./license.md)

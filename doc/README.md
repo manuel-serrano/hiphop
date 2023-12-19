@@ -6,7 +6,7 @@
   1. [Introduction](./_index.md), _general introduction to HipHop._
   2. [License](./license.md), _the license of this release._
   3. [Download](./download.md), _how to get HipHop._
-  4. [Language](./_lang.md)
+  4. [Language](./_lang.md), _the language documentation._
   5. [API](./api.md)
   6. [Dev](./dev.md)
   7. [Syntax](./syntax/hiphop.bnf)
