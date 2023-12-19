@@ -4,7 +4,7 @@ ${ var xml = require( config.docDir + "/xml.js" ) }
 ${ var cfg = require( "./doc.json" ) }
 ${ var pkg = require( "../package.json" ) } -->
 
-![http://hop.inria.fr/hiphop](./doc/logo.svg) HipHop.js, Synchronous Multitier JavaScript Reactive Programming
+![http://hop.inria.fr/hiphop](./logo.svg) HipHop.js, Synchronous Multitier JavaScript Reactive Programming
        
 &copy; 2024 INRIA
 
