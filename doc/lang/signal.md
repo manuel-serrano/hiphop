@@ -210,8 +210,6 @@ await (expr);
 await (expr);
 ```
 
-
-
 ### emit signal([ value ]) ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
