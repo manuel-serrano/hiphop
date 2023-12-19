@@ -3,9 +3,9 @@
 
 
 
-  1. [Introduction](./_index.md), general introduction to HipHop
-  2. [License](./license.md), the license of this release
-  3. [Download](./download.md), how to get HipHop
+  1. [Introduction](./_index.md), _general introduction to HipHop._
+  2. [License](./license.md), _the license of this release._
+  3. [Download](./download.md), _how to get HipHop._
   4. [Language](./_lang.md)
   5. [API](./api.md)
   6. [Dev](./dev.md)

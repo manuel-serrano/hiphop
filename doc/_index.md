@@ -26,7 +26,7 @@ machine is reset when button `R` is pressed, whatever its current
 state.
 
 ```javascript
-// hello.hh.js
+// abro.hh.js
 import { ReactiveMachine } from "@hop/hiphop";
 
 const abro = hiphop module() {
@@ -49,6 +49,10 @@ m.react({ B: 2 });
 m.react({ R: true });
 m.react({ A: 3, B: 4 });
 ```
+
+> [!NOTE]
+> HipHop programs have to be stored in files whose names are suffixed 
+> with `.hh.js`.
 
 The statement `do`/`every` implements a loop that executes its body
 each time the condition of the `every` is statisfied. The statement

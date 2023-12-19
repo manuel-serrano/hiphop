@@ -125,7 +125,7 @@ we create a machine and we proceed to *reactions* (here 4 reactions are
 triggered).
 
 ```javascript
-const m = new ReactiveMachine(HelloWorld, "ABRO");
+const m = new ReactiveMachine(HelloWorld);
 m.addEventListener("O", e => console.log("got: ", e));
 m.react({ A: 1 });
 m.react({ B: 2 });

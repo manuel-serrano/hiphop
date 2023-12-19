@@ -5,12 +5,11 @@ ${ var cfg = require( "./doc.json" ) }
 ${ var dockerurl = cfg.urlbase + "docker.tgz" }
 ${ const pkg = require( "../package.json" ) } -->
 
-## License ##
+Getting HipHop.js
+=================
 
-This software is released under the [Apache 2.0 license](https://apache.org/licenses/LICENSE-2.0).
-
-
-## NPM installation ##
+NPM Installation
+----------------
 
 ```
 npm install https://www-sop.inria.fr/members/Manuel.Serrano/software/npmx/hiphop.tgz
@@ -22,8 +21,67 @@ When HipHop is officially released in 2024, the installation procedure is:
 npm install @hop/hiphop
 ```
 
+To test HipHop
+
+```
+(cd node_modules/@hop/hiphop; npm install --save-dev; npm test)
+```
+
 To run a program:
 
 ```
+cat > prog.hh.js <<EOF
+import { ReactiveMachine } from "@hop/hiphop";
+
+hiphop prog() {
+   host { console.log("please, wake me up..."); }
+   yield;
+   host { console.log("thanks!"); }
+}
+
+const m = new ReactiveMachine(prog);
+m.react();
+m.react();
+EOF
 nodejs --enable-source-maps --no-warnings --loader ./node_modules/@hop/hiphop/lib/hiphop-loader.mjs prog.hh.js
 ```
+
+Installing from the Source Files 
+--------------------------------
+
+HipHop needs to be installed in a prepared directory whose its two
+dependencies, `hopc` and `readlines` are already installed:
+
+```
+mkdir project
+cd project
+mkdir download
+(cd download; wget https://www-sop.inria.fr/members/Manuel.Serrano/software/npmx/hopc.tgz)
+(cd download; wget https://www-sop.inria.fr/members/Manuel.Serrano/software/npmx/readlines.tgz)
+mkdir -p node_modules/@hop
+(cd node_modules/@hop; tar xvfz ../download/hopc.tgz)
+(cd node_modules/@hop; tar xvfz ../download/readlines.tgz)
+
+```
+
+Then, to install HipHop:
+
+```
+(cd download; wget https://www-sop.inria.fr/members/Manuel.Serrano/software/npmx/hiphop.tgz)
+(cd node_modules/@hop; tar xvfz ../download/hiphop.tgz)
+```
+
+Installing from the git Repository 
+----------------------------------
+
+Install the HipHop dependencies as from a [source file installation](#installing-from-the-source-files)
+
+Then, to install HipHop:
+
+```
+(cd node_modules/@hop; git clone https://github.com/manuel-serrano/hiphop)
+```
+
+
+
+
