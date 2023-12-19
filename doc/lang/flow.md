@@ -224,5 +224,5 @@ exit: fork {
 ```
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-[[main page]](./README.md) | [[language]](../_lang.md) | [[license]](../license.md)
+[[main page]](../../README.md) | [[documentation]](../README.md) | [[language]](../_lang.md) | [[license]](../license.md)
 
