@@ -1,23 +1,23 @@
-${ var doc = require( "hopdoc" ) }
+<!-- ${ var doc = require( "hopdoc" ) }
 ${ var path = require( "path" ) }
-${ var ROOT = path.dirname( module.filename ) }
+${ var ROOT = path.dirname( module.filename ) } -->
 
 Async
 =====
 
-Async forms implement long lasting background JavaScript
-actions. They are the essential ingredient for mixing undeterministic
-asynchronous computation and deterministic synchronous
-computations. In other words, the `async` form enables well-behaving
-synchronous to regulate unsteady asynchronous computations.
+Hiphop `async` forms enables HipHop to control (i.e., abort, suspend,
+resume, and react to) long lasting background JavaScript actions. They
+are the essential ingredient for mixing undeterministic asynchronous
+computations and deterministic synchronous computations. In other
+words, the `async` form enables well-behaving synchronous to regulate
+unsteady asynchronous computations.
 
 ### async [ident] { ... } [kill { ... }] [suspend { ... }] [resume { ... }]
-[:@glyphicon glyphicon-tag syntax]
+<!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[Formal syntax](./syntax.html#HHAsync)
+&#x2606; [Formal syntax](./syntax/hiphop.bnf#HHAsync)
 
-The `async` form executes a JavaScript statement that is supposed to
-spawn a long lasting background computation. When this completes, the
+The `async` form executes a JavaScript statement and upon its completion, the
 asynchronous block can resume the synchronous machine by calling one of the
 functions that compose the `async` JavaScript API. When an `ident` is
 specified with the `async` call, the JavaScript code will have the possibility
@@ -26,19 +26,15 @@ completes or simply progresses.
 
 ### Example ###
 
-This example spawns a JavaScript timer that will completes no sooner
+This example spawns a JavaScript timer that will complete no sooner
 than five seconds after being started. When the timeout is reached,
-that JavaScript asynchronous computation resumes the reactive machine
+the JavaScript asynchronous computation resumes the reactive machine
 and emit the signal `O` with the value `5`.
 
 Inside the asynchronous block, the JavaScript `this` object is
 a descriptor of the asynchronous computation.
 
-${ <span class="label label-info">exec2.hh.js</span> }
-
-```hiphop
-${ doc.include( ROOT + "/../../tests/exec2.hh.js" ) }
-```
+&#x2605; [exec2.hh.js](../../tests/exec2.hh.js" )
 
 ### Kill, suspend, and resume ###
 
@@ -138,5 +134,9 @@ is equivalent to:
 ```hiphop
 this.machine.react( sigset )
 ```
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+[[main page]](../../README.md) | [[documentation]](../README.md) | [[language]](../_lang.md) | [[license]](../license.md)
+
 
 

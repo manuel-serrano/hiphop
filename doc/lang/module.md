@@ -28,7 +28,7 @@ and trap scopes. That is:
 ### module [ident](arg, ...) [implements [mirror] intf, ...] { sigdecl... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2606; Formal syntax](../syntax/syntax.md#HHModule)
+&#x2606; [Formal syntax](../syntax/syntax.md#HHModule)
 
 If the optional `ident` is specified a JavaScript constant named
 `ident` is automatically declared and bound to the HipHop module.
@@ -104,7 +104,7 @@ interface contains no body.
 ### interface [ident] [extends intf, ...] { ... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2606; Formal syntax](../syntax/syntax.md#HHInterface)
+&#x2606; [Formal syntax](../syntax/syntax.md#HHInterface)
 
 If the optional `ident` is specified a JavaScript constant named
 `ident` is automatically declared and bound to the HipHop interface.
@@ -149,7 +149,7 @@ via the `run` syntactif form.
 ### run ident(arg, ...) { sig, ...} ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2606; Formal syntax](../syntax/syntax.md#HHRun). 
+&#x2606; [Formal syntax](../syntax/syntax.md#HHRun). 
 
 The module `ident` expression must be a JavaScript variable
 holding a module.
