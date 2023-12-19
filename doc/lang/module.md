@@ -2,8 +2,8 @@
 ${ var path = require( "path" ) }
 ${ var ROOT = path.dirname( module.filename ) } -->
 
-HipHop Module
-=============
+HipHop Modules
+==============
 
 Modules are the HipHop architectural tool for structuring programs. 
 They are syntactic constructs that facilitate code re-use. There is
@@ -18,6 +18,12 @@ and trap scopes. That is:
   * a module can only use the signal it defines, either in its 
   argument list or locally;
   * trap labels are only visible inside a module.
+
+> [!NOTE]
+> This chapter documents _static_ modules. _Dynamic_ or _staged_ modules, 
+> that is, modules generated dynamically by prior JavaScrpt executions
+> are described in the [staging chater](../staging.md).
+
 
 ### module [ident](arg, ...) [implements [mirror] intf, ...] { sigdecl... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
@@ -228,34 +234,6 @@ example shows, that each instance "sees" its own copy of the parameter.
 
 &#x2605; Example: [run4.hh.js](../../test/run4.hh.js)
 
-
-### Generated Modules ###
-
-This example uses a module generator (the function `Timer`). HipHop modules are
-lexically scopped with regard to Hop environment so all the expressions they
-contain can refer to Hop variables bound in the environment. In this example,
-the function parameter `timeout` is used in the `async` form to set the
-timeout duration.
-
-The new modules are directly created when run, using the dollar-form
-in the main HipHop program. 
-
-${ <span class="label label-info">run3.hh.js</span> }
-
-```hiphop
-${ doc.include( ROOT + "/../../tests/run3.hh.js" ) }
-```
-
-### Example of Dynamically Generated Interfaces ###
-
-When interfaces are to be generated dynamically, the XML interface
-must be used.
-
-${ <span class="label label-info">imirrordyn.js</span> }
-
-```hiphop
-${ doc.include( ROOT + "/../../tests/imirrordyn.hh.js" ) }
-```
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

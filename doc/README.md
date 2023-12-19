@@ -9,7 +9,8 @@
   4. [Language](./_lang.md), _the language documentation._
   5. [API](./api.md)
   6. [Dev](./dev.md)
-  7. [Syntax](./syntax/hiphop.bnf)
+  7. [Staging](./staging.md)
+  8. [Syntax](./syntax/hiphop.bnf)
   
 
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
