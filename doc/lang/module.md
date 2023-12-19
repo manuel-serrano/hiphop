@@ -5,38 +5,72 @@ ${ var ROOT = path.dirname( module.filename ) } -->
 HipHop Module
 =============
 
-Modules are the HipHop execution units. Modules can be
-[loaded](./api.html) into a reactive machine or _ran_ by another
-module. Modules are lexically scoped and each module introduces it own
-signal and trap scopes. That is:
+Modules are the HipHop architectural tool for structuring programs. 
+They are syntactic constructs that facilitate code re-use. There is
+two ways to use a module:
 
-  * a module can only use the signal
- it defines, either in its argument list or locally;
-  * trap labels are only visible inside a module .
+  * to [load](./.api.md) it into a reactive machine;
+  * to _run_ it from another module via the `run` statement
 
-### module [ident]( arg, ... ) [implements [mirror] intf, ...] { ... } ###
+Modules are lexically scoped and each module introduces it own signal
+and trap scopes. That is:
+
+  * a module can only use the signal it defines, either in its 
+  argument list or locally;
+  * trap labels are only visible inside a module.
+
+### module [ident](arg, ...) [implements [mirror] intf, ...] { sigdecl... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[Formal syntax](./syntax.html#HHModule)
+[Formal syntax](../syntax/syntax.md#HHModule)
 
-Modules parameters are equivalent to variables declared with `var` or
-`let` forms. They denotes Hop values that can be used in any
-expressions of the module.  They are passed to the module with the
+Modules parameters (`arg`, ...) are equivalent to variables declared
+with `var` or `let` forms. They denotes Hop values that can be used in
+any expressions of the module.  They are passed to the module with the
 `run` form.
-  
+
 Modules body constist of HipHop
-[statements](./syntax.html#HHStatement). The arguments, which are
+[statements](../syntax/syntax.md#HHStatement). The arguments, which are
 signal declarations, constitute its interface. Module arguments are
 either _input_ signals, _output_ signals, or _input/output_
 signals. Here is an example of a module with an input, an output
 signal, and an input/output signal:
 
-```hiphop
-module mod(x) {
+```javascript
+module M1(x) {
   in S; out T; inout U;
   ...
 }
 ```
+
+These signals in addition to the ones declared in the optional
+interfaces (`intf`, ...) form the module interface. For that 
+module to be executed, this signals have to be bound the
+signal in the caller scope (the scope of the corresponding
+`run` form).
+
+For instance, the `M1` module can be used in the following
+`run` statement from a `M2` module.
+
+```javascript
+module M2() {
+  ...
+  run M1(10) { myS as S, myT as T, U a U }
+  ...
+}
+```
+
+In that example, the `M2`'s `myS` signal is bound to
+the `M1`'s `S`, `myT` to `T` and `M2`'s signal `U` is
+bound to `M1`'s signal `U`.
+
+&#x2605 Example: [run2.hh.js](../../test/run2.hh.js)
+
+See [`run`](#running-modules) for a complete description
+of the `run` form.
+
+Signals that are declared after the first body statements are
+local signals and they cannot be bound in a `run` statement.
 
 #### module.precompile() ####
 
@@ -45,7 +79,7 @@ purpose of running preliminary checks such as signal names resolution.
 
 
 HipHop Interface
-================
+----------------
 
 Module arguments can either be specified in the module declaration
 or packed into an _interface_ that a module can then implements. 
@@ -55,7 +89,7 @@ interface contains no body.
 ### interface [ident] [extends intf, ...] { ... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[Formal syntax](./syntax.html#HHInterface)
+[Formal syntax](../syntax/syntax.md#HHInterface)
 
 Here is an example of interface declaration and use to define a module:
 
@@ -72,23 +106,26 @@ modules, one emitted, the other receiving to be easily connected. The syntax
 is as follows:
 
 ```hiphop
-interface intf( out T );
+interface intf(out T);
 
 module producer() implements intf { ; }
 module consumer() implements mirror intf { ; }
 ```
 
+&#x2605 Example: [imirror.hh.js](../../test/imirror.hh.js)
+
+
 Running Modules
-===============
+---------------
 
 A module can be executed either because it is directly loaded into a
 [reactive machine](./api.html) or because it is ran by other module
-via the run syntactif form.
+via the `run` syntactif form.
 
 ### run module(arg, ...) { sig, ...} ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[Formal syntax](./syntax#HHRun). 
+[Formal syntax](../syntax#HHRun). 
 
 The module can either be:
 
@@ -122,7 +159,7 @@ The linkings can either be:
 
 
 Top level Definitions
-=====================
+---------------------
 
 Modules and interfaces have an optional name. When a named is declared
 at the JavaScript top-level, it is automatically bound to an eponym

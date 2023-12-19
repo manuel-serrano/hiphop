@@ -41,4 +41,4 @@ Table of contents
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-[[main page]](./index.md) | [[license]](./license.md)
+[[main page]](./README.md) | [[license]](./license.md)

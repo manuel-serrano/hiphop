@@ -17,4 +17,4 @@ https://github.com/manuel-serrano/hiphop.git
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-[[main page]](./index.md) | [[license]](./license.md)
+[[main page]](./README.md) | [[license]](./license.md)

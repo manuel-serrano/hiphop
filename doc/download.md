@@ -82,5 +82,5 @@ Then, to install HipHop:
 ```
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-[[main page]](./index.md) | [[license]](./license.md)
+[[main page]](./README.md) | [[license]](./license.md)
 
