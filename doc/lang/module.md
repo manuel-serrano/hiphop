@@ -22,7 +22,7 @@ and trap scopes. That is:
 > [!NOTE]
 > This chapter documents _static_ modules. _Dynamic_ or _staged_ modules, 
 > that is, modules generated dynamically by prior JavaScrpt executions
-> are described in the [staging chater](../staging.md).
+> are described in the [staging chapter](../staging.md).
 
 
 ### module [ident](arg, ...) [implements [mirror] intf, ...] { sigdecl... } ###
@@ -237,5 +237,5 @@ example shows, that each instance "sees" its own copy of the parameter.
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-[[main page]](./README.md) | [[language]](../lang.md) | [[license]](../license.md)
+[[main page]](./README.md) | [[language]](../_lang.md) | [[license]](../license.md)
 

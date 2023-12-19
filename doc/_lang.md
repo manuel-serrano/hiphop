@@ -33,7 +33,7 @@ modules](./stdmod.md).
 Table of contents
 -----------------
 
-  1. [Modules](./lang/module.md), _how to define HipHop modulse._
+  1. [Modules](./lang/module.md), _how to define HipHop modules._
   2. [Signals](./lang/signal.md), _how to deal with signals._
   3. [Flow](./lang/flow.md), _the various HipHop statements._
   4. [Async](./lang/async.md), _the `async` form to orchestrate JavaScript asynchronous operations._
