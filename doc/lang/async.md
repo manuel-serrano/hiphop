@@ -34,25 +34,21 @@ and emit the signal `O` with the value `5`.
 Inside the asynchronous block, the JavaScript `this` object is
 a descriptor of the asynchronous computation.
 
-&#x2605; [exec2.hh.js](../../tests/exec2.hh.js" )
+&#x2605; [exec2.hh.js](../../test/exec2.hh.js" )
 
 ### Kill, suspend, and resume ###
 
-The optional arguments `kill`, `suspend`, and `resume` of `async`
-blocks are JavaScript statements that are executed when the HipHop
-statement state changes. They give the opportunity to the program to
-cleanup a computation if the `async` block is preempted or to
-suspend/resume it. It is up to JavaScript to stop and to free
-resources if needed.
+The optional arguments `kill`, `suspend`, and `resume` are JavaScript
+statements that are executed when the HipHop statement state
+changes. They give the opportunity to the JavaScript program to
+cleanup a computation if the `async` block is preempted or
+suspended or resumed. 
 
 The following example shows a JavaScript `setTimeout` that is stopped
-when the HipHop `async` statement is interrupted.
+when the HipHop `async` statement is aborted.
 
-${ <span class="label label-info">local-kill2.hh.js</span> }
+&#x2605; [exec2.hh.js](../../test/local-kill2.hh.js" )
 
-```hiphop
-${ doc.include( ROOT + "/../../tests/local-kill2.hh.js" ) }
-```
 
 Async JavaScript API
 ====================
