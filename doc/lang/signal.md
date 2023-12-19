@@ -156,7 +156,7 @@ if(SIG.nowval > 10 && SIG.nowval < 100) { host { console.log("signal in range") 
 
 It is frequent for a program to wait for one or several signals to be
 emitted. This can be acheived with the `await` construct, which waits
-for a condition to be true. The `delay` [expression](./syntax.html#HHDelay)
+for a condition to be true. The `delay` [expression](./syntax/hiphop.bnf#HHDelay)
 can be:
 
  * an simple HipHop expression as the one used in the `if` construct.
@@ -166,18 +166,49 @@ can be:
 yield; await immediate expr }`. 
  * `count(counter, expression)`, this waits for expression to be true
  `counter` times.
- 
+
+The `await` form is derived form from the elementary `if` and `loop` constructs.
 The form:
 
 ```javascript
-await (expr);
+await immediate (expr);
 ```
 
 is equivalent to
 
 ```javascript
+loop {
+  if (!expr) yield;
+}
+```
+
+The form:
+
+```javascript
+await (expr)
+```
+
+is equivalent to:
+
+```javascript
 yield;
-await immeidate (expr);
+await immediate (expr);
+```
+
+The form:
+
+```javascript
+await count(5, expr)
+```
+
+is equivalent to:
+
+```javascript
+await (expr);
+await (expr);
+await (expr);
+await (expr);
+await (expr);
 ```
 
 
