@@ -1,9 +1,6 @@
-"use @hop/hiphop";
-"use hopscript"
-
 import * as hh from "@hop/hiphop";
 
-function sum( arg1, arg2 ) {
+function sum(arg1, arg2) {
    return arg1 + arg2;
 }
 
@@ -28,13 +25,13 @@ hiphop module prg() {
 		     break T2;
 		  } par {
 		     loop {
-			if( S1.now ) {
-			   if( S2.now ) {
+			if(S1.now) {
+			   if(S2.now) {
 			      emit S1_and_S2();
 			   } else {
 			      emit S1_and_not_S2();
 			   }
-			} else if( S2.now ) {
+			} else if(S2.now) {
 			   emit not_S1_and_S2();
 			} else {
 			   emit not_S1_and_not_S2();
@@ -49,4 +46,4 @@ hiphop module prg() {
    }
 }
 
-export const mach = new hh.ReactiveMachine( prg, "P18" );
+export const mach = new hh.ReactiveMachine(prg, "P18");
