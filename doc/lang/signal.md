@@ -148,8 +148,7 @@ A particular value of a signal can be checked. For instance:
 if(SIG.nowval > 10 && SIG.nowval < 100) { host { console.log("signal in range") } }
 ```
 
-### await [immediate] (expr) ###
-### await count(expr, expr) ###
+### await delay ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
 [&#x2606; Formal syntax](./syntax/syntax.bnf#HHAwait)
@@ -174,7 +173,7 @@ The form:
 await immediate (expr);
 ```
 
-is equivalent to
+is equivalent to:
 
 ```javascript
 loop {
