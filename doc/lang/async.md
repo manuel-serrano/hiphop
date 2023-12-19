@@ -24,8 +24,9 @@ specified with the `async` call, the JavaScript code will have the possibility
 to emit a signal whose name is `ident` when the asynchronous block
 completes or simply progresses.
 
-The `async` statement blocks until its JavaScript body invokes the
-`this.notify` method.
+A `async` statement blocks until its JavaScript body invokes the
+`this.notify` method. In other words, an `async` statement completes
+when its JavaScript body invokes the `notify` method.
 
 
 ### Example ###
@@ -71,19 +72,19 @@ expression that evaluates to the HipHop internal name of the signal
 `Tick`.
 
 
-### async.notify( value, [ react = true ] ) ###
+### async.notify(value, [react = true]) ###
 <!-- [:@glyphicon glyphicon-tag function] -->
 
 This function notifies the reactive machine that the `async` form has
 completed and it emits the event that was associated with the form. 
 
 > [!NOTE]
-> Notifying the termination of the `async` form is not equivalent to trigger
-> a new reaction. It tells HipHop to execute the next statement in sequence.
+> Notifying the termination of the `async` form with the method `notify`
+> is not equivalent to triggering a new reaction as only the `notify`
+> method tells HipHop to execute the next statement in sequence.
 
-How and 
-when the machine is notified depends of `value`'s type. Two cases are
-considered:
+How and when the machine is notified depends of `value`'s type. Two
+cases are considered:
 
  * `value` is anything but a JavaScript Promise: the machine is
  immediately notified and the value of the `async` associate event is `value`.
@@ -96,11 +97,7 @@ considered:
 Here is an example of an `async` block that uses a JavaScript Promise to
 resume the HipHop computation.
 
-${ <span class="label label-info">exec3.hh.js</span> }
-
-```hiphop
-${ doc.include( ROOT + "/../../tests/exec3.hh.js" ) }
-```
+&#x2605; [exec3.hh.js](../../test/exec3.hh.js)
 
 The optional argument `react` controls whether a reaction should be 
 automatically triggered with the notification. If the `react` is `true`,
@@ -108,7 +105,7 @@ a reaction to the machine is executed. The following asynchronous block:
 
 ```hiphop
 async {
-   this.notify( "complete" );
+   this.notify("complete");
 }
 ```
 
@@ -116,13 +113,13 @@ is equivalent to:
 
 ```hiphop
 async {
-   this.notify( "complete", false );
+   this.notify("complete", false);
    this.react();
 }
 ```
 
-### async.react( sigset ) ###
-[:@glyphicon glyphicon-tag function]
+### async.react(sigset) ###
+<!-- [:@glyphicon glyphicon-tag function] -->
 
 Invokes the `react` method with `sigset` argument of the machine
 running the `async` block.
