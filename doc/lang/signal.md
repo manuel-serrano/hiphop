@@ -31,7 +31,7 @@ HipHop statement, with the [signal](./syntax/hiphop.bnf#HHSignal) construct.
 ### signal [direction] ident [= value] [combine function] ... ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2606; Formal syntax](./syntax/syntax.bnf#HHSignal)
+&#x2606; [Formal syntax](./syntax/syntax.bnf#HHSignal)
 
 See the [module documentation](./module.md) for module signals.
 
@@ -60,7 +60,7 @@ Variable Declarations
 ### let ident [= value], ..., ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2606; Formal syntax](./syntax/syntax.bnf#HHLet)
+&#x2606; [Formal syntax](./syntax/syntax.bnf#HHLet)
 
 Along with signals, HipHop supports local Hop variables. They are
 local variable carrying Hop values. These variable can be used in all the
@@ -131,7 +131,7 @@ Test, Await, and Emit
 ### if (expr) { ... } [else { ... }] ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2606; Formal syntax](./syntax/hiphop.bnf#HHIf)
+&#x2606; [Formal syntax](./syntax/hiphop.bnf#HHIf)
 
 The presence or absence of a signal can be checked with the `if`
 conditional construct. The value of a signal can be checked too. The
@@ -151,7 +151,7 @@ if(SIG.nowval > 10 && SIG.nowval < 100) { host { console.log("signal in range") 
 ### await delay ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2606; Formal syntax](./syntax/syntax.bnf#HHAwait)
+&#x2606; [Formal syntax](./syntax/syntax.bnf#HHAwait)
 
 It is frequent for a program to wait for one or several signals to be
 emitted. This can be acheived with the `await` construct, which waits
@@ -215,7 +215,7 @@ await (expr);
 ### emit signal([ value ]) ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2606; Formal syntax](./syntax/syntax.bnf#HHEmit)
+&#x2606; [Formal syntax](./syntax/syntax.bnf#HHEmit)
 
 The `emit` form emit the value in the instant. The form `emit sig1()` emits
 a signal without value. The form `emit sig2(val)` emits a signal with
@@ -231,7 +231,7 @@ a value.
 ### sustain signal([ value ]) ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2606; Formal syntax](./syntax/syntax.bnf#HHSustain)
+&#x2606; [Formal syntax](./syntax/syntax.bnf#HHSustain)
 
 Similar to `emit` but the emission is repeated at each instant. The
 statement
@@ -256,15 +256,15 @@ Examples
 A module waiting sequentially for `A` and `B` to be emitted during
 distinct reactions and that emits `O` right after `B` is received.
 
-[&#x2605; await-seq.hh.js](../../test/await-seq.hh.js)
+&#x2605; [await-seq.hh.js](../../test/await-seq.hh.js)
 
 A module that waits the event `I` to be present in three distinctive instants.
 
-[&#x2605; await-count.hh.js](../../test/await-count.hh.js)
+&#x2605; [await-count.hh.js](../../test/await-count.hh.js)
 
 A module using Hop variable inside HipHop statements. 
 
-[&#x2605; variable.hh.js](../../test/variable.hh.js)
+&#x2605; [variable.hh.js](../../test/variable.hh.js)
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
