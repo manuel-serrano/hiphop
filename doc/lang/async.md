@@ -52,7 +52,7 @@ suspended or resumed.
 The following example shows a JavaScript `setTimeout` that is stopped
 when the HipHop `async` statement is aborted.
 
-&#x2605; [exec2.hh.js](../../test/local-kill2.hh.js)
+&#x2605; [exec2.hh.js](../../test/exec2.hh.js)
 
 
 Async JavaScript API
@@ -124,17 +124,6 @@ async {
 Invokes the `react` method with `sigset` argument of the machine
 running the `async` block.
 
-Inside an `async` block, the expression:
-
-```hiphop
-this.react( sigset )
-```
-
-is equivalent to:
-
-```hiphop
-this.machine.react( sigset )
-```
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 [[main page]](../../README.md) | [[documentation]](../README.md) | [[language]](../_lang.md) | [[license]](../license.md)
