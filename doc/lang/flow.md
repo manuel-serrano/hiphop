@@ -54,7 +54,7 @@ several loop constructs.
 
 Implements an infinite loop
 
-&#x2605; Example: [sync1.hh.js](../../ttest/sync1.hh.js).
+&#x2605; Example: [sync1.hh.js](../../test/sync1.hh.js)
 
 
 ### every (test) { ... } ###
