@@ -46,8 +46,8 @@ EOF
 nodejs --enable-source-maps --no-warnings --loader ./node_modules/@hop/hiphop/lib/hiphop-loader.mjs prog.hh.js
 ```
 
-Installing from the Source Files 
---------------------------------
+Installing from the Sources
+---------------------------
 
 HipHop needs to be installed in a prepared directory whose its two
 dependencies, `hopc` and `readlines` are already installed:
@@ -70,8 +70,8 @@ Then, to install HipHop:
 (cd node_modules/@hop; tar xvfz ../download/hiphop.tgz)
 ```
 
-Installing from the git Repository 
-----------------------------------
+Installing from git
+-------------------
 
 Install the HipHop dependencies as for a [source file installation](#installing-from-the-source-files)
 
@@ -82,5 +82,5 @@ Then, to install HipHop:
 ```
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-[[main page]](./README.md) | [[license]](./license.md)
+[[main page]](../README.md) | [[documentation]](./README.md)  | [[license]](./license.md)
 

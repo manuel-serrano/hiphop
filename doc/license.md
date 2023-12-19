@@ -5,6 +5,7 @@ ${ var cfg = require( "./doc.json" ) }
 ${ var pkg = require( "../package.json" ) } -->
 
 ![http://hop.inria.fr/hiphop](./logo.svg) HipHop.js, Synchronous Multitier JavaScript Reactive Programming
+=============================================================================
        
 &copy; 2024 INRIA
 
@@ -17,4 +18,4 @@ https://github.com/manuel-serrano/hiphop.git
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-[[main page]](../README.md) | [[language]](./lang.md) | [[license]](./license.md)
+[[main page]](../README.md) | [[documentation]](./README.md) | [[license]](./license.md)
