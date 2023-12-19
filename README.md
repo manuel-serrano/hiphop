@@ -7,10 +7,12 @@ __Hiphop.js__ is JavaScript DSL for easing the programming of asynchronous
 applications. It executes on unmodified JavaScript engines, let them run
 on server-side or client-side. 
 
-See [HipHop.js](http://hop.inria.fr/hiphop) for the complete 
-generic documentation.
+The documentation is available in two formats:
 
-The documentation of this commit can be found [here](./doc/README.md).
+|     HTML generic documentation     | Markdown commit documentation     |
+|------------------------------------|-----------------------------------|
+| [HTML](http://hop.inria.fr/hiphop) | [markdown](./doc/README.md)       |
+
 
 Installation
 ------------
@@ -35,15 +37,19 @@ npm install @hop/hiphop
 Getting started
 ---------------
 
-In this introduction we merely show how to execute the `hello world`
-HipHop.js program, assuming a Node.js/NPM installation. We
-consider a program stored in a file named `hello.hh.js`, `.hh.js`
+In this introduction we merely show how to write and execute the `hello world`
+HipHop.js program, assuming a Node.js/NPM installation. 
+
+#### Editing and compiling
+
+We consider a program stored in a file named `hello.hh.js`, `.hh.js`
 being the suffix of HipHop source files. This program waits for two
 events `A` and `B` to be received. It then emits itself the event
 `O`. Each time the `R` event is received, the program returns to its
 initial state.
 
 ```javascript
+// hello.hh.js
 import { ReactiveMachine } from "@hop/hiphop";
 
 const HelloWorld = hiphop module() {
@@ -61,11 +67,11 @@ const HelloWorld = hiphop module() {
 ```
 
 The `HelloWorld` program uses the HipHop.js syntactic extension
-(marked by the `hiphop` keyword). This syntactic extension has to be
+(the `hiphop` tag). This syntactic extension has to be
 compiled down to plain JavaScript before being executed. This
 compilation can be executed in two ways.
 
-  1. The easiest way: just asks Nodejs to compile the file on the file. For 
+  1. **The easiest way**: just asks Nodejs to compile the file on the file. For 
   that, simply invokes Node.js as follows:
   
 ```
@@ -80,14 +86,15 @@ export NODE_OPTIONS="--enable-source-maps --no-warnings --loader ./node_modules/
 nodejs hello.hh.js
 ```
 
-   In the future, the Nodejs' option `--loader` might be renamed. 
-   Please check your setting for accomodating the future new name.
+> [!NOTE]
+> In the future, the Nodejs' option `--loader` might be renamed. 
+> Please check your setting for accomodating the future new name.
    
-   With this method, the program `hello.hh.js` will first be silently compiled
+   With this method, the program `hello.hh.js` will be silently compiled
    into a `._hello.mjs` and `._hello.mjs.map` files. These are the files
-   that Nodejs will use for executing.
+   that Nodejs will use for executinon.
    
-   2. The explict way: the file `hello.hh.js` can be compiled in advance and
+   2. **The explict way**: the file `hello.hh.js` is compiled in advance and
    Node.js can be feed with the result of the compilation.
    
 ```
@@ -96,27 +103,26 @@ nodejs --enable-source-maps hello.mjs
 ```
 
    This the most reliable way as it does not depend on any experimental 
-   Nodejs feature.
-   
-The two methods produce equivalent results.
+   Nodejs feature but the two methods produce equivalent results.
+
+
+#### Executing
 
 Once compiled, in order to be executed, a HipHop program has be loaded
-into a reactive machine and executed from within JavaScript. 
+into a *reactive machine* and executed from within JavaScript. 
 Actually the HipHop execution is interleaved with the JavaScript execution. 
 
 
 ```mermaid
 flowchart LR
-    A[javascript] --> B[mach.react]
+    A[javascript] --> B{{mach.react}}
     B --> C[javascript]
-    C --> D[mach.react]
-    D --> E[javascript]
-    E --> F[mach.react]
-    F --> A
+    C -.-> A
 ```
 
 To execute the `HelloWorld` HipHop program from within a JavaScript module,
-we create a machine and we proceed to 4 reactive steps.
+we create a machine and we proceed to *reactions* (here 4 reactions are
+triggered).
 
 ```
 const m = new ReactiveMachine(HelloWorld, "ABRO");
@@ -127,5 +133,6 @@ m.react({ R: true });
 m.react({ A: 3, B: 4 });
 ```
 
-> [!NOTE]
-> HipHop requires the program to use ECMAScript modules.
+> [!CAUTION]
+> HipHop requires the program to use ECMAScript modules. They cannot 
+> be used with CommonJS modules.
