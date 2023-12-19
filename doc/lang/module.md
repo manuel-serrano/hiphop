@@ -22,7 +22,7 @@ and trap scopes. That is:
 ### module [ident](arg, ...) [implements [mirror] intf, ...] { sigdecl... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2604 Formal syntax](../syntax/syntax.md#HHModule)
+[&#x2604; Formal syntax](../syntax/syntax.md#HHModule)
 
 If the optional `ident` is specified a JavaScript constant named
 `ident` is automatically declared and bound to the HipHop module.
@@ -98,7 +98,7 @@ interface contains no body.
 ### interface [ident] [extends intf, ...] { ... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2604 Formal syntax](../syntax/syntax.md#HHInterface)
+[&#x2604; Formal syntax](../syntax/syntax.md#HHInterface)
 
 If the optional `ident` is specified a JavaScript constant named
 `ident` is automatically declared and bound to the HipHop interface.
@@ -130,7 +130,7 @@ module producer() implements intf { ; }
 module consumer() implements mirror intf { ; }
 ```
 
-&#x2605 Example: [imirror.hh.js](../../test/imirror.hh.js)
+&#x2605; Example: [imirror.hh.js](../../test/imirror.hh.js)
 
 
 Running Modules
@@ -140,23 +140,18 @@ A module can be executed either because it is directly loaded into a
 [reactive machine](./api.html) or because it is ran by other module
 via the `run` syntactif form.
 
-### run module(arg, ...) { sig, ...} ###
+### run ident(arg, ...) { sig, ...} ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[Formal syntax](../syntax#HHRun). 
+[&#x2604; Formal syntax](../syntax/syntax.md#HHRun). 
 
-The module can either be:
+The module `ident` expression must be a JavaScript variable
+holding a module.
 
-  1. `ident`, this identifier refers to a module declared under that name.
- Its is an error to refer to an unbound module.
-  2. a dollar expression, which must evaluate to a module. If it fails to do
- so, a `TypeError` is signal when the program is construct.
 
-${ <span class="label label-warning">Note:</span> } The module resolution
-always take place *before* the HipHop execution. That is, when a 
-module identifier is used, that identifier is searched before the execution,
-when a dollar expression is used, that expression is evaluated *before* the
-HipHop execution.
+> [!WARNING]
+> The module resolution always take place *before* the HipHop execution. That is, when a 
+> module identifier is used, that identifier is searched before the execution.
 
 The arguments of the `run` form are bound the module variables.
 
