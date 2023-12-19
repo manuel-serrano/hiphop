@@ -2,8 +2,11 @@
 ${ var path = require("path") }
 ${ var ROOT = path.dirname(module.filename) } -->
 
+Control Flow Operators
+======================
+
 Sequence, Yield, and Parallelism
-================================
+--------------------------------
 
 Sequences are implicit in HipHop. That is, two statements separated by
 a `;` are executed sequentially. 
@@ -19,6 +22,7 @@ the `yield` construct. The execution will resume after the `yield` when
 the `react` method of the machine will be called again.
 
 &#x2605; Example: [weak.hh.js](../../test/weak.hh.js)
+
 &#x2605; Example: [trap-par-3.hh.js](../../test/trap-par-3.hh.js)
 
 
@@ -29,14 +33,17 @@ the `react` method of the machine will be called again.
 
 Run all the bodies in parallel. Complete when all bodies have completed.
 
-&#x2605; Example: [parallel-unary.hh.js](../../test/paralle-unary.hh.js)
+&#x2605; Example: [parallel-unary.hh.js](../../test/parallel-unary.hh.js)
 
 This example uses two nested `fork` constructs. The second is synchronized
 with the first as it waits for an event the first branch is to emit.
 
 
-Exit
-====
+Exits
+=====
+
+HipHop supports an escape mechanism by the means for the `exit`/`break`
+constructs. They enable a program to abort an ongoing computation.
 
 ### exit ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
