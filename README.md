@@ -124,7 +124,7 @@ To execute the `HelloWorld` HipHop program from within a JavaScript module,
 we create a machine and we proceed to *reactions* (here 4 reactions are
 triggered).
 
-```
+```javascript
 const m = new ReactiveMachine(HelloWorld, "ABRO");
 m.addEventListener("O", e => console.log("got: ", e));
 m.react({ A: 1 });
@@ -133,6 +133,6 @@ m.react({ R: true });
 m.react({ A: 3, B: 4 });
 ```
 
-> [!CAUTION]
+> [!IMPORTANT]
 > HipHop requires the program to use ECMAScript modules. They cannot 
 > be used with CommonJS modules.
