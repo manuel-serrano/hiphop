@@ -93,8 +93,8 @@ Compiles a module. Compiling a module is optional and serves only the
 purpose of running preliminary checks such as signal names resolution.
 
 
-HipHop Interface
-----------------
+HipHop Interfaces
+-----------------
 
 Module arguments can either be specified in the module declaration
 or packed into an _interface_ that a module can then implements. 
