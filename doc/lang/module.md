@@ -237,5 +237,5 @@ example shows, that each instance "sees" its own copy of the parameter.
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-[[main page]](./README.md) | [[language]](../_lang.md) | [[license]](../license.md)
+[[main page]](../../README.md) | [[documentation]](../README.md) | [[language]](../_lang.md) | [[license]](../license.md)
 

@@ -167,7 +167,7 @@ loop {
 
 &#x2606; [Formal syntax](../syntax/hiphop.bnf#HHAbort)
 
-Execute the `abort`'s body and abort the execution when delay` is true.
+Execute the `abort`'s body and abort the execution when delay is true.
 
 &#x2605; Example: [abort-par.hh.js](../../test/abort-par.hh.js)
 
@@ -196,7 +196,7 @@ exit: fork {
 
 &#x2606; [Formal syntax](../syntax/hiphop.bnf#HHAbort)
 
-Execute the `weakabort`'s body and abort the execution when delay` is true
+Execute the `weakabort`'s body and abort the execution when delay is true
 at the end of the reaction
 
 &#x2605; Example: [loopeach-weakabort-emit.hh.js](../../test/loopeach-weakabort-emit.hh.js)
