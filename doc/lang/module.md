@@ -22,7 +22,7 @@ and trap scopes. That is:
 ### module [ident](arg, ...) [implements [mirror] intf, ...] { sigdecl... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2604; Formal syntax](../syntax/syntax.md#HHModule)
+[&#x2606; Formal syntax](../syntax/syntax.md#HHModule)
 
 If the optional `ident` is specified a JavaScript constant named
 `ident` is automatically declared and bound to the HipHop module.
@@ -98,7 +98,7 @@ interface contains no body.
 ### interface [ident] [extends intf, ...] { ... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2604; Formal syntax](../syntax/syntax.md#HHInterface)
+[&#x2606; Formal syntax](../syntax/syntax.md#HHInterface)
 
 If the optional `ident` is specified a JavaScript constant named
 `ident` is automatically declared and bound to the HipHop interface.
@@ -143,7 +143,7 @@ via the `run` syntactif form.
 ### run ident(arg, ...) { sig, ...} ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-[&#x2604; Formal syntax](../syntax/syntax.md#HHRun). 
+[&#x2606; Formal syntax](../syntax/syntax.md#HHRun). 
 
 The module `ident` expression must be a JavaScript variable
 holding a module.
@@ -171,29 +171,8 @@ The linkings can either be:
       same names, but contrary to `+`, ignore unbound signals.
 
 
-Top level Definitions
----------------------
-
-Modules and interfaces have an optional name. When a named is declared
-at the JavaScript top-level, it is automatically bound to an eponym
-JavaScript global variable. That is
-
-
-```hiphop
-const intf = hiphop intf { ... };
-const mod = hiphop module() implements ${intf} { .... }
-```
-
-are equivalent to:
-
-```hiphop
-hiphop interface intf { ... };
-hiphop module mod() implements intf { .... }
-```
-
-
 Examples
-========
+--------
 
 ### A Basic example ###
 
@@ -202,22 +181,16 @@ Each time `I` is received, `O` is emitted. The module is directly loaded
 into a reactive machine. It constitutes the program this machine will
 execute.
 
-${ <span class="label label-info">every1.js</span> }
+&#x2605; Example: [every1.js](../../test/every1.hh.js)
 
-```hiphop
-${ doc.include( ROOT + "/../../tests/every1.hh.js" ) }
-```
 
 ### Example using combined signals ###
 
 A module with an input/output signal `O` with default value `5`
 and a combine function.
 
-${ <span class="label label-info">value1.js</span> }
+&#x2605; Example: [value1.hh.js](../../test/value1.hh.js)
 
-```hiphop
-${ doc.include( ROOT + "/../../tests/value1.hh.js" ) }
-```
 
 ### Example of submodule ###
 
@@ -227,11 +200,8 @@ name. That is when the input signal `S` is sent to the machine, both
 modules see it simultaneously and when `sub` emits the output signal
 `U`, the program behaves as if the emission was executed by `main`.
 
-${ <span class="label label-info">run.js</span> }
+&#x2605; Example: [run.hh.js](../../test/run.hh.js)
 
-```hiphop
-${ doc.include( ROOT + "/../../tests/run.hh.js" ) }
-```
 
 ### Example of Interfaces ###
 
@@ -240,21 +210,24 @@ The module `M1` runs the module `M2` by aliasing its signal `Z` to the
 `M2`'s signal `D` and by linking all the other signals (`A`, `B`, and `C`)
 directly.
 
-${ <span class="label label-info">interface.js</span> }
+&#x2605; Example: [interface.hh.js](../../test/interface.hh.js)
 
-```hiphop
-${ doc.include( ROOT + "/../../tests/interface.hh.js" ) }
-```
 
 ### Example of Mirrored Interfaces ###
 
 This example defines two modules connected with mirrored interfaces.
 
-${ <span class="label label-info">imirror.hh.js</span> }
+&#x2605; Example: [imirror.hh.js](../../test/imirro.hh.js)
 
-```hiphop
-${ doc.include( ROOT + "/../../tests/imirror.hh.js" ) }
-```
+### Modules Variables ###
+
+This example shows how to use module variable parameters. In that example,
+two instances of the smae module `mod` are executed in parallel construct,
+each invoking the module with a different variable paramter value. This
+example shows, that each instance "sees" its own copy of the parameter.
+
+&#x2605; Example: [run4.hh.js](../../test/run4.hh.js)
+
 
 ### Generated Modules ###
 
@@ -272,20 +245,6 @@ ${ <span class="label label-info">run3.hh.js</span> }
 ```hiphop
 ${ doc.include( ROOT + "/../../tests/run3.hh.js" ) }
 ```
-
-### Modules Variables ###
-
-This example shows how to use module variable parameters. In that example,
-two instances of the smae module `mod` are executed in parallel construct,
-each invoking the module with a different variable paramter value. This
-example shows, that each instance "sees" its own copy of the parameter.
-
-${ <span class="label label-info">run4.hh.js</span> }
-
-```hiphop
-${ doc.include( ROOT + "/../../tests/run4.hh.js" ) }
-```
-
 
 ### Example of Dynamically Generated Interfaces ###
 
