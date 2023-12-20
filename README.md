@@ -1,4 +1,4 @@
-![http://hop.inria.fr/hiphop](./doc/logo.svg) HipHop: Reactive Web programming
+![http://hop.inria.fr/hiphop](./doc/logo.svg) HipHop: Reactive Web Programming
 ===============================================================================
 
 ![branch workflow](https://github.com/manuel-serrano/hiphop/actions/workflows/hiphop.yml/badge.svg?branch=1.3.x)

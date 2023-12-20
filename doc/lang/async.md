@@ -37,7 +37,9 @@ the JavaScript asynchronous computation resumes the reactive machine
 and emit the signal `O` with the value `5`.
 
 Inside the asynchronous block, the JavaScript `this` object is
-a descriptor of the asynchronous computation.
+a descriptor of the asynchronous computation. The machine that
+has spawned this `async` form is stored in `this.machine`.
+
 
 &#x2605; [exec2.hh.js](../../test/exec2.hh.js)
 
@@ -61,8 +63,9 @@ Async JavaScript API
 JavaScript asynchronous blocks can use several functions to notify
 the reactive machine that their state have changed.
 
-Inside the body of an `async` form, `this` is bound to the reactive
-machine executing asynchronous block. New reactions can be triggered
+Inside the body of an `async` form, `this` is bound to an `async`
+descriptor and the reactive machine executing asynchronous block is
+to be found in `this.machine`. New reactions can be triggered
 from within the `async` JavaScript block. Example:
 
 &#x2605; [setinterval.hh.js](../../test/setinterval.hh.js)
