@@ -4,7 +4,7 @@ import { format } from "util";
 hiphop module prg() {
    in A = "_"; in B;
    loop {
-      host {
+      pragma {
 	 mach.outbuf += ("A.now=" + A.now + " A.pre=" + A.pre + 
 	    " A.nowval=" + A.nowval + " A.preval=" + A.preval) + "\n";
       	 mach.outbuf += ("B.now=" + B.now + " B.pre=" + B.pre +

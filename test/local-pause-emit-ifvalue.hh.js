@@ -9,7 +9,7 @@ hiphop module prg() {
 
       yield;
       emit L();
-      if (!L.nowval) host { mach.outbuf += ("L: " + L.nowval) + "\n" }
+      if (!L.nowval) pragma { mach.outbuf += ("L: " + L.nowval) + "\n" }
    }
 }
 

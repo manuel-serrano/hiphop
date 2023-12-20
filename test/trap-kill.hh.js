@@ -17,7 +17,7 @@ export const mach = new hh.ReactiveMachine(
 	    mach.outbuf = ("been killed\n");
 	 }
       }
-      host { resolve(false); }
+      pragma { resolve(false); }
    });
 
 mach.outbuf = "";

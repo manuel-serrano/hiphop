@@ -14,7 +14,7 @@ export const mach = new hh.ReactiveMachine(
       async (S) {
          setTimeout(this.notify.bind(this), 100, 5);
       }
-      host { resolve(false); }
+      pragma { resolve(false); }
    } );
 
 mach.outbuf = "";

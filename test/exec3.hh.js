@@ -8,7 +8,7 @@ hiphop module prg(resolve) {
 	 setTimeout(() => resolve(5), 100);
       }));
    }
-   host { resolve(false); }
+   pragma { resolve(false); }
 }
 
 export const mach = new hh.ReactiveMachine(prg, "exec");

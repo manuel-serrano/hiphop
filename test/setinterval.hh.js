@@ -12,7 +12,7 @@ hiphop module setinterval(resolve) {
 	 }
       }
    }
-   host { resolve(false); }
+   pragma { resolve(false); }
 };
    
 export const mach = new hh.ReactiveMachine(setinterval);

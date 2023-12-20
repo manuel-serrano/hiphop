@@ -26,7 +26,7 @@ hiphop module prg(resolve) {
       await (tmt.now);
       emit O(tmt.nowval);
    }
-   host { resolve(false); }
+   pragma { resolve(false); }
 }
 
 export const mach = new hh.ReactiveMachine(prg);

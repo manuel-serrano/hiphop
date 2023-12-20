@@ -15,7 +15,7 @@ export const mach = new hh.ReactiveMachine(
 	       clearTimeout(tmt);
 	    }
 
-	    host { mach.outbuf += ('tick 10s') + "\n" }
+	    pragma { mach.outbuf += ('tick 10s') + "\n" }
 	 }
       } par {
 	 async () {
@@ -25,7 +25,7 @@ export const mach = new hh.ReactiveMachine(
       }
 
       emit A();
-      host { resolve(false); }
+      pragma { resolve(false); }
    });
 
 mach.outbuf = "";

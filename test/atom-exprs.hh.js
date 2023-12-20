@@ -9,7 +9,7 @@ hiphop module prg() {
 
       emit L("foo bar");
       yield;
-      host { mach.outbuf += "atom works! value of L is " + L.nowval + "\n"; }
+      pragma { mach.outbuf += "atom works! value of L is " + L.nowval + "\n"; }
    }
 }
 

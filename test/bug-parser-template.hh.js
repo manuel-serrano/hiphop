@@ -4,7 +4,7 @@
 import { ReactiveMachine } from "@hop/hiphop";
 
 hiphop module prg() {
-   host { ; }
+   pragma { ; }
 }
 
 export const mach = new ReactiveMachine(prg);

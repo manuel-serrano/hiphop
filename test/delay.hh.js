@@ -7,9 +7,9 @@ const prg = hiphop module() {
    in S, T;
 
    await (S.now && S.nowval);
-   host { mach.outbuf += "S\n"; }
+   pragma { mach.outbuf += "S\n"; }
    await (T.now && T.nowval.len > 3);
-   host { mach.outbuf += "T\n"; }
+   pragma { mach.outbuf += "T\n"; }
 }
 
 export const mach = new hh.ReactiveMachine(prg, "DELAY");

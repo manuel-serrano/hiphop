@@ -20,7 +20,7 @@ hiphop module prg(resolve) {
       }
    }
    emit Z();
-   host { resolve(false); }
+   pragma { resolve(false); }
 }
 
 export const mach = new hh.ReactiveMachine(prg);

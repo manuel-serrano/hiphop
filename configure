@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Wed Dec 13 21:22:46 2023 (serrano)                */
+#*    Last change :  Wed Dec 20 12:55:56 2023 (serrano)                */
 #*    Copyright   :  2018-23 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -206,7 +206,7 @@ cat $brew.in \
 chmod a+rx $brew
  
 # docker/Dockerfile.in
-for path in docker/Dockerfile etc/hiphop.el doc/doc.json arch/debian/makedeb.sh arch/homebrew/makebrew.sh Makefile lib/config.js examples/hhdroid/Makefile tests/TEST; do
+for path in docker/Dockerfile etc/hiphop.el doc/doc.json arch/debian/makedeb.sh arch/homebrew/makebrew.sh Makefile lib/config.js examples/hhdroid/Makefile test/TEST; do
   rm -f $path 2> /dev/null
   cat $path.in \
     | sed -e "s|@HIPHOPVERSION@|$version|g" \
@@ -237,7 +237,7 @@ done
 
 chmod a+rx arch/debian/makedeb.sh
 chmod a+rx arch/homebrew/makebrew.sh
-chmod a+rx tests/TEST
+chmod a+rx test/TEST
 
 #*---------------------------------------------------------------------*/
 #*    Summary                                                          */

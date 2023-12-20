@@ -6,10 +6,10 @@ hiphop module prg() {
 
    every (sig.now) {
       if (sig.nowval > v) {
-	 host { v = sig.nowval + 1 }
+	 pragma { v = sig.nowval + 1 }
       }
 
-      host { mach.outbuf += ("v= " + v) + "\n" }
+      pragma { mach.outbuf += ("v= " + v) + "\n" }
       yield;
    }
 }

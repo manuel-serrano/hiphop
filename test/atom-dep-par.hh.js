@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 
 hiphop module prg() {
@@ -14,13 +11,13 @@ hiphop module prg() {
    } par {
       loop {
 	 emit A(1);
-	 host { mach.outbuf += A.nowval + "\n"; }
+	 pragma { mach.outbuf += A.nowval + "\n"; }
 	 yield;
       }
    } par {
       loop {
 	 emit A(2);
-	 host { mach.outbuf += A.nowval + "\n"; }
+	 pragma { mach.outbuf += A.nowval + "\n"; }
 	 yield;
       }
    }

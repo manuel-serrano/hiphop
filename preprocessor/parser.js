@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Dec 14 13:08:28 2023 (serrano)                */
+/*    Last change :  Wed Dec 20 12:55:05 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -808,19 +808,19 @@ function parseModuleSiglist(interfacep) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    parseHop ...                                                     */
+/*    parsePragma ...                                                  */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | host statement                                              */
+/*       | pragma statement                                            */
 /*---------------------------------------------------------------------*/
-function parseAtom(token) {
+function parsePragma(token) {
    
-   function parseAtomBlock(loc) {
+   function parsePragmaBlock(loc) {
       return parseHHThisBlock.call(this);
    }
 
    const loc = token.location;
-   const { block, accessors, signames } = parseAtomBlock.call(this, loc);
+   const { block, accessors, signames } = parsePragmaBlock.call(this, loc);
    const appl = astutils.J2SDataPropertyInit(
       loc, 
       astutils.J2SString(loc, "apply"),
@@ -1764,9 +1764,10 @@ function parseStmt(token, declaration) {
    switch (next.type) {
       case this.ID:
 	 switch (next.value) {
+	    case "pragma":
 	    case "host":
 	    case "hop":
-	       return parseAtom.call(this, next);
+	       return parsePragma.call(this, next);
 	    case "module":
 	      return parseModule.call(this, next, declaration, "MODULE");
 	    case "halt":

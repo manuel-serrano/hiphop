@@ -17,7 +17,7 @@ hiphop module prg(resolve) {
       emit O(tick);
    } par {
       loop {
-	 host { mach.outbuf += "tick " + tick++ + "\n"; }
+	 pragma { mach.outbuf += "tick " + tick++ + "\n"; }
 	 yield;
       }
    }

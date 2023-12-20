@@ -1,24 +1,21 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 
 function makePar(x, y) {
    return hiphop fork {
-      host { x() }
+      pragma { x() }
    } par {
-      host { y() }
+      pragma { y() }
    }
 }
 
 hiphop module main() {
    "myseq" {
       loop {
-        host { mach.outbuf += "a\n" }
+        pragma { mach.outbuf += "a\n" }
 	yield;
-        host { mach.outbuf += "b\n" }
+        pragma { mach.outbuf += "b\n" }
 	yield;
-        host { mach.outbuf += "c\n" }
+        pragma { mach.outbuf += "c\n" }
 	yield;
       }
    }

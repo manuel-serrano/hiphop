@@ -1,6 +1,3 @@
-"use @hop/hiphop"
-"use hopscript"
-
 import { ReactiveMachine } from "@hop/hiphop";
 
 let outbuf = "";
@@ -19,7 +16,7 @@ hiphop module prg() {
    in AAA, BBB;
 
    if (AAA.now && this[bar()].now) {
-      host { mach.outbuf += (outbuf + "yep "+ AAA.nowval + ", " + this[foo()].nowval + "\n"); }
+      pragma { mach.outbuf += (outbuf + "yep "+ AAA.nowval + ", " + this[foo()].nowval + "\n"); }
    }
 }
 

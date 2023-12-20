@@ -14,6 +14,27 @@ Sequences are implicit in HipHop. That is, two statements separated by
 a `;` are executed sequentially. 
 
 
+### pragma ###
+<!-- [:@glyphicon glyphicon-tag syntax] -->
+
+&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHYield)
+
+The `pragma` form executes a JavaScript statement during the reaction.
+
+&#x2605; Example: [seq.hh.js](../../test/seq.hh.js)
+
+The JavaScript body may have signal dependencies.
+
+&#x2605; Example: [atom-dep-par.hh.js](../../test/atom-dep-par.hh.js)
+
+> [!WARNING]
+> Under no circumstances JavaScript side effects must be observable
+> from within a HipHop reaction. It is the responsability of the
+> JavaScript program not to execute visible side effects. If such
+> a side effect happen and is observed from within a HipHop reaction,
+> its behavior becomes unpredictable.
+
+
 ### yield ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
@@ -39,6 +60,13 @@ Run all the bodies in parallel. Complete when all bodies have completed.
 
 This example uses two nested `fork` constructs. The second is synchronized
 with the first as it waits for an event the first branch is to emit.
+
+### halt ###
+<!-- [:@glyphicon glyphicon-tag syntax] -->
+
+Terminate the current thread.
+
+&#x2605; Example: [run-add-par.hh.js](../../test/run-add-par.hh.js)
 
 
 Loop

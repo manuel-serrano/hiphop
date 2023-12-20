@@ -30,7 +30,7 @@ hiphop module prg(resolve) {
 
    await (RESS.now);
    emit OT(T.nowval);
-   host { resolve(false); }
+   pragma { resolve(false); }
 }
 
 export const mach = new hh.ReactiveMachine(prg, "exec");

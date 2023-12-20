@@ -3,7 +3,7 @@
 
 hiphop module M() {
    inout a = 99999;
-   host {mach.outbuf += ("a= " + a.nowval) + "\n" };
+   pragma {mach.outbuf += ("a= " + a.nowval) + "\n" };
 }
 
 import * as hh from "@hop/hiphop";

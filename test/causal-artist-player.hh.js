@@ -32,15 +32,15 @@ hiphop module prg(resolve) {
 	 run PRG2() { * };
       } par {
 	 every (artist.now) {
-	    host { mach.outbuf += ("***ARTIST*** " + artist.nowval) + "\n" };
+	    pragma { mach.outbuf += ("***ARTIST*** " + artist.nowval) + "\n" };
 	 }
       } par {
 	 every (playlist.now) {
-	    host { mach.outbuf += ("***PLAYLIST*** " + playlist.nowval) + "\n" };
+	    pragma { mach.outbuf += ("***PLAYLIST*** " + playlist.nowval) + "\n" };
 	 }
       }
    }
-   host { resolve(false); }
+   pragma { resolve(false); }
 }
 
 export const mach = new hh.ReactiveMachine(prg);

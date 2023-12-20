@@ -1,15 +1,12 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 import { format } from "util";
 
 hiphop module m1() {
    inout S, U, W, Z;
    fork {
-      if( S.now ) emit W();
+      if (S.now) emit W();
    } par {
-      if( U.now ) emit Z();
+      if (U.now) emit Z();
    }
 }
 
@@ -29,9 +26,9 @@ mach.debug_emitted_func = val => {
 }
 
 mach.outbuf += ("m.inputAndReact(S)") + "\n";
-mach.inputAndReact( "S" )
+mach.inputAndReact("S")
 
-mach.getElementById( "par" ).appendChild( hiphop run m1() { S, U, A as Z } );
+mach.getElementById("par").appendChild(hiphop run m1() { S, U, A as Z });
 
 mach.outbuf += ("==================== ADD RUN PARALLEL ==================") + "\n";
 

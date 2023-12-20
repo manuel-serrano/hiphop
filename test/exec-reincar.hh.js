@@ -27,7 +27,7 @@ hiphop module prg(resolve) {
    } every (R.now);
    } par {
       await (E.now);
-      host { resolve(false); }
+      pragma { resolve(false); }
    }
 }
 

@@ -13,7 +13,7 @@ export const mach = new hh.ReactiveMachine(
 	       emit B();
 	    }
 	 }
-	 host { mach.outbuf += ( "weakabort terminated 1." ) + "\n"; }
+	 pragma { mach.outbuf += ( "weakabort terminated 1." ) + "\n"; }
       } every( A.now )
    } );
 
@@ -33,7 +33,7 @@ const machine2 = new hh.ReactiveMachine(
 	       emit B();
 	    }
 	 }
-	 host { mach.outbuf += ( "weakabort terminated 2." ) + "\n"; }
+	 pragma { mach.outbuf += ( "weakabort terminated 2." ) + "\n"; }
       } every( A.now )
    } );
 
@@ -54,7 +54,7 @@ const machine3 = new hh.ReactiveMachine(
 	    yield;
 	    emit B();
 	 }
-	 host { mach.outbuf += ( "weakabort terminated 3." ) + "\n"; }
+	 pragma { mach.outbuf += ( "weakabort terminated 3." ) + "\n"; }
       } every( A.now )
    } );
 
