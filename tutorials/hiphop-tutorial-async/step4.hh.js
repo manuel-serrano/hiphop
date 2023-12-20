@@ -72,7 +72,7 @@ hiphop module httpGetRedirection(URL, redirect) implements HttpRequest {
    exit: loop {
       run httpGetOrchestration(URL) { rep as response };
       if (rep.nowval.statusCode === 301 && redirect <= 10) {
-	 host {
+	 pragma {
 	    URL = rep.nowval.headers.location;
 	    redirect++;
 	 }

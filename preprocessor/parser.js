@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Dec 20 12:55:05 2023 (serrano)                */
+/*    Last change :  Wed Dec 20 17:06:45 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -626,7 +626,7 @@ function parseInterfaceIntflist() {
       const token = this.peekToken();
       const loc = token.location;
       const tag = tagInit("interface", loc);
-      let expr = this.parseExpression();
+      let expr = this.parseCondExpression();
       
       const attrs = astutils.J2SObjInit(
 	 loc,
@@ -1002,40 +1002,48 @@ function parseEmitSustain(token, command) {
 	 astutils.J2SString(locid, "signame"),
 	 signame)];
       let accessors = [];
+      let signames = [];
 
       const lparen = this.consumeToken(this.LPAREN);
 	 
       if (this.peekToken().type !== this.RPAREN) {
 	 const ll = lparen.location;
-	 const { init: val, accessors: axs, signames } = parseValueApply.call(this, ll);
+	 const { init: val, accessors: axs, signames: sns } = parseValueApply.call(this, ll);
 	 const rparen = this.consumeToken(this.RPAREN);
 
 	 inits.push(val);
+	 signames = sns;
 	 accessors = axs;
       } else {
 	 this.consumeAny();
       }
-      
-      return astutils.J2SCall(
+
+      const node = astutils.J2SCall(
 	 loc, hhref(loc, command), null,
 	 [astutils.J2SObjInit(loc, inits)].concat(accessors));
+      return { node, signames };
    }
 
    const loc = token.location;
    let locinit = locInit(loc);
-   let nodes = [parseSignalEmit.call(this, loc)];
+   let { node, signames } = parseSignalEmit.call(this, loc);
+   let nodes = [ node ];
 
    while (this.peekToken().type === this.COMMA) {
       this.consumeAny();
-      nodes.push(parseSignalEmit.call(this, loc));
+      const { node: n, signames: s } = parseSignalEmit.call(this, loc);
+      nodes.push(n);
+      signames.push(s);
    }
 
    if (nodes.length === 1) {
-      return nodes[0];
+      return wrapSignalNames(nodes[0], signames);
    } else {
-      return astutils.J2SCall(
+      const node = astutils.J2SCall(
 	 loc, hhref(loc, "SEQUENCE"), null,
 	 [astutils.J2SObjInit(loc, [locinit])].concat(nodes));
+
+      return wrapSignalNames(node, signames);
    }
 }
 
