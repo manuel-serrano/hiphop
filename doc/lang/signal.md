@@ -54,6 +54,17 @@ hiphop module M() {
 
 &#x2605; Example: [samelocalname.hh.js](../../test/samelocalname.hh.js)
 
+Signals can only be emitted once per instant, unless they are declared
+with a default value and a combination function. If such a function
+is specified, it must be associative and commutative. Signales associated
+with a combination function can be emitted several time during the reaction.
+The `.nowval` will contain all the values emitted during the reaction.
+
+&#x2605; Example: [incr-branch.hh.js](../../test/incr-branch.hh.js)
+
+&#x2605; Example: [toggle.hh.js](../../test/toggle.hh.js)
+
+
 Variable Declarations
 ---------------------
 

@@ -27,7 +27,7 @@ The JavaScript body may have signal dependencies.
 
 &#x2605; Example: [atom-dep-par.hh.js](../../test/atom-dep-par.hh.js)
 
-> [!WARNING]
+> [!CAUTION]
 > Under no circumstances JavaScript side effects must be observable
 > from within a HipHop reaction. It is the responsability of the
 > JavaScript program not to execute visible side effects. If such

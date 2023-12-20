@@ -1,5 +1,3 @@
-"use @hop/hiphop";
-
 import * as hh from "@hop/hiphop";
 
 hiphop module t() {
@@ -8,6 +6,6 @@ hiphop module t() {
    pragma { mach.outbuf += "2\n"; }
 }
 
-export const mach = new hh.ReactiveMachine( t );
+export const mach = new hh.ReactiveMachine(t);
 mach.outbuf = "";
-mach.react( {n: 34} );
+mach.react({n: 34});

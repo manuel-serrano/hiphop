@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 
 function bool_and(x, y) {
@@ -20,7 +17,7 @@ hiphop module prg() {
    inout STATE1=false combine bool_or;
    inout STATE2=false combine bool_and;
    inout S;
-   inout TOOGLE;
+   inout TOGGLE;
 		
    loop {
       emit SEQ(SEQ.preval + 1);
@@ -29,9 +26,9 @@ hiphop module prg() {
       emit STATE2(true);
       emit STATE2(false);
       if(S.pre) {
-	 emit TOOGLE(true);
+	 emit TOGGLE(true);
       } else {
-	 emit TOOGLE(false);
+	 emit TOGGLE(false);
 	 emit S();
       }
       yield;
