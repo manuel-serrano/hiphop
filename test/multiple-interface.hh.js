@@ -8,7 +8,7 @@ hiphop module M2() implements I2 {
    emit D(23);
 }
 
-hiphop module M1() implements I1, T2 {
+hiphop module M1() implements I1, I2 {
    inout Z;
    run M2() { Z as D, * }
 }

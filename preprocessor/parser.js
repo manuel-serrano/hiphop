@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Dec 20 17:06:45 2023 (serrano)                */
+/*    Last change :  Thu Dec 21 07:08:47 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1029,22 +1029,7 @@ function parseEmitSustain(token, command) {
    let { node, signames } = parseSignalEmit.call(this, loc);
    let nodes = [ node ];
 
-   while (this.peekToken().type === this.COMMA) {
-      this.consumeAny();
-      const { node: n, signames: s } = parseSignalEmit.call(this, loc);
-      nodes.push(n);
-      signames.push(s);
-   }
-
-   if (nodes.length === 1) {
-      return wrapSignalNames(nodes[0], signames);
-   } else {
-      const node = astutils.J2SCall(
-	 loc, hhref(loc, "SEQUENCE"), null,
-	 [astutils.J2SObjInit(loc, [locinit])].concat(nodes));
-
-      return wrapSignalNames(node, signames);
-   }
+   return wrapSignalNames(nodes[0], signames);
 }
 
 /*---------------------------------------------------------------------*/

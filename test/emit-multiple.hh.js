@@ -1,12 +1,9 @@
-"use @hop/hiphop";
-"use hopscropt";
-
 import * as hh from "@hop/hiphop";
 import { format } from "util";
 
 hiphop module prg() {
    inout A, B;
-   emit A(), B();
+   emit A(); emit B();
 }
 
 export const mach = new hh.ReactiveMachine(prg);
