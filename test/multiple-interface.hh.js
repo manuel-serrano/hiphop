@@ -2,14 +2,14 @@ import * as hh from "@hop/hiphop";
 
 hiphop interface I1 { inout A, B, C; };
 hiphop interface I2 extends I1 { inout D; };
+hiphop interface I3 { inout Z; }
 
 hiphop module M2() implements I2 {
    emit A(10);
    emit D(23);
 }
 
-hiphop module M1() implements I1, I2 {
-   inout Z;
+hiphop module M1() implements I1, I3 {
    run M2() { Z as D, * }
 }
 
