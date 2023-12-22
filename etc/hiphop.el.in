@@ -4,7 +4,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Fri Dec 22 07:14:47 2023 (serrano)                */
+;*    Last change :  Fri Dec 22 09:02:39 2023 (serrano)                */
 ;*    Copyright   :  2018-23 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
@@ -65,7 +65,7 @@ Set this to nil if you don't want a modeline indicator."
    (list 'font-lock-face-hiphop-values "Goldenrod" nil nil t nil nil)))
 (defvar font-lock-face-hiphop-label
   (hiphop-make-face
-   (list 'font-lock-face-hiphop-label "tomato" nil nil t nil)))
+   (list 'font-lock-face-hiphop-label "olive drab" nil nil t nil)))
 
 ;; font lock
 (defcustom hiphop-font-lock-keywords
