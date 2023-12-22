@@ -85,6 +85,19 @@ Implements an infinite loop
 &#x2605; Example: [sync1.hh.js](../../test/sync1.hh.js)
 
 
+Suspension
+----------
+
+### suspend delay { block } ###
+<!-- [:@glyphicon glyphicon-tag syntax] -->
+
+Suspend the execution of `block` while `delay` is true.
+
+&#x2605; Example: [suspend.hh.js](../../test/suspend.hh.js)
+
+&#x2605; Example: [trap-suspend.hh.js](../../test/trap-suspend.hh.js)
+
+
 Lexical Escapes
 ---------------
 

@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 
 export const mach = new hh.ReactiveMachine(
@@ -9,7 +6,7 @@ export const mach = new hh.ReactiveMachine(
       T1: fork {
 	 break T1;
       } par {
-	 suspend( L.now ) {
+	 suspend (L.now) {
 	    yield;
 	 }
       }

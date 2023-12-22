@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Dec 21 07:08:47 2023 (serrano)                */
+/*    Last change :  Fri Dec 22 07:09:08 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1639,7 +1639,7 @@ function parseLet(token, binder) {
 /*    parseSignal ...                                                  */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | { signal id [= val], ; ... }                                */
+/*       | { signal id [= val]; ... }                                  */
 /*       | { signal implements intf, ; ... }                           */
 /*---------------------------------------------------------------------*/
 function parseSignal(token) {

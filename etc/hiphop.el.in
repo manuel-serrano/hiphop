@@ -4,7 +4,7 @@
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Wed Dec 20 12:55:28 2023 (serrano)                */
+;*    Last change :  Fri Dec 22 07:14:47 2023 (serrano)                */
 ;*    Copyright   :  2018-23 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
@@ -38,7 +38,7 @@ Set this to nil if you don't want a modeline indicator."
 	(bgcolor (car (cdr (cdr l))))
 	(italic (car (cdr (cdr (cdr l)))))
 	(bold (car (cdr (cdr (cdr (cdr l))))))
-	(underline (car (cdr (cdr (cdr (cdr l)))))))
+	(underline (car (cdr (cdr (cdr (cdr (cdr l))))))))
     (let ((face (copy-face 'default fname)))
       (when color
 	(set-face-foreground face color))
@@ -49,30 +49,30 @@ Set this to nil if you don't want a modeline indicator."
       (when bold
 	(make-face-bold face))
       (when underline
-	(set-face-underline face nil))
+	(set-face-underline face underline))
       (set-face-attribute face (selected-frame) :height 1.0)
       face)))
 
 ;; HipHop faces
 (defvar font-lock-face-hiphop-hiphop
   (hiphop-make-face
-   (list 'font-lock-face-hiphop-hiphop "white" "gray50" nil t nil)))
+   (list 'font-lock-face-hiphop-hiphop "white" "gray50" nil t nil nil)))
 (defvar font-lock-face-hiphop-async
   (hiphop-make-face
-   (list 'font-lock-face-hiphop-async "tomato2" nil nil t nil)))
+   (list 'font-lock-face-hiphop-async "tomato2" nil nil t nil nil)))
 (defvar font-lock-face-hiphop-values
   (hiphop-make-face
-   (list 'font-lock-face-hiphop-values "Goldenrod" nil nil t nil)))
+   (list 'font-lock-face-hiphop-values "Goldenrod" nil nil t nil nil)))
 (defvar font-lock-face-hiphop-label
   (hiphop-make-face
-   (list 'font-lock-face-hiphop-label "red" nil nil t nil)))
+   (list 'font-lock-face-hiphop-label "tomato" nil nil t nil)))
 
 ;; font lock
 (defcustom hiphop-font-lock-keywords
   (list
    (cons "\\hiphop\\>" 'font-lock-face-hiphop-hiphop)
    (cons "\\<\\(?:fork\\|par\\|in\\|out\\|inout\\)\\>" 'font-lock-keyword-face)
-   (cons "\\(?:loop\\|every\\|while\\|do\\|abort\\|weakabort\\|run\\|signal\\|module\\|interface\\|emit\\|sustain\\|halt\\|yield\\)\\>" 'font-lock-keyword-face)
+   (cons "\\(?:loop\\|every\\|while\\|do\\|abort\\|weakabort\\|run\\|signal\\|module\\|interface\\|emit\\|sustain\\|halt\\|yield\\)\\_>" 'font-lock-keyword-face)
    (cons "\\<\\(?:async\\|pragma\\|kill\\|suspend\\|resume\\)\\>" 'font-lock-face-hiphop-async)
    (list "^[ \t]*\\([A-Za-z0-9_$]+\\):" 1 'font-lock-face-hiphop-label)
    (list "break \\([A-Za-z0-9_$]+\\)" 1 'font-lock-face-hiphop-label)

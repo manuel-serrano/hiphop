@@ -1,11 +1,8 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 
 const prg = hiphop module() {
    in I; out J, O;
-   suspend( I.now ) {
+   suspend (I.now) {
       loop {
 	 emit O();
 	 yield;
