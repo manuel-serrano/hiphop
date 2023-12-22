@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Dec 22 07:09:08 2023 (serrano)                */
+/*    Last change :  Fri Dec 22 11:12:06 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -900,6 +900,7 @@ function parseHalt(token) {
 /*---------------------------------------------------------------------*/
 function parseSequence(token, tagname, id, consume) {
    const loc = token.location;
+   const dollar = this.peekToken().type === this.DOLLAR;
    const locid = id.location;
    const tag = tagInit(tagname, loc);
    const body = parseHHBlock.call(this, consume);
@@ -912,7 +913,7 @@ function parseSequence(token, tagname, id, consume) {
  	   locInit(loc), tag])
       : astutils.J2SObjInit(loc, [locInit(loc), tag]);
 
-   if (body.length === 1 && !id) {
+   if (body.length === 1 && !id && !dollar) {
       return body[0];
    } else {
       return astutils.J2SCall(loc, hhref(loc, "SEQUENCE"), 
@@ -1068,6 +1069,17 @@ function parseAwait(token) {
       [astutils.J2SObjInit(loc, [locInit(loc), tag].concat(inits))]
 	 .concat(accessors));
    return wrapSignalNames(node, signames);
+}
+
+/*---------------------------------------------------------------------*/
+/*    parseDollarStatement ...                                         */
+/*---------------------------------------------------------------------*/
+function parseDollarStatement(token) {
+   const loc = token.location;
+   const expr = this.parseExpression();
+   const attrs = astutils.J2SObjInit(loc, [locInit(loc), tagInit("dollar", loc)]);
+   this.consumeToken(this.RBRACE);
+   return astutils.J2SCall(loc, hhref(loc, "SEQUENCE"), null, [attrs, expr]);
 }
 
 /*---------------------------------------------------------------------*/
@@ -1762,7 +1774,7 @@ function parseStmt(token, declaration) {
 	    case "hop":
 	       return parsePragma.call(this, next);
 	    case "module":
-	      return parseModule.call(this, next, declaration, "MODULE");
+	       return parseModule.call(this, next, declaration, "MODULE");
 	    case "halt":
 	       return parseHalt.call(this, next);
 	    case "fork":
@@ -1808,11 +1820,8 @@ function parseStmt(token, declaration) {
       case this.await:
 	 return parseAwait.call(this, next);
 	 
-      case this.DOLLAR: {
-	    const expr = this.parseExpression();
-	    this.consumeToken(this.RBRACE);
-	    return expr;
-	 }
+      case this.DOLLAR: 
+	 return parseDollarStatement.call(this, next);
 
       case this.LBRACE:
 	 return parseSequence.call(this, next, "sequence", false, false);
