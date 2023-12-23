@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Dec 22 16:50:29 2023 (serrano)                */
+/*    Last change :  Sat Dec 23 15:08:36 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -121,7 +121,7 @@ function tokenLocation(token) {
 /*    tokenValueError ...                                              */
 /*---------------------------------------------------------------------*/
 function tokenValueError(token) {
-   return error.SyntaxError("unexpected token `" + token.value + "'",
+   return error.SyntaxError("unexpected token `" + token.value + "'.",
 			    tokenLocation(token));
 }
 
@@ -129,7 +129,7 @@ function tokenValueError(token) {
 /*    tokenTypeError ...                                               */
 /*---------------------------------------------------------------------*/
 function tokenTypeError(token) {
-   return error.SyntaxError("unexpected token `" + token.type + "'",
+   return error.SyntaxError("unexpected token `" + token.type + "'.",
 			     tokenLocation(token));
 }
 
@@ -1189,7 +1189,7 @@ function parseSuspend(token) {
 	       this, this.consumeAny().location, "SUSPEND", "fromApply");
       const tot = this.consumeAny();
       if (!isIdToken(this, tot, "to")) {
-	 throw error.SyntaxError("SUSPEND: unexpected token `" + tot.value + "'",
+	 throw error.SyntaxError("SUSPEND: unexpected token `" + tot.value + "'.",
 				  tokenLocation(tot));
       }
 

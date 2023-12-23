@@ -160,14 +160,13 @@ Derived Forms
 
 &#x2606; [Formal syntax](../syntax/hiphop.bnf#HHEvery)
 
-A loop executed each time the delay is true. Abort the execution of 
-the body when delay is true. Delays are documented [here](./signal#test-await-and-emit).
+A loop executed each time the `delay` is true. Abort the execution of 
+the body when `delay` is true. Delays are documented [here](./signal#test-await-and-emit).
 
 &#x2605; Example: [every1.hh.js](../../test/every1.hh.js)
 
 All the delay forms can be used with `every`.
 &#x2605; Example: [every-delay.hh.js](../../test/every-delay.hh.js)
-
 
 
 The form `every` is a derived form. The form:
@@ -177,7 +176,7 @@ every (expr) {
    ... body ...
 }
 ```
-is equivalent to
+is equivalent to:
 
 ```javascript
 await (expr);
