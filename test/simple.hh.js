@@ -1,12 +1,9 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 import { format } from "util";
 
 hiphop module prg() {
    inout OK, O, A, B, C, BBBB, NEVER; in STOP; in AIN;
-   abort( STOP.now ) {
+   abort(STOP.now) {
       loop {
 	 JMP: {
 	    emit O();
@@ -18,10 +15,10 @@ hiphop module prg() {
 	 }
 	 emit O();
 
-	 if( O.now ) emit OK();
+	 if(O.now) emit OK();
 	 yield;
 	 emit O();
-	 if( O.now ) emit OK();
+	 if(O.now) emit OK();
 	 yield;
 
 	 fork {
@@ -37,10 +34,10 @@ hiphop module prg() {
    }
    emit NEVER();
    yield;
-   await( STOP.now );
+   await(STOP.now);
    emit B();
-   await( AIN.now );
-   if( AIN.now ) {
+   await(AIN.now);
+   if(AIN.now) {
       emit C();
    }
 }
@@ -54,7 +51,7 @@ hiphop module prg2() {
       yield;
       emit O();
 
-      if( O.now ) {
+      if(O.now) {
 	 emit V();
       }
    }
@@ -73,14 +70,14 @@ hiphop module prg3() {
 hiphop module prg4() {
    out OK, O;
    emit O();
-   if( O.now ) {
+   if(O.now) {
       emit OK();
    }
 }
 
 hiphop module prg5() {
    out OK, O;
-   if( O.now ) {
+   if(O.now) {
       emit OK();
    }
 }
@@ -106,7 +103,7 @@ mach.react();
 mach.outbuf += "will react" + "\n";
 mach.react();
 mach.outbuf += "will react STOP" + "\n";
-mach.inputAndReact( "STOP", undefined );
+mach.inputAndReact("STOP", undefined);
 mach.outbuf += "will react" + "\n";
 mach.react();
 mach.outbuf += "will react" + "\n";
@@ -116,13 +113,13 @@ mach.react();
 mach.outbuf += "will react" + "\n";
 mach.react();
 mach.outbuf += "will react STOP" + "\n";
-mach.inputAndReact( "STOP", undefined )
+mach.inputAndReact("STOP", undefined)
 mach.outbuf += "will react" + "\n";
-mach.inputAndReact( "AIN", undefined )
+mach.inputAndReact("AIN", undefined)
 mach.outbuf += "will react" + "\n";
 mach.react();
 
-const m2 = new hh.ReactiveMachine( prg2, "2" );
+const m2 = new hh.ReactiveMachine(prg2, "2");
 m2.debug_emitted_func = val => {
    mach.outbuf += format(val) + "\n";
 }
@@ -133,7 +130,7 @@ m2.react();
 m2.react();
 m2.react();
 
-const m3 = new hh.ReactiveMachine( prg3, "3" );
+const m3 = new hh.ReactiveMachine(prg3, "3");
 m3.debug_emitted_func = val => {
    mach.outbuf += format(val) + "\n";
 }
@@ -144,7 +141,7 @@ m3.react();
 m3.react();
 m3.react();
 
-const m4 = new hh.ReactiveMachine( prg4, "4" );
+const m4 = new hh.ReactiveMachine(prg4, "4");
 m4.debug_emitted_func = val => {
    mach.outbuf += format(val) + "\n";
 }
@@ -155,7 +152,7 @@ m4.react()
 m4.react()
 m4.react()
 
-const m5 = new hh.ReactiveMachine( prg5, "5" );
+const m5 = new hh.ReactiveMachine(prg5, "5");
 m5.debug_emitted_func = val => {
    mach.outbuf += format(val) + "\n";
 }

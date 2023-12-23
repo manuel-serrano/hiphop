@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Dec 22 11:12:06 2023 (serrano)                */
+/*    Last change :  Fri Dec 22 16:50:29 2023 (serrano)                */
 /*    Copyright   :  2018-23 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -825,7 +825,7 @@ function parsePragma(token) {
       loc, 
       astutils.J2SString(loc, "apply"),
       astutils.J2SMethod(loc, "atomfun", [], block, self(loc)));
-   const tag = tagInit("hop", loc);
+   const tag = tagInit("pragma", loc);
    const attrs = astutils.J2SObjInit(loc, [locInit(loc), tag, appl]);
    const node = astutils.J2SCall(loc, hhref(loc, "ATOM"), null,
 				 [attrs].concat(accessors));

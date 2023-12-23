@@ -1,0 +1,12 @@
+TRAP-LOOP> ;
+--- Output: tick("loop5")
+TRAP-LOOP> ;
+--- Output: tick("loop4")
+TRAP-LOOP> ;
+--- Output: tick("loop3")
+TRAP-LOOP> ;
+--- Output: tick("loop2")
+TRAP-LOOP> ;
+--- Output: tick("loop1")
+TRAP-LOOP> ;
+--- Output: tick("done")

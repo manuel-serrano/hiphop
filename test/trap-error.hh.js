@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript"
-
 import * as hh from "@hop/hiphop";
 
 hiphop module sub() {

@@ -21,7 +21,7 @@ npm test
 2. Using the builtin driver
 ---------------------------
 
-Go into the `tests` directory and execute
+Go into the `test` directory and execute
 
 ```node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all-test.js
 ```
@@ -29,7 +29,7 @@ Go into the `tests` directory and execute
 3. Running an individual test
 -----------------------------
 
-Go into the `tests` directory and execute
+Go into the `test` directory and execute
 
 ```node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all.test.js -- ./<A-TEST.hh.js>
 ```

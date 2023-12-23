@@ -4,15 +4,15 @@ hiphop module prg() {
    inout A, B;
    EXIT: fork {
       await(A.now);
-      hop { mach.outbuf += "A\n"; }
+      pragma { mach.outbuf += "A\n"; }
       break EXIT;
    } par {
       await(B.now);
-      hop { mach.outbuf += "B\n"; }
+      pragma { mach.outbuf += "B\n"; }
       break EXIT;
    }
 
-   hop { mach.outbuf += "end\n"; }
+   pragma { mach.outbuf += "end\n"; }
 }
 
 export const mach = new hh.ReactiveMachine(prg);

@@ -10,7 +10,7 @@ export const mach = new hh.ReactiveMachine(
 	    yield;
 	 }
       }
-      hop { mach.outbuf += "exit trap\n"; }
+      pragma { mach.outbuf += "exit trap\n"; }
    } );
 
 mach.outbuf = "";

@@ -61,6 +61,7 @@ Run all the bodies in parallel. Complete when all bodies have completed.
 This example uses two nested `fork` constructs. The second is synchronized
 with the first as it waits for an event the first branch is to emit.
 
+
 ### halt ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
@@ -73,16 +74,29 @@ Loop
 ----
 
 Loops are so central HipHop program control flow that HipHop proposes
-several loop constructs.
+several loop constructs, see [derived forms](#derived-forms). These are
+all based on a combination of the elementary `loop` construct and
+[lexical espaces](#lexical-escapes).
+
 
 ### loop { ... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
 &#x2606; [Formal syntax](../syntax/hiphop.bnf#HHLoop)
 
-Implements an infinite loop
+This is the basis loop construct that implements an infinite loop
 
 &#x2605; Example: [sync1.hh.js](../../test/sync1.hh.js)
+
+A loop can be interrupted by exiting with a `break` statement.
+
+&#x2605; Example: [trap-loop.hh.js](../../test/trap-loop.hh.js)
+
+> [!NOTE]
+> It is not permitted to implement _instantaneous_ loops, that is
+> a loop for which two iterations may execute during the same reaction.
+> This will be rejected by the compiler. All loops must have a `yield`
+> statement in their control flow.
 
 
 Suspension
