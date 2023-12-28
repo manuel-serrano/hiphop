@@ -16,7 +16,7 @@ hiphop module M1() implements I1, I3 {
 export const mach = new hh.ReactiveMachine(M1);
 mach.outbuf = "";
 
-mach.addEventListener("A", v => mach.outbuf += ("got A " + v.signalValue) + "\n");
-mach.addEventListener("Z", v => mach.outbuf += ("got Z " + v.signalValue) + "\n");
+mach.addEventListener("A", v => mach.outbuf += ("got A " + v.nowval) + "\n");
+mach.addEventListener("Z", v => mach.outbuf += ("got Z " + v.nowval) + "\n");
 
 mach.react();

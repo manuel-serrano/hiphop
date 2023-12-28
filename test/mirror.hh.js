@@ -4,11 +4,11 @@
 import * as hh from "@hop/hiphop";
 
 function foo(evt) {
-   m.outbuf += ("hi from foo signal " + evt.type +  " is set!") + "\n";
+   m.outbuf += ("hi from foo signal " + evt.signame +  " is set!") + "\n";
 }
 
 function bar(evt) {
-   m.outbuf += ("hi from bar signal " + evt.type + " is set with value " + evt.nowval + " !") + "\n"; 
+   m.outbuf += ("hi from bar signal " + evt.signame + " is set with value " + evt.nowval + " !") + "\n"; 
 }
 
 hiphop module prg() {

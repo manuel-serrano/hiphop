@@ -5,15 +5,15 @@ import * as hh from "@hop/hiphop";
 import { format } from "util";
 
 function foo( evt ) {
-   mach.outbuf += ("foo called by " + evt.type + " with value " + evt.nowval) + "\n";
+   mach.outbuf += ("foo called by " + evt.signame + " with value " + evt.nowval) + "\n";
 }
 
 function foo2( evt ) {
-   mach.outbuf += ("foo2 called by " + evt.type + " with value " + evt.nowval) + "\n";
+   mach.outbuf += ("foo2 called by " + evt.signame + " with value " + evt.nowval) + "\n";
 }
 
 function foo3( evt ) {
-   mach.outbuf += ("foo3 called by " + evt.type + " with value " + evt.nowval) + "\n";
+   mach.outbuf += ("foo3 called by " + evt.signame + " with value " + evt.nowval) + "\n";
 }
 
 hiphop module prg() {

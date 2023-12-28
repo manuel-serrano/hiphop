@@ -14,6 +14,6 @@ export const mach = new hh.ReactiveMachine(
    } );
 
 mach.outbuf = "";
-mach.addEventListener( "S", function (evt) { mach.outbuf += `{ type: '${evt.type}', nowval: ${evt.nowval} }` + "\n" });
+mach.addEventListener( "S", function (evt) { mach.outbuf += `{ type: '${evt.signame}', nowval: ${evt.nowval} }` + "\n" });
 mach.react();
 mach.react();

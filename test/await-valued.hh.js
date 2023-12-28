@@ -5,7 +5,7 @@ import * as hh from "@hop/hiphop";
 import { format } from "util";
 
 function foo( evt ) {
-   mach.outbuf += "foo called by " + evt.type + " with value " + evt.nowval + "\n";
+   mach.outbuf += "foo called by " + evt.signame + " with value " + evt.nowval + "\n";
 }
 
 hiphop module prg() {

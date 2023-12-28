@@ -15,15 +15,15 @@ export const mach = new hh.ReactiveMachine( prg, "foo" );
 mach.outbuf = "";
 
 mach.addEventListener( "O", function( evt ) {
-   mach.outbuf += ("first " + evt.type + "\n");
+   mach.outbuf += ("first " + evt.signame + "\n");
 });
 
 mach.addEventListener( "O", function( evt ) {
    evt.stopPropagation();
-   mach.outbuf += ("second " + evt.type + "\n");
+   mach.outbuf += ("second " + evt.signame + "\n");
 });
 
 mach.addEventListener( "O", function( evt ) {
-   mach.outbuf += ("third " + evt.type + "\n");
+   mach.outbuf += ("third " + evt.signame + "\n");
 });
 
