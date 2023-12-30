@@ -29,6 +29,7 @@ via an [interface declaration](./module.md##hiphop-interfaces) or inside an
 HipHop statement, with the [signal](./syntax/hiphop.bnf#HHSignal) construct.
 
 ### signal [direction] ident [= value] [combine function] ... ###
+### signal implements [mirror] intf ... ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
 &#x2606; [Formal syntax](./syntax/syntax.bnf#HHSignal)
@@ -63,6 +64,12 @@ The `.nowval` will contain all the values emitted during the reaction.
 &#x2605; Example: [incr-branch.hh.js](../../test/incr-branch.hh.js)
 
 &#x2605; Example: [toggle.hh.js](../../test/toggle.hh.js)
+
+The form `signal implements [mirror] intf` declares locally the
+signals declared in the interface `intf`. The optional keyword
+`mirror` swaps the input and output signals.
+
+&#x2605; Example: [imirror.hh.js](../../test/imirror.hh.js)
 
 
 Variable Declarations
