@@ -60,12 +60,12 @@ modules](./stdmod.md).
 Table of contents
 -----------------
 
-  1. [Modules](./lang/module.md), _how to define HipHop modules._
-  2. [Signals](./lang/signal.md), _how to deal with signals and variables._
-  3. [Flow](./lang/flow.md), _the HipHop statements._
-  4. [Async](./lang/async.md), _the `async` form to orchestrate JavaScript asynchronous operations._
-  5. [Errors](./lang/error.md), _error and causes._
-  6. [BNF](./syntax/hiphop.bnf), _the full HipHop programming language syntax._
+  1. [Modules](./module.md), _how to define HipHop modules._
+  2. [Signals](./signal.md), _how to deal with signals and variables._
+  3. [Flow](./flow.md), _the HipHop statements._
+  4. [Async](./async.md), _the `async` form to orchestrate JavaScript asynchronous operations._
+  5. [Errors](./error.md), _errors and causes._
+  6. [BNF](../syntax/hiphop.bnf), _the full HipHop programming language syntax._
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - 
