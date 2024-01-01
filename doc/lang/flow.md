@@ -5,8 +5,8 @@ ${ var ROOT = path.dirname(module.filename) } -->
 Control Flow Operators
 ======================
 
-Sequence, Yield, and Parallelism
---------------------------------
+Sequence, Test, Yield, and Parallelism
+--------------------------------------
 
 ### sequence ###
 
@@ -33,6 +33,25 @@ The JavaScript body may have signal dependencies.
 > JavaScript program not to execute visible side effects. If such
 > a side effect happen and is observed from within a HipHop reaction,
 > its behavior becomes unpredictable.
+
+### if delay { block } [else { block }] ###
+<!-- [:@glyphicon glyphicon-tag syntax] -->
+
+Execute the _then_ block is delay is true, execute the optional _else_
+block otherwise. The `delay` [expression](./syntax/hiphop.bnf#HHDelay)
+can be is a JavaScript that evaluates to a boolean. If that expression
+uses signal attributes (`now`, `pre`, `nowval`, or `preval`), HipHop computes
+a flow dependency in order to evalute the `delay` only when all the values
+of these attributes are known for the instance. For instance, the
+test:
+
+```
+if (!SIG.now) { ... }
+```
+
+depends on the `now` attribute of the signal `SIG`. It cannot be evaluated
+before it is know that `SIG` is now emitted during the reaction. The HipHop
+runtime system computes these dependencies automatically.
 
 
 ### yield ###

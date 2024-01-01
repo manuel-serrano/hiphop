@@ -63,7 +63,8 @@ first thread of the `fork` statement until the signal `A` is emitted.
 
 To be executed, a HipHop program has to be loaded into a [_reactive machine_](./api.md).
 This is done with the expression `new ReactiveMachine(abro)`, which creates
-a new reactive machine and loads the `abro` into it.
+a new reactive machine and loads the `abro` into it, and by invoking
+its `react` method.
 
 Event listeners can be added to a reactive machine so that JavaScript
 can be notified of HipHop executions. In our example, a listener
