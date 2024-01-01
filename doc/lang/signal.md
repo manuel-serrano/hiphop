@@ -307,5 +307,5 @@ A module using Hop variable inside HipHop statements.
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-[[main page]](../../README.md) | [[documentation]](../README.md) | [[language]](../_lang.md) | [[license]](../license.md)
+[[main page]](../../README.md) | [[documentation]](../README.md) | [[language]](./README.md) | [[license]](../license.md)
 
