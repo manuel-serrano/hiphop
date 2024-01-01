@@ -64,7 +64,7 @@ Table of contents
   2. [Signals](./lang/signal.md), _how to deal with signals and variables._
   3. [Flow](./lang/flow.md), _the HipHop statements._
   4. [Async](./lang/async.md), _the `async` form to orchestrate JavaScript asynchronous operations._
-  5. [Errors](./lang/errors.md), _error and causes._
+  5. [Errors](./lang/error.md), _error and causes._
   6. [BNF](./syntax/hiphop.bnf), _the full HipHop programming language syntax._
 
 
