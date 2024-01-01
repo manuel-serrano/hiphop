@@ -5,20 +5,43 @@ ${ var ROOT = path.dirname(module.filename) } -->
 HipHop Signals and Variables
 ============================
 
-Signals enable HipHop components to communicate with one
-another. They also implement outside world communications. A signal is
-identified by its name. It can be local, i.e., defined locally inside
-a [module](./module.md) and invisible outside this module, or global,
-that is defined as an input or as an output of the main module.
-Signals have a direction. A signal may be an input from the outside
-world, an output to the outside world, or used in both directions.
+Signals enable HipHop components to communicate with one another. They
+play a role akin to variables in traditional programming
+languages. They are the central component to store and exchange
+information between componnents. They also implement outside world
+communications. A signal is identified by its name. It can be local,
+i.e., defined locally inside a [module](./module.md) and invisible
+outside this module, or global, that is defined as an input or as an
+output of the main module.  Signals have a direction. A signal may be
+an input from the outside world, an output to the outside world, or
+used in both directions.
 
 A signal can also carry a value. The value is specified by the
-_emitter_ and transmitted to the _receiver_. A same signal can be
-emitted several times during a reaction but it that signal is valued,
+_emitter_ and transmitted to the _receiver_. If a same signal is to be
+emitted several times during a reaction with different values,
 a combination used to accumulate all the values must be specified when
 the signal is declared. The combination function is an arbitrary
 JavaScript but it _must_ be associative and commutative.
+
+A signal has four attributes that are **invariant** during a reaction:
+
+  * `now`: a boolean which is true if the signal is emitte during the reaction,
+  and false otherwise.
+  * `pre`: a boolean which is true if the signal is emitte during the 
+  previous reaction, and false otherwise.
+  * `nowval`: the value of the most recent emission of that signal.
+  * `preval`: the value of the signal during the previous instant.
+  
+> [!NOTE]
+> Note the asymmetry between `nowval` and `preval`. The attribute `nowval`
+> _stores_ the most recent value emitted and it changes when a new emission
+> happens. The attribute `preval` stores the value of the signal only at
+> the previous reaction.
+
+Variables are regular JavaScript variables. Assignments to variables
+should never be observed during a reaction. That is, a variable should never
+been read after having being assigned during a reaction. It is the 
+responsibility of the program that ensure that this property holds.
 
 
 Signal Declarations
