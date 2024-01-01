@@ -10,8 +10,8 @@
   5. [API](./api.md)
   6. [Dev](./dev.md)
   7. [Staging](./staging.md)
-  8. [Syntax](./syntax/hiphop.bnf)
+  8. [Syntax](./syntax/hiphop.bnf) _the HipHop BNF syntax._
   
 
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-[[main page]](../README.md) | [[language]](./lang.md) | [[license]](./license.md)
+[[main page]](../README.md) | [[language]](./lang/README.md) | [[license]](./license.md)
