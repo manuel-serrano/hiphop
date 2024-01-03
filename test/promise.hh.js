@@ -1,7 +1,7 @@
 import * as hh from "@hop/hiphop";
 
 hiphop module prg() {
-   out res;
+   out res, rej;
    emit res("machine promise resolved");
 }
 

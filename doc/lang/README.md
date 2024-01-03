@@ -54,7 +54,7 @@ modules](./stdmod.md).
 
 ### Example ###
 
-&#x2605; [The abro example](../test/abro.hh.js)
+&#x2605; [The abro example](../../test/abro.hh.js)
 
 
 Table of contents

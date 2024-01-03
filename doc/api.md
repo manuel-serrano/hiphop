@@ -9,10 +9,9 @@ HipHop reactive machines.
 Use `import * as hiphop from "@hop/hiphop"` to use it.
 
 Once defined, a HipHop program must be _loaded_ into a HipHop
-[reactive machine](./api.md) that can execute this program by
-running _reactions_. A reactive machine is an instance of the
-JavaScript `ReactiveMachine` class which is exported by the
-`@hop/hiphop` module.
+*reactive machine* that execute this program by running _reactions_. A
+reactive machine is an instance of the JavaScript `ReactiveMachine`
+class which is exported by the `@hop/hiphop` module.
 
 
 Creating HipHop Reactive Machines
@@ -139,7 +138,7 @@ Interfacing with HipHop Reactive Machines
 
 Return a promise that resolves when the machine emits the signal named
 `ressig` and that rejects when the machine emits the signal named `rejsig`.
-
+The machine must define the two output signals `ressig` and `rejsig`.
 
 &#x2605; Example: [promise.hh.js](../test/promise.hh.js)
 
