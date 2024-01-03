@@ -7,7 +7,7 @@
   2. [License](./license.md), _the license of this release._
   3. [Download](./download.md), _how to get HipHop._
   4. [Language](./lang/README.md), _the language documentation._
-  5. [API](./api.md)
+  5. [API](./api.md), _HipHop and JavaScript._
   6. [Dev](./dev.md)
   7. [Staging](./staging.md)
   8. [Syntax](./syntax/hiphop.bnf) _the HipHop BNF syntax._
