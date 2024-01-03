@@ -8,5 +8,5 @@ hiphop module prg() {
 export const mach = new hh.ReactiveMachine(prg, "promise");
 mach.outbuf = "";
 
-mach.batchPromise = mach.promise().then(v => mach.outbuf += "v");
+mach.batchPromise = mach.promise().then(v => mach.outbuf += v);
 mach.react();
