@@ -138,12 +138,13 @@ Return the machine name.
 Interfacing with HipHop Reactive Machines
 -----------------------------------------
 
-### mach.promise(ressig = "res", rejsig = "rej") ###
+### mach.promise(ressigname = "res", rejsigname = "rej") ###
 <!-- [:@glyphicon glyphicon-tag function] -->
 
 Return a promise that resolves when the machine emits the signal named
-`ressig` and that rejects when the machine emits the signal named `rejsig`.
-The machine must define the two output signals `ressig` and `rejsig`.
+`ressigname` and that rejects when the machine emits the signal named 
+`rejsigname`. The machine must define the two output signals 
+`ressigname` and `rejsigname`.
 
 &#x2605; Example: [promise.hh.js](../test/promise.hh.js)
 
@@ -182,13 +183,13 @@ obj.addEventListener(event, e => mach.react({ [ event ]: e.value }));
 ```
 
 
-Evaluating Expression
----------------------
+HipHop Eval
+-----------
 
 ### hiphop.eval(string) ###
 <!-- [:@glyphicon glyphicon-tag function] -->
 
-The `eval` function evaluates a string denoting an HipHop statement.
+The `eval` function evaluates a string denoting a HipHop statement.
 
 &#x2605; Example: [eval.hh.js](../test/eval.hh.js)
 
