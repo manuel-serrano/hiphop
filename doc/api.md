@@ -190,14 +190,7 @@ Evaluating Expression
 
 The `eval` function evaluates a string denoting an HipHop statement.
 
-Example:
-
-```javascript
-import * as hh from "@hop/hiphop;
-
-const prgm = hh.eval("hiphop machine() { hop { console.log('hello') } });
-const mach = new hh.ReactiveMachine(prgm);
-```
+&#x2605; Example: [eval.hh.js](../test/eval.hh.js)
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 [[main page]](../README.md) | [[documentation]](./README.md)  | [[license]](./license.md)
