@@ -130,6 +130,11 @@ m.react();
 Return the number of reactions `mach` has already executed.
 
 
+### mach.name() ###
+
+Return the machine name.
+
+
 Interfacing with HipHop Reactive Machines
 -----------------------------------------
 
@@ -158,7 +163,7 @@ Listeners are invoked with one object with one or two fields:
 The `stopPropagation()` is a method that, if called within the listener, will
 inhibit the call of others callback mapped on this signal.
 
-&#x2605; Example: [reactfun.hh.js](../test/reactfun.hh.js)
+&#x2605; Example: [reactfun.hh.js](../test/reactfunc.hh.js)
 
 
 ### mach.removeEventListener(signame, listener) ###
