@@ -1,4 +1,4 @@
-${ var doc = require("hopdoc") }
+<!-- ${ var doc = require("hopdoc") } -->
 
 HipHop
 ======
@@ -19,7 +19,7 @@ Creating HipHop Reactive Machines
 ---------------------------------
 
 ### new hiphop.ReactiveMachine(hhprgm [, opts]) ###
-[:server@glyphicon glyphicon-tag constructor]
+<!-- [:server@glyphicon glyphicon-tag constructor] -->
 
 ```javascript
 import { ReactiveMachine } from "@hop/hiphop";
@@ -54,7 +54,7 @@ Running HipHop Reactive Machines
 --------------------------------
 
 ### mach.react(sigset) ###
-[:@glyphicon glyphicon-tag function]
+<!-- [:@glyphicon glyphicon-tag function] -->
 
 The `react` function machine reactions. If called with no argument,
 it proceed to one step. If called with one or several arguments, it
@@ -99,30 +99,16 @@ associated to these signals.
 
 
 ### mach.init(values) ###
-[:@glyphicon glyphicon-tag function]
+<!-- [:@glyphicon glyphicon-tag function] -->
 
 Set the value of the machine's main module parameters. Can only be executed
 once, and before the machine first reaction.
 
-```javascript
-import { ReactiveMachine } from "@hop/hiphop";
+&#x2605; Example: [trap-kill.hh.js](../../test/trap-kill.hh.js)
 
-hiphop module Main(id) {
-   in I; out O;
-   host { console.log(">>>", id) }
-   await(I.now);
-   host { console.log("<<<", id) }
-}
-
-const mach = new ReactiveMachine(Main);
-
-mach.init(1);
-mach.react();
-mach.react();
-```
 
 ### mach.input(sigset) ###
-[:@glyphicon glyphicon-tag function]
+<!-- [:@glyphicon glyphicon-tag function] -->
 
 The `input` function emits signal in the machine but does not
 triggers the reaction. For instance,
@@ -149,13 +135,14 @@ Interfacing with HipHop Reactive Machines
 -----------------------------------------
 
 ### mach.promise(ressig = "res", rejsig = "rej") ###
+<!-- [:@glyphicon glyphicon-tag function] -->
 
 Return a promise that resolves when the machine emits the signal named
 `ressig` and that rejects when the machine emits the signal named `rejsig`.
 
 
 ### mach.addEventListener(signame, listener) ###
-[:@glyphicon glyphicon-tag function]
+<!-- [:@glyphicon glyphicon-tag function] -->
 
 Associate a listener to the machine event `signame`.
 
@@ -169,22 +156,17 @@ Listeners are invoked with one object with one or two fields:
 The `stopPropagation()` is a method that, if called within the listener, will
 inhibit the call of others callback mapped on this signal.
 
-Example:
+&#x2605; Example: [reactfun.hh.js](../../test/reactfun.hh.js)
 
-${ <span class="label label-info">reactfunc.js</span> }
-
-```javascript
-${ doc.include("../tests/reactfunc.hh.js") }
-```
 
 ### mach.removeEventListener(signame, listener) ###
-[:@glyphicon glyphicon-tag function]
+<!-- [:@glyphicon glyphicon-tag function] -->
 
 Remove the listener from the machine.
 
 
 ### mach.bindEvent(event, obj) ###
-[:@glyphicon glyphicon-tag function]
+<!-- [:@glyphicon glyphicon-tag function] -->
 
 A shortcut for:
 
@@ -193,45 +175,11 @@ obj.addEventListener(event, e => mach.react({ [ event ]: e.value }));
 ```
 
 
-Batch Execution
----------------
-
-### mach.batch() ###
-[:@glyphicon glyphicon-tag function]
-
-The `batch` machine method executes the machine in batch mode against
-commands that are read from the standard input. Example
-
-${ <span class="label label-info">batch.js</span> }
-
-```javascript
-import * as hh from "@hop/hiphop;
-import { Lisinopril } from "./Lisinopril.hh.js;
-
-try {
-   new hh.ReactiveMachine(Lisinopril, "Lisinopril").batch();
-} catch(e) {
-   console.log(e.message);
-   process.exit(1);
-}
-```
-
-To run this program:
-
-```shell
-hop --no-server -g ./test.js &lt; Lisinopril.in
-```
-
-The syntax for the commands is the same as for Esterel. Their syntax
-has to be added to this documentation. (In the meantime, the `tests`
-directory contains many `.in` files that can be used as examples.).
-
-
 Evaluating Expression
 ---------------------
 
 ### hiphop.eval(string) ###
-[:@glyphicon glyphicon-tag function]
+<!-- [:@glyphicon glyphicon-tag function] -->
 
 The `eval` function evaluates a string denoting an HipHop statement.
 

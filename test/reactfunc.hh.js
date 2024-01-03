@@ -1,6 +1,3 @@
-"use @hop/hiphop"
-"use hopscript"
-
 import * as hh from "@hop/hiphop";
 
 function foo(evt) {
@@ -22,11 +19,11 @@ function bar2(evt) {
 hiphop module prg() {
    in I1; in I2; out O1, O11, O2;
    loop {
-      if(I1.now) {
+      if (I1.now) {
 	 emit O1();
 	 emit O11();
       }
-      if(I2.now) {
+      if (I2.now) {
 	 emit O2(I2.nowval);
       }
       yield;
