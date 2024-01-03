@@ -104,7 +104,7 @@ associated to these signals.
 Set the value of the machine's main module parameters. Can only be executed
 once, and before the machine first reaction.
 
-&#x2605; Example: [trap-kill.hh.js](../../test/trap-kill.hh.js)
+&#x2605; Example: [trap-kill.hh.js](../test/trap-kill.hh.js)
 
 
 ### mach.input(sigset) ###
@@ -141,6 +141,9 @@ Return a promise that resolves when the machine emits the signal named
 `ressig` and that rejects when the machine emits the signal named `rejsig`.
 
 
+&#x2605; Example: [promise.hh.js](../test/promise.hh.js)
+
+
 ### mach.addEventListener(signame, listener) ###
 <!-- [:@glyphicon glyphicon-tag function] -->
 
@@ -156,7 +159,7 @@ Listeners are invoked with one object with one or two fields:
 The `stopPropagation()` is a method that, if called within the listener, will
 inhibit the call of others callback mapped on this signal.
 
-&#x2605; Example: [reactfun.hh.js](../../test/reactfun.hh.js)
+&#x2605; Example: [reactfun.hh.js](../test/reactfun.hh.js)
 
 
 ### mach.removeEventListener(signame, listener) ###
