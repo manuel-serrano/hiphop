@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Thu Dec 14 08:11:08 2023 (serrano)                */
-/*    Copyright   :  2023 manuel serrano                               */
+/*    Last change :  Fri Jan  5 21:21:11 2024 (serrano)                */
+/*    Copyright   :  2023-24 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
 /*    -------------------------------------------------------------    */
@@ -125,7 +125,7 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
 
 	 switch (field.val) {
 	    case "signame":
-	       return sigaccess(loc, name, false, false);
+	       return sigaccess(loc, name, true, false);
 	    case "now":
 	       return sigaccess(loc, name, false, false);
 	    case "nowval":
@@ -207,6 +207,9 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
 		  break;
 	       case "preval":
 		  axs.val = true;
+		  axs.pre = true;
+	       case "signame":
+		  axs.val = false;
 		  axs.pre = true;
 	    }
 	 }

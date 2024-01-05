@@ -13,4 +13,4 @@ const prog = hh.eval(`hiphop module() {
    } every(R.now)
 }`);
 
-const mach = new hh.ReactiveMachine(prog, "ABRO");
+const mach = new hh.ReactiveMachine(prog, "EABRO");
