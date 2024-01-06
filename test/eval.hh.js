@@ -1,6 +1,6 @@
 import * as hh from "@hop/hiphop";
 
-const prog = hh.eval(`hiphop module() {
+const prog = hh.hheval(`hiphop module() {
    in A; in B; in R; out O;
 		  
    do {
