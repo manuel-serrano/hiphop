@@ -183,13 +183,14 @@ obj.addEventListener(event, e => mach.react({ [ event ]: e.value }));
 ```
 
 
-HipHop Eval
------------
+HipHop Compile
+--------------
 
-### hiphop.hheval(string) ###
+### hiphop.compileString(string) ###
 <!-- [:@glyphicon glyphicon-tag function] -->
 
-The `eval` function evaluates a string denoting a HipHop statement.
+The `eval` function compiles a string denoting a HipHop statement into
+a JavaScript expression.
 
 &#x2605; Example: [eval.hh.js](../test/eval.hh.js)
 

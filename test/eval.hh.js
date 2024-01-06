@@ -1,6 +1,6 @@
 import * as hh from "@hop/hiphop";
 
-const prog = hh.hheval(`hiphop module() {
+const prog = eval(hh.compileString(`hiphop module() {
    in A; in B; in R; out O;
 		  
    do {
@@ -11,6 +11,6 @@ const prog = hh.hheval(`hiphop module() {
       }
       emit O();
    } every(R.now)
-}`);
+}`));
 
 const mach = new hh.ReactiveMachine(prog, "EABRO");
