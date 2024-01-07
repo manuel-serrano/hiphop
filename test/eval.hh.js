@@ -13,4 +13,4 @@ const prog = eval(hh.compileString(`hiphop module() {
    } every(R.now)
 }`));
 
-const mach = new hh.ReactiveMachine(prog, "EABRO");
+export const mach = new hh.ReactiveMachine(prog, "EABRO");
