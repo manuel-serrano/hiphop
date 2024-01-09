@@ -58,6 +58,7 @@
 
 <Signal> --> <Identifier> <Combine>
   | <Identifier> = <HHExpression> <Combine>
+  | <Identifier> = <HHExpression> <Combine> transient
 
 <Combine> --> | combine <Expression>
 

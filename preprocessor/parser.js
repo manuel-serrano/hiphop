@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Sat Dec 23 15:08:36 2023 (serrano)                */
-/*    Copyright   :  2018-23 Manuel Serrano                            */
+/*    Last change :  Tue Jan  9 05:13:35 2024 (serrano)                */
+/*    Copyright   :  2018-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
 /*=====================================================================*/
@@ -711,49 +711,23 @@ function parseModuleSiglist(interfacep) {
 	 loc,
 	 astutils.J2SString(loc, "direction"),
 	 astutils.J2SString(loc, direction));
-      const id = astutils.J2SDataPropertyInit(
-	 loc,
-	 astutils.J2SString(loc, "name"),
-	 signame);
 
-      const inits = [locInit(loc), dir, id];
       let accessors = [];
-      let signames = []
+      let signames = [];
+      let node;
       
       if (this.peekToken().type === this.EGAL) {
 	 this.consumeAny();
-	 const { expr, accessors: axs, signames: sigs } = parseHHExpression.call(this);
+	 const { expr, accessors: axs, signames: sigs } =
+	    parseHHExpression.call(this);
 	 signames = sigs;
-
-	 const func = astutils.J2SMethod(
-	    loc, "initfunc", [],
-	    astutils.J2SBlock(
-	       loc, loc,
-	       [astutils.J2SReturn(loc, expr)]),
-            self(loc));
-	 const initfunc = astutils.J2SDataPropertyInit(
-	    loc,
-	    astutils.J2SString(loc, "init_func"),
-	    func);
-
 	 accessors = axs;
-	 inits.push(initfunc);
-      }
-	 
-      if (isIdToken(this, this.peekToken(), "combine")) {
-	 const locc = this.consumeAny().location;
-	 const fun = this.parseCondExpression();
 
-	 const combine = astutils.J2SDataPropertyInit(
-	    loc,
-	    astutils.J2SString(loc, "combine_func"),
-	    fun);
-	 inits.push(combine);
+	 node = parseSigAttr.call(this, loc, signame, expr, axs, dir);
+      } else {
+	 node = parseSigAttr.call(this, loc, signame, false, [], dir);
       }
 
-      const attrs = astutils.J2SObjInit(loc, inits);
-      const node = astutils.J2SCall(loc, hhref(loc, "SIGNAL"), null,
-				    [attrs].concat(accessors));
       return wrapSignalNames(node, signames);
    }
 
@@ -1648,6 +1622,70 @@ function parseLet(token, binder) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    parseSiglAttr ...                                                */
+/*---------------------------------------------------------------------*/
+function parseSigAttr(loc, name, init, axs, dir) {
+   const id = astutils.J2SDataPropertyInit(
+      loc,
+      astutils.J2SString(loc, "name"),
+      name);
+   const inits = dir ? [locInit(loc), dir, id] : [locInit(loc), id];
+   let init_func = false;
+
+   if (init) {
+      init_func = astutils.J2SMethod(
+	 loc, "initfunc", [],
+	 astutils.J2SBlock(
+	    loc, loc,
+	    [astutils.J2SReturn(loc, init)]),
+	 self(loc));
+      const initfunc_prop = astutils.J2SDataPropertyInit(
+	 loc,
+	 astutils.J2SString(loc, "init_func"),
+	 init_func);
+
+      inits.push(initfunc_prop);
+   }
+   
+   if (isIdToken(this, this.peekToken(), "combine")) {
+      const locc = this.consumeAny().location;
+      const fun = this.parseCondExpression();
+
+      const combine = astutils.J2SDataPropertyInit(
+	 loc,
+	 astutils.J2SString(loc, "combine_func"),
+	 fun);
+      inits.push(combine);
+   }
+   
+   if (isIdToken(this, this.peekToken(), "transient")) {
+      let reinit_func = init_func;
+
+      if (!reinit_func) {
+	 reinit_func = astutils.J2SMethod(
+	    loc, "reinitfunc", [],
+	    astutils.J2SBlock(
+	       loc, loc,
+	       [astutils.J2SReturn(loc, astutils.J2SUndefined(loc))]),
+	    self(loc));
+      }
+      this.consumeAny();
+
+      const reinitfunc_prop = astutils.J2SDataPropertyInit(
+	 loc,
+	 astutils.J2SString(loc, "reinit_func"),
+	 reinit_func);
+
+      inits.push(reinitfunc_prop);
+   }
+
+   const attrs = astutils.J2SObjInit(loc, inits);
+   
+   return astutils.J2SCall(loc, hhref(loc, "SIGNAL"), null,
+			   [attrs].concat(axs));
+}
+
+/*---------------------------------------------------------------------*/
 /*    parseSignal ...                                                  */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
@@ -1658,60 +1696,25 @@ function parseSignal(token) {
    const loc = token.location;
    let signames = [];
 
-   function signal(loc, name, direction, init, accessors) {
-      const id = astutils.J2SDataPropertyInit(
-	 loc,
-	 astutils.J2SString(loc, "name"),
-	 astutils.J2SString(loc, name));
-      const inits = [id];
-
-      if (init) {
-	 const func = astutils.J2SMethod(
-		  loc, "initfunc", [],
-		  astutils.J2SBlock(
-		     loc, loc,
-		     [astutils.J2SReturn(loc, init)]),
-	          self(loc));
-	 const initfunc = astutils.J2SDataPropertyInit(
-	    loc,
-	    astutils.J2SString(loc, "init_func"),
-	    func);
-
-	 inits.push(initfunc);
-      }
-      
-      if (isIdToken(this, this.peekToken(), "combine")) {
-	 const locc = this.consumeAny().location;
-	 const fun = this.parseCondExpression();
-
-	 const combine = astutils.J2SDataPropertyInit(
-	    loc,
-	    astutils.J2SString(loc, "combine_func"),
-	    fun);
-	 inits.push(combine);
-      }
-
-      const attrs = astutils.J2SObjInit(loc, inits);
-      return astutils.J2SCall(loc, hhref(loc, "SIGNAL"), null,
-			       [attrs].concat(accessors));
-   }
-
    function parseSiglist() {
       let args = [];
 
       while (true) {
-	 const t = this.consumeToken(this.ID);
-	 
-	 if (t.value === "implements") {
+	 const sigloc = this.peekToken().location;
+	 const sigstring = this.peekToken().value;
+	 let signame = parseDollarIdentName.call(this);
+
+	 if (sigstring === "implements") {
 	    args = args.concat(parseInterfaceIntflist.call(this));
 	 } else {
 	    if (this.peekToken().type === this.EGAL) {
 	       this.consumeAny();
-	       const { expr, accessors, signames: sigs } = parseHHExpression.call(this);
-	       args.push(signal.call(this, t.location, t.value, "INOUT", expr, accessors));
+	       const { expr, accessors, signames: sigs } =
+		  parseHHExpression.call(this);
 	       signames = signames.concat(sigs);
+	       args.push(parseSigAttr.call(this, sigloc, signame, expr, accessors, undefined));
 	    } else {
-	       args.push(signal.call(this, t.location, t.value, "INOUT", false, []));
+	       args.push(parseSigAttr.call(this, sigloc, signame, false, [], undefined));
 	    }
 	 }
 	 switch (this.peekToken().type) {

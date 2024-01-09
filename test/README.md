@@ -39,3 +39,11 @@ Where you should replace `<A-TEST.hh.js>` with your test. For example:
 
 ```node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all.test.js -- ./incr-type.hh.js`
 ```
+
+3. Manual compilation
+---------------------
+
+Go into the `test` directory and execute
+
+```node ../lib/hhc.js <A-TEST.hh.js
+```

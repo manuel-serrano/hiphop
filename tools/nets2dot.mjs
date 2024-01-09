@@ -4,10 +4,18 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Thu Nov 30 14:42:32 2023 (serrano)                */
-/*    Copyright   :  2023 manuel serrano                               */
+/*    Last change :  Tue Jan  9 07:59:06 2024 (serrano)                */
+/*    Copyright   :  2023-24 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
+/*    -------------------------------------------------------------    */
+/*    To use this tool, considering a source file foo.hh.js:           */
+/*      - add the option { dumpNets: true } to the machine.            */
+/*      - run the program                                              */
+/*      - node tools/nets2dot.js foo.hh.js.nets+.json > nets+.dot      */
+/*      - node tools/nets2dot.js foo.hh.js.nets-.json > nets-.dot      */
+/*      - dot -T pdf nets+.dot > nets+.pdf                             */
+/*      - dot -T pdf nets-.dot > nets-.pdf                             */
 /*=====================================================================*/
 "use strict";
 "use hopscript";
