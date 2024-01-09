@@ -3,8 +3,8 @@ ${ var doc = require("hopdoc") }
 HipHop Environment
 ==================
 
-Running HipHop programs
------------------------
+Running HipHop programs (this section is obsolete and no longer valid)
+----------------------------------------------------------------------
 
 In this section we assume the file `abro.hh.js` defined as:
 
@@ -154,3 +154,25 @@ minor mode requires `hopjs.el`. It does not work with standard Emacs
 JavaScript mode. The major mode `hopjs.el` is still highly experimental
 and will improve in the future.
 
+
+Visualizing the Net List
+------------------------
+
+The HipHop compiler generates a net list from a HipHop source. This compiled
+program can be executed by simulating the generated circuit. The tools
+`tools/nets2dot.mjs` can be used in conjunction with the 
+[dot](https://graphviz.org) graph visualizer to generate PDF files.
+Here is how to proceed for generating these files, considering a HipHop
+source file named `foo.hh.js`:
+
+  1. Add the option `{ dumpNets: true }` to the reactive machine for 
+  which you want to dump the net list.
+  2. Run your program. This will generate two files: `foo.hh.js.nets-.json`
+  and `foo.hh.js.nets+.json`. The former is the net list before optimization
+  the latter with optimization.
+  3. Generate the `.dot` files:
+    i. bin/nets2dot.js foo.hh.js.nets-.json > nets-.dot
+    ii. bin/nets2dot.js foo.hh.js.nets+.json > nets+.dot
+  4. Generate the PDF files:
+    i. dot -T pdf nets-.dot > nets-.pdf
+    ii. dot -T pdf nets+.dot > nets+.pdf
