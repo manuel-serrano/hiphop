@@ -1,4 +1,4 @@
-${ var doc = require("hopdoc") }
+<!-- ${ var doc = require("hopdoc") } -->
 
 HipHop Environment
 ==================
@@ -171,8 +171,8 @@ source file named `foo.hh.js`:
   and `foo.hh.js.nets+.json`. The former is the net list before optimization
   the latter with optimization.
   3. Generate the `.dot` files:
-    i. bin/nets2dot.js foo.hh.js.nets-.json > nets-.dot
-    ii. bin/nets2dot.js foo.hh.js.nets+.json > nets+.dot
+    - bin/nets2dot.js foo.hh.js.nets-.json > nets-.dot
+    - bin/nets2dot.js foo.hh.js.nets+.json > nets+.dot
   4. Generate the PDF files:
-    i. dot -T pdf nets-.dot > nets-.pdf
-    ii. dot -T pdf nets+.dot > nets+.pdf
+    - dot -T pdf nets-.dot > nets-.pdf
+    - dot -T pdf nets+.dot > nets+.pdf
