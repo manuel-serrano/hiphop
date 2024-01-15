@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/1.3.x/preprocessor/hhaccess.js       */
+/*    .../node_modules/@hop/hiphop/preprocessor/hhaccess.js            */
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Fri Jan  5 21:21:11 2024 (serrano)                */
+/*    Last change :  Mon Jan 15 13:41:46 2024 (serrano)                */
 /*    Copyright   :  2023-24 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -115,17 +115,19 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
 			       args: list.list(attr)});
    }
 
-   function accessor(loc, obj, field, env) {
+   function accessor(loc, axs, obj, field) {
       if (obj instanceof ast.J2SUnresolvedRef) {
 	 const name = new ast.J2SString({loc: loc, val: obj.id});
-	 const axs = env[obj.id];
-	 return sigaccess(loc, name, axs.pre, axs.val);
+	 const fname = field.val;
+	 return sigaccess(loc, name,
+			  fname === "pre" || fname === "preval",
+			  fname === "preval" || fname === "nowval");
       } else {
 	 const name = obj.field;
 
 	 switch (field.val) {
 	    case "signame":
-	       return sigaccess(loc, name, true, false);
+	       return sigaccess(loc, name, false, false);
 	    case "now":
 	       return sigaccess(loc, name, false, false);
 	    case "nowval":
@@ -138,13 +140,10 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
       }
    }
 
-   function accessGeneralDecl(ax, env) {
+   function accessGeneralDecl(ax) {
       const loc = ax.loc;
       const obj = ax.obj;
-      const field = ax.field;
 
-      accessors.push(accessor(loc, obj, field, env));
-      
       if (obj instanceof ast.J2SUnresolvedRef) {
 	 const id = obj.id;
 	 return new ast.J2SDeclInit(
@@ -158,17 +157,6 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
 		{loc: loc,
 		 obj: new ast.J2SUnresolvedRef({loc: loc, id: "this"}),
 		 field: new ast.J2SString({loc: loc, val: id})})});
-/*       } else {                                                      */
-/* 	 const id = "g" + (loc?.offset || gensym++);                   */
-/* 	 ax.obj = new ast.J2SUnresolvedRef({loc: loc, id: id});        */
-/* 	 return new ast.J2SDeclInit(                                   */
-/* 	    {loc: loc,                                                 */
-/* 	     id: id,                                                   */
-/* 	     writable: false,                                          */
-/* 	     vtype: "any",                                             */
-/* 	     binder: "let-opt",                                        */
-/* 	     scopt: "letblock",                                        */
-/* 	     val: obj});                                               */
       }
    }
 
@@ -188,33 +176,14 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
    const loc = node.loc;
 
    if (axs.length > 0) {
-      const axEnv = {};
+      list.array2list(axs.forEach(ax => {
+	 const loc = ax.loc;
+	 const obj = ax.obj;
+	 const field = ax.field;
 
-      // compute all the dependencies
-      axs.forEach(({loc, obj, field}) => {
-	 if (obj instanceof ast.J2SUnresolvedRef) {
-	    let axs = axEnv[obj.id];
-	    if (!axs) {
-	       axs = { val: false, pre: false };
-	       axEnv[obj.id] = axs;
-	    }
-	    switch (field.val) {
-	       case "nowval":
-		  axs.val = true;
-		  break;
-	       case "pre":
-		  axs.pre = true;
-		  break;
-	       case "preval":
-		  axs.val = true;
-		  axs.pre = true;
-	       case "signame":
-		  axs.val = false;
-		  axs.pre = true;
-	    }
-	 }
-      });
-
+	 accessors.push(accessor(loc, ax, obj, field));
+      }));
+      
       return new ast.J2SLetBlock(
 	 {loc: loc,
 	  endloc: loc,
