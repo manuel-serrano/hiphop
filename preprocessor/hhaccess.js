@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Mon Jan 15 13:41:46 2024 (serrano)                */
+/*    Last change :  Mon Jan 15 13:39:36 2024 (serrano)                */
 /*    Copyright   :  2023-24 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -176,6 +176,7 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
    const loc = node.loc;
 
    if (axs.length > 0) {
+
       list.array2list(axs.forEach(ax => {
 	 const loc = ax.loc;
 	 const obj = ax.obj;
@@ -189,7 +190,7 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
 	  endloc: loc,
 	  rec: false,
 	  decls: list.array2list(deleteDuplicates(axs)
-	     .map(ax => accessGeneralDecl(ax, axEnv))
+	     .map(ax => accessGeneralDecl(ax))
 	     .filter(a => a)),
 	  mode: "hopscript",
 	  nodes: list.list(node)});

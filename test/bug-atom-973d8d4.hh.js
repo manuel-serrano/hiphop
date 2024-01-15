@@ -32,5 +32,3 @@ hiphop module prg() {
 export const mach = new ReactiveMachine(prg);
 mach.outbuf = "";
 mach.react();
-
-console.error("BUG-ATOM-973d8d4 should have failed.");
