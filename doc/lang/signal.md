@@ -98,7 +98,7 @@ Transient signals are declared with the addition of the `transient` keyword.
 They do not save their `nowval` value from one instant to the other, 
 contrary to plain signals that do.
 
-&#x2605; Example: [transient.hh.js](../../test/transient.hh.js).
+&#x2605; Example: [transient.hh.js](../../test/transient.hh.js)
 
 
 Variable Declarations
