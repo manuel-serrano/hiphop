@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Jan  9 05:13:35 2024 (serrano)                */
+/*    Last change :  Tue Jan 23 09:13:05 2024 (serrano)                */
 /*    Copyright   :  2018-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1357,12 +1357,18 @@ function parseRunFunExpression(loc, expr, parent) {
 /*    parseRunFun ...                                                  */
 /*---------------------------------------------------------------------*/
 function parseRunFun(next) {
-   if (next.type !== this.ID) {
-      throw tokenTypeError(this.consumeAny());
-   } else {
-      const token = this.consumeAny();
-      const loc = normalizeLoc(token.location);
-      return astutils.J2SUnresolvedRef(loc, token.value);
+   switch (next.type) {
+      case this.ID: {
+	 const token = this.consumeAny();
+	 const loc = normalizeLoc(token.location);
+	 return astutils.J2SUnresolvedRef(loc, token.value);
+      }
+      case this.DOLLAR: {
+	 return this.parsePrimaryDollar();
+      }
+      default:  { 
+	 throw tokenTypeError(this.consumeAny());
+      }
    }
 }
    
