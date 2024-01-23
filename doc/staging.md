@@ -1,6 +1,8 @@
 HipHop Staging
 ==============
 
+This chapter is obsolete and must be revised.
+
 ### Generated Modules ###
 
 This example uses a module generator (the function `Timer`). HipHop modules are
