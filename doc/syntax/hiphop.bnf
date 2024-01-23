@@ -92,7 +92,7 @@
 <HHSeq> --> [ <String> ] <HHBlock>
 
 <HHFork> --> fork [ <String> ] <HHBlock> [ par <HHBlock> ... par <HHBlock> ]
-  | fortk <HHDollarExpression>
+  | fork <HHDollarExpression>
 
 <HHSignalName> --> <Identifier>
   | <HHDollarExpression>
@@ -123,8 +123,10 @@
 
 <HHAsyncResume> --> | resume <HHBlock>
 
-<HHRun> --> run <Ident> ( <HHRunExpressions> ) { <HHRunSigs> }
-  | run <Ident> ( <HHRunExpressions> ) <HHDollarExpression>
+<HHRun> --> run <HHRunModule> ( <HHRunExpressions> ) { <HHRunSigs> }
+  | run <HHRunModule> ( <HHRunExpressions> ) <HHDollarExpression>
+
+<HHRunModule> --> <Ident> | <HHDollarExpression>
 
 <HHRunExpressions> --> | | <HHExpression>, ... <HHExpression>
 
