@@ -4,8 +4,8 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Thu Dec 14 19:01:26 2023 (serrano)                */
-#*    Copyright   :  2006-23 Manuel Serrano                            */
+#*    Last change :  Tue Jan 30 08:07:56 2024 (serrano)                */
+#*    Copyright   :  2006-24 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
 #*=====================================================================*/
@@ -42,7 +42,7 @@ HHC = bin/hhc.sh --js-require-hop
 
 LIB = ast.js batch.js compiler.js compiler-utils.js debugger-common.js \
  debugger.js debugger-server.js debug.js error.js hiphop.js lang.js \
- machine.js net.js queue.js signal.js sweep.js causality.js bourdoncle.js
+ machine.js net.js queue.js signal.js sweep.js causality.js
 
 JSPREPROCESSOR = astutils.js parser.js
 HOPPREPROCESSOR = _hhaccess.hop
