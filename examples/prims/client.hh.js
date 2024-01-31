@@ -14,7 +14,7 @@
 /*---------------------------------------------------------------------*/
 /*    module                                                           */
 /*---------------------------------------------------------------------*/
-import { ReactiveMachine } from ${require.resolve("@hop/hiphop")};
+import { ReactiveMachine } from "@hop/hiphop";
 export { addNumber, resume, pause, setSpeed, start };
 
 /*---------------------------------------------------------------------*/

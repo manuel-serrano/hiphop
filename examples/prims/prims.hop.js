@@ -11,12 +11,17 @@
 /*    run with:                                                        */
 /*      http://localhost:8080/hop/prims?width=300&height=300           */
 /*=====================================================================*/
-"use hopscript";
+import * as hop from "@hop/hop";
+
+/*---------------------------------------------------------------------*/
+/*    R ... hop resolver                                               */
+/*---------------------------------------------------------------------*/
+const R = new hop.Resolver(import.meta.url, "@hop/hiphop/lib/hiphop-loader.mjs");
 
 /*---------------------------------------------------------------------*/
 /*    prims ...                                                        */
 /*---------------------------------------------------------------------*/
-service prims(o) {
+async function prims(o) {
    if (!o) o = {};
    
    let count = ~~o.count || 1;
@@ -26,12 +31,21 @@ service prims(o) {
    let canvas = <canvas width=${width} height=${height}/>;
 
    return <html>
-     <head css=${require.resolve("./prims.hss")}>
+     <head>
+       <link rel="stylesheet" href=${await R.resolve("./prims.hss")}/>
        <link rel="shortcut icon" href="#"/>
+       <script type="importmap">
+         {
+	    "imports": {
+	       "@hop/hop": "${await R.resolve('@hop/hop/hop-client.mjs')}",
+	       "@hop/hiphop": "${await R.resolve('@hop/hiphop')}"
+	    }
+         }
+       </script>
        <script type="module">
-	 import * as pc from ${require.resolve("./client.js")};
+	 import * as pc from ${await R.resolve("./client.hh.js")};
 	 window.onload = () => pc.start(${canvas}, ${speed});
-	 globalThis.pc = pc;
+	 window.pc = pc;
        </script>
      </head>
      <body>
@@ -40,17 +54,16 @@ service prims(o) {
 	 <div>
 	   <button onclick=~{pc.pause()}>Pause</button>
 	   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-	   ${[1,5,10,25,100].map(function(el, idx, arr) {
-	      return <button onclick=~{pc.addNumber(${el})}>
+           ${[1,5,10,25,100].map((el, idx, arr) => 
+              <button onclick=~{pc.addNumber(${el})}>
 	        Add ${el}
-	      </button>
-	   })}
+	      </button>)}
 	 </div>
          <table id="slide-label">
            <tr>
 	     <td>slow</td>
 	     <td>
-	       <input type=range 
+	       <input type=range
                       min=0 max=100 value=${100 - speed}
 		      onchange=~{pc.setSpeed(100 - this.value)}/>
              </td>
@@ -60,5 +73,7 @@ service prims(o) {
      </body>
    </html>
 }
+	     
+new hop.Service(prims, "/prims");
        
-console.log('go to "http://' + hop.hostname + ":" + hop.port + '/hop/prims"');	   
+console.log('go to "http://' + hop.hostname + ":" + hop.port + '/prims"');	   
