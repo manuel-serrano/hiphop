@@ -1,8 +1,0 @@
-Run
-	hop ./translator.js
-
-App
-	http://localhost:8080/hop/translator
-
-Debugger
-	http://localhost:8080/hop/debug

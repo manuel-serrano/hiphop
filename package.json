@@ -37,25 +37,5 @@
    "scripts": {
      "test": "HIPHOP_RESOLVE=\"./lib/hiphop.js\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js",
      "prepare": "node etc/configure.js package.json lib/config.js.in lib/config.js"
-   },
-   "server": "lib/hiphop.js",
-   "client": [
-      "lib/hiphop.js",
-      "lib/lang.js",
-      "lib/error.js",
-      "lib/net.js",
-      "lib/ast.js",
-      "lib/compiler.js",
-      "lib/compiler-utils.js",
-      "lib/sweep.js",
-      "lib/machine.js",
-      "lib/debugger.js",
-      "lib/debugger-common.js",
-      "lib/signal.js",
-      "lib/queue.js",
-      "lib/config.js",
-      "lib/bourdoncle.js",
-      "lib/causality.js",
-      "ulib/parallelmap.js"
-   ]
+   }
 }
