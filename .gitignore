@@ -58,3 +58,4 @@ etc/hiphop.el.in
 tests/TEST
 tests/node_modules
 npm
+*~
