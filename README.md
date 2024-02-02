@@ -118,6 +118,7 @@ flowchart LR
     B --> C[javascript]
     C -.-> A
 ```
+
 To execute the `HelloWorld` HipHop program from within a JavaScript module,
 we create a machine and we proceed to *reactions* (here 4 reactions are
 triggered).
