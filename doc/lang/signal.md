@@ -175,7 +175,7 @@ with `async` forms (see [async documentation](./async.md)).
 Test, Await, and Emit
 ---------------------
 
-### if (expr) { ... } [else { ... }] ###
+### if (delay) { ... } [else { ... }] ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
 &#x2606; [Formal syntax](./syntax/hiphop.bnf#HHIf)
@@ -194,6 +194,9 @@ A particular value of a signal can be checked. For instance:
 ```hiphop
 if(SIG.nowval > 10 && SIG.nowval < 100) { host { console.log("signal in range") } }
 ```
+
+See [staging](../staging.md) for using dynamic signal names in delay
+expressions.
 
 ### await delay ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->

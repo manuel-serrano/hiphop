@@ -1,0 +1,30 @@
+STAGING-ABRO> ;
+--- Output:
+STAGING-ABRO> A B;
+--- Output: O
+STAGING-ABRO> A B;
+--- Output:
+STAGING-ABRO> R;
+--- Output:
+STAGING-ABRO> A B;
+--- Output: O
+STAGING-ABRO> A B;
+--- Output:
+STAGING-ABRO> R;
+--- Output:
+STAGING-ABRO> B;
+--- Output:
+STAGING-ABRO> A;
+--- Output: O
+STAGING-ABRO> A;
+--- Output:
+STAGING-ABRO> B;
+--- Output:
+STAGING-ABRO> R B;
+--- Output:
+STAGING-ABRO> A;
+--- Output:
+STAGING-ABRO> ;
+--- Output:
+STAGING-ABRO> B;
+--- Output: O

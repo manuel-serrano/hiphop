@@ -112,14 +112,12 @@ Once compiled, in order to be executed, a HipHop program has be loaded
 into a *reactive machine* and executed from within JavaScript. 
 Actually the HipHop execution is interleaved with the JavaScript execution. 
 
-
 ```mermaid
 flowchart LR
     A[javascript] --> B{{mach.react}}
     B --> C[javascript]
     C -.-> A
 ```
-
 To execute the `HelloWorld` HipHop program from within a JavaScript module,
 we create a machine and we proceed to *reactions* (here 4 reactions are
 triggered).

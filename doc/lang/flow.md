@@ -34,7 +34,7 @@ The JavaScript body may have signal dependencies.
 > a side effect happen and is observed from within a HipHop reaction,
 > its behavior becomes unpredictable.
 
-### if delay { block } [else { block }] ###
+### if (delay) { block } [else { block }] ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
 Execute the _then_ block is delay is true, execute the optional _else_
@@ -53,6 +53,8 @@ depends on the `now` attribute of the signal `SIG`. It cannot be evaluated
 before it is know that `SIG` is now emitted during the reaction. The HipHop
 runtime system computes these dependencies automatically.
 
+See [staging](../staging.md) for using dynamic signal names in delay
+expressions.
 
 ### yield ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->

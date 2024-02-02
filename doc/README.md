@@ -9,7 +9,7 @@
   4. [Language](./lang/README.md), _the language documentation._
   5. [API](./api.md), _HipHop and JavaScript._
   6. [Dev](./dev.md)
-  7. [Staging](./staging.md)
+  7. [Staging](./staging.md), _dynamic HipHop programs generation._
   8. [Syntax](./syntax/hiphop.bnf) _the HipHop BNF syntax._
   
 

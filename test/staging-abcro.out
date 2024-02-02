@@ -1,0 +1,42 @@
+STATING-ABCRO> A;
+--- Output:
+STATING-ABCRO> B;
+--- Output:
+STATING-ABCRO> C;
+--- Output:
+STATING-ABCRO> ;
+--- Output:
+STATING-ABCRO> A B;
+--- Output: O
+STATING-ABCRO> A B;
+--- Output:
+STATING-ABCRO> R C;
+--- Output:
+STATING-ABCRO> A B;
+--- Output:
+STATING-ABCRO> A B;
+--- Output:
+STATING-ABCRO> R;
+--- Output:
+STATING-ABCRO> C B;
+--- Output:
+STATING-ABCRO> A;
+--- Output: O
+STATING-ABCRO> A;
+--- Output:
+STATING-ABCRO> B;
+--- Output:
+STATING-ABCRO> R B;
+--- Output:
+STATING-ABCRO> A;
+--- Output:
+STATING-ABCRO> ;
+--- Output:
+STATING-ABCRO> B;
+--- Output:
+STATING-ABCRO> R;
+--- Output:
+STATING-ABCRO> C;
+--- Output:
+STATING-ABCRO> A B;
+--- Output: O
