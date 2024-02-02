@@ -1,4 +1,4 @@
-valuepre2> ;
+valuepre2> I(2);
 --- Output: O(3)
-valuepre2> ;
+valuepre2> I(3);
 --- Output: O(5)
