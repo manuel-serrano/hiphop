@@ -9,7 +9,7 @@ const I1 = {
 const I2 = Object.assign({D: { direction: "INOUT" }}, I1);
 
 const bindings = {
-   Z: "D",
+   D: "Z",
    "*": true
 };
 
