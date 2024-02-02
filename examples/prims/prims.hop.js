@@ -1,10 +1,10 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/hiphop/examples/prims/prims.js       */
+/*    .../prgm/project/hiphop/1.3.x/examples/prims/prims.hop.js        */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Oct 16 08:45:43 2012                          */
-/*    Last change :  Mon Dec 27 11:25:16 2021 (serrano)                */
-/*    Copyright   :  2012-21 Manuel Serrano                            */
+/*    Last change :  Fri Feb  2 08:02:57 2024 (serrano)                */
+/*    Copyright   :  2012-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prim numbers aka the Darwin Sieve                                */
 /*    -------------------------------------------------------------    */
@@ -28,7 +28,7 @@ async function prims(o) {
    let width = ~~o.width || 600;
    let height = ~~o.height || 400;
    let speed = ~~o.speed || 20;
-   let canvas = <canvas width=${width} height=${height}/>;
+   let canvas = <canvas id="can" width=${width} height=${height}/>;
 
    return <html>
      <head>
@@ -38,13 +38,13 @@ async function prims(o) {
          {
 	    "imports": {
 	       "@hop/hop": "${await R.resolve('@hop/hop/hop-client.mjs')}",
-	       "@hop/hiphop": "${await R.resolve('@hop/hiphop')}"
+	       "@hop/hiphop": "${await R.resolve('@hop/hiphop-client.mjs')}"
 	    }
          }
        </script>
        <script type="module">
 	 import * as pc from ${await R.resolve("./client.hh.js")};
-	 window.onload = () => pc.start(${canvas}, ${speed});
+         window.onload = () => pc.start(document.getElementById("can"), ${speed});
 	 window.pc = pc;
        </script>
      </head>

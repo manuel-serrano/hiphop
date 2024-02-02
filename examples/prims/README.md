@@ -19,7 +19,7 @@ Run
   1. Spawn the server side
 
 ```
-node --no-warnings --enable-source-maps --loader ./node_modules/@hop/hop/lib/hop-loader.mjs --loader ./node_modules/@hop/hiphop/lib/hiphop-loader.mjs ./prims.hop.js
+node --no-warnings --enable-source-maps --loader ./node_modules/@hop/hop/lib/hop-loader.mjs ./prims.hop.js
 ```
 
   2. Browse the client side at the URL [http://localhost:8888/prims].
