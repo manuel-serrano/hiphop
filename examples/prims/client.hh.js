@@ -1,10 +1,10 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/hiphop/examples/prims/client.js      */
+/*    .../prgm/project/hiphop/1.3.x/examples/prims/client.hh.js        */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Jan 16 07:20:47 2016                          */
-/*    Last change :  Tue Jan 18 16:44:10 2022 (serrano)                */
-/*    Copyright   :  2016-22 Manuel Serrano                            */
+/*    Last change :  Fri Feb  2 09:20:51 2024 (serrano)                */
+/*    Copyright   :  2016-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prims client part                                                */
 /*=====================================================================*/
@@ -271,6 +271,6 @@ function start(g, speed) {
    G.count = 2;
 
    setSpeed(speed);
-   G.mach = new ReactiveMachine(prims(G));
+   G.mach = new ReactiveMachine(prims(G), { sweep: false });
    resume();
 }

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Thu Aug  2 00:58:52 2018                          */
-/*    Last change :  Wed Jan 31 15:54:49 2024 (serrano)                */
+/*    Last change :  Fri Feb  2 09:21:57 2024 (serrano)                */
 /*    Copyright   :  2018-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Multiple parallel translations example                           */
@@ -28,7 +28,7 @@ async function translator() {
          {
 	    "imports": {
 	       "@hop/hop": "${await R.resolve('@hop/hop/hop-client.mjs')}",
-	       "@hop/hiphop": "${await R.resolve('@hop/hiphop')}"
+	       "@hop/hiphop": "${await R.resolve('@hop/hiphop/hiphop-client.mjs')}"
 	    }
          }
        </script>
@@ -40,7 +40,6 @@ async function translator() {
          function updateColor(s) {
             const el = document.getElementById(s.signame);
             el.style.color = s.nowval;
-	    console.log("el=", el, s.nowval);
          }
    
          function updateTrans(s) {

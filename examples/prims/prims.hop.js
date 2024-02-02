@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Oct 16 08:45:43 2012                          */
-/*    Last change :  Fri Feb  2 08:02:57 2024 (serrano)                */
+/*    Last change :  Fri Feb  2 09:05:45 2024 (serrano)                */
 /*    Copyright   :  2012-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prim numbers aka the Darwin Sieve                                */
@@ -38,7 +38,7 @@ async function prims(o) {
          {
 	    "imports": {
 	       "@hop/hop": "${await R.resolve('@hop/hop/hop-client.mjs')}",
-	       "@hop/hiphop": "${await R.resolve('@hop/hiphop-client.mjs')}"
+	       "@hop/hiphop": "${await R.resolve('@hop/hiphop/hiphop-client.mjs')}"
 	    }
          }
        </script>
