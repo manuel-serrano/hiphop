@@ -23,7 +23,8 @@ npm test
 
 Go into the `test` directory and execute
 
-```node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all-test.js
+```
+node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all-test.js
 ```
 
 3. Running an individual test
@@ -31,13 +32,15 @@ Go into the `test` directory and execute
 
 Go into the `test` directory and execute
 
-```node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all.test.js -- ./<A-TEST.hh.js>
+```
+node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all.test.js -- ./<A-TEST.hh.js>
 ```
 
 Where you should replace `<A-TEST.hh.js>` with your test. For example:
 
 
-```node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all.test.js -- ./incr-type.hh.js`
+```
+node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all.test.js -- ./incr-type.hh.js`
 ```
 
 3. Manual compilation
@@ -45,5 +48,6 @@ Where you should replace `<A-TEST.hh.js>` with your test. For example:
 
 Go into the `test` directory and execute
 
-```node ../lib/hhc.js <A-TEST.hh.js
+```
+node ../lib/hhc.js <A-TEST.hh.js
 ```
