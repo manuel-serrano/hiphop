@@ -3,12 +3,17 @@ import * as hh from "@hop/hiphop";
 const I1 = {
    A: { direction: "INOUT", transient: true },
    B: { direction: "INOUT", transient: true },
-   C: { direction: "INOUT", transient: true }, }
+   C: { direction: "INOUT", transient: true }
 }
 
 const I2 = {
    D: { direction: "INOUT" }
 }.assign(I1);
+
+const bindings = {
+   Z: "D",
+   "*": true
+};
 
 hiphop module M2() implements I2 {
    emit A(10);
@@ -17,7 +22,7 @@ hiphop module M2() implements I2 {
 
 hiphop module M1() implements I1 {
    inout Z;
-   run M2() ${Z: "D", "*": true}
+   run M2() ${bindings}
 }
 
 export const mach = new hh.ReactiveMachine(M1);
