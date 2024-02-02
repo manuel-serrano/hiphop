@@ -6,9 +6,7 @@ const I1 = {
    C: { direction: "INOUT", transient: true }
 }
 
-const I2 = {
-   D: { direction: "INOUT" }
-}.assign(I1);
+const I2 = Object.assign({D: { direction: "INOUT" }}, I1);
 
 const bindings = {
    Z: "D",
