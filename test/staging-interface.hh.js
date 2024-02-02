@@ -1,13 +1,13 @@
 import * as hh from "@hop/hiphop";
 
 const I1 = {
-   A: { direction "INOUT", transient: true },
-   B: { direction "INOUT", transient: true }, },
-   C: { direction "INOUT", transient: true }, }
+   A: { direction: "INOUT", transient: true },
+   B: { direction: "INOUT", transient: true },
+   C: { direction: "INOUT", transient: true }, }
 }
 
 const I2 = {
-   D: { direction "INOUT" }
+   D: { direction: "INOUT" }
 }.assign(I1);
 
 hiphop module M2() implements I2 {

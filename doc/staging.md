@@ -20,13 +20,13 @@ assembled from separately developed statements. Within HipHop, the
 escape sequence `${...}` (similar to the escape sequence of JavaScript
 string templates), _inserts_ a HipHop statement into the program being
 build. For instance, compare the two equivalent programs.  The first
-one does not use any stagging facility.
+one uses any stagging facility.
 
-&#x2605; Example: [seq.hh.js](../../test/abro.hh.js)
+&#x2605; Example: [staging-abro.hh.js](../../test/staging-abro.hh.js)
 
-The second one, which executes similarly and produces the same result does:
+The second one, which executes similarly and produces the same result does not:
 
-&#x2605; Example: [seq.hh.js](../../test/staging-abro.hh.js)
+&#x2605; Example: [abro.hh.js](../../test/abro.hh.js)
 
 Note in this example, how HipHop statments are stored in JavaScript
 variables and then inserted into the main program. 
@@ -45,11 +45,11 @@ In the following example, the three arms of a `fork` construct are first
 stored in a JavaScript array and then inserted into the constructed
 HipHop program.
 
-&#x2605; Example: [seq.hh.js](../../test/staging-abcro.hh.js)
+&#x2605; Example: [staging-abcro.hh.js](../../test/staging-abcro.hh.js)
 
 In the second example:
 
-&#x2605; Example: [seq.hh.js](../../test/staging-emit-if2.hh.js)
+&#x2605; Example: [staging-emit-if2.hh.js](../../test/staging-emit-if2.hh.js)
 
 The `emit` statements uses generated signal names.
 
@@ -63,7 +63,7 @@ should used dynamically generated signal names. This is accomplished
 using the JavaScript `this[expre]` syntax. For instance, in the following
 example:
 
-&#x2605; Example: [seq.hh.js](../../test/staging-emit-if2.hh.js)
+&#x2605; Example: [staging-emit-if2.hh.js](../../test/staging-emit-if2.hh.js)
 
 The two HipHop `if` statements uses dynamic signal expressions for 
 refering to signals `B` and `C`.
@@ -91,7 +91,7 @@ Staged interfaces are created by using regular objects whose properites
 are HipHop signal descriptor. An signal descriptor is described by the
 following properties:
 
-  * `direction`: either "IN", "OUT", or "INOUT";
+  * `direction`: a string that might either be `"IN"`, `"OUT"`, or `"INOUT"`;
   * `init`: a JavaScript thunk (a function with no argument) that initializes
   the signal during the reaction;
   * `combine`: an associated binary function used for multiple emissions
@@ -106,7 +106,7 @@ special properties `*` and `+` play the same role as the `*` and
 
 Example:
 
-&#x2605; [staging-interface.hh.js](../test/stating-interface.hh.js)
+&#x2605; [staging-interface.hh.js](../test/staging-interface.hh.js)
 
 which can be compared to the non-staged version:
 
