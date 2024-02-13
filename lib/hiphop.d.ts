@@ -1,10 +1,10 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/hiphop/lib/hiphop.d.ts               */
+/*    serrano/prgm/project/hiphop/1.3.x/lib/hiphop.d.ts                */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Feb 19 05:58:45 2022                          */
-/*    Last change :  Tue Apr 26 15:17:08 2022 (serrano)                */
-/*    Copyright   :  2022 Manuel Serrano                               */
+/*    Last change :  Tue Feb 13 15:18:49 2024 (serrano)                */
+/*    Copyright   :  2022-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop types                                                     */
 /*=====================================================================*/
@@ -37,3 +37,35 @@ export declare class ReactiveMachine<S> {
    react(signals:S): void;
    addEventListener(name: string, callback: MachineListener);
 }
+
+/*---------------------------------------------------------------------*/
+/*    lang                                                             */
+/*---------------------------------------------------------------------*/
+export function MODULE(attrs?: {}, ...nodes: any[]): ASTNode;
+export function INTERFACE(attrs?: {}, ...nodes: any[]): ASTNode;
+export function INTF(attrs?: {}, ...nodes: any[]): ASTNode;
+export function FRAME(attrs?: {}, ...nodes: any[]): ASTNode;
+export function LOCAL(attrs?: {}, ...nodes: any[]): ASTNode;
+export function SIGNAL(attrs?: {}, ...nodes: any[]): ASTNode;
+export function EMIT(attrs?: {}, ...nodes: any[]): ASTNode;
+export function SUSTAIN(attrs?: {}, ...nodes: any[]): ASTNode;
+export function IF(attrs?: {}, ...nodes: any[]): ASTNode;
+export function NOTHING(attrs?: {}, ...nodes: any[]): ASTNode;
+export function PAUSE(attrs?: {}, ...nodes: any[]): ASTNode;
+export function HALT(attrs?: {}, ...nodes: any[]): ASTNode;
+export function AWAIT(attrs?: {}, ...nodes: any[]): ASTNode;
+export function SIGACCESS(attrs?: {}, ...nodes: any[]): ASTNode;
+export function FORK(attrs?: {}, ...nodes: any[]): ASTNode;
+export function ABORT(attrs?: {}, ...nodes: any[]): ASTNode;
+export function WEAKABORT(attrs?: {}, ...nodes: any[]): ASTNode;
+export function SUSPEND(attrs?: {}, ...nodes: any[]): ASTNode;
+export function LOOP(attrs?: {}, ...nodes: any[]): ASTNode;
+export function LOOPEACH(attrs?: {}, ...nodes: any[]): ASTNode;
+export function EVERY(attrs?: {}, ...nodes: any[]): ASTNode;
+export function SEQUENCE(attrs?: {}, ...nodes: any[]): ASTNode;
+export function ATOM(attrs?: {}, ...nodes: any[]): ASTNode;
+export function TRAP(attrs?: {}, ...nodes: any[]): ASTNode;
+export function EXIT(attrs?: {}, ...nodes: any[]): ASTNode;
+export function RUN(attrs?: {}, ...nodes: any[]): ASTNode;
+export function EXEC(attrs?: {}, ...nodes: any[]): ASTNode;
+export { FORK as PARALLEL };
