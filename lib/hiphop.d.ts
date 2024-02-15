@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Feb 19 05:58:45 2022                          */
-/*    Last change :  Tue Feb 13 15:18:49 2024 (serrano)                */
+/*    Last change :  Thu Feb 15 14:52:27 2024 (serrano)                */
 /*    Copyright   :  2022-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop types                                                     */
@@ -36,6 +36,8 @@ export declare class ReactiveMachine<S> {
    promise(ressig?: string, rejsig?: string): Promise<any>;
    react(signals:S): void;
    addEventListener(name: string, callback: MachineListener);
+   name(): any;
+   age(): number;
 }
 
 /*---------------------------------------------------------------------*/
