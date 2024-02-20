@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Mon Feb 19 16:59:33 2024 (serrano)                */
+/*    Last change :  Tue Feb 20 10:20:29 2024 (serrano)                */
 /*    Copyright   :  2018-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -796,7 +796,7 @@ function parseModuleSiglist(interfacep) {
 	 const tok = this.consumeAny();
 
 	 if (this.peekToken().type === this.DOTS) {
-	    sigs = sigs.concat(sigs, parseDotSignalsModule.call(this, tok));
+	    sigs = sigs.concat(parseDotSignalsModule.call(this, tok));
 	 } else {
 	    while (true) {
 	       sigs.push(parseSignalModule.call(this, tok));
