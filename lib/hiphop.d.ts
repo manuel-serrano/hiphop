@@ -12,7 +12,7 @@
 /*---------------------------------------------------------------------*/
 /*    ASTNode                                                          */
 /*---------------------------------------------------------------------*/
-export declare class ASTNode {
+export declare class HipHopFragment {
 }
 
 /*---------------------------------------------------------------------*/
@@ -31,7 +31,7 @@ export type MachineOptions = {
 /*    ReactiveMachine                                                  */
 /*---------------------------------------------------------------------*/
 export declare class ReactiveMachine<S> {
-   constructor(ast: ASTNode, opts?: MachineOptions);
+   constructor(ast: HipHopFragment, opts?: MachineOptions);
 
    promise(ressig?: string, rejsig?: string): Promise<any>;
    react(signals:S): void;
@@ -43,31 +43,31 @@ export declare class ReactiveMachine<S> {
 /*---------------------------------------------------------------------*/
 /*    lang                                                             */
 /*---------------------------------------------------------------------*/
-export function MODULE(attrs?: {}, ...nodes: any[]): ASTNode;
-export function INTERFACE(attrs?: {}, ...nodes: any[]): ASTNode;
-export function INTF(attrs?: {}, ...nodes: any[]): ASTNode;
-export function FRAME(attrs?: {}, ...nodes: any[]): ASTNode;
-export function LOCAL(attrs?: {}, ...nodes: any[]): ASTNode;
-export function SIGNAL(attrs?: {}, ...nodes: any[]): ASTNode;
-export function EMIT(attrs?: {}, ...nodes: any[]): ASTNode;
-export function SUSTAIN(attrs?: {}, ...nodes: any[]): ASTNode;
-export function IF(attrs?: {}, ...nodes: any[]): ASTNode;
-export function NOTHING(attrs?: {}, ...nodes: any[]): ASTNode;
-export function PAUSE(attrs?: {}, ...nodes: any[]): ASTNode;
-export function HALT(attrs?: {}, ...nodes: any[]): ASTNode;
-export function AWAIT(attrs?: {}, ...nodes: any[]): ASTNode;
-export function SIGACCESS(attrs?: {}, ...nodes: any[]): ASTNode;
-export function FORK(attrs?: {}, ...nodes: any[]): ASTNode;
-export function ABORT(attrs?: {}, ...nodes: any[]): ASTNode;
-export function WEAKABORT(attrs?: {}, ...nodes: any[]): ASTNode;
-export function SUSPEND(attrs?: {}, ...nodes: any[]): ASTNode;
-export function LOOP(attrs?: {}, ...nodes: any[]): ASTNode;
-export function LOOPEACH(attrs?: {}, ...nodes: any[]): ASTNode;
-export function EVERY(attrs?: {}, ...nodes: any[]): ASTNode;
-export function SEQUENCE(attrs?: {}, ...nodes: any[]): ASTNode;
-export function ATOM(attrs?: {}, ...nodes: any[]): ASTNode;
-export function TRAP(attrs?: {}, ...nodes: any[]): ASTNode;
-export function EXIT(attrs?: {}, ...nodes: any[]): ASTNode;
-export function RUN(attrs?: {}, ...nodes: any[]): ASTNode;
-export function EXEC(attrs?: {}, ...nodes: any[]): ASTNode;
+export function MODULE(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function INTERFACE(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function INTF(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function FRAME(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function LOCAL(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function SIGNAL(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function EMIT(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function SUSTAIN(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function IF(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function NOTHING(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function PAUSE(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function HALT(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function AWAIT(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function SIGACCESS(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function FORK(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function ABORT(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function WEAKABORT(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function SUSPEND(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function LOOP(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function LOOPEACH(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function EVERY(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function SEQUENCE(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function ATOM(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function TRAP(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function EXIT(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function RUN(attrs?: {}, ...nodes: any[]): HipHopFragment;
+export function EXEC(attrs?: {}, ...nodes: any[]): HipHopFragment;
 export { FORK as PARALLEL };
