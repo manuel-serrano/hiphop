@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Jan 23 09:13:05 2024 (serrano)                */
+/*    Last change :  Mon Feb 19 16:59:33 2024 (serrano)                */
 /*    Copyright   :  2018-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -258,10 +258,10 @@ function parseHHExpression() {
    return parseHHThisExpr.call(this, accessors => {
       if (this.peekToken().type === this.DOLLAR) {
 	 const expr = this.parseDollarExpression();
-	 return { expr: expr, accessors: accessors };
+	 return { expr, accessors };
       } else {
 	 const expr = this.parseCondExpression();
-	 return { expr: expr, accessors: accessors };
+	 return { expr, accessors };
       }
    });
 }
@@ -275,10 +275,10 @@ function parseHHCondExpression(iscnt, isrun) {
       accessors => {
 	 if (this.peekToken().type === this.DOLLAR) {
 	    const expr = this.parseDollarExpression();
-	    return { expr: expr, accessors: accessors };
+	    return { expr, accessors };
 	 } else {
 	    const expr = this.parseCondExpression();
-	    return { expr: expr, accessors: accessors };
+	    return { expr, accessors };
 	 }
       },
       iscnt);
@@ -682,35 +682,36 @@ function parseModuleVarlist() {
 /*---------------------------------------------------------------------*/
 function parseModuleSiglist(interfacep) {
 
-   function parseSignalModule(token) {
-      const loc = token.location;
-      let signame = parseDollarIdentName.call(this);
-      let direction;
-
+   function direction(token) {
       if (token.type === this.in) {
-	 direction = "IN"
+	 return "IN"
       } else if (token.type === this.ID) {
 	 switch (token.value) {
 	    case "out": {
-	       direction = "OUT"
+	       return "OUT"
 	       break;
 	    }
 	    case "inout": {
-	       direction = "INOUT"
+	       return "INOUT"
 	       break;
 	    }
 	    default: {
-	       direction = "INOUT"
+	       return "INOUT"
 	    }
 	 }
       } else {
 	 throw tokenTypeError(token)
       }
+   }
+      
+   function parseSignalModule(token) {
+      const loc = token.location;
+      let signame = parseDollarIdentName.call(this);
       
       const dir = astutils.J2SDataPropertyInit(
 	 loc,
 	 astutils.J2SString(loc, "direction"),
-	 astutils.J2SString(loc, direction));
+	 astutils.J2SString(loc, direction.call(this, token)));
 
       let accessors = [];
       let signames = [];
@@ -731,48 +732,85 @@ function parseModuleSiglist(interfacep) {
       return wrapSignalNames(node, signames);
    }
 
-   let sigs = [];
+   function parseDotSignalsModule(token) {
+      // example:
+      // ... ${expr} = new Set() combine (x, y) => x.union(y)
+      //  =>
+      // expr.map(n => hh.SIGNAL({name: n, initFunc: () => newSet(), ...));
 
-   while (true) {
-      const ty = this.peekToken().type;
+      const loc = this.consumeAny().location;
+      const dir = astutils.J2SDataPropertyInit(
+	 loc,
+	 astutils.J2SString(loc, "direction"),
+	 astutils.J2SString(loc, direction.call(this, token)));
       
-      if (ty === this.in) {
-	 const tok = this.consumeAny();
+      const name = "n";
+      const arg = astutils.J2SUnresolvedRef(loc, name);
+      const formal = astutils.J2SDecl(loc, name);
+      let arr = [];
+
+      if (this.peekToken().type === this.DOLLAR) {
+	 const { expr, accessors } = parseHHExpression.call(this);
+	 arr = expr;
+      } else {
+	 let els = [];
 	 while (true) {
-	    sigs.push(parseSignalModule.call(this, tok));
-	    if (this.peekToken().type === this.COMMA) { 
+	    els.push(astutils.J2SString(loc, this.consumeToken(this.ID).value));
+	    if (this.peekToken().type === this.COMMA) {
 	       this.consumeAny();
 	    } else {
 	       break;
 	    }
 	 }
-	 
+	 arr = astutils.J2SArray(loc, els);
+      }
+
+      const m = astutils.J2SAccess(loc, arr, astutils.J2SString(loc, "map"));
+      
+      if (this.peekToken().type === this.EGAL) {
+	 this.consumeAny();
+	 const { expr, accessors: axs, signames } =
+	    parseHHExpression.call(this);
+
+	 const node = parseSigAttr.call(this, loc, arg, expr, axs, dir);
+	 const arrow = astutils.J2SArrow(loc, "sig", [ formal ], node);
+	 const call =  astutils.J2SCall(loc, m, null, [ arrow ]);
+	 return wrapSignalNames(call, signames);
+      } else {
+	 const node = parseSigAttr.call(this, loc, arg, false, [], dir);
+	 const arrow = astutils.J2SArrow(loc, "sig", [ formal ], node);
+	 return astutils.J2SCall(loc, m, null, [ arrow ]);
+      }
+   }
+
+   function isInOut(token) {
+      return token.type === this.in
+	 || (token.type === this.ID
+	    && (token.value === "out" || token.value === "inout"));
+   }
+   
+   let sigs = [];
+
+   while (true) {
+      if (isInOut.call(this, this.peekToken())) {
+	 const tok = this.consumeAny();
+
+	 if (this.peekToken().type === this.DOTS) {
+	    sigs = sigs.concat(sigs, parseDotSignalsModule.call(this, tok));
+	 } else {
+	    while (true) {
+	       sigs.push(parseSignalModule.call(this, tok));
+	       if (this.peekToken().type === this.COMMA) { 
+		  this.consumeAny();
+	       } else {
+		  break;
+	       }
+	    }
+	 }
 	 if (interfacep && this.peekToken().type === this.RBRACE) {
 	    break;
 	 }
 	 this.consumeToken(this.SEMICOLON);
-      } else if (ty === this.ID) {
-	 const val = this.peekToken().value;
- 	 
-	 if (val === "out" || val === "inout") {
-	    const tok = this.consumeAny();
-
-	    while (true) {
-	       sigs.push(parseSignalModule.call(this, tok));
-	       if (this.peekToken().type === this.COMMA) { 
-	       	  this.consumeAny();
-	       } else {
-	       	  break;
-	       }
-	    }
-
-	    if (interfacep && this.peekToken().type === this.RBRACE) {
-	       break;
-	    }
-	    this.consumeToken(this.SEMICOLON);
-	 } else {
-	    break;
-	 }
       } else {
 	 break;
       }

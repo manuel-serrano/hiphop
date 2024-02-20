@@ -83,6 +83,12 @@ in the main HipHop program.
 
 &#x2605; [run3.hh.js](../test/run3.hh.js)
 
+The input/output signal declaration syntax enables staging. The
+`...` form can be followed by a _dollar_ expression that should evaluate
+to an array of strings that will denote the names of the declared signals.
+
+&#x2605; Example: [staging-incr-branch2.hh.js](../../test/staging-incr-branch2.hh.js)
+
 
 Generated Interfaces
 --------------------

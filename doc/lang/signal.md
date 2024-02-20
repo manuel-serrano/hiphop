@@ -52,6 +52,7 @@ via an [interface declaration](./module.md##hiphop-interfaces) or inside an
 HipHop statement, with the [signal](./syntax/hiphop.bnf#HHSignal) construct.
 
 ### signal [direction] ident [= value] [combine function] ... ###
+### signal [direction] ... ident, ident [= value] [combine function] ... ###
 ### signal implements [mirror] intf ... ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
@@ -99,6 +100,12 @@ They do not save their `nowval` value from one instant to the other,
 contrary to plain signals that do.
 
 &#x2605; Example: [transient.hh.js](../../test/transient.hh.js)
+
+The form using the `...` syntax enables several signals to share the
+same attributes. For instance in the declaration `in ... x, y, z = 1`,
+the three signals `x`, `y, and `z` will be initialized to 1.
+
+&#x2605; Example: [incr-branch2.hh.js](../../test/incr-branch2.hh.js)
 
 
 Variable Declarations

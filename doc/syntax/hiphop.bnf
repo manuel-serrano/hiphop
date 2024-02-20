@@ -53,14 +53,19 @@
 <FormalSignalList> --> | <GlobalSignal>, ... <GlobalSignal>
 
 <GlobalSignal> --> <Direction> <Signal>, ... <Signal>
+  | <Direction> "..." <Identifier>, ..., <Identifier> <SignalAttr>
+  | <Direction> "..." <HHDollarExpression> <SignalAttr>
 
 <Direction> --> | in | out | inout
 
-<Signal> --> <Identifier> <Combine>
-  | <Identifier> = <HHExpression> <Combine>
-  | <Identifier> = <HHExpression> <Combine> transient
-  | <Identifier> = <HHExpression> transient
+<Signal> --> <Identifier> <SignaAttr>
 
+<SignalAttr> ->
+  | <Combine>
+  | = <HHExpression> <Combine>
+  | = <HHExpression> <Combine> transient
+  | = <HHExpression> transient
+  
 <Combine> --> | combine <Expression>
 
 <HHAwait> --> await <HHDelay>
