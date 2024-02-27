@@ -77,6 +77,12 @@ hiphop module M() {
 }
 ```
 
+[Module signals](./module.md) are declared with the keywords `in`,
+`out`, and `inout`.  The signals can be used from outside of the
+machine to pass values in or to receive values after a reaction.
+
+These are signals 
+
 &#x2605; Example: [samelocalname.hh.js](../../test/samelocalname.hh.js)
 
 Signals can only be emitted once per instant, unless they are declared
