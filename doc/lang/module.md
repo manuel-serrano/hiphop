@@ -64,6 +64,9 @@ module to be executed, its signals have to be bound the
 caller signals in its scope (the scope of the corresponding
 `run` form).
 
+Within a module, the `in`, `out`, and `inout` signals can be used
+as any [local signals](./signal.md).
+
 For instance, the `M1` module can be used in the following
 `run` statement from a `M2` module.
 
