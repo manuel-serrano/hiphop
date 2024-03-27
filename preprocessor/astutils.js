@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Thu Dec 14 08:45:46 2023 (serrano)                */
-/*    Copyright   :  2018-23 Manuel Serrano                            */
+/*    Last change :  Wed Mar 27 16:46:24 2024 (serrano)                */
+/*    Copyright   :  2018-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
 /*=====================================================================*/
@@ -447,7 +447,8 @@ export function J2SDecl(loc, id, binder = "let", _scmid = false) {
       	 undefined /* irange */,
       	 undefined /* vrange */, 
       	 null /* hint */,
-      	 false /* export */);
+         false /* export */,
+         false /* optional */);
    } else if (configUtype) { 
       return new ast.J2SDecl(loc, 
       	 id /* id */, 
@@ -467,7 +468,8 @@ export function J2SDecl(loc, id, binder = "let", _scmid = false) {
       	 undefined /* irange */,
       	 undefined /* vrange */, 
       	 null /* hint */,
-      	 false /* export */);
+         false /* export */,
+         false /* optional */);
    } else {
       return new ast.J2SDecl(loc, 
       	 id /* id */, 
@@ -486,7 +488,8 @@ export function J2SDecl(loc, id, binder = "let", _scmid = false) {
       	 undefined /* irange */,
       	 undefined /* vrange */, 
       	 null /* hint */,
-      	 false /* export */);
+         false /* export */,
+         false /* optional */);
    }
 }
 
@@ -514,7 +517,8 @@ export function J2SDeclParam(loc, id, utype) {
       	 undefined /* irange */,
       	 undefined /* vrange */, 
       	 null /* hint */,
-      	 false /* export */);
+         false /* export */,
+         false /* optional */);
    } else if (configUtype) { 
       return new ast.J2SDecl(loc, 
       	 id /* id */, 
@@ -534,7 +538,8 @@ export function J2SDeclParam(loc, id, utype) {
       	 undefined /* irange */,
       	 undefined /* vrange */, 
       	 null /* hint */,
-      	 false /* export */);
+         false /* export */,
+         false /* optional */);
    } else {
       return new ast.J2SDecl(loc, 
       	 id /* id */, 
@@ -553,7 +558,8 @@ export function J2SDeclParam(loc, id, utype) {
       	 undefined /* irange */,
       	 undefined /* vrange */, 
       	 null /* hint */,
-      	 false /* export */);
+         false /* export */,
+         false /* optional */);
    }
 }
 
@@ -581,7 +587,8 @@ export function J2SDeclInitScope(loc, id, val, scope, binder = "let", ronly) {
       	 undefined /* irange */, 
       	 undefined /* vrange */,
       	 null /* hint */, 
-      	 false /* export */, 
+         false /* export */,
+         false /* optional */,
       	 val);
    } else if (configUtype) { 
       return new ast.J2SDeclInit(loc, 
@@ -602,7 +609,8 @@ export function J2SDeclInitScope(loc, id, val, scope, binder = "let", ronly) {
       	 undefined /* irange */, 
       	 undefined /* vrange */,
       	 null /* hint */, 
-      	 false /* export */, 
+         false /* export */,
+         false /* optional */,
       	 val);
    } else {
       return new ast.J2SDeclInit(loc, 
@@ -622,7 +630,8 @@ export function J2SDeclInitScope(loc, id, val, scope, binder = "let", ronly) {
       	 undefined /* irange */, 
       	 undefined /* vrange */,
       	 null /* hint */, 
-      	 false /* export */, 
+         false /* export */,
+         false /* optional */,
       	 val);
    }
 }

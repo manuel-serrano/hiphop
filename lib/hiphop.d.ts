@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Feb 19 05:58:45 2022                          */
-/*    Last change :  Tue Feb 20 11:51:02 2024 (serrano)                */
+/*    Last change :  Thu Feb 22 17:47:44 2024 (serrano)                */
 /*    Copyright   :  2022-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop types                                                     */
@@ -25,6 +25,12 @@ export type MachineListener = ({type: string, nowval: any, now: boolean}) => voi
 /*---------------------------------------------------------------------*/
 export type MachineOptions = {       
    sweep?: boolean;
+   verbose?: number;
+   dumpNets?: boolean;
+   name?: string;
+   traceReactDuration?: boolean;
+   traceCompileDuration?: boolean;
+   causalityErrorTrace?: "shallow" | "deep";
 } 
 	    
 /*---------------------------------------------------------------------*/
