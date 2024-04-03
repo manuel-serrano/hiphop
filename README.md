@@ -64,8 +64,6 @@ const HelloWorld = hiphop module() {
       emit O();
    } every (R.now)
 }
-
-const m = new ReactiveMachine(HelloWorld);
 ```
 
 The `HelloWorld` program uses the HipHop.js syntactic extension
