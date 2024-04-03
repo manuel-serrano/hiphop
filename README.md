@@ -53,7 +53,7 @@ initial state.
 import { ReactiveMachine } from "@hop/hiphop";
 
 const HelloWorld = hiphop module() {
-   in A, in B, in R;
+   in A; in B; in R;
    out O;
    do {
       fork {
@@ -64,6 +64,17 @@ const HelloWorld = hiphop module() {
       emit O();
    } every (R.now)
 }
+
+const m = new ReactiveMachine(HelloWorld);
+m.addEventListener("O", v => console.log("got O", v.nowval));
+
+m.react({A: 1});
+m.react({A: 43});
+m.react({B: 3});
+m.react({B: 8});
+m.react({B: 1});
+m.react({O: 2});
+m.react({B: 0});
 ```
 
 The `HelloWorld` program uses the HipHop.js syntactic extension
@@ -98,7 +109,7 @@ nodejs hello.hh.js
    Node.js can be feed with the result of the compilation.
    
 ```
-nodejs node_module/@hop/hiphop/bin/hhc.mjs hello.hh.js -o hello.mjs
+nodejs node_modules/@hop/hiphop/bin/hhc.mjs hello.hh.js -o hello.mjs
 nodejs --enable-source-maps hello.mjs
 ```
 
