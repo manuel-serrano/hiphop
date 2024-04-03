@@ -66,15 +66,6 @@ const HelloWorld = hiphop module() {
 }
 
 const m = new ReactiveMachine(HelloWorld);
-m.addEventListener("O", v => console.log("got O", v.nowval));
-
-m.react({A: 1});
-m.react({A: 43});
-m.react({B: 3});
-m.react({B: 8});
-m.react({B: 1});
-m.react({O: 2});
-m.react({B: 0});
 ```
 
 The `HelloWorld` program uses the HipHop.js syntactic extension
