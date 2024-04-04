@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/1.3.x/preprocessor/parser.js         */
+/*    serrano/prgm/project/hiphop/hiphop/preprocessor/parser.js        */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Feb 20 10:20:29 2024 (serrano)                */
+/*    Last change :  Thu Apr  4 13:19:47 2024 (serrano)                */
 /*    Copyright   :  2018-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -243,7 +243,7 @@ function wrapSignalNames(expr, signames) {
       return expr;
    } else {
       const loc = normalizeLoc(expr.loc);
-      const formals = signames.map(s => astutils.J2SDecl(loc, s.id));
+      const formals = signames.map(s => astutils.J2SDecl(loc, s.id, "param"));
       const actuals = signames.map(s => s.field);
       const arrow = astutils.J2SArrow(loc, "signames", formals, expr);
 
@@ -746,7 +746,7 @@ function parseModuleSiglist(interfacep) {
       
       const name = "n";
       const arg = astutils.J2SUnresolvedRef(loc, name);
-      const formal = astutils.J2SDecl(loc, name);
+      const formal = astutils.J2SDecl(loc, name, "param");
       let arr = [];
 
       if (this.peekToken().type === this.DOLLAR) {
@@ -1894,12 +1894,17 @@ function parseHiphopValue(token, declaration, conf) {
       }
    }
 
+   function isInterfacep(next) {
+      return (next.type === this.ID && next.value === "interface")
+	 || (next.type === this.INTERFACE);
+   }
+
    const next = this.peekToken();
 
    if (next.type === this.ID && next.value === "module") {
       this.consumeAny();
       return wrapVarDecl(parseModule.call(this, next, declaration, "MODULE"));
-   } else if (next.type === this.ID && next.value === "interface") {
+   } else if (isInterfacep.call(this, next)) {
       this.consumeAny();
       return wrapVarDecl(parseInterface.call(this, next, declaration));
    } else {

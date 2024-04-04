@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/1.3.x/lib/hiphop.d.ts                */
+/*    serrano/prgm/project/hiphop/hiphop/lib/hiphop.d.ts               */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Feb 19 05:58:45 2022                          */
-/*    Last change :  Tue Feb 20 11:51:02 2024 (serrano)                */
+/*    Last change :  Thu Apr  4 09:51:01 2024 (serrano)                */
 /*    Copyright   :  2022-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop types                                                     */
@@ -23,7 +23,8 @@ export type MachineListener = ({type: string, nowval: any, now: boolean}) => voi
 /*---------------------------------------------------------------------*/
 /*    MachineOptions                                                   */
 /*---------------------------------------------------------------------*/
-export type MachineOptions = {       
+export type MachineOptions = {
+   name?: string;
    sweep?: boolean;
 } 
 	    
@@ -34,7 +35,7 @@ export declare class ReactiveMachine<S> {
    constructor(ast: HipHopFragment, opts?: MachineOptions);
 
    promise(ressig?: string, rejsig?: string): Promise<any>;
-   react(signals:S): void;
+   react(signals?:S): void;
    addEventListener(name: string, callback: MachineListener);
    name(): any;
    age(): number;
