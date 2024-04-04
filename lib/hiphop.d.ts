@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Feb 19 05:58:45 2022                          */
-/*    Last change :  Thu Apr  4 09:51:01 2024 (serrano)                */
+/*    Last change :  Thu Apr  4 15:33:27 2024 (serrano)                */
 /*    Copyright   :  2022-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop types                                                     */
@@ -13,6 +13,7 @@
 /*    HipHopFragment                                                   */
 /*---------------------------------------------------------------------*/
 export declare class HipHopFragment {
+   appendChild(node:HipHopFragment): any;
 }
 
 /*---------------------------------------------------------------------*/
@@ -35,8 +36,10 @@ export declare class ReactiveMachine<S> {
    constructor(ast: HipHopFragment, opts?: MachineOptions);
 
    promise(ressig?: string, rejsig?: string): Promise<any>;
-   react(signals?:S): void;
+   init(opt?: any): void;
+   react(signals?: S): void;
    addEventListener(name: string, callback: MachineListener);
+   getElementById(id: string): HipHopFragment | undefined;
    name(): any;
    age(): number;
 }
