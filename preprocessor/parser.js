@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Apr  4 13:19:47 2024 (serrano)                */
+/*    Last change :  Wed Apr 10 13:16:31 2024 (serrano)                */
 /*    Copyright   :  2018-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -293,7 +293,7 @@ function parseValueApply(loc) {
    if (typeof expr === "J2SDollar" || expr?.$class === "J2SDollar") {
       init = astutils.J2SDataPropertyInit(
 	 loc,
-	 astutils.J2SString(loc, "value"),
+	 astutils.J2SString(loc, "%value"),
 	 expr.node);
    } else {
       const fun = astutils.J2SMethod(
@@ -632,7 +632,7 @@ function parseInterfaceIntflist() {
 	 loc,
 	 [astutils.J2SDataPropertyInit(
 	      loc,
-	      astutils.J2SString(loc, "value"),
+	      astutils.J2SString(loc, "%value"),
 	      expr),
 	   astutils.J2SDataPropertyInit(
 	      loc,

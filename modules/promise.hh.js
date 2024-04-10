@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sun Apr 10 08:11:59 2022                          */
-/*    Last change :  Wed Apr 10 10:39:48 2024 (serrano)                */
+/*    Last change :  Wed Apr 10 11:26:03 2024 (serrano)                */
 /*    Copyright   :  2022-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Promise module.                                                  */
@@ -28,47 +28,44 @@ hiphop module promise(promise) implements Promise {
    let self;
    let state = "active";
    let res, rej = false;
-   let prom;
    
-   let onres = (value) => {
+   let onres = (val) => {
       switch (state) {
 	 case "suspend":
 	    state = "pending";
-	    res = value;
+	    res = val;
 	    break;
 	 case "kill":
 	    break;
 	 default:
-	    self.notify({res: value, rej: false});
+	    self.notify({res: val, rej: false});
       }
    };
    
-   let onrej = (value) => {
+   let onrej = (val) => {
       switch (state) {
 	 case "suspend":
 	    state = "pending";
-	    rej = value;
+	    rej = val;
 	    break;
 	 case "kill":
 	    break;
 	 default:
-	    self.notify({res: undefined, rej: value});
+	    self.notify({res: undefined, rej: val});
       }
    };
 
-   abort (value.now) {
-      async (value) {
-      	 self = this;
-      	 promise.then(onres, onrej);
-      } suspend {
-      	 state = "suspend";
-      } resume {
-      	 if (state === "pending") {
-	    state = "resume";
-	    self.notify({res: res, rej: rej});
-      	 }
-      } kill {
-      	 state = "kill";
+   async (value) {
+      self = this;
+      promise.then(onres, onrej);
+   } suspend {
+      state = "suspend";
+   } resume {
+      if (state === "pending") {
+	 state = "resume";
+	 self.notify({res: res, rej: rej});
       }
+   } kill {
+      state = "kill";
    }
 }
