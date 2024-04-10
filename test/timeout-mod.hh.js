@@ -7,29 +7,30 @@ hiphop module prg(resolve) {
    out DUR;
    signal implements Timeout;
    let now0 = Date.now();
-   
+
    fork {
       run timeout(delay) { * };
    } par {
       // pause the timer
+      yield;
       emit pause(true);
 
       // wait for a an extra delay
-      {
-	 signal implements Timeout;
-	 run timeout(delay) { * };
-      }
+      run timeout(delay) { };
 
       // resume the timer
       emit pause(false);
    } par {
-      await (elapsed.now);
+      await immediate (elapsed.now);
    }
 
-   emit 
+   emit DUR((Date.now() - now0) > delay);
+   pragma { resolve(false); }
 }
 
 export const mach = new hh.ReactiveMachine(prg);
-mach.addEventListener("duration", function(evt) {
-   process.exit(
+mach.batchPromise = new Promise((res, rej) => mach.init(res));
+
 mach.react();
+mach.react();
+
