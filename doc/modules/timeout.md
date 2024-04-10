@@ -32,12 +32,12 @@ These signals are used to control a running instance of the
 ### module timeout(duration) implements Timeout ###
 <!-- [:@glyphicon glyphicon-tag module] -->
 
-A HipHop timeout modules is an asynchronous tasks that run in the
+A HipHop `timeout` module is an asynchronous tasks that run in the
 background of the application. When it expires, it emits its signal
 `elapsed`.
 
-A `timeout` is created y running the `timeout` module passing
-a numerical value, which is the timeout in millisecond before
+A `timeout` is created by running the `timeout` module passing
+it a numerical value, which is the timeout in millisecond before
 the signal `elapsed` is emitted. Example:
 
 ```
