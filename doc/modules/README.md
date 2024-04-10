@@ -15,6 +15,7 @@ environment. They are described in this chapter.
 Table of contents
 -----------------
 
+  1. [Promise](./promise.md), _JavaScript promises support._
   1. [Timeout](./timeout.md), _A module to implement simple timeout._
 
 

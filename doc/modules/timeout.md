@@ -42,6 +42,7 @@ the signal `elapsed` is emitted. Example:
 
 ```
 run timeout(2000) { e as elapsed }; // wait for two seconds before emitting `e`.
+```
 
 A timeout instance is paused by emitting its `pause` signals. It is
 resumed by emitting the same signal again. When a timeout is paused,
