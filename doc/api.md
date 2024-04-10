@@ -3,8 +3,8 @@
 HipHop
 ======
 
-The `"hiphop"` module contains utilities for creating and running
-HipHop reactive machines.
+The `"hiphop"` JavaScript module contains utilities for creating and
+running HipHop reactive machines.
 
 Use `import * as hiphop from "@hop/hiphop"` to use it.
 

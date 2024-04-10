@@ -1,15 +1,13 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/1.3.x/modules/timeout.hh.js          */
+/*    serrano/prgm/project/hiphop/hiphop/modules/timeout.hh.js         */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Mon Nov 27 18:37:24 2023 (serrano)                */
-/*    Copyright   :  2022-23 Manuel Serrano                            */
+/*    Last change :  Wed Apr 10 09:19:07 2024 (serrano)                */
+/*    Copyright   :  2022-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop timeout module.                                           */
 /*=====================================================================*/
-"use @hop/hiphop";
-"use hopscript";
 
 /*---------------------------------------------------------------------*/
 /*    module                                                           */
@@ -17,9 +15,9 @@
 export { timeout, Timeout };
        
 /*---------------------------------------------------------------------*/
-/*    sleep ...                                                        */
+/*    $timeout ...                                                     */
 /*---------------------------------------------------------------------*/
-const sleep = hiphop module (duration) {
+const $timeout = hiphop module(duration) {
    out elapsed;
 
    let tmt = false;
@@ -54,7 +52,7 @@ const sleep = hiphop module (duration) {
 hiphop interface Timeout {
    in reset;
    in pause;
-   in elapsed;
+   out elapsed;
 }
 
 /*---------------------------------------------------------------------*/
@@ -64,7 +62,7 @@ hiphop module timeout(duration) implements Timeout {
    done: {
       do {
 	 suspend toggle (pause.now) {
-	    run sleep(duration) { * };
+	    run $timeout(duration) { * };
             break done;
 	 }
       } every (reset.now);

@@ -49,5 +49,5 @@ node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all.
 Go into the `test` directory and execute
 
 ```
-node ../lib/hhc.js <A-TEST.hh.js
+node ../lib/hhc.js <A-TEST.hh.js>
 ```

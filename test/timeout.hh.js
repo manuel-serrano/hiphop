@@ -1,3 +1,4 @@
+import { ReactiveMachine } from "@hop/hiphop";
 import * as hh from "@hop/hiphop";
 
 hiphop module prg(resolve) {
