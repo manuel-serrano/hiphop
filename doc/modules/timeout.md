@@ -32,14 +32,35 @@ These signals are used to control a running instance of the
 ### module timeout(duration) implements Timeout ###
 <!-- [:@glyphicon glyphicon-tag module] -->
 
-&#x2605; Example: [timeout.hh.js](../test/timeout-mod.hh.js)
+A HipHop timeout modules is an asynchronous tasks that run in the
+background of the application. When it expires, it emits its signal
+`elapsed`.
+
+A `timeout` is created y running the `timeout` module passing
+a numerical value, which is the timeout in millisecond before
+the signal `elapsed` is emitted. Example:
+
+```
+run timeout(2000) { e as elapsed }; // wait for two seconds before emitting `e`.
+
+A timeout instance is paused by emitting its `pause` signals. It is
+resumed by emitting the same signal again. When a timeout is paused,
+it stops counting elapsed time.  For instance, if a timeout is spawned
+to wait for 1000 ms and if it is suspended after 100ms, when resumed,
+and whenever resumed, it will wait for an extra 900ms before emitting
+its `elapsed` signal.
+
+If a timeout receives its `reset` signal, it resets its internal
+counter and waits again for the full duration before emiting `elapsed`.
+
+&#x2605; Example: [timeout-mod.hh.js](../../test/timeout-mod.hh.js)
 
 
 Implementation
 --------------
 
-  * JavaScript implementation: [timeout.hh.js](../modules/timeout.hh.js)
-  * TypeScript type declaration: [timeout.d.ts](../modules/timeout.d.ts)
+  * JavaScript implementation: [timeout.hh.js](../../modules/timeout.hh.js)
+  * TypeScript type declaration: [timeout.d.ts](../../modules/timeout.d.ts)
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

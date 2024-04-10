@@ -73,7 +73,7 @@ For instance, the `M1` module can be used in the following
 ```javascript
 module M2() {
   ...
-  run M1(10) { myS as S, myT as T, U a U }
+  run M1(10) { myS as S, myT as T, U as U }
   ...
 }
 ```
