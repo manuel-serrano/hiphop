@@ -1,10 +1,10 @@
 #* Generated file, don't edit
 #*=====================================================================*/
-#*    serrano/prgm/project/hiphop/1.3.x/Makefile.in                    */
+#*    serrano/prgm/project/hiphop/hiphop/Makefile.in                   */
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Tue Jan 30 08:07:56 2024 (serrano)                */
+#*    Last change :  Fri Apr  5 08:35:43 2024 (serrano)                */
 #*    Copyright   :  2006-24 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -83,7 +83,7 @@ nodejs: $(NODEJSFILES)
 #*---------------------------------------------------------------------*/
 .PHONY: npm
 
-npm-sans-rm:
+npm-hiphop:
 	mkdir -p npm/$(HIPHOPNPMDIR)
 	mkdir -p npm/$(HIPHOPNPMDIR)/lib
 	mkdir -p npm/$(HIPHOPNPMDIR)/bin
@@ -94,6 +94,7 @@ npm-sans-rm:
 	cp -r modules npm/$(HIPHOPNPMDIR)
 	cp -r test npm/$(HIPHOPNPMDIR)
 	cp -r etc/configure.js npm/$(HIPHOPNPMDIR)/etc
+	cp -r etc/buildmodules.js npm/$(HIPHOPNPMDIR)/etc
 	echo "#!/usr/bin/env node" > npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
 	echo "import * as hhc from \"../lib/hhc.js\"" >> npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
 	chmod a+rx npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
@@ -109,7 +110,8 @@ npm-hiphop-tutorial-async-sans-rm:
 npm-hiphop-tutorial-async: npm-hiphop-tutorial-async-sans-rm
 	(cd npm; rm -rf hiphop-tutorial-async-$(HZVERSION)-$(HIPHOPBUILDID))
 
-npm: npm-sans-rm npm-hiphop-tutorial-async
+npm-sans-rm: npm-hiphop npm-hiphop-tutorial-async
+npm: npm-sans-rm 
 	(cd npm; rm -rf $(HIPHOPNPMDIR))
 
 
