@@ -1,5 +1,3 @@
-<!-- ${ var doc = require("hopdoc") } -->
-
 HipHop Environment
 ==================
 
@@ -8,23 +6,26 @@ Running HipHop programs (this section is obsolete and no longer valid)
 
 In this section we assume the file `abro.hh.js` defined as:
 
-${ <span class="label label-info">abro.hh.js</span> }
-```hiphop
-"use hiphop"
-"use hopscript"
+<span class="label label-info">abro.hh.js</span>
 
-hiphop machine prg( in A, in B, in R, out O = 0 ) {
+```hiphop
+const prg = hiphop module() {
+   in A;
+   in B;
+   in R;
+   out O = 0;
+   
    do {
       fork {
-	 await( A.now );
+	 await (A.now);
       } par {
-	 await( B.now );
+	 await (B.now);
       }
-      emit O( O.preval + 1 );
-   } every( R.now )
+      emit O(O.preval + 1);
+   } every (R.now)
 }
 
-module.exports = prg;
+export const mach = new hh.ReactiveMachine(prg);
 ```
 
 ### Hop server ###

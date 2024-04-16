@@ -3,12 +3,12 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Mon Nov 16 10:15:32 2015                          */
-#*    Copyright   :  2015-20 Manuel Serrano                            */
+#*    Copyright   :  2015-24 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Build the documentation                                          */
 #*=====================================================================*/
 HOP=hop
-DOCJS=`$(HOP) --no-server --evaljs 'console.log( require( hop.config ).docDir + "/doc.js" )'`
+DOCJS=`$(HOP) --no-server --evaljs 'console.log(require(hop.config).docDir + "/doc.js")'`
 
 #*---------------------------------------------------------------------*/
 #*    Targets                                                          */
@@ -23,10 +23,10 @@ TARGETS=$(COMMON_TARGETS) $(LANG_TARGETS)
 all: $(TARGETS) lib hss
 
 lib: $(TARGETS)
-	cp -r `$(HOP) --no-server --evaljs 'console.log( require( hop.config ).docDir + "/lib" )'` .
+	cp -r `$(HOP) --no-server --evaljs 'console.log(require(hop.config).docDir + "/lib")'` .
 
 hss:
-	cp -r `$(HOP) --no-server --evaljs 'console.log( require( hop.config ).docDir + "/hss" )'` .
+	cp -r `$(HOP) --no-server --evaljs 'console.log(require(hop.config).docDir + "/hss")'` .
 	cat hiphop.hss >> hss/doc.css
 
 #*---------------------------------------------------------------------*/
@@ -43,7 +43,7 @@ VPATH=lang syntax
 #*---------------------------------------------------------------------*/
 #*    doc                                                              */
 #*---------------------------------------------------------------------*/
-index.html: _index.md abro-gui.hh.js
+index.html: ../README.md
 	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "compile-library" $< > $@ \
           || ($(RM) $@; exit 1)
@@ -99,7 +99,7 @@ cleanall: clean
 #*---------------------------------------------------------------------*/
 #*    dependencies                                                     */
 #*---------------------------------------------------------------------*/
-lang.html: _lang.md
+lang.html: lang/README.md
 syntax.html: syntax/hiphop.bnf
 bib.html: hiphop.bib
 

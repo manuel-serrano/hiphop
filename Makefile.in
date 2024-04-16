@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Wed Apr 10 10:49:04 2024 (serrano)                */
+#*    Last change :  Thu Apr 11 13:46:01 2024 (serrano)                */
 #*    Copyright   :  2006-24 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -91,6 +91,7 @@ npm-hiphop:
 	mkdir -p npm/$(HIPHOPNPMDIR)/modules
 	cp package.json npm/$(HIPHOPNPMDIR)
 	cp -r lib npm/$(HIPHOPNPMDIR)
+	mv npm/$(HIPHOPNPMDIR)/lib/hiphop-client.mjs npm/$(HIPHOPNPMDIR)
 	cp -r preprocessor npm/$(HIPHOPNPMDIR)
 	cp -r modules/*.hh.js npm/$(HIPHOPNPMDIR)/modules
 	cp -r modules/*.d.ts npm/$(HIPHOPNPMDIR)/modules

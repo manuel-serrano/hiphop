@@ -49,7 +49,7 @@ nodejs --enable-source-maps --no-warnings --loader ./node_modules/@hop/hiphop/li
 Installing from the Sources
 ---------------------------
 
-HipHop needs to be installed in a prepared directory whose its two
+HipHop needs to be installed in a prepared directory in which its two
 dependencies, `hopc` and `readlines` are already installed:
 
 ```shell
@@ -65,7 +65,7 @@ mkdir -p node_modules/@hop
 
 Then, to install HipHop:
 
-```
+```shell
 (cd download; wget https://www-sop.inria.fr/members/Manuel.Serrano/software/npmx/hiphop.tgz)
 (cd node_modules/@hop; tar xvfz ../download/hiphop.tgz)
 ```

@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sun Nov 18 14:36:32 2018                          */
-/*    Last change :  Thu May 28 14:09:20 2020 (serrano)                */
-/*    Copyright   :  2018-20 Manuel Serrano                            */
+/*    Last change :  Tue Apr 16 09:03:17 2024 (serrano)                */
+/*    Copyright   :  2018-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop specific fontification                                    */
 /*=====================================================================*/
@@ -13,6 +13,7 @@
 /*    HipHop specific ...                                              */
 /*---------------------------------------------------------------------*/
 body.hop pre.hiphop {
+body.hop pre.javascript {
     border-left-color: #faab02;
 }
 
