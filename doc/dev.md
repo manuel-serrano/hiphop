@@ -1,14 +1,27 @@
 HipHop Environment
 ==================
 
-Running HipHop programs (this section is obsolete and no longer valid)
-----------------------------------------------------------------------
+Running HipHop programs 
+-----------------------
 
-In this section we assume the file `abro.hh.js` defined as:
+In this document, we show how to run HipHop programs on a server-side
+of an application, e.g., on Nodejs, or on the client-side of a web
+application. To prepare a directory for running these examples, one
+may proceed as follows:
 
-<span class="label label-info">abro.hh.js</span>
+```shell
+mkdir example
+cd example
+npm install https://www-sop.inria.fr/members/Manuel.Serrano/software/npmx/hiphop.tgz
+```
+
+In the rest of this section we assume the file `abro.hh.js` defined as:
+
+<span class="label label-info">abro.hh.mjs</span>
 
 ```hiphop
+import { ReactiveMachine } from "@hop/hiphop";
+
 const prg = hiphop module() {
    in A;
    in B;
@@ -25,66 +38,130 @@ const prg = hiphop module() {
    } every (R.now)
 }
 
-export const mach = new hh.ReactiveMachine(prg);
+export const mach = new ReactiveMachine(prg);
 ```
 
-### Hop server ###
+### Server-side execution ###
 
-HipHop programs can be executed _as is_ in a running Hop server. HipHop
-modules can be required as any regular modules. Example:
+To execute a HipHop program on an unmodified JavaScript execution engines,
+let it be Nodejs, Hop, or any other compliant engine, it has to be
+compiled first. This is accomplished by the `hhc.mjs` compiler that
+is part of the standard HipHop distribution. To compile our `abro.hh.js`
+example, one has to use the following command:
 
-${ <span class="label label-info">hop.js</span> }
+```shell
+./node_module/@hop/hiphop/bin/hhc.mjs abro.hh.mjs -o abro.mjs
+```
+
+This will generate two files:
+
+  * `abro.mjs`, which a standard JavaScript ES6 module.
+  * `abro.map.json`, which is a _source map_ file that will let the
+  native JavaScript engine refer to source location inside `abro.hh.js`
+  instead of `abro.mjs`.
+
+Once, compiled, the program can be imported by any regular ES6 module
+and executed using the HipHop API. Example:
+
+${ <span class="label label-info">hello.mjs</span> }
 ```hopscript
-const mach = require( "./abro.hh.js" );
+import { mach } from "./abro.mjs";
 
-mach.addEventListener( "O", e => console.log( e.nowval ) );
+mach.addEventListener("O", e => console.log(e.nowval));
 
 mach.react();
-mach.react( { A: undefined } );
-mach.react( { B: undefined } );
-mach.react( { B: undefined } );
-mach.react( { R: undefined } );
-mach.react( { A: undefined, B: undefined } );
+mach.react({ A: undefined });
+mach.react({ B: undefined });
+mach.react({ B: undefined });
+mach.react({ R: undefined });
+mach.react({ A: undefined, B: undefined });
 mach.react();
 ```
 
 This program can be executed with:
 
 ```shell
-hop --no-server hop.js
+nodejs --enable-source-maps hello.mjs 
 ```
 
-### Web browsers ###
+### Client-side execution ###
 
-To run HipHop programs on Web browsers, the web must include both 
-the HipHop library and the HipHop programs. Example:
+HipHop can be used on the client-side of web applications. Let us
+illustrate this feature with an web app executing the `abro.hh.mjs` 
+reactive program on a web browser. Let's implement a minimal web
+server using the bare Node.js `http` api (this complete example
+can be found in the [example/web](https://github.com/manuel-serrano/hiphop/tree/master/examples/web) directory of the HipHop distribution).
 
-${ <span class="label label-info">hop-client.js</span> }
-```hopscript
-service abro() {
-   return <html>
-     <head>
-       <script src="hiphop" lang="hopscript"/>
-       <script src=${require.resolve( "./abro.hh.js" )} lang="hiphop"/>
-       <script defer>
-	 const mach = require( "./abro.hh.js" );
-	 mach.addEventListener( "O", e => alert( e.nowval ) );
-       </script>
-     </head>
-     <body>
-       <button onclick=~{mach.react( "A" )}>A</button>
-       <button onclick=~{mach.react( "B" )}>B</button>
-       <button onclick=~{mach.react( "R" )}>R</button>
-     </body>
-   </html>
+<span class="label label-info">server.mjs</span>
+
+```javascript
+import { createServer } from "node:http";
+import { readFileSync, readdirSync } from "node:fs";
+
+const host = "localhost";
+const port = 8888;
+
+const contents = {
+   "/abro.mjs": readFileSync("./abro.mjs"),
+   "/": readFileSync("./index.html"),
+   "/hiphop.mjs": readFileSync("./node_modules/@hop/hiphop/hiphop-client.mjs")
 }
-```
 
-${<span class="label label-primary">Note:</span>} Both the `script` tag
-and the `require` expression are necessary. The `script` tells the Web browser
-to request the compiled HipHop source from the Hop server. The second, 
-is used within the Web environment to create the reactive machine and to
-make it accessible to the rest of the application.
+for (let file of readdirSync("./node_modules/@hop/hiphop/lib")) {
+   if (file.match(/\.m?js$/)) {
+      contents["/lib/" + file] = readFileSync("./node_modules/@hop/hiphop/lib/" + file);
+   }
+}
+
+const handler = function(req, res) {
+   const content = contents[req.url];
+
+   if (content) {
+      if (req.url.match(/\.m?js$/)) {
+	 res.setHeader("Content-Type", "text/javascript");
+      } else {
+	 res.setHeader("Content-Type", "text/html");
+      }
+
+      res.writeHead(200);
+      res.end(content);
+   } else {
+      res.writeHead(404);
+      res.end("no such file");
+   }
+}
+
+const server = createServer(handler);
+server.listen(port, host, () => {
+    console.log(`Server is running on http://${host}:${port}`);
+});
+```
+<span class="label label-info">index.html</span>
+
+```html
+<html>
+  <script type="importmap">
+    {
+       "imports": {
+          "@hop/hiphop": "/hiphop.mjs"
+        }
+    }
+  </script>
+  <script type="module">
+    import { mach } from "./abro.mjs";
+    globalThis.mach = mach;
+    mach.addEventListener("O", (evt) => {
+       document.getElementById("console").innerHTML = evt.nowval;
+    });
+  </script>
+  <div>
+    <button onclick="mach.react({A: 1})">A</button>
+    <button onclick="mach.react({B: 1})">B</button>
+    <button onclick="mach.react({R: 1})">R</button>
+  </div>
+  <div id="console">-</div>
+</html>
+```
 
 
 ### Nodejs ###
