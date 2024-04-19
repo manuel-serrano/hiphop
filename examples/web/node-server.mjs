@@ -7,7 +7,7 @@ const port = 8888;
 const contents = {
    "/abro.mjs": readFileSync("./abro.mjs"),
    "/": readFileSync("./index.html"),
-   "/hiphop.mjs": readFileSync("./node_modules/@hop/hiphop/hiphop-client.mjs")
+   "/hiphop-client.mjs": readFileSync("./node_modules/@hop/hiphop/hiphop-client.mjs")
 }
 
 for (let file of readdirSync("./node_modules/@hop/hiphop/lib")) {

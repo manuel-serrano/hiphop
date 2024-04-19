@@ -1,13 +1,20 @@
+<!-- ${ var doc = require( "hopdoc" ) } -->
+
 HipHop Environment
 ==================
+
+> [!NOTE]
+> The source files used in this chapter are avaiable in the HipHop
+> [github](https://github.com/manuel-serrano/hiphop/tree/master/examples/web) 
+> repository.
 
 Running HipHop programs 
 -----------------------
 
-In this document, we show how to run HipHop programs on a server-side
-of an application, e.g., on Nodejs, or on the client-side of a web
-application. To prepare a directory for running these examples, one
-may proceed as follows:
+In this chapter, we show how to run HipHop programs on a server-side
+of an application, e.g., on Nodejs, and on the client-side of a web
+application, .e.g., on Firefox. To run the examples, first create a
+fresh directory and install HipHop inside it.
 
 ```shell
 mkdir example
@@ -17,29 +24,8 @@ npm install https://www-sop.inria.fr/members/Manuel.Serrano/software/npmx/hiphop
 
 In the rest of this section we assume the file `abro.hh.js` defined as:
 
-<span class="label label-info">abro.hh.mjs</span>
-
-```hiphop
-import { ReactiveMachine } from "@hop/hiphop";
-
-const prg = hiphop module() {
-   in A;
-   in B;
-   in R;
-   out O = 0;
-   
-   do {
-      fork {
-	 await (A.now);
-      } par {
-	 await (B.now);
-      }
-      emit O(O.preval + 1);
-   } every (R.now)
-}
-
-export const mach = new ReactiveMachine(prg);
-```
+&#x2605; [abro.hh.mjs](../examples/web/abro.hh.mjs)
+<!-- ${doc.includeCode("../examples/web/abro.hh.mjs", "hopscript")} -->
 
 ### Server-side execution ###
 
@@ -63,20 +49,8 @@ This will generate two files:
 Once, compiled, the program can be imported by any regular ES6 module
 and executed using the HipHop API. Example:
 
-${ <span class="label label-info">hello.mjs</span> }
-```hopscript
-import { mach } from "./abro.mjs";
-
-mach.addEventListener("O", e => console.log(e.nowval));
-
-mach.react();
-mach.react({ A: undefined });
-mach.react({ B: undefined });
-mach.react({ B: undefined });
-mach.react({ R: undefined });
-mach.react({ A: undefined, B: undefined });
-mach.react();
-```
+&#x2605; [hello.mjs](../examples/web/hello.mjs)
+<!-- ${doc.includeCode("../examples/web/hello.mjs", "hopscript")} -->
 
 This program can be executed with:
 
@@ -84,154 +58,69 @@ This program can be executed with:
 nodejs --enable-source-maps hello.mjs 
 ```
 
-### Client-side execution ###
+### Client-side execution with a Nodejs server ###
 
-HipHop can be used on the client-side of web applications. Let us
-illustrate this feature with an web app executing the `abro.hh.mjs` 
-reactive program on a web browser. Let's implement a minimal web
-server using the bare Node.js `http` api (this complete example
-can be found in the [example/web](https://github.com/manuel-serrano/hiphop/tree/master/examples/web) directory of the HipHop distribution).
+In this section we show how to use HipHop on client-side of web
+applications. We show how to proceed to implement a web app executing
+the `abro.hh.mjs` reactive program on a web browser. Let's implement a
+minimal web server only using the bare
+Nodejs' [http](https://nodejs.org/docs/latest/api/http.html) api.
 
-<span class="label label-info">server.mjs</span>
+Let us first describe the web page the server delivers.
 
-```javascript
-import { createServer } from "node:http";
-import { readFileSync, readdirSync } from "node:fs";
+&#x2605; [index.html](../examples/web/index.html)
+<!-- ${doc.includeCode("../examples/web/index.html", "xml")} -->
 
-const host = "localhost";
-const port = 8888;
+The `script type="importmap"` specify a mapping from JavaScript module
+names to URL. As such, when the JavaScript code running on the browser
+will import the module `@hop/hiphop`, the browser will request the URL
+`/hiphop.mjs` to the server (we'll see in a moment how we configure
+the server so that it can respond to this request). By specifying a
+module-to-URL mapping, we can re-use the same program `abro.mjs`
+as the one we use when running on the server, althought the module
+`@hop/hiphop` has different implementations for the server and for the
+client.
 
-const contents = {
-   "/abro.mjs": readFileSync("./abro.mjs"),
-   "/": readFileSync("./index.html"),
-   "/hiphop.mjs": readFileSync("./node_modules/@hop/hiphop/hiphop-client.mjs")
-}
+The configuration of the web server is as follows:
 
-for (let file of readdirSync("./node_modules/@hop/hiphop/lib")) {
-   if (file.match(/\.m?js$/)) {
-      contents["/lib/" + file] = readFileSync("./node_modules/@hop/hiphop/lib/" + file);
-   }
-}
+&#x2605; [node-server.mjs](../examples/web/node-server.mjs)
+<!-- ${doc.includeCode("../examples/web/node-server.mjs", "hopscript")} -->
 
-const handler = function(req, res) {
-   const content = contents[req.url];
+It is a standard implementation of a web server using Nodejs and contains
+no code specific to HipHop.
 
-   if (content) {
-      if (req.url.match(/\.m?js$/)) {
-	 res.setHeader("Content-Type", "text/javascript");
-      } else {
-	 res.setHeader("Content-Type", "text/html");
-      }
+### Client-side execution with a Hop Server ###
 
-      res.writeHead(200);
-      res.end(content);
-   } else {
-      res.writeHead(404);
-      res.end("no such file");
-   }
-}
+We can simplify the implementation of our simple HipHop web
+application by using a [hop](https://github.com/manuel-serrano/hop)
+server instead of a plain Nodejs server.
 
-const server = createServer(handler);
-server.listen(port, host, () => {
-    console.log(`Server is running on http://${host}:${port}`);
-});
-```
-<span class="label label-info">index.html</span>
+As for the previous example, the Hiphop `abro.hh.mjs` file remain unchanged.
+In Hop, the standard way to generate HTML documents is to build them
+dynamically using the builtin XML syntax. The HTML page will be then
+generated by the `index` function defined as:
 
-```html
-<html>
-  <script type="importmap">
-    {
-       "imports": {
-          "@hop/hiphop": "/hiphop.mjs"
-        }
-    }
-  </script>
-  <script type="module">
-    import { mach } from "./abro.mjs";
-    globalThis.mach = mach;
-    mach.addEventListener("O", (evt) => {
-       document.getElementById("console").innerHTML = evt.nowval;
-    });
-  </script>
-  <div>
-    <button onclick="mach.react({A: 1})">A</button>
-    <button onclick="mach.react({B: 1})">B</button>
-    <button onclick="mach.react({R: 1})">R</button>
-  </div>
-  <div id="console">-</div>
-</html>
-```
+&#x2605; [index.hop.mjs](../examples/web/index.hop.mjs)
+<!-- ${doc.includeCode("../examples/web/index.hop.mjs", "hopscript")} -->
 
-
-### Nodejs ###
-
-${<span class="label label-warning">Note:</span>} HipHop programs can 
-be executed inside unmodified Nodejs environment but for that they have to 
-be compiled first. This compilation **requires** an operational Hop 
-installation.
-
-Before executing HipHop programs within Nodejs, the package has to be
-compiled and installed first with:
+Before being executed, this module has to be compiled to plain JavaScript
 
 ```shell
-./configure && make nodejs && make install-nodejs
+./node_modules/@hop/hop/bin/hopc index.hop.mjs -o index.mjs
 ```
 
-Then, each HipHop programs has to be compiled with the `hhc` compiler
-that is shipped with the `HipHop` package. Considering the file `abro.hh.js`
-defined above, it can be compiled with:
+The main difference with the static document we have used for Nodejs is
+the use of the `R` variable. The Nodejs version was only able to deliver
+a fixed set of files and the mapping between URL and files was fixed once
+for all at the initialization of the program. Hop uses a more elaborated
+mechanism for implementing the mapping. The only useful information here
+is that `R` is a bidirectional data structure mapping actual file names
+to URL and vice-versa.
 
-```shell
-~/.node_modules/hiphop/bin/hhc.sh abro.hh.js -o abro.js
-```
+The server-side module is defined as follows:
 
-After the compilation, HipHop compiled modules can be used as any
-plain JavaScript module. Example:
-
-${ <span class="label label-info">nodejs.js</span> }
-```javascript
-const mach = require( "./abro.js" );
-
-mach.addEventListener( "O", e => console.log( e.nowval ) );
-
-mach.react();
-mach.react( { A: undefined } );
-mach.react( { B: undefined } );
-mach.react( { B: undefined } );
-mach.react( { R: undefined } );
-mach.react( { A: undefined, B: undefined } );
-mach.react();
-```
-
-To execute it:
-
-```shell
-nodejs nodejs.js
-```
-
-
-Editing HipHop programs
------------------------
-
-The HipHop distribution comes with a dedicated Emacs package that
-implements a HipHop plugin for the `hopjs.el` Emacs mode. To use is,
-add the following declaration to you Emacs custom configuration
-
-```lisp
-(custom-set-variables
-   ...
-   (hopjs-site-lisp-extra-dir (quote ("/usr/local/share/hiphop/site-lisp"))))
-```
-
-This example assumes that HipHop has been installed in the default `/usr/local`
-directory. Otherwise, adjust the path according to your configuration.
-
-${<span class="label label-warning">Node:</span>} The `hiphop.el`
-minor mode requires `hopjs.el`. It does not work with standard Emacs
-JavaScript mode. The major mode `hopjs.el` is still highly experimental
-and will improve in the future.
-
+&#x2605; [hop-server.mjs](../examples/web/hop-server.mjs)
+<!-- ${doc.includeCode("../examples/web/hop-server.mjs", "hopscript")} -->
 
 Visualizing the Net List
 ------------------------

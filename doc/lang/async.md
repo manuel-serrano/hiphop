@@ -1,6 +1,4 @@
-<!-- ${ var doc = require( "hopdoc" ) }
-${ var path = require( "path" ) }
-${ var ROOT = path.dirname( module.filename ) } -->
+<!-- ${ var doc = require( "hopdoc" ) } -->
 
 Async
 =====
@@ -40,8 +38,8 @@ Inside the asynchronous block, the JavaScript `this` object is
 a descriptor of the asynchronous computation. The machine that
 has spawned this `async` form is stored in `this.machine`.
 
-
-&#x2605; [exec2.hh.js](../../test/exec2.hh.js)
+&#x2605; Example [exec2.hh.js](../../test/exec2.hh.js)
+<!-- ${doc.includeCode("../test/exec2.hh.js", "hopscript")} -->
 
 ### Kill, suspend, and resume ###
 
@@ -54,8 +52,9 @@ suspended or resumed.
 The following example shows a JavaScript `setTimeout` that is stopped
 when the HipHop `async` statement is aborted.
 
-&#x2605; [exec2.hh.js](../../test/exec2.hh.js)
+&#x2605; Example [exec-susp-res.hh.js](../../test/exec-susp-res.hh.js)
 
+<!-- ${doc.includeCode("../test/exec-susp-res.hh.js", "hopscript")} -->
 
 Async JavaScript API
 ====================
@@ -68,7 +67,9 @@ descriptor and the reactive machine executing asynchronous block is
 to be found in `this.machine`. New reactions can be triggered
 from within the `async` JavaScript block. Example:
 
-&#x2605; [setinterval.hh.js](../../test/setinterval.hh.js)
+&#x2605; Example [setinterval.hh.js](../../test/setinterval.hh.js)
+
+<!-- ${doc.includeCode("../test/setinterval.hh.js", "hopscript")} -->
 
 This example uses the expression `Tick.signame` that is a JavaScript
 expression that evaluates to the HipHop internal name of the signal
@@ -100,7 +101,9 @@ cases are considered:
 Here is an example of an `async` block that uses a JavaScript Promise to
 resume the HipHop computation.
 
-&#x2605; [exec3.hh.js](../../test/exec3.hh.js)
+&#x2605; Example [exec3.hh.js](../../test/exec3.hh.js)
+
+<!-- ${doc.includeCode("../test/exec3.hh.js", "hopscript")} -->
 
 The optional argument `react` controls whether a reaction should be 
 automatically triggered with the notification. If the `react` is `true`,

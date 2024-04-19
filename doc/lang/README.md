@@ -1,7 +1,3 @@
-<!-- ${ var doc = require( "hopdoc" ) }
-${ var path = require( "path" ) }
-${ var ROOT = path.dirname( module.filename ) } -->
-
 The HipHop Programming Language
 ===============================
 
@@ -57,6 +53,7 @@ modules](./stdmod.md).
 &#x2605; [The abro example](../../test/abro.hh.js)
 
 
+<!-- github -->
 Table of contents
 -----------------
 
@@ -67,6 +64,7 @@ Table of contents
   5. [Errors](./error.md), _errors and causes._
   6. [BNF](../syntax/hiphop.bnf), _the full HipHop programming language syntax._
 
+<!-- /github -->
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 [[main page]](../README.md) | [[documentation]](./README.md) | [[license]](./license.md)

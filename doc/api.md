@@ -156,7 +156,8 @@ Associate a listener to the machine event `signame`.
 
 Listeners are invoked with one object with one or two fields:
 
-  * `type`: the name of the emitted output signal;
+  * `signame`: the name of the emitted output signal;
+  * `preval`: the value of the signal at the previous reaction;
   * `nowval`: the value of the signal at the end of the reaction.
  This field exists only for valued signals. This field is immutable;
 

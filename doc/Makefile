@@ -16,23 +16,24 @@ DOCJS=`$(HOP) --no-server --evaljs 'console.log(require(hop.config).docDir + "/d
 COMMON_TARGETS=index.html idx.html api.html debug.html download.html lang.html \
    syntax.html bib.html dev.html
 
-LANG_TARGETS=module.html signal.html flow.html async.html
+LANG_SOURCES=module.md signal.md flow.md async.md error.md README.md
+LANG_TARGETS=$(LANG_SOURCES:%.md=lang/%.html)
 
 TARGETS=$(COMMON_TARGETS) $(LANG_TARGETS)
 
-all: $(TARGETS) lib hss
+all: $(TARGETS) lib css
 
-lib: $(TARGETS)
+lib:
 	cp -r `$(HOP) --no-server --evaljs 'console.log(require(hop.config).docDir + "/lib")'` .
 
-hss:
-	cp -r `$(HOP) --no-server --evaljs 'console.log(require(hop.config).docDir + "/hss")'` .
-	cat hiphop.hss >> hss/doc.css
+css:
+	cp -r `$(HOP) --no-server --evaljs 'console.log(require(hop.config).docDir + "/hss")'` css
+	cat hiphop.css >> css/doc.css
 
 #*---------------------------------------------------------------------*/
 #*    Search path                                                      */
 #*---------------------------------------------------------------------*/
-VPATH=lang syntax
+VPATH=syntax
 
 #*---------------------------------------------------------------------*/
 #*    Suffixes                                                         */
@@ -43,9 +44,9 @@ VPATH=lang syntax
 #*---------------------------------------------------------------------*/
 #*    doc                                                              */
 #*---------------------------------------------------------------------*/
-index.html: ../README.md
+index.html: ../README.md lib css/doc.css
 	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
-          $(DOCJS) "compile-library" $< > $@ \
+          $(DOCJS) "compile-library" $< -o $@ \
           || ($(RM) $@; exit 1)
 
 #*---------------------------------------------------------------------*/
@@ -59,7 +60,7 @@ idx.json: debug.html $(LANG_TARGETS) api.html
 #*---------------------------------------------------------------------*/
 #*    idx.html ...                                                     */
 #*---------------------------------------------------------------------*/
-idx.html: idx.json
+idx.html: idx.json lib css/doc.css
 	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "compile-idx" $^ > $@ \
           || ($(RM) $@; exit 1)
@@ -67,17 +68,17 @@ idx.html: idx.json
 #*---------------------------------------------------------------------*/
 #*    .md -> .html                                                     */
 #*---------------------------------------------------------------------*/
-%.html: %.md 
+%.html: %.md lib css/doc.css
 	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
-          $(DOCJS) "compile-section" $< > $@ \
+          $(DOCJS) "compile-section" $< -o $@ \
           || ($(RM) $@; exit 1)
 
 #*---------------------------------------------------------------------*/
 #*    .json -> .html                                                   */
 #*---------------------------------------------------------------------*/
-%.html: %.json
+%.html: %.json lib css/doc.css
 	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
-          $(DOCJS) "compile-chapter" $< > $@ \
+          $(DOCJS) "compile-chapter" $< -o $@ \
           || ($(RM) $@; exit 1)
 
 00-syntax.html: hiphop.bnf
@@ -86,12 +87,19 @@ doc.json: doc.json.in
 	cp $< $@
 
 #*---------------------------------------------------------------------*/
+#*    css                                                              */
+#*---------------------------------------------------------------------*/
+css/doc.css: hiphop.css css
+	cp `$(HOP) --no-server --evaljs 'console.log(require(hop.config).docDir + "/hss")'`/doc.css $@
+	cat hiphop.css >> css/doc.css
+
+#*---------------------------------------------------------------------*/
 #*    clean                                                            */
 #*---------------------------------------------------------------------*/
 clean:
 	$(RM) $(TARGETS)
 	$(RM) -f idx.json
-	$(RM) -rf lib hss
+	$(RM) -rf lib css
 
 cleanall: clean
 	#$(RM) doc.json
@@ -102,7 +110,3 @@ cleanall: clean
 lang.html: lang/README.md
 syntax.html: syntax/hiphop.bnf
 bib.html: hiphop.bib
-
-hss/doc.css: hss/doc.hss
-	cp $< $@
-

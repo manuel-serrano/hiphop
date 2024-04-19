@@ -1,10 +1,9 @@
 <html>
-  <script type="importmap">
-    {
-       "imports": {
-          "@hop/hiphop": "/hiphop.mjs"
-        }
-    }
+  <script type="importmap"> {
+     "imports": {
+        "@hop/hiphop": "/hiphop-client.mjs"
+     }
+  }
   </script>
   <script type="module">
     import { mach } from "./abro.mjs";
@@ -12,6 +11,7 @@
     mach.addEventListener("O", (evt) => {
        document.getElementById("console").innerHTML = evt.nowval;
     });
+    mach.react();
   </script>
   <div>
     <button onclick="mach.react({A: 1})">A</button>

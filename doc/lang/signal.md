@@ -81,13 +81,13 @@ hiphop module M() {
 `out`, and `inout`.  The signals can be used from outside of the
 machine to pass values in or to receive values after a reaction.
 
-These are signals 
-
 &#x2605; Example: [samelocalname.hh.js](../../test/samelocalname.hh.js)
+
+** Multiple emission with combine functions **:
 
 Signals can only be emitted once per instant, unless they are declared
 with a default value and a combination function. If such a function
-is specified, it must be associative and commutative. Signales associated
+is specified, it must be associative and commutative. Signals associated
 with a combination function can be emitted several time during the reaction.
 The `.nowval` will contain all the values emitted during the reaction.
 

@@ -1,8 +1,3 @@
-"use @hop/hiphop"
-"use hopscript"
-
-/* check if semantics of suspends / resume is correct when a task is over */
-
 import * as hh from "@hop/hiphop";
 import { format } from "util";
 
