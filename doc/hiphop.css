@@ -1,0 +1,827 @@
+/*=====================================================================*/
+/*    serrano/prgm/project/hiphop/hiphop/doc/hiphop.css                */
+/*    -------------------------------------------------------------    */
+/*    Author      :  Manuel Serrano                                    */
+/*    Creation    :  Sat Aug  1 10:20:48 2015                          */
+/*    Last change :  Wed Apr 24 12:15:45 2024 (serrano)                */
+/*    Copyright   :  2015-24 Manuel Serrano                            */
+/*    -------------------------------------------------------------    */
+/*    HSS for the Hop.js documentation                                 */
+/*=====================================================================*/
+
+/*---------------------------------------------------------------------*/
+/*    colors                                                           */
+/*---------------------------------------------------------------------*/
+:root {
+    --hopscriptColor: #faab02;
+    --javascriptColor: #faab02;
+    --hiphopColor: #faab02;
+    --typescriptColor: #f63646;
+    --jsonColor: #22ba5a;
+    --xmlColor: #ac56cf;
+    --shellColor: #777777;
+}
+
+span.hopscript {
+    color: var(--hopscriptColor);
+}
+
+span.javascript {
+    color: var(--hopscriptColor);
+}
+
+span.hiphop {
+    color: var(--hopscriptColor);
+}
+
+span.xml {
+    color: var(--xmlColor);
+}
+
+span.typescript {
+    color: var(--typescriptColor);
+}
+
+span.json {
+    color: var(--jsonColor);
+}
+
+/*---------------------------------------------------------------------*/
+/*    Programs                                                         */
+/*---------------------------------------------------------------------*/
+pre.markdown.xml {
+    border-left: 2px solid var(--xmlColor);
+}
+
+/*---------------------------------------------------------------------*/
+/*    grey effect                                                      */
+/*---------------------------------------------------------------------*/
+.hopdoc-grey {
+  -webkit-filter: grayscale(1) sepia(0.2);
+  filter: grayscale(1);
+  transition: 0.5s all;
+}
+
+.hopdoc-grey:hover {
+  -webkit-filter: none;
+  filter: none;
+}  
+
+/*---------------------------------------------------------------------*/
+/*    body                                                             */
+/*---------------------------------------------------------------------*/
+body.hop {
+  position: relative;
+  background-color: #fafafa;
+  color: #222;
+}
+
+/*---------------------------------------------------------------------*/
+/*    bootstrap                                                        */
+/*---------------------------------------------------------------------*/
+p.danger {
+  margin-top: 3ex;
+  border-left: 4px solid #d00;
+  padding-left: 4px;
+  margin-top: 1ex;
+}
+
+.btn-group .btn-primary a {
+  color: white;
+}
+
+body#README h1:before {
+    content: none;
+}
+
+/*---------------------------------------------------------------------*/
+/*    title                                                            */
+/*---------------------------------------------------------------------*/
+@media screen and (min-width: 1024px) {
+    .hop .jumbotron {
+	position: fixed;
+    }
+    .filler {
+	height: 290px;
+    }
+}
+
+.hop .jumbotron {
+  margin-top: 40px;
+  top: 0px;
+  right: 0;
+  left: 0;
+  z-index: 1;
+  transition: 0.5s all;
+  border-bottom: 4px solid white;
+  opacity: 0.90;
+  background-color: #33393f;
+}
+
+.jumbotron svg {
+  transition: 0.5s all;
+}  
+
+.jumbotron h1, .jumbotron p {
+  transition: 0.2s all;
+}
+
+.jumbotron p.version {
+  text-align: left;
+  padding-top: 60px;
+}
+
+.jumbotron p .date {
+    font-size: 70%;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    color: #777;
+}
+
+[scrolled="yes"] .jumbotron {
+  margin-top: 0;
+  padding-top: 38px;
+  padding-bottom: 0px;
+  opacity: 0.85;
+}
+
+[scrolled="yes"] .jumbotron h1 {
+  margin-bottom: 4px;
+  margin-top: 20px;
+  font-size: 230%;
+}
+
+[scrolled="yes"] .jumbotron svg {
+  transform: scale(0.4);
+  filter: grayscale(30%);
+}
+
+[scrolled="yes"] .jumbotron .svg-container {
+  height: 10px;
+  font-size: 10px;
+}
+
+[scrolled="yes"] .jumbotron p {
+  margin-top: 2px;
+  font-size: 110%;
+}
+
+[scrolled="yes"] .jumbotron p.version {
+  text-align: left;
+  padding-top: 24px;
+  margin-top: 6px;
+  font-size: 100%;
+}
+
+[scrolled="yes"] div.col-md-2 {
+  height: 8ex;
+}
+
+/*---------------------------------------------------------------------*/
+/*    filler                                                           */
+/*---------------------------------------------------------------------*/
+.filler {
+  visibility: hidden;
+}
+
+/*---------------------------------------------------------------------*/
+/*    footer                                                           */
+/*---------------------------------------------------------------------*/
+footer {
+  border-top: 1px solid #ddd;
+  padding-top: 4ex;
+  padding-bottom: 2ex;
+  margin-top: 4ex;
+  text-align: left;
+  color: #777;
+  font-size: 12px;
+}
+
+footer button.inria {
+  line-height: 10px;
+  font-size: 16px;
+  border: none;
+}
+
+footer button.inria svg * {
+  fill: white;
+  stroke: white;
+}
+
+footer .copyright-right {
+  text-align: right;
+}
+
+footer .copyright-left {
+  text-align: left;
+}
+
+footer .copyright-middle {
+  text-align: center;
+}
+
+/*---------------------------------------------------------------------*/
+/*    HipHop specific ...                                              */
+/*---------------------------------------------------------------------*/
+body.hop pre.hiphop,
+body.hop pre.javascript {
+    border-left-color: var(--javascriptColor);
+}
+
+body.hop pre.typescript {
+    border-left-color: var(--typescriptColor);
+}
+
+body.hop pre.json {
+    border-left-color: var(--jsonColor);
+}
+
+.fontifier-prog span.hiphop,
+.fontifier-prog span.hop {
+  background-color: #777;
+  border-radius: 1px;
+  color: white;
+}
+
+.fontifier-prog span.module,
+.fontifier-prog span.interface,
+.fontifier-prog span.machine {
+  color: #6959cf;
+}
+
+.fontifier-prog span.await {
+    color: #E45840
+}
+
+body.library h3.markdown {
+    font-size: 140%;
+    text-shadow: #ccc 1px 1px 1px;
+}
+
+/*---------------------------------------------------------------------*/
+/*    sections                                                         */
+/*---------------------------------------------------------------------*/
+.jumbotron .row h1 {
+  color: #faab02;
+  text-shadow: none;
+  font-weight: bold;
+  border: 0;
+}
+
+.jumbotron h1:before {
+  content: none;
+}
+
+h1.toc {
+  font-weight: bold;
+}
+
+h1 {
+  padding-bottom: 4px;
+  padding-top: 4px;
+  border-bottom: 1px solid #777;
+  border-top: 1px solid #777;
+  /* counter-reset: subsection; */
+  /* counter-increment: section; */
+}
+
+h1:before {
+  /* content: counter( section ) ". "; */
+}
+
+h1#toc {
+  /* counter-reset: section; */
+  /* counter-increment: none; */
+}
+
+h1 img {
+    display: none;
+}
+
+h1#toc:before {
+  content: none;
+}
+
+h2 {
+  padding-bottom: 4px;
+  border-bottom: 1px dashed #777;
+  text-shadow: #ccc 1px 1px 1px;
+}
+
+body.home h2:before,
+body.home h3:before,
+body.library h2:before,
+body.download h2:before,
+body.download h3:before,
+h1.nonumber:before,
+h2.nonumber:before,
+h3.nonumber:before,
+[data-toc=no] h1:before,
+[data-toc=no] h2:before,
+[data-toc=no] h3:before {
+  content: none;
+}
+
+h2:before {
+  /* counter-increment: subsection; */
+  /* content: counter( section ) "." counter( subsection ) ". "; */
+}
+
+h3 {
+    text-shadow: none;
+    font-weight: bold;
+}
+
+h3.glyphicon {
+  display: block;
+}
+
+h1.toc, h1.markdown {
+  font-size: 170%;
+}
+
+h2.markdown {
+  font-size: 160%;
+}
+
+h3.markdown {
+  font-size: 130%;
+}
+
+/*---------------------------------------------------------------------*/
+/*    navigation                                                       */
+/*---------------------------------------------------------------------*/
+.navbut .btn-primary a {
+  color: white;
+}
+
+.navbar-brand {
+  transition: 2s all;
+  opacity: 0;
+}
+
+[scrolled="yes"] .navbar-brand {
+  opacity: 1;
+}
+
+nav.sidebar {
+  background-color: #ffffff;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  width: 20em;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 95%;
+  opacity: 0.9;
+}
+
+nav.noaffix {
+  position: fixed;
+  top: 270px
+}
+
+nav.sidebar a {
+  color: #777;
+}
+  
+.affix-top {
+  position: absolute;
+  top: 20px;
+}
+
+.affix {
+  position: absolute;
+  top: 310px;
+}
+
+.affix-bottom {
+  position: absolute;
+  top: 80px;
+}
+
+nav.sidebar li {
+  border-left: 4px solid;
+  border-left-color: transparent;
+  text-overflow: ellipsis;
+}
+
+nav.sidebar .active {
+  font-weight: bold;
+  border-left-color: #900;
+  background-color: #d0d0d0;
+}
+
+nav.sidebar ul ul .active {
+  border: none;
+}
+
+nav.sidebar ul ul .active:after {
+  content: "\25c2";
+  color: #900;
+  font-size: 90%;
+}
+
+nav.sidebar .active * {
+  color: #222;
+}
+
+nav.sidebar li > a {
+  padding: 4px 8px;
+}
+
+nav.navbar-inverse {
+  border-bottom: 0;
+}
+
+nav.navbar-inverse .navbar-nav li.active > a {
+  background-color: #444;
+}
+
+nav.navbar-inverse .navbar-nav li {
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+}
+
+nav.navbar-inverse .navbar-nav li.active {
+  border-bottom-color: #faab02;
+}
+
+/*---------------------------------------------------------------------*/
+/*    description                                                      */
+/*---------------------------------------------------------------------*/
+div.page-header {
+/*   font-size: 130%;                                                  */
+}
+  
+/*---------------------------------------------------------------------*/
+/*    toc                                                              */
+/*---------------------------------------------------------------------*/
+.toc li {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.toc li .toc-description {
+  margin-left: 1em;
+  font-size: 95%;
+}
+
+.toc-description {
+  color: #555;
+}
+
+/*---------------------------------------------------------------------*/
+/*    code                                                             */
+/*---------------------------------------------------------------------*/
+pre code {
+  font-family: monospace;
+}
+
+body.hop pre, pre.fontifier-prog {
+    background-color: #ffffff;
+    border-radius: 0;
+}
+
+pre.fontifier-prog span.ebnf-tag {
+  color: #338;
+}
+
+/*---------------------------------------------------------------------*/
+/*    blockquote                                                       */
+/*---------------------------------------------------------------------*/
+p.warning {
+  margin-top: 3ex;
+  border-left: 4px solid #f0ad4e;
+  padding-left: 4px;
+  margin-top: 1ex;
+}
+
+p.danger {
+  margin-top: 3ex;
+  border-left: 4px solid #d9534f;
+  padding-left: 4px;
+  margin-top: 1ex;
+}
+
+p.info {
+}
+
+/*---------------------------------------------------------------------*/
+/*    label                                                            */
+/*---------------------------------------------------------------------*/
+span.lbl-lg {
+  padding: 8px;
+}
+
+pre + p {
+  margin-top: 1ex;
+}
+
+/*---------------------------------------------------------------------*/
+/*    download                                                         */
+/*---------------------------------------------------------------------*/
+body.download pre {
+  font-size: 80%;
+  font-family: monospace;
+}
+
+button.download {
+  border-radius: 3px;
+  border: 1px solid #aaa;
+  padding: 1ex 1em;
+  width: 16em;
+  text-align: center;
+}
+
+button.download table {
+  width: 100%;
+}
+
+button.download table td {
+  text-align: right;
+}
+
+button.download table td.content {
+  font-weight: bold;
+  text-align: left;
+  padding-left: 1em;
+}
+
+div.download + div.download {
+  margin-top: 2ex;
+}
+
+button.download * {
+  color: white;
+}
+
+button.download a span {
+  font-size: 140%;
+}
+
+/*---------------------------------------------------------------------*/
+/*    Specific page configuration                                      */
+/*---------------------------------------------------------------------*/
+body.lang ul.toc,
+body.lang h1.toc,
+body.download ul.toc,
+body.download h1.toc {
+  display: none;
+}
+
+div.home-body {
+  color: #444;
+  font-size: 16px;
+}
+
+body.home h1, body.home h2 {
+  color: #faab02;
+  text-shadow: none;
+  font-weight: bold;
+}
+
+body.home h2 {
+  font-size: 200%;
+}
+
+body.hop pre {
+    border: none;
+    border-radius: 0;
+    color: #000;
+    margin-left: 0;
+    border: 1px solid #d2d2d2;
+    border-left: 2px solid #666666;
+}
+
+body.hop pre.hop, body.hop pre.hopscript {
+    border-left-color: var(--hopscriptColor);
+}
+
+body.hop pre.scheme {
+    border-left-color: #f91a03;
+}
+
+body.hop pre.ebnf {
+    border-left-color: #22ba5a;
+}
+
+body.hop pre.shell {
+    border-left-color: var(--shellColor);
+}
+
+body.hop pre.config {
+  border-left-color: #D85023;
+}
+
+body.home pre.homeprog .fontifier-prog-string,
+body.home pre.homeprog .fontifier-prog-define,
+body.home pre.homeprog .fontifier-prog-keyword,
+body.home pre.homeprog .fontifier-prog-tag,
+body.home pre.homeprog .fontifier-prog-reserved,
+body.home pre.homeprog .fontifier-prog-client,
+body.home pre.homeprog .fontifier-prog-server {
+  font-weight: normal;
+  color: inherit;
+}
+
+body.home pre#prog1 span.service,
+body.home pre#prog2 .fontifier-prog-tag,
+body.home pre#prog3 .fontifier-prog-client,
+body.home pre#prog4 .fontifier-prog-server {
+  font-weight: bold;
+  color: #D85023;
+  background-color: #efefef;
+  border: 1px solid #d2d2d2;
+  border-radius: 1px;
+  padding-left: 1px;
+  padding-right: 1px;
+  margin-left: 1px;
+  margin-right: 1px;
+}
+
+body.hop code {
+  background-color: #efefef;
+  border: 1px solid #d2d2d2;
+  border-radius: 1px;
+  color: #1467E6;
+}
+
+body.hop pre code {
+  background-color: inherit;
+  border: none;
+}
+
+/*---------------------------------------------------------------------*/
+/*    prog                                                             */
+/*---------------------------------------------------------------------*/
+code .h1, code .h2, code .h3, code .h4 {
+  font-size: inherit;
+}
+
+/*---------------------------------------------------------------------*/
+/*    index                                                            */
+/*---------------------------------------------------------------------*/
+.idx-col {
+  width: 100%;
+}
+
+.idx-prefix {
+  color: #777;
+  text-align: right;
+}
+
+.idx-letter th {
+  text-align: left;
+  color: #777;
+  font-size: 220%;
+}
+
+.idx-letter > * {
+  border-bottom: 1px solid #ccc;
+}
+
+/*---------------------------------------------------------------------*/
+/*    bibentry                                                         */
+/*---------------------------------------------------------------------*/
+.bibentry {
+    margin-top: 2ex;
+}
+
+.bibentry .title {
+    font-weight: bold;
+}
+
+.bibentry .title:before {
+    content: " -- ";
+    font-weight: normal;
+}
+
+.bibentry .booktitle:before {
+    content: " -- ";
+    font-weight: normal;
+}
+
+.bibentry .download {
+    margin-left: 2em;
+}
+
+.bibentry .download a:before {
+    content: "[ ";
+}
+
+.bibentry .download a:after {
+    content: " ]";
+}
+
+.bibentry .abstract {
+    margin-left: 4em;
+    font-size: 85%;
+    text-align: justify;
+}
+
+body.bib pre {
+    border-left-color: #999;
+}
+
+/*---------------------------------------------------------------------*/
+/*    alert                                                            */
+/*---------------------------------------------------------------------*/
+blockquote.NOTE {
+    border-left-color: #0969da;
+    margin-top: 2ex;
+}
+
+blockquote.NOTE p.alert-title {
+    color: #0969da;
+}
+
+blockquote.NOTE p.alert-title:before {
+    content: "\1f6c8  Note";
+}
+
+blockquote.IMPORTANT {
+    border-left-color: #8250df;
+    margin-top: 2ex;
+}
+
+blockquote.IMPORTANT p.alert-title {
+    color: #8250df;
+}
+
+blockquote.IMPORTANT p.alert-title:before {
+    content: "\1f6c8  Important";
+}
+
+blockquote.WARNING {
+    border-left-color: #bb8a33;
+    margin-top: 2ex;
+}
+
+blockquote.WARNING p.alert-title {
+    color: #bb8a33;
+}
+
+blockquote.WARNING p.alert-title:before {
+    content: "\26A0  Warning";
+}
+
+blockquote.CAUTION {
+    border-left-color: #c52d2d;
+    margin-top: 2ex;
+}
+
+blockquote.CAUTION p.alert-title {
+    color: #c52d2d;
+}
+
+blockquote.CAUTION p.alert-title:before {
+    content: "\26A0  Caution";
+}
+
+/*---------------------------------------------------------------------*/
+/*    mermaid                                                          */
+/*---------------------------------------------------------------------*/
+body.hop pre.mermaid {
+    border-left: 1px solid #d2d2d2;
+}
+
+div.mermaid {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}
+
+div.mermaid img {
+    width: 30em;
+}
+
+/*---------------------------------------------------------------------*/
+/*    anchors ...                                                      */
+/*---------------------------------------------------------------------*/
+h3.interface:before,
+h4.interface:before {
+  color: #53945c;
+}
+
+h3.module:before,
+h4.module:before {
+  color: #79ccc5;
+}
+
+/*---------------------------------------------------------------------*/
+/*    footer                                                           */
+/*---------------------------------------------------------------------*/
+hr.markdown,
+hr.markdown + p.markdown {
+    display: none;
+}
+
+/*---------------------------------------------------------------------*/
+/*    media                                                            */
+/*---------------------------------------------------------------------*/
+@media screen and (max-width:1024px) {
+  #navbar, .idx-chapter {
+     display: none;
+  }
+}
