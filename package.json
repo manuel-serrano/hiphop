@@ -35,7 +35,7 @@
       "mocha": "^10.2.0"
    },
    "scripts": {
-     "test": "HIPHOP_RESOLVE=\"./lib/hiphop.js\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js",
+     "test": "HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js",
      "prepare": "node etc/configure.js package.json lib/config.js.in lib/config.js && node etc/buildmodules.js"
    }
 }
