@@ -22,4 +22,3 @@ export function index(R) {
       <div id="console">-</div>
    </html>
 }
-      

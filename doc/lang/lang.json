@@ -1,6 +1,6 @@
 {
    "title": "Lang",
-   "files": [ "lang", [], "syntax" ],
+   "files": [ "lang" ],
    "description": "lang/README.md",
    "key": "lang"
 }

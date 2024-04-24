@@ -1,6 +1,4 @@
-<!-- ${ var doc = require( "hopdoc" ) }
-${ var path = require( "path" ) }
-${ var ROOT = path.dirname( module.filename ) } -->
+<!-- ${ var doc = require( "hopdoc" ) } -->
 
 HipHop Modules
 ==============
@@ -28,7 +26,7 @@ and trap scopes. That is:
 ### module [ident](arg, ...) [implements [mirror] intf, ...] { sigdecl... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-&#x2606; [Formal syntax](../syntax/syntax.md#HHModule)
+&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHModule)
 
 If the optional `ident` is specified a JavaScript constant named
 `ident` is automatically declared and bound to the HipHop module.
@@ -45,7 +43,7 @@ any expressions of the module.  They are passed to the module with the
 `run` form.
 
 Module bodies constist of HipHop
-[statements](../syntax/syntax.md#HHStatement). The arguments, which are
+[statements](../syntax/hiphop.bnf#HHStatement). The arguments, which are
 signal declarations, constitute its interface. Module arguments are
 either _input_ signals, _output_ signals, or _input/output_
 signals. Here is an example of a module with an input, an output
@@ -82,7 +80,8 @@ In that example, the `M2`'s `myS` signal is bound to
 the `M1`'s `S`, `myT` to `T` and `M2`'s signal `U` is
 bound to `M1`'s signal `U`.
 
-&#x2605; Example: [run2.hh.js](../../test/run2.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [run2.hh.js](../../test/run2.hh.js)
+<!-- ${doc.includeCode("../../test/run2.hh.js", "hiphop")} -->
 
 See [`run`](#running-modules) for a complete description
 of the `run` form.
@@ -107,7 +106,7 @@ interface contains no body.
 ### interface [ident] [extends intf, ...] { ... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-&#x2606; [Formal syntax](../syntax/syntax.md#HHInterface)
+&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHInterface)
 
 If the optional `ident` is specified a JavaScript constant named
 `ident` is automatically declared and bound to the HipHop interface.
@@ -139,7 +138,8 @@ module producer() implements intf { ; }
 module consumer() implements mirror intf { ; }
 ```
 
-&#x2605; Example: [imirror.hh.js](../../test/imirror.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [imirror.hh.js](../../test/imirror.hh.js)
+<!-- ${doc.includeCode("../../test/imirror.hh.js", "hiphop")} -->
 
 
 Running Modules
@@ -152,7 +152,7 @@ via the `run` syntactif form.
 ### run ident(arg, ...) { sig, ...} ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-&#x2606; [Formal syntax](../syntax/syntax.md#HHRun). 
+&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHRun). 
 
 The module `ident` expression must be a JavaScript variable
 holding a module.
@@ -190,7 +190,8 @@ Each time `I` is received, `O` is emitted. The module is directly loaded
 into a reactive machine. It constitutes the program this machine will
 execute.
 
-&#x2605; Example: [every1.js](../../test/every1.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [every1.js](../../test/every1.hh.js)
+<!-- ${doc.includeCode("../../test/every1.hh.js", "hiphop")} -->
 
 
 ### Example using combined signals ###
@@ -198,7 +199,8 @@ execute.
 A module with an input/output signal `O` with default value `5`
 and a combine function.
 
-&#x2605; Example: [value1.hh.js](../../test/value1.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [value1.hh.js](../../test/value1.hh.js)
+<!-- ${doc.includeCode("../../test/value1.hh.js", "hiphop")} -->
 
 
 ### Example of submodule ###
@@ -209,7 +211,8 @@ name. That is when the input signal `S` is sent to the machine, both
 modules see it simultaneously and when `sub` emits the output signal
 `U`, the program behaves as if the emission was executed by `main`.
 
-&#x2605; Example: [run.hh.js](../../test/run.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [run.hh.js](../../test/run.hh.js)
+<!-- ${doc.includeCode("../../test/run.hh.js", "hiphop")} -->
 
 
 ### Example of Interfaces ###
@@ -219,14 +222,16 @@ The module `M1` runs the module `M2` by aliasing its signal `Z` to the
 `M2`'s signal `D` and by linking all the other signals (`A`, `B`, and `C`)
 directly.
 
-&#x2605; Example: [interface.hh.js](../../test/interface.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [interface.hh.js](../../test/interface.hh.js)
+<!-- ${doc.includeCode("../../test/interface.hh.js", "hiphop")} -->
 
 
 ### Example of Mirrored Interfaces ###
 
 This example defines two modules connected with mirrored interfaces.
 
-&#x2605; Example: [imirror.hh.js](../../test/imirro.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [imirror.hh.js](../../test/imirro.hh.js)
+<!-- ${doc.includeCode("../../test/imirror.hh.js", "hiphop")} -->
 
 ### Modules Variables ###
 
@@ -235,8 +240,8 @@ two instances of the smae module `mod` are executed in parallel construct,
 each invoking the module with a different variable paramter value. This
 example shows, that each instance "sees" its own copy of the parameter.
 
-&#x2605; Example: [run4.hh.js](../../test/run4.hh.js)
-
+<span class="hiphop">&#x2605;</span> Example: [run4.hh.js](../../test/run4.hh.js)
+<!-- ${doc.includeCode("../../test/run4.hh.js", "hiphop")} -->
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

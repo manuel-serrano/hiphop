@@ -1,6 +1,4 @@
-<!-- ${ var doc = require( "hopdoc" ) }
-${ var path = require( "path" ) }
-${ var ROOT = path.dirname( module.filename ) } -->
+<!-- ${ var doc = require("hopdoc") } -->
 
 Standard Module: timeout
 ========================
@@ -17,7 +15,7 @@ controlled by Hiphop programs. Once started, a timeout can be
 paused, reset, or aborted. When the timeout expires, it emits
 a signal to notify the other components of the HipHop program.
 
-### interface Timeout ###
+### Timeout ###
 <!-- [:@glyphicon glyphicon-tag interface] -->
 
 The `Timeout` interface declares the following HipHop signals:
@@ -29,7 +27,7 @@ The `Timeout` interface declares the following HipHop signals:
 These signals are used to control a running instance of the
 `timeout` module.
   
-### module timeout(duration) implements Timeout ###
+### timeout(duration) implements Timeout ###
 <!-- [:@glyphicon glyphicon-tag module] -->
 
 A HipHop `timeout` module is an asynchronous tasks that run in the
@@ -40,7 +38,7 @@ A `timeout` is created by running the `timeout` module passing
 it a numerical value, which is the timeout in millisecond before
 the signal `elapsed` is emitted. Example:
 
-```
+```hiphop
 run timeout(2000) { e as elapsed }; // wait for two seconds before emitting `e`.
 ```
 
@@ -54,7 +52,8 @@ its `elapsed` signal.
 If a timeout receives its `reset` signal, it resets its internal
 counter and waits again for the full duration before emiting `elapsed`.
 
-&#x2605; Example: [timeout-mod.hh.js](../../test/timeout-mod.hh.js)
+<span class="hopscript">&#x2605;</span> Example: [timeout-mod.hh.js](../../test/timeout-mod.hh.js)
+<!-- ${doc.includeCode("../../test/timeout-mod.hh.js", "hiphop")} -->
 
 
 Implementation

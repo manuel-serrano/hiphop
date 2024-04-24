@@ -14,12 +14,15 @@ DOCJS=`$(HOP) --no-server --evaljs 'console.log(require(hop.config).docDir + "/d
 #*    Targets                                                          */
 #*---------------------------------------------------------------------*/
 COMMON_TARGETS=index.html idx.html api.html debug.html download.html lang.html \
-   syntax.html bib.html dev.html
+   bib.html dev.html staging.html
 
-LANG_SOURCES=module.md signal.md flow.md async.md error.md README.md
+LANG_SOURCES=README.md module.md signal.md flow.md async.md error.md syntax.md
+MODULES_SOURCES=README.md promise.md timeout.md 
+
 LANG_TARGETS=$(LANG_SOURCES:%.md=lang/%.html)
+MODULES_TARGETS=$(MODULES_SOURCES:%.md=modules/%.html)
 
-TARGETS=$(COMMON_TARGETS) $(LANG_TARGETS)
+TARGETS=$(COMMON_TARGETS) $(LANG_TARGETS) $(MODULES_TARGETS)
 
 all: $(TARGETS) lib css
 
@@ -52,9 +55,10 @@ index.html: ../README.md lib css/doc.css
 #*---------------------------------------------------------------------*/
 #*    idx.json ...                                                     */
 #*---------------------------------------------------------------------*/
-idx.json: debug.html $(LANG_TARGETS) api.html
+idx.json: debug.html $(LANG_TARGETS) $(MODULES_TARGETS) \
+  dev.html api.html staging.html
 	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
-          $(DOCJS) "html-to-idx" . $^ > $@ \
+          $(DOCJS) "html-to-idx" . -o $@ $^ \
           || ($(RM) $@; exit 1)
 
 #*---------------------------------------------------------------------*/
@@ -62,7 +66,7 @@ idx.json: debug.html $(LANG_TARGETS) api.html
 #*---------------------------------------------------------------------*/
 idx.html: idx.json lib css/doc.css
 	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
-          $(DOCJS) "compile-idx" $^ > $@ \
+          $(DOCJS) "compile-idx" $< -o $@ \
           || ($(RM) $@; exit 1)
 
 #*---------------------------------------------------------------------*/

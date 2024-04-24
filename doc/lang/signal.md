@@ -1,6 +1,4 @@
-<!-- ${ var doc = require("hopdoc") }
-${ var path = require("path") }
-${ var ROOT = path.dirname(module.filename) } -->
+<!-- ${ var doc = require("hopdoc") } -->
 
 HipHop Signals and Variables
 ============================
@@ -52,11 +50,11 @@ via an [interface declaration](./module.md##hiphop-interfaces) or inside an
 HipHop statement, with the [signal](./syntax/hiphop.bnf#HHSignal) construct.
 
 ### signal [direction] ident [= value] [combine function] ... ###
+<!-- [:@glyphicon glyphicon-tag syntax] -->
 ### signal [direction] ... ident, ident [= value] [combine function] ... ###
 ### signal implements [mirror] intf ... ###
-<!-- [:@glyphicon glyphicon-tag syntax] -->
 
-&#x2606; [Formal syntax](./syntax/syntax.bnf#HHSignal)
+&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHSignal)
 
 See the [module documentation](./module.md) for module signals.
 
@@ -81,7 +79,8 @@ hiphop module M() {
 `out`, and `inout`.  The signals can be used from outside of the
 machine to pass values in or to receive values after a reaction.
 
-&#x2605; Example: [samelocalname.hh.js](../../test/samelocalname.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [samelocalname.hh.js](../../test/samelocalname.hh.js)
+<!-- ${doc.includeCode("../../test/samelocalname.hh.js", "hiphop")} -->
 
 ** Multiple emission with combine functions **:
 
@@ -91,27 +90,32 @@ is specified, it must be associative and commutative. Signals associated
 with a combination function can be emitted several time during the reaction.
 The `.nowval` will contain all the values emitted during the reaction.
 
-&#x2605; Example: [incr-branch.hh.js](../../test/incr-branch.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [incr-branch.hh.js](../../test/incr-branch.hh.js)
+<!-- ${doc.includeCode("../../test/incr-branch.hh.js", "hiphop")} -->
 
-&#x2605; Example: [toggle.hh.js](../../test/toggle.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [toggle.hh.js](../../test/toggle.hh.js)
+<!-- ${doc.includeCode("../../test/toggle.hh.js", "hiphop")} -->
 
 The form `signal implements [mirror] intf` declares locally the
 signals declared in the interface `intf`. The optional keyword
 `mirror` swaps the input and output signals.
 
-&#x2605; Example: [imirror.hh.js](../../test/imirror.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [imirror.hh.js](../../test/imirror.hh.js)
+<!-- ${doc.includeCode("../../test/imirror.hh.js", "hiphop")} -->
 
 Transient signals are declared with the addition of the `transient` keyword.
 They do not save their `nowval` value from one instant to the other, 
 contrary to plain signals that do.
 
-&#x2605; Example: [transient.hh.js](../../test/transient.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [transient.hh.js](../../test/transient.hh.js)
+<!-- ${doc.includeCode("../../test/transient.hh.js", "hiphop")} -->
 
 The form using the `...` syntax enables several signals to share the
 same attributes. For instance in the declaration `in ... x, y, z = 1`,
 the three signals `x`, `y, and `z` will be initialized to 1.
 
-&#x2605; Example: [incr-branch2.hh.js](../../test/incr-branch2.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [incr-branch2.hh.js](../../test/incr-branch2.hh.js)
+<!-- ${doc.includeCode("../../test/incr-branch2.hh.js", "hiphop")} -->
 
 
 Variable Declarations
@@ -120,14 +124,15 @@ Variable Declarations
 ### let ident [= value], ..., ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-&#x2606; [Formal syntax](./syntax/syntax.bnf#HHLet)
+&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHLet)
 
 Along with signals, HipHop supports local Hop variables. They are
 local variable carrying Hop values. These variable can be used in all the
 Hop expressions HipHop might used, for instance, for computing a delay,
 for producing an emission value, or for running asynchronous  computation.
 
-&#x2605; Example: [variable.hh.js](../../test/variable.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [variable.hh.js](../../test/variable.hh.js)
+<!-- ${doc.includeCode("../../test/variable.hh.js", "hiphop")} -->
 
 
 Using Signals in Expressions
@@ -173,7 +178,8 @@ reaction.
 The following example illustrates the various values of `now`, `pre`, `nowval`,
 and `preval` along instants.
 
-&#x2605; Example: [npnvpv.hh.js](../../test/npnvpv.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [npnvpv.hh.js](../../test/npnvpv.hh.js)
+<!-- ${doc.includeCode("../../test/npnvpv.hh.js", "hiphop")} -->
 
 When executed with the following [input](/../../test/npnvpv.in) signals.
 It generates the following [output](/../../test/npnvpv.out).
@@ -185,41 +191,18 @@ Returns the JavaScript name of a signal. This is useful when dealing
 with `async` forms (see [async documentation](./async.md)).
 
 
-Test, Await, and Emit
----------------------
-
-### if (delay) { ... } [else { ... }] ###
-<!-- [:@glyphicon glyphicon-tag syntax] -->
-
-&#x2606; [Formal syntax](./syntax/hiphop.bnf#HHIf)
-
-The presence or absence of a signal can be checked with the `if`
-conditional construct. The value of a signal can be checked too. The
-`expr` argument is any Hop expression agumented with the signal
-API. For instance, the presence of a signal can be checked with:
-
-```hiphop
-if(!SIG.now) { host { console.log("signal not emitted in reaction") } }
-```
-
-A particular value of a signal can be checked. For instance:
-
-```hiphop
-if(SIG.nowval > 10 && SIG.nowval < 100) { host { console.log("signal in range") } }
-```
-
-See [staging](../staging.md) for using dynamic signal names in delay
-expressions.
+Await, and Emit
+---------------
 
 ### await delay ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-&#x2606; [Formal syntax](./syntax/syntax.bnf#HHAwait)
+&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHAwait)
 
 It is frequent for a program to wait for one or several signals to be
 emitted. This can be acheived with the `await` construct, which waits
-for a condition to be true. The `delay` [expression](./syntax/hiphop.bnf#HHDelay)
-can be:
+for a condition to be true. The `delay`
+[expression](./syntax/hiphop.bnf#HHDelay) can be:
 
  * an simple HipHop expression as the one used in the `if` construct.
  * an HipHop expression prefixed with `immediate`. If `immediate` is
@@ -273,10 +256,20 @@ await (expr);
 await (expr);
 ```
 
+The form `await (delay)` is equivalent to:
+
+```hiphop
+endif: loop {
+   yield;
+   if (delay) break endif;
+}
+```
+   
+
 ### emit signal([ value ]) ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-&#x2606; [Formal syntax](./syntax/syntax.bnf#HHEmit)
+&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHEmit)
 
 The `emit` form emit the value in the instant. The form `emit sig1()` emits
 a signal without value. The form `emit sig2(val)` emits a signal with
@@ -292,7 +285,7 @@ a value.
 ### sustain signal([ value ]) ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-&#x2606; [Formal syntax](./syntax/syntax.bnf#HHSustain)
+&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHSustain)
 
 Similar to `emit` but the emission is repeated at each instant. The
 statement
@@ -317,15 +310,18 @@ Examples
 A module waiting sequentially for `A` and `B` to be emitted during
 distinct reactions and that emits `O` right after `B` is received.
 
-&#x2605; [await-seq.hh.js](../../test/await-seq.hh.js)
+<span class="hiphop">&#x2605;</span> [await-seq.hh.js](../../test/await-seq.hh.js)
+<!-- ${doc.includeCode("../../test/await-seq.hh.js", "hiphop")} -->
 
 A module that waits the event `I` to be present in three distinctive instants.
 
-&#x2605; [await-count.hh.js](../../test/await-count.hh.js)
+<span class="hiphop">&#x2605;</span> [await-count.hh.js](../../test/await-count.hh.js)
+<!-- ${doc.includeCode("../../test/await-count.hh.js", "hiphop")} -->
 
 A module using Hop variable inside HipHop statements. 
 
-&#x2605; [variable.hh.js](../../test/variable.hh.js)
+<span class="hiphop">&#x2605;</span> [variable.hh.js](../../test/variable.hh.js)
+<!-- ${doc.includeCode("../../test/variable.hh.js", "hiphop")} -->
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -25,6 +25,3 @@ mach.debug_emitted_func = emitted => {
 mach.batchPromise = new Promise((res, rej) => mach.init(res));
 
 mach.react();
-
-
-

@@ -1,6 +1,4 @@
-<!-- ${ var doc = require( "hopdoc" ) }
-${ var path = require( "path" ) }
-${ var ROOT = path.dirname( module.filename ) } -->
+<!-- ${ var doc = require("hopdoc") } -->
 
 Standard Module: promise
 ========================
@@ -16,7 +14,7 @@ The `promise` HipHop module maps JavaScript promises to
 HipHop signals. It enables to spawn a JavaScript promise which
 upon resolution or rejection emits a HipHop signal.
 
-### interface Promise ###
+### Promise ###
 <!-- [:@glyphicon glyphicon-tag interface] -->
 
 The `Promise` interface declares the following HipHop signals:
@@ -25,22 +23,20 @@ The `Promise` interface declares the following HipHop signals:
   module emits a single signal. That signal is an object with two
   attributes: `{res: resolution-value, rej: rejection-value}`.
   
-### module promise(duration) implements Promise ###
+### promise(duration) implements Promise ###
 <!-- [:@glyphicon glyphicon-tag module] -->
 
 A HipHop `promise` module is an asynchronous tasks that run in the
 background of the application. When it resolves or rejects, it emits
-its signal `value`.
+its signal `value`. Example:
 
-A `promise` is created by running the `promise` module passing
-it a JavaScript promise.
-
-```
+```hiphop
 // emits v with the value { resolve: "yep", reject: false }
 run promise(new Promise((res, rej) => res("yep")))) { v as value }; 
 ```
 
-&#x2605; Example: [promise-mod.hh.js](../../test/promise-mod.hh.js)
+<span class="hopscript">&#x2605;</span> Example: [promise-mod.hh.js](../../test/promise-mod.hh.js)
+<!-- ${doc.includeCode("../../test/promise-mod.hh.js", "hiphop")} -->
 
 
 Implementation

@@ -33,4 +33,3 @@ mach.batchPromise = new Promise((res, rej) => mach.init(res));
 
 mach.react();
 mach.react();
-

@@ -1,3 +1,5 @@
+<!-- ${ var doc = require("hopdoc") } -->
+
 The HipHop Programming Language
 ===============================
 
@@ -50,7 +52,8 @@ modules](./stdmod.md).
 
 ### Example ###
 
-&#x2605; [The abro example](../../test/abro.hh.js)
+<span class="hopscript">&#x2605;</span> [abro.hh.js](../../test/abro.hh.js)
+<!-- ${doc.includeCode("../../test/abro.hh.js", "hiphop")} -->
 
 
 <!-- github -->
