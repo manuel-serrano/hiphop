@@ -13,7 +13,8 @@ DOCJS=`$(HOP) --no-server --evaljs 'console.log(require(hop.config).docDir + "/d
 #*---------------------------------------------------------------------*/
 #*    Targets                                                          */
 #*---------------------------------------------------------------------*/
-COMMON_TARGETS=index.html idx.html api.html debug.html download.html lang.html \
+COMMON_TARGETS=../index.html \
+   idx.html api.html debug.html download.html lang.html \
    bib.html dev.html staging.html
 
 LANG_SOURCES=README.md module.md signal.md flow.md async.md error.md syntax.md
@@ -47,7 +48,7 @@ VPATH=syntax
 #*---------------------------------------------------------------------*/
 #*    doc                                                              */
 #*---------------------------------------------------------------------*/
-index.html: ../README.md lib css/doc.css
+../index.html: ../README.md lib css/doc.css
 	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "compile-library" $< -o $@ \
           || ($(RM) $@; exit 1)
