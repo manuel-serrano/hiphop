@@ -57,7 +57,7 @@ initial state.
 import { ReactiveMachine } from "@hop/hiphop";
 
 const HelloWorld = hiphop module() {
-   in A, in B, in R;
+   in A; in B; in R;
    out O;
    do {
       fork {
