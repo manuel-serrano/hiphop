@@ -33,14 +33,14 @@ node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all-
 Go into the `test` directory and execute
 
 ```
-node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all.test.js -- ./<A-TEST.hh.js>
+HIPHOP_RESOLVE=".." node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all.test.js -- ./<A-TEST.hh.js>
 ```
 
 Where you should replace `<A-TEST.hh.js>` with your test. For example:
 
 
 ```
-node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all.test.js -- ./incr-type.hh.js`
+HIPHOP_RESOLVE=".." node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all.test.js -- ./incr-type.hh.js`
 ```
 
 3. Manual compilation
