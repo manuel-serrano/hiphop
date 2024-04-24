@@ -1,20 +1,18 @@
-${ var doc = require( "hopdoc" ) }
-${ var config = require( hop.config ) }
-${ var xml = require( config.docDir + "/xml.js" ) }
-${ var cfg = require( "./doc.json" ) }
-${ var bibtex = require( "./_bibtex.hop" ) }
+${ var doc = require("hopdoc") }
+${ var config = require(hop.config) }
+${ var cfg = require("./doc.json") }
+${ var bibtex = require("./_bibtex.hop") }
 
 Citations
 ---------
 
-To cite the Hop software, please use the following Biblatex entry.
+To cite the HipHop software, please use the following Biblatex entry.
 
 ${<pre class="bibtex">
 @software{ hiphop,
-   title = {Hop, multitier Web Programming},
+   title = {HipHop, (A)Synchronous Web Reactive Programming},
    author = {Berry, G{\'e}rard and Serrano, Manuel},
-   year = {2011},
-   institution = {Inria},
+   year = {2024},
    url = {${cfg.homepage}}
 }
 </pre>}
@@ -27,7 +25,6 @@ ${<pre class="bibtex">
   year = {${cfg.date.split( " " )[ 2 ]}},
   month = {${cfg.date.split( " " )[ 1 ]}},
   file = {${cfg.urlbase}/hop-${cfg.version}},
-  crossref = {hop}
 }
 </pre>}
 

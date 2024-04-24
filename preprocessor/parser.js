@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/1.3.x/preprocessor/parser.js         */
+/*    serrano/prgm/project/hiphop/hiphop/preprocessor/parser.js        */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Mar 27 16:55:50 2024 (serrano)                */
+/*    Last change :  Wed Apr 10 13:16:31 2024 (serrano)                */
 /*    Copyright   :  2018-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -293,7 +293,7 @@ function parseValueApply(loc) {
    if (typeof expr === "J2SDollar" || expr?.$class === "J2SDollar") {
       init = astutils.J2SDataPropertyInit(
 	 loc,
-	 astutils.J2SString(loc, "value"),
+	 astutils.J2SString(loc, "%value"),
 	 expr.node);
    } else {
       const fun = astutils.J2SMethod(
@@ -632,7 +632,7 @@ function parseInterfaceIntflist() {
 	 loc,
 	 [astutils.J2SDataPropertyInit(
 	      loc,
-	      astutils.J2SString(loc, "value"),
+	      astutils.J2SString(loc, "%value"),
 	      expr),
 	   astutils.J2SDataPropertyInit(
 	      loc,
@@ -1894,12 +1894,17 @@ function parseHiphopValue(token, declaration, conf) {
       }
    }
 
+   function isInterfacep(next) {
+      return (next.type === this.ID && next.value === "interface")
+	 || (next.type === this.INTERFACE);
+   }
+
    const next = this.peekToken();
 
    if (next.type === this.ID && next.value === "module") {
       this.consumeAny();
       return wrapVarDecl(parseModule.call(this, next, declaration, "MODULE"));
-   } else if (next.type === this.ID && next.value === "interface") {
+   } else if (isInterfacep.call(this, next)) {
       this.consumeAny();
       return wrapVarDecl(parseInterface.call(this, next, declaration));
    } else {

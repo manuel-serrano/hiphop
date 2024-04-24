@@ -5,9 +5,9 @@ machine. It takes input commands on standard input, and display
 results of reaction on standard output. It started this way:
 
 ```hopscript
-const hh = require("hiphop");
+import * as hiphop from "@hop/hiphop";
 const prg = <hh.Module> ... </hh.Module>;
-var machine = new hh.ReactiveMachine(prg);
+const machine = new hh.ReactiveMachine(prg);
 
 hh.batch(machine); // starts the batch interpreter
 ```

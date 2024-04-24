@@ -1,3 +1,5 @@
+<!-- ${ var doc = require("hopdoc") } -->
+
 HipHop Staging
 ==============
 
@@ -17,21 +19,23 @@ Generating statements
 
 The HipHop syntax provides _escapes_ that enable HipHop programs to be
 assembled from separately developed statements. Within HipHop, the
-escape sequence `${...}` (similar to the escape sequence of JavaScript
-string templates), _inserts_ a HipHop statement into the program being
-build. For instance, compare the two equivalent programs.  The first
-one uses any stagging facility.
+escape sequence <tt>&#36;{...}</tt> (similar to the escape sequence of
+JavaScript string templates), _inserts_ a HipHop statement into the
+program being build. For instance, compare the two equivalent
+programs.  The first one uses any stagging facility.
 
-&#x2605; [staging-abro.hh.js](../test/staging-abro.hh.js)
+<span class="hiphop">&#x2605;</span> [staging-abro.hh.js](../test/staging-abro.hh.js)
+<!-- ${doc.includeCode("../test/staging-abro.hh.js", "hiphop")} -->
 
 The second one, which executes similarly and produces the same result does not:
 
-&#x2605; [abro.hh.js](../test/abro.hh.js)
+<span class="hiphop">&#x2605;</span> [abro.hh.js](../test/abro.hh.js)
+<!-- ${doc.includeCode("../test/abro.hh.js", "hiphop")} -->
 
 Note in this example, how HipHop statments are stored in JavaScript
 variables and then inserted into the main program. 
 
-Inside a Hiphop statement an escape sequence `${...}` is replaced
+Inside a Hiphop statement an escape sequence <tt>&#36;{...}</tt> is replaced
 at compile-time by the corresponding value. The type of the inserted
 value depends on the context of the escape sequence. 
 
@@ -45,11 +49,13 @@ In the following example, the three arms of a `fork` construct are first
 stored in a JavaScript array and then inserted into the constructed
 HipHop program.
 
-&#x2605; [staging-abcro.hh.js](../test/staging-abcro.hh.js)
+<span class="hiphop">&#x2605;</span> [staging-abcro.hh.js](../test/staging-abcro.hh.js)
+<!-- ${doc.includeCode("../test/staging-abcro.hh.js", "hiphop")} -->
 
 In the second example:
 
-&#x2605; [staging-emit-if2.hh.js](../test/staging-emit-if2.hh.js)
+<span class="hiphop">&#x2605;</span> [staging-emit-if2.hh.js](../test/staging-emit-if2.hh.js)
+<!-- ${doc.includeCode("../test/staging-emit-if2.hh.js", "hiphop")} -->
 
 The `emit` statements uses generated signal names.
 
@@ -63,7 +69,8 @@ should used dynamically generated signal names. This is accomplished
 using the JavaScript `this[expre]` syntax. For instance, in the following
 example:
 
-&#x2605; [staging-emit-if2.hh.js](../test/staging-emit-if2.hh.js)
+<span class="hiphop">&#x2605;</span> [staging-emit-if2.hh.js](../test/staging-emit-if2.hh.js)
+<!-- ${doc.includeCode("../test/staging-emit-if2.hh.js", "hiphop")} -->
 
 The two HipHop `if` statements uses dynamic signal expressions for 
 refering to signals `B` and `C`.
@@ -81,13 +88,15 @@ timeout duration.
 The new modules are directly created when run, using the dollar-form
 in the main HipHop program. 
 
-&#x2605; [run3.hh.js](../test/run3.hh.js)
+<span class="hiphop">&#x2605;</span> [run3.hh.js](../test/run3.hh.js)
+<!-- ${doc.includeCode("../test/run3.hh.js", "hiphop")} -->
 
 The input/output signal declaration syntax enables staging. The
 `...` form can be followed by a _dollar_ expression that should evaluate
 to an array of strings that will denote the names of the declared signals.
 
-&#x2605; Example: [staging-incr-branch2.hh.js](../../test/staging-incr-branch2.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [staging-incr-branch2.hh.js](../test/staging-incr-branch2.hh.js)
+<!-- ${doc.includeCode("../test/staging-incr-branch2.hh.js", "hiphop")} -->
 
 
 Generated Interfaces
@@ -112,11 +121,13 @@ special properties `*` and `+` play the same role as the `*` and
 
 Example:
 
-&#x2605; [staging-interface.hh.js](../test/staging-interface.hh.js)
+<span class="hiphop">&#x2605;</span> [staging-interface.hh.js](../test/staging-interface.hh.js)
+<!-- ${doc.includeCode("../test/staging-interface.hh.js", "hiphop")} -->
 
 which can be compared to the non-staged version:
 
-&#x2605; [interface.hh.js](../test/interface.hh.js).
+<span class="hiphop">&#x2605;</span> [interface.hh.js](../test/interface.hh.js).
+<!-- ${doc.includeCode("../test/interface.hh.js", "hiphop")} -->
 
 
 Dynamic Program Modifications
@@ -141,9 +152,8 @@ child is added after the node children.
 
 Remove a child.
 
-Example:
-
-&#x2605; [appendseqchild.hh.js](../test/appendseqchild.hh.js)
+<span class="hiphop">&#x2605;</span> Example [appendseqchild.hh.js](../test/appendseqchild.hh.js)
+<!-- ${doc.includeCode("../test/appendseqchild.hh.js", "hiphop")} -->
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

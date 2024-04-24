@@ -1,6 +1,4 @@
-<!-- ${ var doc = require("hopdoc") }
-${ var path = require("path") }
-${ var ROOT = path.dirname(module.filename) } -->
+<!-- ${ var doc = require("hopdoc") } -->
 
 Control Flow Operators
 ======================
@@ -17,15 +15,17 @@ a `;` are executed sequentially.
 ### pragma ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHYield)
+<span class="syntax">&#x2606;</span> [Formal syntax](../syntax/hiphop.bnf#HHYield)
 
 The `pragma` form executes a JavaScript statement during the reaction.
 
-&#x2605; Example: [seq.hh.js](../../test/seq.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [seq.hh.js](../../test/seq.hh.js)
+<!-- ${doc.includeCode("../../test/seq.hh.js", "hiphop")} -->
 
 The JavaScript body may have signal dependencies.
 
-&#x2605; Example: [atom-dep-par.hh.js](../../test/atom-dep-par.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [atom-dep-par.hh.js](../../test/atom-dep-par.hh.js)
+<!-- ${doc.includeCode("../../test/atom-dep-par.hh.js", "hiphop")} -->
 
 > [!CAUTION]
 > Under no circumstances JavaScript side effects must be observable
@@ -53,6 +53,12 @@ depends on the `now` attribute of the signal `SIG`. It cannot be evaluated
 before it is know that `SIG` is now emitted during the reaction. The HipHop
 runtime system computes these dependencies automatically.
 
+A particular value of a signal can also be checked. For instance:
+
+```hiphop
+if(SIG.nowval > 10 && SIG.nowval < 100) { host { console.log("signal in range") } }
+```
+
 See [staging](../staging.md) for using dynamic signal names in delay
 expressions.
 
@@ -65,9 +71,11 @@ A thread of execution can suspend itself for the current instance using
 the `yield` construct. The execution will resume after the `yield` when
 the `react` method of the machine will be called again.
 
-&#x2605; Example: [weak.hh.js](../../test/weak.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [weak.hh.js](../../test/weak.hh.js)
+<!-- ${doc.includeCode("../../test/weak.hh.js", "hiphop")} -->
 
-&#x2605; Example: [trap-par-3.hh.js](../../test/trap-par-3.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [trap-par-3.hh.js](../../test/trap-par-3.hh.js)
+<!-- ${doc.includeCode("../../test/trap-par-3.hh.js", "hiphop")} -->
 
 
 ### fork { ... } par { ... } ###
@@ -77,7 +85,8 @@ the `react` method of the machine will be called again.
 
 Run all the bodies in parallel. Complete when all bodies have completed.
 
-&#x2605; Example: [parallel-unary.hh.js](../../test/parallel-unary.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [parallel-unary.hh.js](../../test/parallel-unary.hh.js)
+<!-- ${doc.includeCode("../../test/parallel-unary.hh.js", "hiphop")} -->
 
 This example uses two nested `fork` constructs. The second is synchronized
 with the first as it waits for an event the first branch is to emit.
@@ -88,7 +97,8 @@ with the first as it waits for an event the first branch is to emit.
 
 Terminate the current thread.
 
-&#x2605; Example: [run-add-par.hh.js](../../test/run-add-par.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [run-add-par.hh.js](../../test/run-add-par.hh.js)
+<!-- ${doc.includeCode("../../test/run-add-par.hh.js", "hiphop")} -->
 
 
 Loop
@@ -107,11 +117,13 @@ all based on a combination of the elementary `loop` construct and
 
 This is the basis loop construct that implements an infinite loop
 
-&#x2605; Example: [sync1.hh.js](../../test/sync1.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [sync1.hh.js](../../test/sync1.hh.js)
+<!-- ${doc.includeCode("../../test/sync1.hh.js", "hiphop")} -->
 
 A loop can be interrupted by exiting with a `break` statement.
 
-&#x2605; Example: [trap-loop.hh.js](../../test/trap-loop.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [trap-loop.hh.js](../../test/trap-loop.hh.js)
+<!-- ${doc.includeCode("../../test/trap-loop.hh.js", "hiphop")} -->
 
 > [!NOTE]
 > It is not permitted to implement _instantaneous_ loops, that is
@@ -128,9 +140,11 @@ Suspension
 
 Suspend the execution of `block` while `delay` is true.
 
-&#x2605; Example: [suspend.hh.js](../../test/suspend.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [suspend.hh.js](../../test/suspend.hh.js)
+<!-- ${doc.includeCode("../../test/suspend.hh.js", "hiphop")} -->
 
-&#x2605; Example: [trap-suspend.hh.js](../../test/trap-suspend.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [trap-suspend.hh.js](../../test/trap-suspend.hh.js)
+<!-- ${doc.includeCode("../../test/trap-suspend.hh.js", "hiphop")} -->
 
 
 Lexical Escapes
@@ -158,19 +172,23 @@ after the statement that follows that break label. The `break` form
 can be used to abord an execution thread when used to escape a `fork`/`par`
 form.
 
-&#x2605; Example: [timeout.hh.js](../../test/timeout.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [timeout.hh.js](../../test/timeout.hh.js)
+<!-- ${doc.includeCode("../../test/timeout.hh.js", "hiphop")} -->
 
 This example shows how to exit a `loop`.
 
-&#x2605; Example: [trap-par.hh.js](../../test/trap-par.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [trap-par.hh.js](../../test/trap-par.hh.js)
+<!-- ${doc.includeCode("../../test/trap-par.hh.js", "hiphop")} -->
 
 This example shows how to exit a `fork`/`par`.
 
-&#x2605; Example: [trap-await-parallel.hh.js](../../test/trap-await-parallel.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [trap-await-parallel.hh.js](../../test/trap-await-parallel.hh.js)
+<!-- ${doc.includeCode("../../test/trap-await-parallel.hh.js", "hiphop")} -->
 
 This example shows that several threads can decide to exit from a `fork`/`par`.
 
-&#x2605; Example: [p18.hh.js](../../test/p18.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [p18.hh.js](../../test/p18.hh.js)
+<!-- ${doc.includeCode("../../test/p18.hh.js", "hiphop")} -->
 
 
 Derived Forms
@@ -184,10 +202,12 @@ Derived Forms
 A loop executed each time the `delay` is true. Abort the execution of 
 the body when `delay` is true. Delays are documented [here](./signal#test-await-and-emit).
 
-&#x2605; Example: [every1.hh.js](../../test/every1.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [every1.hh.js](../../test/every1.hh.js)
+<!-- ${doc.includeCode("../../test/every1.hh.js", "hiphop")} -->
 
 All the delay forms can be used with `every`.
-&#x2605; Example: [every-delay.hh.js](../../test/every-delay.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [every-delay.hh.js](../../test/every-delay.hh.js)
+<!-- ${doc.includeCode("../../test/every-delay.hh.js", "hiphop")} -->
 
 
 The form `every` is a derived form. The form:
@@ -218,7 +238,8 @@ loop {
 
 Execute the `do`'s body and loop when `test` is true.
 
-&#x2605; Example: [loopeach.hh.js](../../test/loopeach.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [loopeach.hh.js](../../test/loopeach.hh.js)
+<!-- ${doc.includeCode("../../test/loopeach.hh.js", "hiphop")} -->
 
 The form `do`/`every` is a dericed form. The form:
 
@@ -244,9 +265,11 @@ loop {
 
 Execute the `abort`'s body and abort the execution when delay is true.
 
-&#x2605; Example: [abort-par.hh.js](../../test/abort-par.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [abort-par.hh.js](../../test/abort-par.hh.js)
+<!-- ${doc.includeCode("../../test/abort-par.hh.js", "hiphop")} -->
 
-&#x2605; Example: [abortpre.hh.js](../../test/abortpre.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [abortpre.hh.js](../../test/abortpre.hh.js)
+<!-- ${doc.includeCode("../../test/abortpre.hh.js", "hiphop")} -->
 
 The form:
 
@@ -274,11 +297,14 @@ exit: fork {
 Execute the `weakabort`'s body and abort the execution when delay is true
 at the end of the reaction
 
-&#x2605; Example: [loopeach-weakabort-emit.hh.js](../../test/loopeach-weakabort-emit.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [loopeach-weakabort-emit.hh.js](../../test/loopeach-weakabort-emit.hh.js)
+<!-- ${doc.includeCode("../../test/loopeach-weakabort-emit.hh.js", "hiphop")} -->
 
-&#x2605; Example: [weak2.hh.js](../../test/weak2.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [weak2.hh.js](../../test/weak2.hh.js)
+<!-- ${doc.includeCode("../../test/weak2.hh.js", "hiphop")} -->
 
-&#x2605; Example: [weak-immediate.hh.js](../../test/weak-immediate.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [weak-immediate.hh.js](../../test/weak-immediate.hh.js)
+<!-- ${doc.includeCode("../../test/weak-immediate.hh.js", "hiphop")} -->
 
 The form:
 

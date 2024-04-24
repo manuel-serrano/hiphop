@@ -3,7 +3,6 @@ doc/*.css
 doc/lib/bootstrap/css/bootstrap*.map
 doc/idx.json
 doc/lib
-doc/hss
 Makefile
 config.status
 lib/config.js

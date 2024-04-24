@@ -3,8 +3,8 @@
 HipHop
 ======
 
-The `"hiphop"` module contains utilities for creating and running
-HipHop reactive machines.
+The `"hiphop"` JavaScript module contains utilities for creating and
+running HipHop reactive machines.
 
 Use `import * as hiphop from "@hop/hiphop"` to use it.
 
@@ -103,7 +103,8 @@ associated to these signals.
 Set the value of the machine's main module parameters. Can only be executed
 once, and before the machine first reaction.
 
-&#x2605; Example: [trap-kill.hh.js](../test/trap-kill.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [trap-kill.hh.js](../test/trap-kill.hh.js)
+<!-- ${doc.includeCode("../test/trap-kill.hh.js", "hiphop")} -->
 
 
 ### mach.input(sigset) ###
@@ -146,7 +147,8 @@ Return a promise that resolves when the machine emits the signal named
 `rejsigname`. The machine must define the two output signals 
 `ressigname` and `rejsigname`.
 
-&#x2605; Example: [promise.hh.js](../test/promise.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [promise.hh.js](../test/promise.hh.js)
+<!-- ${doc.includeCode("../test/promise.hh.js", "hiphop")} -->
 
 
 ### mach.addEventListener(signame, listener) ###
@@ -156,7 +158,8 @@ Associate a listener to the machine event `signame`.
 
 Listeners are invoked with one object with one or two fields:
 
-  * `type`: the name of the emitted output signal;
+  * `signame`: the name of the emitted output signal;
+  * `preval`: the value of the signal at the previous reaction;
   * `nowval`: the value of the signal at the end of the reaction.
  This field exists only for valued signals. This field is immutable;
 
@@ -164,7 +167,8 @@ Listeners are invoked with one object with one or two fields:
 The `stopPropagation()` is a method that, if called within the listener, will
 inhibit the call of others callback mapped on this signal.
 
-&#x2605; Example: [reactfun.hh.js](../test/reactfunc.hh.js)
+<span class="hiphop">&#x2605;</span> Example: [reactfun.hh.js](../test/reactfunc.hh.js)
+<!-- ${doc.includeCode("../test/reactfunc.hh.js", "hiphop")} -->
 
 
 ### mach.removeEventListener(signame, listener) ###
@@ -182,17 +186,6 @@ A shortcut for:
 obj.addEventListener(event, e => mach.react({ [ event ]: e.value }));
 ```
 
-
-HipHop Compile
---------------
-
-### hiphop.compileString(string) ###
-<!-- [:@glyphicon glyphicon-tag function] -->
-
-The `eval` function compiles a string denoting a HipHop statement into
-a JavaScript expression.
-
-&#x2605; Example: [eval.hh.js](../test/eval.hh.js)
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 [[main page]](../README.md) | [[documentation]](./README.md)  | [[license]](./license.md)

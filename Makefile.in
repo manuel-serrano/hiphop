@@ -1,10 +1,10 @@
 #* Generated file, don't edit
 #*=====================================================================*/
-#*    serrano/prgm/project/hiphop/1.3.x/Makefile.in                    */
+#*    serrano/prgm/project/hiphop/hiphop/Makefile.in                   */
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Tue Jan 30 08:07:56 2024 (serrano)                */
+#*    Last change :  Thu Apr 11 13:46:01 2024 (serrano)                */
 #*    Copyright   :  2006-24 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -83,17 +83,21 @@ nodejs: $(NODEJSFILES)
 #*---------------------------------------------------------------------*/
 .PHONY: npm
 
-npm-sans-rm:
+npm-hiphop:
 	mkdir -p npm/$(HIPHOPNPMDIR)
 	mkdir -p npm/$(HIPHOPNPMDIR)/lib
 	mkdir -p npm/$(HIPHOPNPMDIR)/bin
 	mkdir -p npm/$(HIPHOPNPMDIR)/etc
+	mkdir -p npm/$(HIPHOPNPMDIR)/modules
 	cp package.json npm/$(HIPHOPNPMDIR)
 	cp -r lib npm/$(HIPHOPNPMDIR)
+	mv npm/$(HIPHOPNPMDIR)/lib/hiphop-client.mjs npm/$(HIPHOPNPMDIR)
 	cp -r preprocessor npm/$(HIPHOPNPMDIR)
-	cp -r modules npm/$(HIPHOPNPMDIR)
+	cp -r modules/*.hh.js npm/$(HIPHOPNPMDIR)/modules
+	cp -r modules/*.d.ts npm/$(HIPHOPNPMDIR)/modules
 	cp -r test npm/$(HIPHOPNPMDIR)
 	cp -r etc/configure.js npm/$(HIPHOPNPMDIR)/etc
+	cp -r etc/buildmodules.js npm/$(HIPHOPNPMDIR)/etc
 	echo "#!/usr/bin/env node" > npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
 	echo "import * as hhc from \"../lib/hhc.js\"" >> npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
 	chmod a+rx npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
@@ -101,17 +105,15 @@ npm-sans-rm:
 	chmod a+rx npm/$(HIPHOPNPMDIR)/bin/nets2dot.mjs
 	(cd npm; tar --exclude="*.so" -zcvf $(HIPHOPNPMDIR).tgz $(HIPHOPNPMDIR))
 
-npm-hiphop-tutorial-async-sans-rm:
+npm-hiphop-tutorial-async:
 	mkdir -p npm
 	cp -r tutorials/hiphop-tutorial-async npm/hiphop-tutorial-async-$(HZVERSION)-$(HIPHOPBUILDID)
 	(cd npm; tar --exclude="*.so" -zcvf hiphop-tutorial-async-$(HZVERSION)-$(HIPHOPBUILDID).tgz hiphop-tutorial-async-$(HZVERSION)-$(HIPHOPBUILDID))
 
-npm-hiphop-tutorial-async: npm-hiphop-tutorial-async-sans-rm
-	(cd npm; rm -rf hiphop-tutorial-async-$(HZVERSION)-$(HIPHOPBUILDID))
+npm-sans-rm: npm-hiphop npm-hiphop-tutorial-async
 
-npm: npm-sans-rm npm-hiphop-tutorial-async
+npm: npm-sans-rm 
 	(cd npm; rm -rf $(HIPHOPNPMDIR))
-
 
 #*---------------------------------------------------------------------*/
 #*    .suffixes                                                        */

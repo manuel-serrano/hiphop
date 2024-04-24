@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/1.3.x/lib/hiphop.d.ts                */
+/*    serrano/prgm/project/hiphop/hiphop/lib/hiphop.d.ts               */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Feb 19 05:58:45 2022                          */
-/*    Last change :  Thu Feb 22 17:47:44 2024 (serrano)                */
+/*    Last change :  Sat Apr 20 14:04:01 2024 (serrano)                */
 /*    Copyright   :  2022-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop types                                                     */
@@ -13,21 +13,22 @@
 /*    HipHopFragment                                                   */
 /*---------------------------------------------------------------------*/
 export declare class HipHopFragment {
+   appendChild(node:HipHopFragment): any;
 }
 
 /*---------------------------------------------------------------------*/
 /*    MachineListener ...                                              */
 /*---------------------------------------------------------------------*/
-export type MachineListener = ({type: string, nowval: any, now: boolean}) => void;
+export type MachineListener = ({signame: string, nowval: any, preval: any}) => void;
 
 /*---------------------------------------------------------------------*/
 /*    MachineOptions                                                   */
 /*---------------------------------------------------------------------*/
-export type MachineOptions = {       
+export type MachineOptions = {
+   name?: string;
    sweep?: boolean;
    verbose?: number;
    dumpNets?: boolean;
-   name?: string;
    traceReactDuration?: boolean;
    traceCompileDuration?: boolean;
    causalityErrorTrace?: "shallow" | "deep";
@@ -40,8 +41,10 @@ export declare class ReactiveMachine<S> {
    constructor(ast: HipHopFragment, opts?: MachineOptions);
 
    promise(ressig?: string, rejsig?: string): Promise<any>;
-   react(signals:S): void;
+   init(opt?: any): void;
+   react(signals?: S): void;
    addEventListener(name: string, callback: MachineListener);
+   getElementById(id: string): HipHopFragment | undefined;
    name(): any;
    age(): number;
 }
