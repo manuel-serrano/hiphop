@@ -9,10 +9,10 @@
   4. [Language](./lang/README.md), _the language documentation._
   5. [API](./api.md), _HipHop and JavaScript._
   6. [Standard Modules](./modules/README.md), _HipHop standard modules._
-  7. [Dev](./dev.md)
+  7. [Dev](./dev.md), _Advices and tools for development with HipHop._ 
   8. [Staging](./staging.md), _dynamic HipHop programs generation._
   9. [Syntax](./syntax/hiphop.bnf) _the HipHop BNF syntax._
   
 
  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-[[main page]](../README.md) | [[language]](./lang/README.md) | [[license]](./license.md)
+[[main page]](../README.md) | [[language]](./lang/README.md) | [[modules]](./modules/README.md) | [[license]](./license.md)
