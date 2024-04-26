@@ -59,6 +59,14 @@ In the second example:
 
 The `emit` statements uses generated signal names.
 
+This last example illustrates many of the staging features, included
+those described in the next sections. It shows how to generate a `fork`
+construct with as many branches as values contained in a JavaScript
+array. It shows how to wait for and emit signals whose names are generated.
+
+<span class="hiphop">&#x2605;</span> [staging-fork.hh.js](../test/staging-fork.hh.js)
+<!-- ${doc.includeCode("../test/staging-fork.hh.js", "hiphop")} -->
+
 
 Dynamic Signal Names in Delay Expressions
 -----------------------------------------
