@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Feb 19 05:58:45 2022                          */
-/*    Last change :  Wed Apr 24 12:27:14 2024 (serrano)                */
+/*    Last change :  Mon May  6 11:57:22 2024 (serrano)                */
 /*    Copyright   :  2022-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop types                                                     */
@@ -19,7 +19,7 @@ export declare class HipHopFragment {
 /*---------------------------------------------------------------------*/
 /*    MachineListener ...                                              */
 /*---------------------------------------------------------------------*/
-export type MachineListener = ({signame: string, nowval: any, preval: any}) => void;
+export type MachineListener = ({signame: string, nowval, preval}) => void;
 
 /*---------------------------------------------------------------------*/
 /*    MachineOptions                                                   */

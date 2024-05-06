@@ -3,6 +3,12 @@
 HipHop Staging
 ==============
 
+> [!WARNING]
+> Using staging requires familiarities with code generation and
+> compilation techniques and a deep understanding of HipHop's behavior. 
+> HipHop beginners should refrain from using staging until they
+> have acquired that knowledge.
+
 HipHop is a _staged_ programming language. That is, although hidden
 by the syntax, _all_ HipHop programs are the result of a JavaScript
 execution and _all_ HipHop programs are first class values in the 
@@ -12,7 +18,66 @@ From the JavaScript standpoint, the `hiphop` construct (see
 [Syntax](./syntax/hiphop.bnf)) is an expression, which evaluates to
 a HipHop programs. This value representing a HipHop program can be
 manipulated as any other JavaScript value. It can be stored in variables
-or data structures, passed and returned from functions, etc.
+or data structures, passed and returned from functions, etc. For instance,
+evaluating the following program:
+
+```hiphop
+const f = hiphop fork { await (a.now); } par { await (b.now) };
+console.log(f);
+```
+
+Displays something such as:
+
+```hiphop
+hiphop.FORK { ... }
+```
+
+A HipHop program being a JavaScript value, it can be used as any ordinary
+value. Hence, we can modify the previous example for:
+
+```hiphop
+function makeFork() {
+   return hiphop fork { await (a.now); } par { await (b.now) };
+}
+
+const f = makeFork();
+```
+
+HipHop values can be assembled together to form more complex HipHop programs.
+Example:
+
+```hiphop
+const aa = hiphop { await (a.now) };
+const ab = hiphop { await (be.now) };
+function makeFork(s1, s2) {
+   return hiphop fork { ${s1} } par { ${s2} };
+}
+const f = makeFork(aa, ab);
+```
+
+To use this program fragment it has be installed in a HipHop machine.
+This can be acheived with:
+
+```hiphop
+import * as hh from "@hop/hiphop";
+
+const aa = hiphop { await (a.now) };
+const ab = hiphop { await (be.now) };
+
+function makeFork(s1, s2) {
+   return hiphop fork { ${s1} } par { ${s2} };
+}
+
+const f = makeFork(aa, ab);
+
+const prgm = hiphop module() {
+  in a, b;
+  ${f}
+}
+
+const m = new hh.ReactiveMachine(prgm);
+m.react({a: 1, b: 2});
+```
 
 Generating statements
 ---------------------
