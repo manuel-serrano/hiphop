@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri May 31 09:51:25 2024 (serrano)                */
+/*    Last change :  Fri May 31 22:01:40 2024 (serrano)                */
 /*    Copyright   :  2018-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -543,46 +543,46 @@ function parseModule(token, declaration, ctor) {
       mod = astutils.J2SCall(loc, hhref(loc, ctor), 
          null,
          [attrs].concat(sigs, [cfun]));
-   } else {
-      const framep = astutils.J2SDeclParam(loc, "__frame", "array");
-      const stmt = astutils.J2SStmtExpr(loc, astutils.J2SUndefined(loc));
-      const ablock = astutils.J2SBlock(loc, loc, [stmt]);
-      const appl = astutils.J2SDataPropertyInit(loc, 
-         astutils.J2SString(loc, "apply"),
-         astutils.J2SMethod(loc, "framefun", [framep], ablock, self(loc)));
-      const aattrs = astutils.J2SObjInit(
-         loc, [locInit(loc), tagInit("frame", loc), appl]);
-      const sattrs = astutils.J2SObjInit(
-         loc, [locInit(loc), tagInit("frame", loc)]);
-      const atom = astutils.J2SCall(loc, 
-         hhref(loc, "ATOM"), null, [aattrs]);
-      
-      const val = astutils.J2SCall(loc, hhref(loc, "SEQUENCE"), 
-         null,
-         [sattrs, atom].concat(stmts));
-      
-      const ret = astutils.J2SReturn(loc, val);
-      
-      const cblock = astutils.J2SBlock(loc, loc, [ret]);
-      const clone = astutils.J2SFun(loc, "modfun", [], cblock);
-      
-      const fattrs = astutils.J2SObjInit(
-         loc,
-         [astutils.J2SDataPropertyInit(
-              loc,
-              astutils.J2SString(loc, "fun"),
-              clone),
-           locInit(loc), tag]);
-      const cfun = astutils.J2SCall(loc, hhref(loc, "FRAME"), 
-         null, [fattrs]);
-
-      mod = astutils.J2SCall(loc, hhref(loc, ctor), 
-         null,
-         [attrs].concat(sigs, [cfun]));
 /*    } else {                                                         */
+/*       const framep = astutils.J2SDeclParam(loc, "__frame", "array"); */
+/*       const stmt = astutils.J2SStmtExpr(loc, astutils.J2SUndefined(loc)); */
+/*       const ablock = astutils.J2SBlock(loc, loc, [stmt]);           */
+/*       const appl = astutils.J2SDataPropertyInit(loc,                */
+/*          astutils.J2SString(loc, "apply"),                          */
+/*          astutils.J2SMethod(loc, "framefun", [framep], ablock, self(loc))); */
+/*       const aattrs = astutils.J2SObjInit(                           */
+/*          loc, [locInit(loc), tagInit("frame", loc), appl]);         */
+/*       const sattrs = astutils.J2SObjInit(                           */
+/*          loc, [locInit(loc), tagInit("frame", loc)]);               */
+/*       const atom = astutils.J2SCall(loc,                            */
+/*          hhref(loc, "ATOM"), null, [aattrs]);                       */
+/*                                                                     */
+/*       const val = astutils.J2SCall(loc, hhref(loc, "SEQUENCE"),     */
+/*          null,                                                      */
+/*          [sattrs, atom].concat(stmts));                             */
+/*                                                                     */
+/*       const ret = astutils.J2SReturn(loc, val);                     */
+/*                                                                     */
+/*       const cblock = astutils.J2SBlock(loc, loc, [ret]);            */
+/*       const clone = astutils.J2SFun(loc, "modfun", [], cblock);     */
+/*                                                                     */
+/*       const fattrs = astutils.J2SObjInit(                           */
+/*          loc,                                                       */
+/*          [astutils.J2SDataPropertyInit(                             */
+/*               loc,                                                  */
+/*               astutils.J2SString(loc, "fun"),                       */
+/*               clone),                                               */
+/*            locInit(loc), tag]);                                     */
+/*       const cfun = astutils.J2SCall(loc, hhref(loc, "FRAME"),       */
+/*          null, [fattrs]);                                           */
+/*                                                                     */
 /*       mod = astutils.J2SCall(loc, hhref(loc, ctor),                 */
 /*          null,                                                      */
-/*          [attrs].concat(sigs, stmts));                              */
+/*          [attrs].concat(sigs, [cfun]));                             */
+   } else {
+      mod = astutils.J2SCall(loc, hhref(loc, ctor),
+         null,
+         [attrs].concat(sigs, stmts));
    }
    
    if (declaration) {
