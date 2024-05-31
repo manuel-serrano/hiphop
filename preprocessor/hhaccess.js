@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    .../node_modules/@hop/hiphop/preprocessor/hhaccess.js            */
+/*    serrano/prgm/project/hiphop/hiphop/preprocessor/hhaccess.js      */
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Mon Jan 15 13:39:36 2024 (serrano)                */
+/*    Last change :  Fri May 31 08:55:54 2024 (serrano)                */
 /*    Copyright   :  2023-24 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -202,8 +202,9 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
 /*---------------------------------------------------------------------*/
 /*    collectLets ...                                                  */
 /*---------------------------------------------------------------------*/
-function collectLets(nodes) {
-   const arrays = list.map(d => {
+function collectLets(node) {
+   
+   function nodeCollectLets(d) {
       if (d instanceof ast.J2SVarDecls) {
 	 const p = d => {
 	    if (ast.j2sLetp(d)) {
@@ -221,9 +222,16 @@ function collectLets(nodes) {
       } else {
 	 return [];
       }
-   }, nodes);
-
-   return Array.prototype.concat.apply([], list.list2array(arrays));
+   }
+   
+   if (node instanceof ast.J2SNode) {
+      return [ nodeCollectLets(node ) ];
+   } else if (list.pairp(node)) {
+      const arrays = list.map(nodeCollectLets, node);
+      return Array.prototype.concat.apply([], list.list2array(arrays));
+   } else {
+      return [];
+   }
 }
 
 /*---------------------------------------------------------------------*/
