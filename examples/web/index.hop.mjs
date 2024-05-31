@@ -2,12 +2,12 @@ export function index(R) {
    return (o) => <html>
       <script type="importmap"> {
 	 "imports": {
-            "@hop/hiphop": "${R.register('./node_modules/@hop/hiphop/hiphop-client.mjs')}"
+            "@hop/hiphop": "${R.url('./node_modules/@hop/hiphop/hiphop-client.mjs')}"
          }
       }
       </script>
       <script type="module">
-         import { mach } from ${R.register("./abro.mjs")};
+         import { mach } from ${R.url("./abro.mjs")};
          globalThis.mach = mach;
          mach.addEventListener("O", (evt) => {
             document.getElementById("console").innerHTML = evt.nowval;
