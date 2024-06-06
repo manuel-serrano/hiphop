@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri May 31 22:01:40 2024 (serrano)                */
+/*    Last change :  Tue Jun  4 11:32:49 2024 (serrano)                */
 /*    Copyright   :  2018-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1997,7 +1997,7 @@ export function script(attrs) {
 /*---------------------------------------------------------------------*/
 /*    exports                                                          */
 /*---------------------------------------------------------------------*/
-parser.addPlugin("@hop/hiphop", parseHiphop);
+//parser.addPlugin("@hop/hiphop", parseHiphop);
 parser.addPlugin("hiphop", parseHiphop);
 
 export const parse = parser.parse.bind(parser);
