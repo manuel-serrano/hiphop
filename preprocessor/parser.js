@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Jun  4 11:32:49 2024 (serrano)                */
+/*    Last change :  Thu Jun 13 08:05:12 2024 (serrano)                */
 /*    Copyright   :  2018-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -245,7 +245,8 @@ function wrapSignalNames(expr, signames) {
       const loc = normalizeLoc(expr.loc);
       const formals = signames.map(s => astutils.J2SDecl(loc, s.id, "param"));
       const actuals = signames.map(s => s.field);
-      const arrow = astutils.J2SArrow(loc, "signames", formals, expr);
+      const block = astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, expr)]);
+      const arrow = astutils.J2SArrow(loc, "signames", formals, block);
 
       return astutils.J2SCall(loc, arrow, null, actuals);
    }
@@ -809,12 +810,14 @@ function parseModuleSiglist(interfacep) {
 	    parseHHExpression.call(this);
 
 	 const node = parseSigAttr.call(this, loc, arg, expr, axs, dir);
-	 const arrow = astutils.J2SArrow(loc, "sig", [ formal ], node);
+	 const block = astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, node)]);
+	 const arrow = astutils.J2SArrow(loc, "sig", [ formal ], block);
 	 const call =  astutils.J2SCall(loc, m, null, [ arrow ]);
 	 return wrapSignalNames(call, signames);
       } else {
 	 const node = parseSigAttr.call(this, loc, arg, false, [], dir);
-	 const arrow = astutils.J2SArrow(loc, "sig", [ formal ], node);
+	 const block = astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, node)]);
+	 const arrow = astutils.J2SArrow(loc, "sig", [ formal ], block);
 	 return astutils.J2SCall(loc, m, null, [ arrow ]);
       }
    }
