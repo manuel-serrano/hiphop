@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Sat Jun 15 07:52:49 2024 (serrano)                */
+#*    Last change :  Sat Jun 15 18:21:23 2024 (serrano)                */
 #*    Copyright   :  2006-24 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -125,13 +125,13 @@ npm: npm-sans-rm
 #*    The implicit rules                                               */
 #*---------------------------------------------------------------------*/
 %.@SO@: %.js
-	$(HOPC) $(HFLAGS) --safe -y -o $@ $<
+	$(HOPC) $(HFLAGS) -y -o $@ $<
 
 %.@SO@: %.hop
-	$(HOPC) $(HFLAGS) --safe -y -o $@ $<
+	$(HOPC) $(HFLAGS) -y -o $@ $<
 
 lib/machine.so: lib/machine.js
-	$(HOPC) $(HFLAGS) -O2 --safe -y -o $@ $<
+	$(HOPC) $(HFLAGS) -y -o $@ $<
 
 lib/nodejs/%.js: lib/%.js
 	$(HHC) -o $@ $< 

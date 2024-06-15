@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Sat Jun 15 07:48:09 2024 (serrano)                */
+#*    Last change :  Sat Jun 15 18:21:55 2024 (serrano)                */
 #*    Copyright   :  2018-24 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -32,7 +32,7 @@ urlbase=http://hop.inria.fr/hiphop
 #*---------------------------------------------------------------------*/
 hop=hop
 hopc=hopc
-hflags=-O
+hflags=-Ox
 
 # environment parsing
 if [ "$HFLAGS " != " " ]; then
