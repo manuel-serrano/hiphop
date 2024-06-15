@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Fri Jun 14 13:40:46 2024 (serrano)                */
+/*    Last change :  Sat Jun 15 08:08:16 2024 (serrano)                */
 /*    Copyright   :  2023-24 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -37,7 +37,7 @@ let gensym = 0;
 /*    hhaccess ...                                                     */
 /*---------------------------------------------------------------------*/
 export function hhaccess(n, iscnt, hhname, accessors) {
-   const node = ast?.isNative(n) ? ast.wrap(n) : n;
+   const node = (ast.isNative && ast.isNative(n)) ? ast.wrap(n) : n;
    const venv = collectVars(node);
    const lenv = collectLets(list.list(node));
    const axs = collectAxs(node, venv.concat(lenv));
@@ -243,6 +243,8 @@ function collectAxs(node, env) {
       return node.collectAxs(env);
    } else if (list.pairp(node)) {
       return list.list2array(node).flatMap(n => collectAxs(n, env));
+   } else if (Array.isArray(node)) {
+      return node.flatMap(n => collectAxs(n, env));
    } else {
       return [];
    }

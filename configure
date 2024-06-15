@@ -1,11 +1,11 @@
 #!/bin/bash
 #*=====================================================================*/
-#*    serrano/prgm/project/hiphop/1.3.x/configure                      */
+#*    serrano/prgm/project/hiphop/hiphop/configure                     */
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Wed Dec 20 12:55:56 2023 (serrano)                */
-#*    Copyright   :  2018-23 Manuel Serrano                            */
+#*    Last change :  Sat Jun 15 07:48:09 2024 (serrano)                */
+#*    Copyright   :  2018-24 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
 #*=====================================================================*/
@@ -144,6 +144,7 @@ hopversion=`$hopc $hflags --configure --version`
 hoplibdir=`$hopc $hflags --configure --libdir`
 hopbuildid=`$hopc $hflags --configure --build-id`
 hopbuildarch="$hopversion/$hopbuildid/$hopbuildarch"
+hopmoddir=`$hopc $hflags --configure --node_modules`
 hopsodirname=`$hopc $hflags --configure --so-dirname`
 hopso=`$hop --no-server --eval "(print (bigloo-config 'shared-lib-suffix)))"`
 
@@ -156,7 +157,7 @@ sodir="so/$hopsodirname"
 #*---------------------------------------------------------------------*/
 #*    checking hop installation                                        */
 #*---------------------------------------------------------------------*/
-hopcso=$hoplibdir/hop/$hopversion/node_modules/hopc/lib/so/$hopsodirname/hopc.$hopso
+hopcso=$hopmoddir/@hop/hopc/hop/so/$hopsodirname/hopc.$hopso
 
 if [ ! -f $DESTDIR$hopcso ]; then
   echo "*** ERROR: Cannot find $hopcso"
