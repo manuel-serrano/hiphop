@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Fri May 31 08:55:54 2024 (serrano)                */
+/*    Last change :  Fri Jun 14 13:40:46 2024 (serrano)                */
 /*    Copyright   :  2023-24 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -36,7 +36,8 @@ let gensym = 0;
 /*---------------------------------------------------------------------*/
 /*    hhaccess ...                                                     */
 /*---------------------------------------------------------------------*/
-export function hhaccess(node, iscnt, hhname, accessors) {
+export function hhaccess(n, iscnt, hhname, accessors) {
+   const node = ast?.isNative(n) ? ast.wrap(n) : n;
    const venv = collectVars(node);
    const lenv = collectLets(list.list(node));
    const axs = collectAxs(node, venv.concat(lenv));
@@ -177,13 +178,13 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
 
    if (axs.length > 0) {
 
-      list.array2list(axs.forEach(ax => {
+      axs.forEach(ax => {
 	 const loc = ax.loc;
 	 const obj = ax.obj;
 	 const field = ax.field;
 
 	 accessors.push(accessor(loc, ax, obj, field));
-      }));
+      });
       
       return new ast.J2SLetBlock(
 	 {loc: loc,

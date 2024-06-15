@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Jun 13 08:05:12 2024 (serrano)                */
+/*    Last change :  Fri Jun 14 07:39:47 2024 (serrano)                */
 /*    Copyright   :  2018-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -188,7 +188,7 @@ function parseDollarIdentName() {
 	 return astutils.J2SString(token.location, token.value);
       }
       case this.DOLLAR: {
-	 return this.parsePrimaryDollar();
+	 return this.parsePrimaryDollar().node;
       }
       default: {
 	 throw tokenTypeError(this.peekToken());
@@ -255,10 +255,11 @@ function wrapSignalNames(expr, signames) {
 /*---------------------------------------------------------------------*/
 /*    parseHHExpression ...                                            */
 /*---------------------------------------------------------------------*/
-function parseHHExpression() {
+function parseHHExpression(unwrapDollar = true) {
    return parseHHThisExpr.call(this, accessors => {
       if (this.peekToken().type === this.DOLLAR) {
-	 const expr = this.parseDollarExpression();
+	 const dollar = this.parseDollarExpression();
+	 const expr = unwrapDollar ? dollar.node : dollar;
 	 return { expr, accessors };
       } else {
 	 const expr = this.parseCondExpression();
@@ -275,7 +276,7 @@ function parseHHCondExpression(iscnt, isrun) {
       this,
       accessors => {
 	 if (this.peekToken().type === this.DOLLAR) {
-	    const expr = this.parseDollarExpression();
+	    const expr = this.parseDollarExpression().node;
 	    return { expr, accessors };
 	 } else {
 	    const expr = this.parseCondExpression();
@@ -289,7 +290,7 @@ function parseHHCondExpression(iscnt, isrun) {
 /*    parseValueApply ...                                              */
 /*---------------------------------------------------------------------*/
 function parseValueApply(loc) {
-   const { expr, accessors, signames } = parseHHExpression.call(this);
+   const { expr, accessors, signames } = parseHHExpression.call(this, false);
    let init;
    if (typeof expr === "J2SDollar" || expr?.$class === "J2SDollar") {
       init = astutils.J2SDataPropertyInit(
@@ -359,7 +360,7 @@ function parseDelay(loc, tag, action = "apply", id = false, immediate = false) {
 
       // hhexpr
       this.consumeToken(this.LPAREN);
-      const { expr, accessors, signames } = parseHHExpression.call(this);
+      const { expr, accessors, signames } = parseHHExpression.call(this, true);
       this.consumeToken(this.RPAREN);
       
       let inits;
@@ -757,7 +758,7 @@ function parseModuleSiglist(interfacep) {
       if (this.peekToken().type === this.EGAL) {
 	 this.consumeAny();
 	 const { expr, accessors: axs, signames: sigs } =
-	    parseHHExpression.call(this);
+	    parseHHExpression.call(this, true);
 	 signames = sigs;
 	 accessors = axs;
 
@@ -787,7 +788,7 @@ function parseModuleSiglist(interfacep) {
       let arr = [];
 
       if (this.peekToken().type === this.DOLLAR) {
-	 const { expr, accessors } = parseHHExpression.call(this);
+	 const { expr, accessors } = parseHHExpression.call(this, true);
 	 arr = expr;
       } else {
 	 let els = [];
@@ -807,7 +808,7 @@ function parseModuleSiglist(interfacep) {
       if (this.peekToken().type === this.EGAL) {
 	 this.consumeAny();
 	 const { expr, accessors: axs, signames } =
-	    parseHHExpression.call(this);
+	    parseHHExpression.call(this, true);
 
 	 const node = parseSigAttr.call(this, loc, arg, expr, axs, dir);
 	 const block = astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, node)]);
@@ -1441,7 +1442,7 @@ function parseRunFun(next) {
 	 return astutils.J2SUnresolvedRef(loc, token.value);
       }
       case this.DOLLAR: {
-	 return this.parsePrimaryDollar();
+	 return this.parsePrimaryDollar().node;
       }
       default:  { 
 	 throw tokenTypeError(this.consumeAny());
@@ -1471,7 +1472,8 @@ function parseRun(token) {
    this.consumeToken(this.LPAREN);
    
    for (let idx = 0; this.peekToken().type != this.RPAREN; idx++) {
-      const { expr, accessors, signames: sigs } = parseHHExpression.call(this);
+      const { expr, accessors, signames: sigs } =
+	 parseHHExpression.call(this, true);
       const loc = normalizeLoc(expr.loc);
       const assig = astutils.J2SStmtExpr(loc,
 	 astutils.J2SAssig(
@@ -1567,7 +1569,7 @@ function parseRun(token) {
 
       case this.DOLLAR: {
 	 const loc = this.peekToken().location;
-	 const aliases = this.parsePrimaryDollar();
+	 const aliases = this.parsePrimaryDollar().node;
 	 inits.push(astutils.J2SDataPropertyInit(
 	    loc, astutils.J2SString(loc, "aliases"),
 	    aliases));
@@ -1634,7 +1636,7 @@ function parseLet(token, binder) {
    function parseLetInit(loc) {
       if (this.peekToken().type === this.EGAL) {
 	 this.consumeAny();
-	 return parseHHExpression.call(this);
+	 return parseHHExpression.call(this, true);
       } else {
 	 return { expr: astutils.J2SUndefined(loc), accessors: [], signames: [] };
       }
@@ -1793,7 +1795,7 @@ function parseSignal(token) {
 	    if (this.peekToken().type === this.EGAL) {
 	       this.consumeAny();
 	       const { expr, accessors, signames: sigs } =
-		  parseHHExpression.call(this);
+		  parseHHExpression.call(this, true);
 	       signames = signames.concat(sigs);
 	       args.push(parseSigAttr.call(this, sigloc, signame, expr, accessors, undefined));
 	    } else {

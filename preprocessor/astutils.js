@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Thu Apr  4 13:54:04 2024 (serrano)                */
+/*    Last change :  Fri Jun 14 14:17:26 2024 (serrano)                */
 /*    Copyright   :  2018-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -410,6 +410,19 @@ export function J2SStmtExpr(loc, expr) {
 export function J2SSeq(loc, nodes) {
    return new ast.J2SSeq(loc, 
       nodes);
+}
+
+/*---------------------------------------------------------------------*/
+/*    J2SBindExit ...                                                  */
+/*---------------------------------------------------------------------*/
+export function J2SBindExit(loc, lbl, stmt) {
+   return new ast.J2SBindExit(loc, 
+      Symbol("object") /* type */, 
+      null /* hint */,
+      undefined /* range */, 
+      lbl /* from */, 
+      Symbol("unknown") /* utype */, 
+      stmt);
 }
 
 /*---------------------------------------------------------------------*/
