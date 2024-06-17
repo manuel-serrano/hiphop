@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Sun Jun 16 06:14:27 2024 (serrano)                */
+#*    Last change :  Mon Jun 17 07:34:22 2024 (serrano)                */
 #*    Copyright   :  2006-24 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -43,6 +43,7 @@ HHC=bin/hhc.sh --js-require-hop
 LIB=ast.js batch.js compiler.js compiler-utils.js debugger-common.js \
  debugger.js debugger-server.js debug.js error.js hiphop.js lang.js \
  machine.js net.js queue.js signal.js sweep.js causality.js
+LIBMJS=hiphop-loader.mjs
 
 PREPROCESSOR=astutils.js parser.js hhaccess.js
 
@@ -51,6 +52,7 @@ ULIB=parallelmap.js
 MODULES=interval.hh.js http.hh.js promise.hh.js timeout.hh.js
 
 SOFILES=$(LIB:%.js=lib/$(HOPSODIR)/%.@SO@) \
+  $(LIBMJS:%.mjs=lib/$(HOPSODIR)/%.@SO@) \
   $(PREPROCESSOR:%.js=preprocessor/$(HOPSODIR)/%.@SO@) \
   $(MODULES:%=modules/%)
 
@@ -113,12 +115,15 @@ npm: npm-sans-rm
 #*    .suffixes                                                        */
 #*---------------------------------------------------------------------*/
 .SUFFIXES:
-.SUFFIXES: .js .hop .@SO@
+.SUFFIXES: .js .mjs .hop .@SO@
 
 #*---------------------------------------------------------------------*/
 #*    The implicit rules                                               */
 #*---------------------------------------------------------------------*/
 lib/$(HOPSODIR)/%.@SO@: lib/%.js
+	$(HOPC) $(HFLAGS) -y -o $@ $<
+
+lib/$(HOPSODIR)/%.@SO@: lib/%.mjs
 	$(HOPC) $(HFLAGS) -y -o $@ $<
 
 preprocessor/$(HOPSODIR)/%.@SO@: preprocessor/%.js
@@ -128,7 +133,7 @@ $(MODULES:%.js=modules/%.@SO@): modules/node_modules/@hop/hiphop \
   $(LIB:%.js=lib/%.@SO@)
 
 modules/node_modules/@hop/hiphop: modules/node_modules/@hop
-	(hiphop=`basename $$PWD`; cd modules/node_modules/@hop; ln -s ../../../../$$hiphop hiphop)
+	(hiphop=`basename $$PWD`; cd modules/node_modules/@hop; rm -f hiphop; ln -s ../../../../$$hiphop hiphop)
 
 modules/node_modules/@hop: modules/node_modules
 	mkdir -p $@
@@ -153,9 +158,10 @@ preprocessor/$(HOPSODIR):
 install:
 	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)
 	# lib
-	cp -r lib $(DESTDIR)$(HIPHOPLIBDIR)
+	cp -r lib $(DESTDIR)$(HIPHOPLIBDIR) 
 	chmod $(MODDIR) $(DESTDIR)$(HIPHOPLIBDIR)/lib
 	chmod $(MODFILE) $(DESTDIR)$(HIPHOPLIBDIR)/lib/*.js
+	chmod $(MODFILE) $(DESTDIR)$(HIPHOPLIBDIR)/lib/*.mjs
 	chmod -R $(MODDIR) $(DESTDIR)$(HIPHOPLIBDIR)/lib/so
 	chmod $(MODEXE) $(DESTDIR)$(HIPHOPLIBDIR)/lib/$(HOPSODIR)/*.so
 	# preprocessor
@@ -170,14 +176,12 @@ install:
 	# package.json
 	cp package.json $(DESTDIR)$(HIPHOPLIBDIR)
 	chmod $(MODFILE) $(DESTDIR)$(HIPHOPLIBDIR)/package.json
+	# link hiphop into the hop directory
+	cd $(DESTDIR)$(HOPLIBDIR)/hop/$(HOPVERSION)/node_modules/@hop; \
+	rm -f hiphop; \
+	ln -s $(DESTDIR)$(HIPHOPLIBDIR) hiphop
 
 install-sans-so: install-js install-sitelisp
-	$(MAKE) install-hop
-
-install-hop: 
-	cd $(DESTDIR)$(HOPLIBDIR)/hop/$(HOPVERSION)/node_modules/@hop; \
-	rm -f $(HZ); \
-	ln -s $(DESTDIR)$(LIBDIR)/$(HZ)/$(HZVERSION) $(HZ)
 
 install-js:
 	mkdir -p $(DESTDIR)$(HIPHOPLIBDIR)
@@ -235,10 +239,9 @@ clean-npm:
 	rm -rf npm
 
 clean: 
-	rm -rf lib/*.so
-	rm -rf ulib/*.so
-	rm -rf modules/*.so
-	rm -rf preprocessor/*.so
+	rm -rf lib/so
+	rm -rf modules/so
+	rm -rf preprocessor/so
 
 cleanall: clean
 	rm -f config.status
