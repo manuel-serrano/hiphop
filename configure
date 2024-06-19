@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Sun Jun 16 06:17:56 2024 (serrano)                */
+#*    Last change :  Wed Jun 19 07:49:36 2024 (serrano)                */
 #*    Copyright   :  2018-24 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -31,6 +31,7 @@ urlbase=http://hop.inria.fr/hiphop
 #*    compilers and options                                            */
 #*---------------------------------------------------------------------*/
 hop=hop
+hopjs=hopjs
 hopc=hopc
 hflags=-Ox
 
@@ -73,7 +74,8 @@ while : ; do
     --hopversion=*)
       hopversion="`echo $1 | sed 's/^[^=]*=//'`"
       hopc=hopc-$hopversion
-      hop=hopc-$hopversion;;
+      hop=hopc-$hopversion
+      hopjs=hopjs-$hopversion;;
 
     --hopminorversion=*)
       hopminorversion="`echo $1 | sed 's/^[^=]*=//'`";;
@@ -83,6 +85,9 @@ while : ; do
 
     --hop=*)
       hop="`echo $1 | sed 's/^[^=]*=//'`";;
+
+    --hopjs=*)
+      hopjs="`echo $1 | sed 's/^[^=]*=//'`";;
 
     --hflags=*)
       hflags="`echo $1 | sed 's/^[^=]*=//'`";;
@@ -102,6 +107,7 @@ while : ; do
       echo "   --hopversion=version....... hop and hopc version" >&2;
       echo "   --hopminorversion=version.. hop and hopc minor version" >&2;
       echo "   --hop=path................. hop command" >&2;
+      echo "   --hopjs=path............... hopjs command" >&2;
       echo "   --hopc=path................ hopc command" >&2;
       echo "   --hflags=flags............. hopc flags" >&2;
       echo "   --prefix=dir............... prefix to HOP install" >&2;
@@ -230,6 +236,7 @@ for path in docker/Dockerfile etc/hiphop.el doc/doc.json arch/debian/makedeb.sh 
           -e "s|@HOPBUILDTAG@|$hopbuildtag|g" \
           -e "s|@HOPBUILDARCH@|$hopbuildarch|g" \
           -e "s|@HOP@|$hop|g" \
+          -e "s|@HOPJS@|$hopjs|g" \
           -e "s|@HOPC@|$hopc|g" \
           -e "s|@HFLAGS@|$hflags|g" \
           -e "s|@SODIR@|$sodir|g" \
@@ -255,6 +262,7 @@ echo "Release:"
 echo "  hiphop release number... $version"
 echo "  hiphop build id......... $hiphopbuildid"
 echo "  hop command............. $hop $hopversion$hopminorversion"
+echo "  hopjs command........... hopjs"
 echo "  hopc command............ $hopc"
 echo "  hflags ................. $hflags"
 echo "  etc directory........... $etcdir"

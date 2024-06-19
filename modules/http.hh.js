@@ -1,15 +1,13 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/1.3.x/modules/http.hh.js             */
+/*    serrano/prgm/project/hiphop/hiphop/modules/http.hh.js            */
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Tue Jan 11 18:12:15 2022                          */
-/*    Last change :  Tue Dec 12 11:36:10 2023 (serrano)                */
-/*    Copyright   :  2022-23 manuel serrano                            */
+/*    Last change :  Wed Jun 19 09:59:14 2024 (serrano)                */
+/*    Copyright   :  2022-24 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HTTP HipHop module.                                              */
 /*=====================================================================*/
-"use @hop/hiphop";
-"use hopscript";
 
 /*---------------------------------------------------------------------*/
 /*    module                                                           */
@@ -48,44 +46,7 @@ hiphop module httpRequest(requestOrUrl, optionsOrPayload = undefined, payload = 
    let self;
    
    async (response) {
-      self = this;
-      let request, options;
-
-      // request
-      switch (typeof requestOrUrl) {
-	 case "string": request = parse(requestOrUrl); break; 
-	 case "object": request = requestOrUrl; break;
-	 default: throw `httpRequest, bad requestOrUrl argument "${requestOrUrl}"`
-      }
-
-      // options
-      switch (typeof optionsOrPayload) {
-	 case "object": options = optionsOrPayload; break;
-	 case "string": options = {}; payload = optionsOrPayload; break;
-	 case "function": options = optionsOrPayload(); break;
-	 case "undefined": options = {}; break;
-	 default: throw `httpRequest, bad optionsOrPayload argument "${optionsOrPayload}"`
-      }
-
-      // payload
-      switch (typeof payload) {
-	 case "string":
-	    if (typeof payload !== "undefined") {
-	       throw `httpRequest, bad options/payload arguments "${optionsOrPayload}/${payload}"`
-	    }
-	 case "function":
-	    if (typeof payload !== "undefined") {
-	       throw `httpRequest, bad options/payload arguments "${optionsOrPayload}/${payload}"`
-	    } else {
-	       payload = payload();
-	    }
-	    break;
-	 case "undefined":
-	    break;
-	 default:
-	    throw `httpRequest, bad payload argument "${payload}"`;
-      }
-
+      
       function run(request) {
 	 const proto = ((request.protocol === "https:") ? https : http);
 	 req = proto.request(request, res => {
@@ -128,6 +89,44 @@ hiphop module httpRequest(requestOrUrl, optionsOrPayload = undefined, payload = 
 	 });
 
 	 req.end();
+      }
+
+      self = this;
+      let request, options;
+
+      // request
+      switch (typeof requestOrUrl) {
+	 case "string": request = parse(requestOrUrl); break; 
+	 case "object": request = requestOrUrl; break;
+	 default: throw `httpRequest, bad requestOrUrl argument "${requestOrUrl}"`
+      }
+
+      // options
+      switch (typeof optionsOrPayload) {
+	 case "object": options = optionsOrPayload; break;
+	 case "string": options = {}; payload = optionsOrPayload; break;
+	 case "function": options = optionsOrPayload(); break;
+	 case "undefined": options = {}; break;
+	 default: throw `httpRequest, bad optionsOrPayload argument "${optionsOrPayload}"`
+      }
+
+      // payload
+      switch (typeof payload) {
+	 case "string":
+	    if (typeof payload !== "undefined") {
+	       throw `httpRequest, bad options/payload arguments "${optionsOrPayload}/${payload}"`
+	    }
+	 case "function":
+	    if (typeof payload !== "undefined") {
+	       throw `httpRequest, bad options/payload arguments "${optionsOrPayload}/${payload}"`
+	    } else {
+	       payload = payload();
+	    }
+	    break;
+	 case "undefined":
+	    break;
+	 default:
+	    throw `httpRequest, bad payload argument "${payload}"`;
       }
 
       run(request);
