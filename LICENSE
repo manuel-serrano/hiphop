@@ -1,6 +1,6 @@
 
     HipHop.js, Synchronous Multitier JavaScript Reactive Programming
-    copyright (c) 2018 INRIA
+    copyright (c) 2024 INRIA
                                                                      
     Bug descriptions, user reports, comments, suggestions and
     pull requests are welcome. Send them to
@@ -12,8 +12,8 @@
     the Free Software Foundation; either version 2 of the License, or 
     (at your option) any later version. More precisely:
     
-     The server, the compiler, and the tools are distributed under the 
-     terms of the GNU General Public License.
+       The compiler and the tools are distributed under the 
+       terms of the GNU General Public License.
     
     This program is distributed in the hope that it will be useful,   
     but WITHOUT ANY WARRANTY; without even the implied warranty of    

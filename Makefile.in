@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Wed Jun 19 07:43:07 2024 (serrano)                */
+#*    Last change :  Fri Jul  5 11:49:21 2024 (serrano)                */
 #*    Copyright   :  2006-24 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -101,6 +101,7 @@ npm-hiphop:
 	chmod a+rx npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
 	cp tools/nets2dot.mjs npm/$(HIPHOPNPMDIR)/bin/nets2dot.mjs
 	chmod a+rx npm/$(HIPHOPNPMDIR)/bin/nets2dot.mjs
+	(cd npm/$(HIPHOPNPMDIR); $(HOPJS) -g etc/configure.js package.json lib/config.js.in lib/config.js && $(HOPJS) -g etc/buildmodules.js)
 	(cd npm; tar --exclude="*.so" -zcf $(HIPHOPNPMDIR).tgz $(HIPHOPNPMDIR))
 
 npm-hiphop-tutorial-async:
@@ -131,7 +132,7 @@ lib/$(HOPSODIR)/%.@SO@: lib/%.mjs
 preprocessor/$(HOPSODIR)/%.@SO@: preprocessor/%.js
 	$(HOPC) $(HFLAGS) -y -o $@ $<
 
-modules/._%.js: modules/%.hh.js
+modules/._%.js: modules/%.hh.js modules/node_modules/@hop/hiphop
 	$(HOPJS) -g lib/hhc.js -o $@ $<
 
 modules/$(HOPSODIR)/%.@SO@: modules/._%.js
