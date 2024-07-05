@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    .../prgm/project/hiphop/1.3.x/examples/prims/prims.hop.js        */
+/*    .../prgm/project/hiphop/hiphop/examples/prims/prims.hop.mjs      */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Oct 16 08:45:43 2012                          */
-/*    Last change :  Fri Feb  2 09:05:45 2024 (serrano)                */
+/*    Last change :  Fri Jul  5 19:36:17 2024 (serrano)                */
 /*    Copyright   :  2012-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prim numbers aka the Darwin Sieve                                */
@@ -11,17 +11,25 @@
 /*    run with:                                                        */
 /*      http://localhost:8080/hop/prims?width=300&height=300           */
 /*=====================================================================*/
-import * as hop from "@hop/hop";
+import { Hop } from "@hop/hop";
 
 /*---------------------------------------------------------------------*/
 /*    R ... hop resolver                                               */
 /*---------------------------------------------------------------------*/
-const R = new hop.Resolver(import.meta.url, "@hop/hiphop/lib/hiphop-loader.mjs");
+const anonymous = {
+   name: "anonymous",
+   services: "*",
+   directories: "*",
+   events: "*"
+};
+const config = { users: [ anonymous ] };
+const hop = new Hop(config);
+const R = hop.Resolver(import.meta.url);
 
 /*---------------------------------------------------------------------*/
 /*    prims ...                                                        */
 /*---------------------------------------------------------------------*/
-async function prims(o) {
+function prims(o) {
    if (!o) o = {};
    
    let count = ~~o.count || 1;
@@ -32,18 +40,18 @@ async function prims(o) {
 
    return <html>
      <head>
-       <link rel="stylesheet" href=${await R.resolve("./prims.hss")}/>
+       <link rel="stylesheet" href=${R.url("./prims.hss")}/>
        <link rel="shortcut icon" href="#"/>
        <script type="importmap">
          {
 	    "imports": {
-	       "@hop/hop": "${await R.resolve('@hop/hop/hop-client.mjs')}",
-	       "@hop/hiphop": "${await R.resolve('@hop/hiphop/hiphop-client.mjs')}"
+	       "@hop/hop": "${R.url('@hop/hop/hop-client.mjs')}",
+	       "@hop/hiphop": "${R.url('@hop/hiphop/hiphop-client.mjs')}"
 	    }
          }
        </script>
        <script type="module">
-	 import * as pc from ${await R.resolve("./client.hh.js")};
+	 import * as pc from ${R.resolve("./client.hh.js")};
          window.onload = () => pc.start(document.getElementById("can"), ${speed});
 	 window.pc = pc;
        </script>
@@ -74,6 +82,8 @@ async function prims(o) {
    </html>
 }
 	     
-new hop.Service(prims, "/prims");
+const p = hop.Service(prims, "/prims");
+
+await hop.listen();
        
-console.log('go to "http://' + hop.hostname + ":" + hop.port + '/prims"');	   
+console.log(`go to ${p()}`);

@@ -1,19 +1,14 @@
 /*=====================================================================*/
-/*    .../prgm/project/hiphop/1.3.x/examples/prims/client.hh.js        */
+/*    .../prgm/project/hiphop/hiphop/examples/prims/client.hh.js       */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Jan 16 07:20:47 2016                          */
-/*    Last change :  Fri Feb  2 09:20:51 2024 (serrano)                */
+/*    Last change :  Fri Jul  5 18:16:59 2024 (serrano)                */
 /*    Copyright   :  2016-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prims client part                                                */
 /*=====================================================================*/
-"use @hop/hiphop";
-"use hopscript";
 
-/*---------------------------------------------------------------------*/
-/*    module                                                           */
-/*---------------------------------------------------------------------*/
 import { ReactiveMachine } from "@hop/hiphop";
 export { addNumber, resume, pause, setSpeed, start };
 
