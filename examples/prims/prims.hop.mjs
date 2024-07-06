@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Oct 16 08:45:43 2012                          */
-/*    Last change :  Fri Jul  5 19:36:17 2024 (serrano)                */
+/*    Last change :  Fri Jul  5 20:39:05 2024 (serrano)                */
 /*    Copyright   :  2012-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Prim numbers aka the Darwin Sieve                                */
@@ -12,9 +12,10 @@
 /*      http://localhost:8080/hop/prims?width=300&height=300           */
 /*=====================================================================*/
 import { Hop } from "@hop/hop";
+import { compileFileSync } from "@hop/hiphop/lib/hhc-compiler.mjs";
 
 /*---------------------------------------------------------------------*/
-/*    R ... hop resolver                                               */
+/*    Server configuration                                             */
 /*---------------------------------------------------------------------*/
 const anonymous = {
    name: "anonymous",
@@ -22,7 +23,7 @@ const anonymous = {
    directories: "*",
    events: "*"
 };
-const config = { users: [ anonymous ] };
+const config = { users: [ anonymous ], ports: { http: 8888} };
 const hop = new Hop(config);
 const R = hop.Resolver(import.meta.url);
 
@@ -45,13 +46,13 @@ function prims(o) {
        <script type="importmap">
          {
 	    "imports": {
-	       "@hop/hop": "${R.url('@hop/hop/hop-client.mjs')}",
-	       "@hop/hiphop": "${R.url('@hop/hiphop/hiphop-client.mjs')}"
+	       "@hop/hop": "${R.url('./node_modules/@hop/hop/client.mjs')}",
+	       "@hop/hiphop": "${R.url('./node_modules/@hop/hiphop/hiphop-client.mjs')}"
 	    }
          }
        </script>
        <script type="module">
-	 import * as pc from ${R.resolve("./client.hh.js")};
+         import * as pc from ${R.url(compileFileSync("./client.hh.js"))};
          window.onload = () => pc.start(document.getElementById("can"), ${speed});
 	 window.pc = pc;
        </script>
@@ -86,4 +87,4 @@ const p = hop.Service(prims, "/prims");
 
 await hop.listen();
        
-console.log(`go to ${p()}`);
+console.log(`go to "${p()}"`);

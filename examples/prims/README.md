@@ -23,8 +23,3 @@ node --no-warnings --enable-source-maps --loader ./node_modules/@hop/hopc/node/h
 ```
 
   2. Browse the client side at the URL [http://localhost:8888/prims].
-Run
-	hop ./prims.js
-
-App
-	http://localhost:8080/hop/prims

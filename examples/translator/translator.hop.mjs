@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    .../hiphop/1.3.x/examples/translator/translator.hop.js           */
+/*    .../hiphop/hiphop/examples/translator/translator.hop.mjs         */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Thu Aug  2 00:58:52 2018                          */
-/*    Last change :  Fri Feb  2 09:21:57 2024 (serrano)                */
+/*    Last change :  Sat Jul  6 10:32:55 2024 (serrano)                */
 /*    Copyright   :  2018-24 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Multiple parallel translations example                           */
@@ -11,30 +11,39 @@
 /*    run with:                                                        */
 /*      http://localhost:8080/hop/trans                                */
 /*=====================================================================*/
-import * as hop from "@hop/hop";
+import { Hop } from "@hop/hop";
+import { compileFileSync } from "@hop/hiphop/lib/hhc-compiler.mjs";
 
 /*---------------------------------------------------------------------*/
-/*    R ... hop resolver                                               */
+/*    Server configuration                                             */
 /*---------------------------------------------------------------------*/
-const R = new hop.Resolver(import.meta.url, "@hop/hiphop/lib/hiphop-loader.mjs");
+const anonymous = {
+   name: "anonymous",
+   services: "*",
+   directories: "*",
+   events: "*"
+};
+const config = { users: [ anonymous ], ports: { http: 8888} };
+const hop = new Hop(config);
+const R = hop.Resolver(import.meta.url);
 
 /*---------------------------------------------------------------------*/
 /*    translator ...                                                   */
 /*---------------------------------------------------------------------*/
-async function translator() {
+function translator() {
    return <html>
      <head>
        <script type="importmap">
          {
 	    "imports": {
-	       "@hop/hop": "${await R.resolve('@hop/hop/hop-client.mjs')}",
-	       "@hop/hiphop": "${await R.resolve('@hop/hiphop/hiphop-client.mjs')}"
+	       "@hop/hop": "${R.url('./node_modules/@hop/hop/client.mjs')}",
+	       "@hop/hiphop": "${R.url('./node_modules/@hop/hiphop/hiphop-client.mjs')}"
 	    }
          }
        </script>
 	<script type="module">
 	 import { ReactiveMachine } from "@hop/hiphop";
-	 import { trans } from ${await R.resolve("./translator.hh.js")}; 
+         import { trans } from ${R.url(compileFileSync("./translator.hh.js"))}; 
          window.mach = new ReactiveMachine(trans);
 
          function updateColor(s) {
@@ -82,7 +91,8 @@ async function translator() {
    </html>;
 }
 
-new hop.Service(translator, "/translator");
+const t = hop.Service(translator, "/translator");
 	  
-console.log('go to "http://' + hop.hostname + ":" + hop.port + '/translator"');	   
-// node --no-warnings --enable-source-maps --loader ./node_modules/@hop/hop/lib/hop-loader.mjs --loader ./node_modules/@hop/hiphop/lib/hiphop-loader.mjs ./translator.hop.js
+await hop.listen();
+       
+console.log(`go to "${t()}"`);
