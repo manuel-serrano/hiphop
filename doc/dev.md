@@ -205,8 +205,8 @@ source file named `foo.hh.js`:
   1. Add the option `{ dumpNets: true }` to the reactive machine for 
   which you want to dump the net list.
   2. Run your program. This will generate two files: `foo.hh.js.nets-.json`
-  and `foo.hh.js.nets+.json`. The former is the net list before optimization
-  the latter with optimization.
+  and `foo.hh.js.nets+.json`. The former is the net list before optimizations
+  the latter after optimizations.
   3. Generate the `.dot` files:
     - bin/nets2dot.js foo.hh.js.nets-.json > nets-.dot
     - bin/nets2dot.js foo.hh.js.nets+.json > nets+.dot
