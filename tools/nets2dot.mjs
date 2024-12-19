@@ -1,10 +1,10 @@
 #!/usr/bin/env nodejs
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/1.3.x/tools/nets2dot.mjs             */
+/*    serrano/prgm/project/hiphop/hiphop/tools/nets2dot.mjs            */
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Tue Jan  9 07:59:06 2024 (serrano)                */
+/*    Last change :  Thu Dec 19 11:31:44 2024 (serrano)                */
 /*    Copyright   :  2023-24 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -87,7 +87,7 @@ function main(argv) {
    }
    
    const info = JSON.parse(readFileSync(argv[2]));
-   console.log(`digraph "${argv[2]}" { graph [splines = true overlap = false rankdir = "TD"];`);
+   console.log(`digraph "${argv[2]}" { graph [splines = true overlap = false rankdir = "LR"];`);
    info.nets.forEach(net => {
       const id = td({content: `${net.id} [${net.type}]`});
       const name = td({content: net.name});
