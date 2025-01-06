@@ -4,8 +4,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Thu Dec 19 11:31:44 2024 (serrano)                */
-/*    Copyright   :  2023-24 manuel serrano                            */
+/*    Last change :  Fri Dec 20 12:29:57 2024 (serrano)                */
+/*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
 /*    -------------------------------------------------------------    */
@@ -89,14 +89,14 @@ function main(argv) {
    const info = JSON.parse(readFileSync(argv[2]));
    console.log(`digraph "${argv[2]}" { graph [splines = true overlap = false rankdir = "LR"];`);
    info.nets.forEach(net => {
-      const id = td({content: `${net.id} [${net.type}]`});
-      const name = td({content: net.name});
+      const id = td({content: `${net.id} [${net.type}:${net.lvl}]${(net.sweepable ? "" : "*")}`});
+      const name = td({content: net.name ? net.name : ""});
+      const action = td({content: net.action ? net.action : ""});
       const fanouts = net.fanout.map((n, i, arr) => tr([port(n, i, "&bull;")]))
       const fanins = net.fanin.map((n, i, arr) => tr([port(n, i + net.fanout.length, n.polarity ? "+" : "-", "left")]))
       const fans = table({rows: [tr([td({content: table({rows: fanins})}), td({content: table({rows: fanouts})})])]});
       const header = table({bgcolor: netColor(net), rows: [tr([id]), tr([name])]});
-      const debug = table({bgcolor: netColor(net), rows: [tr([name])]});
-      const file = table({cellpadding: 4, rows: [tr([td({content: font({content: `${basename(net.loc.filename)}:${net.loc.pos}`})})])]});
+      const file = table({cellpadding: 4, rows: [tr([td({content: font({content: `${basename(net.loc.filename)}:${net.loc.pos}`})})]), tr([action])]});;
       const node = table({rows: [tr([td({content: header})]), tr([td({content: file})]), tr([td({align: "center", content: fans})])]});
       
       console.log(`${net.id} [fontname = "Courier New" shape = "none" label = <${node}>];`);
