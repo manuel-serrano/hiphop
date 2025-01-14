@@ -118,7 +118,9 @@ function main(argv) {
 	 const { polarity, index } = fanoutPort(s, t);
 	 const style = s.fanout[i].dep ? ["style=dashed", 'color="red"'] : [];
 
-	 style.push("arrowhead=odot");
+	 if (!polarity) {
+	    style.push("arrowhead=odot");
+	 }
 	 
 	 console.log(`${s.id}:${i} :e -> ${s.fanout[i].id}:${index} :w ${!style.length ? "" : ("[" + style.join() + "]")};`);
       }
