@@ -67,6 +67,8 @@ function main(argv) {
 	 case "ACTION+":
 	 case "ACTION-":
 	 case "ACTION": return "orange";
+	 case "TRUE":
+	 case "FALSE": return "#3691bc";
 	 case "SIG": return "red";
 	 default: return "gray85";
       }
@@ -94,14 +96,14 @@ function main(argv) {
    console.log(`digraph "${argv[2]}" { graph [splines = true overlap = false rankdir = "LR"];`);
    info.nets.forEach(net => {
       const id = td({content: `${net.id} [${net.type}:${net.lvl}]${(net.sweepable ? "" : "*")}`});
-      const name = td({content: net.name ? net.name : ""});
-      const sigs = td({content: net.signals ? "[" + net.signals + "]" : ""});
-      const action = td({content: net.action ? net.action : ""});
+      const name = net.name ? tr([td({content: net.name})]) : "";
+      const sigs = net.signals ? tr([td({content: "[" + net.signals + "]"})]) : "";
+      const action = net.action ? tr([td({content: net.action})]) : (net.value ? tr([td({content: net.value})]) : "");
       const fanouts = net.fanout.map((n, i, arr) => tr([port(n, i, "&bull;")]))
       const fanins = net.fanin.map((n, i, arr) => tr([port(n, i + net.fanout.length, "&bull;", "left")]))
       const fans = table({rows: [tr([td({content: table({rows: fanins})}), td({content: table({rows: fanouts})})])]});
-      const header = table({bgcolor: netColor(net), rows: [tr([id]), tr([name])]});
-      const file = table({cellpadding: 4, rows: [tr([td({content: font({content: `${basename(net.loc.filename)}:${net.loc.pos}`})})]), tr([sigs]), tr([action])]});;
+      const header = table({bgcolor: netColor(net), rows: [tr([id]), name]});
+      const file = table({cellpadding: 4, rows: [tr([td({content: font({content: `${basename(net.loc.filename)}:${net.loc.pos}`})})]), sigs, action]});;
       const node = table({rows: [tr([td({content: header})]), tr([td({content: file})]), tr([td({align: "center", content: fans})])]});
       
       console.log(`${net.id} [fontname = "Courier New" shape = "none" label = <${node}>];`);
