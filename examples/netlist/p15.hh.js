@@ -2,9 +2,6 @@ import * as hh from "@hop/hiphop";
 
 hiphop module P15() {
    in I, J;
-   inout O1 combine (x, y) => x * y;
-   inout O2 combine (x, y) => x * y;
-   inout O3 combine (x, y) => x * y;
 
    fork {
       if (I.now) {
@@ -21,7 +18,7 @@ hiphop module P15() {
    }
 }
 
-export const mach = new hh.ReactiveMachine(P15);
+export const mach = new hh.ReactiveMachine(P15, { sweep: true, dumpNets: true, verbose: 1 });
 mach.outbuf = "";
 
 mach.addEventListener("O3", v => mach.outbuf += "O3=" + v.nowval + "\n");
@@ -38,4 +35,3 @@ react({I: 1});
 react({I: 1, J: 1});
 react({J: 1});
 react();
-

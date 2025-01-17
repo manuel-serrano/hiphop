@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Thu Jan 16 16:19:36 2025 (serrano)                */
+/*    Last change :  Fri Jan 17 07:22:53 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -25,6 +25,14 @@
 /*---------------------------------------------------------------------*/
 import { readFileSync } from "fs";
 import { basename } from "path";
+
+/*---------------------------------------------------------------------*/
+/*    signal accessibility                                             */
+/*---------------------------------------------------------------------*/
+const IN = 1;    //  001, is in ? === accessibility & 1
+const INOUT = 3; //  011
+const OUT = 2;   //  010, is out ? === accessibility & 2
+const LOCAL = 4; //  100
 
 /*---------------------------------------------------------------------*/
 /*    main ...                                                         */
@@ -64,16 +72,27 @@ function main(argv) {
 	 case "OR": return "yellow";
 	 case "AND": return "green";
 	 case "REG": return "#d4aaff";
-	 case "ACTION+":
-	 case "ACTION-":
 	 case "ACTION": return "orange";
+	 case "SIGACTION": return "orange";
+	 case "ACTION-": return "#98bb39";
+	 case "SIGACTION-": return "#98bb39";
 	 case "TRUE":
 	 case "FALSE": return "#3691bc";
-	 case "SIG": return "#32eee2";
-	 case "SIGi": return "#ff002c";
-	 case "SIGo": return "#ff332c";
-	 case "SIGio": return "#ff662c";
+	 case "SIG": return net.accessibility === LOCAL ? "#32eee2" : "#ff002c";
 	 default: return "gray85";
+      }
+   }
+   
+   function netType(net) {
+      if (net.type === "SIG") {
+	 switch (net.accessibility) {
+	    case IN: return "SIGi";
+	    case OUT: return "SIGo";
+	    case INOUT: return "SIGio";
+	    default: return "SIG";
+	 }
+      } else {
+	 return net.type;
       }
    }
 
@@ -98,15 +117,16 @@ function main(argv) {
    const info = JSON.parse(readFileSync(argv[2]));
    console.log(`digraph "${argv[2]}" { graph [splines = true overlap = false rankdir = "LR"];`);
    info.nets.forEach(net => {
-      const id = td({content: `${net.id} [${net.type}:${net.lvl}]${(net.sweepable ? "" : "*")}`});
-      const name = net.name ? tr([td({content: net.name})]) : "";
-      const sigs = net.signals ? tr([td({content: "[" + net.signals + "]"})]) : "";
-      const action = net.action ? tr([td({content: net.action})]) : (net.value ? tr([td({content: net.value})]) : "");
+      const typ = netType(net);
+      const id = td({content: `${net.id} [${typ}:${net.lvl}]${(net.sweepable ? "" : "*")}`});
+      const name = net.$name ? tr([td({content: net.$name})]) : "";
+      const sigs = net.signals ? tr([td({content: "[" + net.signals + "]"})]) : (net.signame ? tr([td({content: net.signame})]) : "");
+      const action = net.$action ? tr([td({content: net.$action})]) : (net.value ? tr([td({content: net.value})]) : "");
       const fanouts = net.fanout.map((n, i, arr) => tr([port(n, i, "&bull;")]))
       const fanins = net.fanin.map((n, i, arr) => tr([port(n, i + net.fanout.length, "&bull;", "left")]))
       const fans = table({rows: [tr([td({content: table({rows: fanins})}), td({content: table({rows: fanouts})})])]});
       const header = table({bgcolor: netColor(net), rows: [tr([id]), name]});
-      const file = table({cellpadding: 4, rows: [tr([td({content: font({content: `${basename(net.loc.filename)}:${net.loc.pos}`})})]), sigs, action]});;
+      const file = table({cellpadding: 4, rows: [tr([td({content: font({content: `${basename(net.$loc.filename)}:${net.$loc.pos}`})})]), sigs, action]});;
       const node = table({rows: [tr([td({content: header})]), tr([td({content: file})]), tr([td({align: "center", content: fans})])]});
       
       console.log(`${net.id} [fontname = "Courier New" shape = "none" label = <${node}>];`);

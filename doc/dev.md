@@ -192,15 +192,17 @@ node --enable-source-maps hello.mjs
 ```
 
 
-Visualizing the Net List
-------------------------
+The Net List
+------------
 
-The HipHop compiler generates a net list from a HipHop source. This compiled
-program can be executed by simulating the generated circuit. The tools
-`tools/nets2dot.mjs` can be used in conjunction with the 
-[dot](https://graphviz.org) graph visualizer to generate PDF files.
-Here is how to proceed for generating these files, considering a HipHop
-source file named `foo.hh.js`:
+The HipHop compiler generates a net list from a HipHop source using
+the technique described in [The Constructive Semantics of Pure
+Esterel](http://www-sop.inria.fr/members/Gerard.Berry/Papers/EsterelConstructiveBook.pdf).
+This compiled program can be executed by simulating the generated
+circuit. The tools `tools/nets2dot.mjs` can be used in conjunction
+with the [dot](https://graphviz.org) graph visualizer to generate PDF
+files. Here is how to proceed for generating these files, considering
+a HipHop source file named `foo.hh.js`:
 
   1. Add the option `{ dumpNets: true }` to the reactive machine for 
   which you want to dump the net list.
@@ -213,3 +215,88 @@ source file named `foo.hh.js`:
   4. Generate the PDF files:
     - dot -T pdf nets-.dot > nets-.pdf
     - dot -T pdf nets+.dot > nets+.pdf
+
+The main syntax of the `json` files representing the net lists is as follows:
+
+
+```json
+<NETLIST> ::= {
+  "filename": <STRING>, # the name fo the source file of the main hiphop module
+  "sweep": <BOOL>,      # true iff the sweep optimization is enabled
+  "nets": [ <NET>, ..., <NET> ] # the actual net list
+}
+
+```
+
+The syntax of the `<NET>` is as follows.
+
+```json
+<NET> ::= {
+  "id": <INTEGER>,      # a unique identifier
+  "lvl": <INTEGER>,     # the re-incarnation level (used for loops)
+  "type": <NET-TYPE>,   # the type of the net
+  "fanout": [<FAN>, ... <FAN>], # the out nets of this net
+  "fanin": [<FAN>, ... <FAN>]  # the int nets of this net
+}
+
+<NET-TYPE> ::= "REG"
+  | "SIG"
+  | "TRUE"
+  | "FALSE"
+  | "AND"
+  | "OR"
+  | "ACTION"
+  | "ACTION-"
+  | "SIGACTION"
+  | "SIGACTION-"
+
+<FAN> ::= {
+  "id": <INTEGER>,      # the net the fan points to
+  "polarity": <BOOL>,   # the polarity of the connection
+  "dep": <BOOL>         # true iff a signal dependency
+}
+```
+
+Nets have also pre-type extra fields.
+
+```json
+<NET-REG> ::= {         # fields available withe type == "REG"
+  ...
+  value: <BOOL>         # the initial value of the register
+}
+
+<NET-SIG> ::= {         # fields available withe type == "SIG"
+  ...
+  signame: <STRING>     # the name of the associated signal
+  accessibility: <INTEGER> # 1: IN, 2: OUT, 3: INOUT, 4: LOCAL
+}
+
+<NET-SIG> ::= {         # fields available withe type == "SIG"
+  ...
+  signame: <STRING>     # the name of the associated signal
+  accessibility: <INTEGER> # 1: IN, 2: OUT, 3: INOUT, 4: LOCAL
+}
+
+<NET-SIGACTION> ::= {   # fields available withe type == "SIGACTION"
+  ...
+  signals: [<STRING>, ... <STRING>]  # the names of the emitted signals
+}
+```
+
+> [!NOTE]
+> Finally, `json` structures might contain extra private fields whose names
+> start with the `$` characters. These fields are used for better visualizations
+> of the net list but they are not required to execute of optimize the net
+> lists.
+  
+Example. Let us consider the P15 example found in page 75 of 
+[The Constructive Semantics of Pure Esterel](http://www-sop.inria.fr/members/Gerard.Berry/Papers/EsterelConstructiveBook.pdf). In HipHop this program
+is implemented as:
+
+<span class="typescript">&#x2605;</span> [p15.hh.js](../examples/netlist/p15.hh.hs)
+<!-- ${doc.includeCode("../examples/netlist/p15.hh.js", "javascript")} -->
+
+The generated net list is:
+
+<span class="json">&#x2605;</span> [p15.net+.json](../examples/netlist/p15.net+.json)
+<!-- ${doc.includeCode("../examples/netlist/p15.net+.json", "json")} -->

@@ -2,7 +2,7 @@
 ===============================================================================
 
 <!-- github -->
-![branch workflow](https://github.com/manuel-serrano/hiphop/actions/workflows/hiphop.yml/badge.svg?branch=1.3.x)
+![branch workflow](https://github.com/manuel-serrano/hiphop/actions/workflows/hiphop.yml/badge.svg?branch=1.4.x)
 <!-- /github -->
 
 __Hiphop.js__ is JavaScript DSL for programming 
@@ -25,14 +25,14 @@ The HipHop.js installation depends on the JavaScript host
 (see Installation chapter). The easiest way to install it is when using 
 `npm`. For that system, the installation is:
 
-Until HipHop reaches a stable state (which is expected to happen in
-2024), use the following to install it.
+Until HipHop is released as an "official" npm package, use the
+following to install it.
 
 ```shell
 npm install https://www-sop.inria.fr/members/Manuel.Serrano/software/npmx/hiphop.tgz
 ```
 
-When HipHop is officially released in 2024, the installation procedure is:
+When HipHop is officially released, the installation procedure is:
 
 ```shell
 npm install @hop/hiphop
