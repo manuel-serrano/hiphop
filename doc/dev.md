@@ -219,7 +219,7 @@ a HipHop source file named `foo.hh.js`:
 The main syntax of the `json` files representing the net lists is as follows:
 
 
-```json
+```bnf
 NETLIST ::= {
   "filename": STRING, # the name fo the source file of the main hiphop module
   "sweep": BOOL,      # true iff the sweep optimization is enabled
@@ -230,7 +230,7 @@ NETLIST ::= {
 
 The syntax of the `NET` is as follows.
 
-```json
+```bnf
 NET ::= {
   "id": INTEGER,      # a unique identifier
   "lvl": INTEGER,     # the re-incarnation level (used for loops)
@@ -259,7 +259,7 @@ FAN ::= {
 
 Nets have also pre-type extra fields.
 
-```json
+```bnf
 NET-REG ::= {         # fields available withe type == "REG"
   ...
   value: BOOL         # the initial value of the register
