@@ -3,11 +3,12 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Mon Nov 16 10:15:32 2015                          */
-#*    Copyright   :  2015-24 Manuel Serrano                            */
+#*    Copyright   :  2015-25 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Build the documentation                                          */
 #*=====================================================================*/
 HOP=hop
+HOPFLAGS="--no-so"
 DOCJS=`$(HOP) --no-server --evaljs 'console.log(require(hop.config).docDir + "/doc.js")'`
 
 #*---------------------------------------------------------------------*/
@@ -49,7 +50,7 @@ VPATH=syntax
 #*    doc                                                              */
 #*---------------------------------------------------------------------*/
 ../index.html: ../README.md lib css/doc.css
-	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
+	$(HOP) $(HOPFLAGS) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "compile-library" $< -o $@ \
           || ($(RM) $@; exit 1)
 	mv mermaid*.svg ..
@@ -59,7 +60,7 @@ VPATH=syntax
 #*---------------------------------------------------------------------*/
 idx.json: debug.html $(LANG_TARGETS) $(MODULES_TARGETS) \
   dev.html api.html staging.html
-	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
+	$(HOP) $(HOPFLAGS) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "html-to-idx" . -o $@ $^ \
           || ($(RM) $@; exit 1)
 
@@ -67,7 +68,7 @@ idx.json: debug.html $(LANG_TARGETS) $(MODULES_TARGETS) \
 #*    idx.html ...                                                     */
 #*---------------------------------------------------------------------*/
 idx.html: idx.json lib css/doc.css
-	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
+	$(HOP) $(HOPFLAGS) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "compile-idx" $< -o $@ \
           || ($(RM) $@; exit 1)
 
@@ -75,7 +76,7 @@ idx.html: idx.json lib css/doc.css
 #*    .md -> .html                                                     */
 #*---------------------------------------------------------------------*/
 %.html: %.md lib css/doc.css
-	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
+	$(HOP) $(HOPFLAGS) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "compile-section" $< -o $@ \
           || ($(RM) $@; exit 1)
 
@@ -83,7 +84,7 @@ idx.html: idx.json lib css/doc.css
 #*    .json -> .html                                                   */
 #*---------------------------------------------------------------------*/
 %.html: %.json lib css/doc.css
-	$(HOP) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
+	$(HOP) $(HOPFLAGS) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "compile-chapter" $< -o $@ \
           || ($(RM) $@; exit 1)
 

@@ -2,6 +2,7 @@ import * as hh from "@hop/hiphop";
 
 hiphop module P15() {
    in I, J;
+   out O1, O2, O3;
 
    fork {
       if (I.now) {

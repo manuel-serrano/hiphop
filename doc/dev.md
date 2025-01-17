@@ -1,4 +1,4 @@
-<!-- ${ var doc = require( "hopdoc" ) } -->
+<!-- ${ var doc = require( "@hop/hopdoc" ) } -->
 
 HipHop Environment
 ==================
@@ -220,26 +220,26 @@ The main syntax of the `json` files representing the net lists is as follows:
 
 
 ```json
-<NETLIST> ::= {
-  "filename": <STRING>, # the name fo the source file of the main hiphop module
-  "sweep": <BOOL>,      # true iff the sweep optimization is enabled
-  "nets": [ <NET>, ..., <NET> ] # the actual net list
+NETLIST ::= {
+  "filename": STRING, # the name fo the source file of the main hiphop module
+  "sweep": BOOL,      # true iff the sweep optimization is enabled
+  "nets": [ NET, ..., NET ] # the actual net list
 }
 
 ```
 
-The syntax of the `<NET>` is as follows.
+The syntax of the `NET` is as follows.
 
 ```json
-<NET> ::= {
-  "id": <INTEGER>,      # a unique identifier
-  "lvl": <INTEGER>,     # the re-incarnation level (used for loops)
-  "type": <NET-TYPE>,   # the type of the net
-  "fanout": [<FAN>, ... <FAN>], # the out nets of this net
-  "fanin": [<FAN>, ... <FAN>]  # the int nets of this net
+NET ::= {
+  "id": INTEGER,      # a unique identifier
+  "lvl": INTEGER,     # the re-incarnation level (used for loops)
+  "type": NET-TYPE,   # the type of the net
+  "fanout": [FAN, ... FAN], # the out nets of this net
+  "fanin": [FAN, ... FAN]   # the int nets of this net
 }
 
-<NET-TYPE> ::= "REG"
+NET-TYPE ::= "REG"
   | "SIG"
   | "TRUE"
   | "FALSE"
@@ -250,36 +250,36 @@ The syntax of the `<NET>` is as follows.
   | "SIGACTION"
   | "SIGACTION-"
 
-<FAN> ::= {
-  "id": <INTEGER>,      # the net the fan points to
-  "polarity": <BOOL>,   # the polarity of the connection
-  "dep": <BOOL>         # true iff a signal dependency
+FAN ::= {
+  "id": INTEGER,      # the net the fan points to
+  "polarity": BOOL,   # the polarity of the connection
+  "dep": BOOL         # true iff a signal dependency
 }
 ```
 
 Nets have also pre-type extra fields.
 
 ```json
-<NET-REG> ::= {         # fields available withe type == "REG"
+NET-REG ::= {         # fields available withe type == "REG"
   ...
-  value: <BOOL>         # the initial value of the register
+  value: BOOL         # the initial value of the register
 }
 
-<NET-SIG> ::= {         # fields available withe type == "SIG"
+NET-SIG ::= {         # fields available withe type == "SIG"
   ...
-  signame: <STRING>     # the name of the associated signal
-  accessibility: <INTEGER> # 1: IN, 2: OUT, 3: INOUT, 4: LOCAL
+  signame: STRING     # the name of the associated signal
+  accessibility: INTEGER # 1: IN, 2: OUT, 3: INOUT, 4: LOCAL
 }
 
-<NET-SIG> ::= {         # fields available withe type == "SIG"
+NET-SIG ::= {         # fields available withe type == "SIG"
   ...
-  signame: <STRING>     # the name of the associated signal
-  accessibility: <INTEGER> # 1: IN, 2: OUT, 3: INOUT, 4: LOCAL
+  signame: STRING     # the name of the associated signal
+  accessibility: INTEGER # 1: IN, 2: OUT, 3: INOUT, 4: LOCAL
 }
 
-<NET-SIGACTION> ::= {   # fields available withe type == "SIGACTION"
+NET-SIGACTION ::= {   # fields available withe type == "SIGACTION"
   ...
-  signals: [<STRING>, ... <STRING>]  # the names of the emitted signals
+  signals: [STRING, ... STRING]  # the names of the emitted signals
 }
 ```
 
@@ -298,5 +298,5 @@ is implemented as:
 
 The generated net list is:
 
-<span class="json">&#x2605;</span> [p15.net+.json](../examples/netlist/p15.net+.json)
-<!-- ${doc.includeCode("../examples/netlist/p15.net+.json", "json")} -->
+<span class="json">&#x2605;</span> [p15.net.json](../examples/netlist/p15.net.json)
+<!-- ${doc.includeCode("../examples/netlist/p15.net.json", "json")} -->

@@ -1,9 +1,10 @@
 {
    "name": "netlist",
    "dependencies": {
-      "@hop/hiphop": "https://www-sop.inria.fr/members/Manuel.Serrano/software/npmx/hiphop.tgz",
+      "@hop/hiphop": "https://www-sop.inria.fr/members/Manuel.Serrano/software/npmx/hiphop.tgz"
    },
    "scripts": {
+      "doc": "node_modules/@hop/hiphop/bin/hhc.mjs p15.hh.js -o p15.mjs && node p15.mjs && js-beautify p15.net+.json > p15.net.json && rm p15.net-.json",
       "test": "node p15.mjs",
       "build": "node_modules/@hop/hiphop/bin/hhc.mjs p15.hh.js -o p15.mjs"
    }

@@ -4,8 +4,8 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Sun Jul 21 11:01:28 2024 (serrano)                */
-#*    Copyright   :  2006-24 Manuel Serrano                            */
+#*    Last change :  Fri Jan 17 10:29:22 2025 (serrano)                */
+#*    Copyright   :  2006-25 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
 #*=====================================================================*/
@@ -255,7 +255,7 @@ $(HOPREPOSITORY)/$(HZ)-$(HZVERSION).tar.gz: \
   docker \
   etc \
   doc \
-  .travis.yml.in \
+  .github/workflows/hiphop.yml \
   test \
   examples \
   tutorials \
