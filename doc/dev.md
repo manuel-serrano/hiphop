@@ -279,7 +279,7 @@ NET-SIG ::= {         # fields available withe type == "SIG"
 
 NET-SIGACTION ::= {   # fields available withe type == "SIGACTION"
   ...
-  signals: [STRING, ... STRING]  # the names of the emitted signals
+  signal: STRING      # the name of the emitted signal
 }
 ```
 

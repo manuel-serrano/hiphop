@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Fri Jan 17 07:22:53 2025 (serrano)                */
+/*    Last change :  Sat Jan 18 17:01:30 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -73,8 +73,8 @@ function main(argv) {
 	 case "AND": return "green";
 	 case "REG": return "#d4aaff";
 	 case "ACTION": return "orange";
-	 case "SIGACTION": return "orange";
-	 case "ACTION-": return "#98bb39";
+	 case "ACTION-": return "orange";
+	 case "SIGACTION": return "#98bb39";
 	 case "SIGACTION-": return "#98bb39";
 	 case "TRUE":
 	 case "FALSE": return "#3691bc";

@@ -13,6 +13,9 @@ hiphop module prg() {
    if (B.now) { 
       emit V_S_C();
    }
+   pragma {
+      mach.outbuf = "ok\n";
+   }
 }
 
 export const mach = new hh.ReactiveMachine(prg, { verbose: -1 });

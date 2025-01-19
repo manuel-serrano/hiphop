@@ -11,6 +11,7 @@ hiphop module prg() {
    }
    if (V_S_i.now) {
       emit V_S_C();
+      yield;
    }
    pragma {
       mach.outbuf = "ok\n";
