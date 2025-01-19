@@ -162,7 +162,7 @@
         },
         "$signals": "",
         "$action": "return 1;",
-        "signals": ["!O1:0"]
+        "signal": "!O1:0"
     }, {
         "id": 20,
         "lvl": 0,
@@ -235,7 +235,7 @@
         },
         "$signals": "",
         "$action": "return 2;",
-        "signals": ["!O2:0"]
+        "signal": "!O2:0"
     }, {
         "id": 38,
         "lvl": 0,
@@ -255,7 +255,7 @@
         },
         "$signals": "",
         "$action": "return 3;",
-        "signals": ["!O3:0"]
+        "signal": "!O3:0"
     }, {
         "id": 42,
         "lvl": 0,
