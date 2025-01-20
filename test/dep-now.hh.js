@@ -11,10 +11,11 @@ hiphop module prg(resolve) {
    }
 
    if (A.now) {
-      pragma { console.log(mach.age(), "ok"); }
+      pragma { mach.outbuf += (mach.age() + " ok\n"); }
    }
 }
 
-export const mach = new hh.ReactiveMachine(prg, { sweep: true, dumpNets: true, verbose: 1 });
+export const mach = new hh.ReactiveMachine(prg, { sweep: true, dumpNets: false, verbose: 0 });
+mach.outbuf = "";
 
 mach.react();

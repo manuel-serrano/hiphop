@@ -4,7 +4,7 @@ import * as hh from "@hop/hiphop";
 hiphop module prg(resolve) {
    inout X = 1, Y, Z;
    T: {
-      signal __internal = -1;
+      signal __internal = -1 combine (x, y) => x + y;
 
       loop {
          if (__internal.preval === -1) {
