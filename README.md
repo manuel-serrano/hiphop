@@ -2,7 +2,7 @@
 ===============================================================================
 
 <!-- github -->
-![branch workflow](https://github.com/manuel-serrano/hiphop/actions/workflows/hiphop.yml/badge.svg?branch=1.4.x)
+![branch workflow](https://github.com/manuel-serrano/hiphop/actions/workflows/hiphop.yml/badge.svg?branch=master)
 <!-- /github -->
 
 __Hiphop.js__ is JavaScript DSL for programming 
