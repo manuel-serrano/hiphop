@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Sat Jan 18 17:01:30 2025 (serrano)                */
+/*    Last change :  Tue Jan 28 09:18:41 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -118,10 +118,10 @@ function main(argv) {
    console.log(`digraph "${argv[2]}" { graph [splines = true overlap = false rankdir = "LR"];`);
    info.nets.forEach(net => {
       const typ = netType(net);
-      const id = td({content: `${net.id} [${typ}:${net.lvl}]${(net.sweepable ? "" : "*")}`});
+      const id = td({content: `${net.id} [${typ}:${net.lvl}]${(net.$sweepable ? "" : "*")}`});
       const name = net.$name ? tr([td({content: net.$name})]) : "";
       const sigs = net.signals ? tr([td({content: "[" + net.signals + "]"})]) : (net.signame ? tr([td({content: net.signame})]) : "");
-      const action = net.$action ? tr([td({content: net.$action})]) : (net.value ? tr([td({content: net.value})]) : "");
+      const action = net.$action ? tr([td({content: net.$action})]) : (net.value !== undefined? tr([td({content: net.value})]) : "");
       const fanouts = net.fanout.map((n, i, arr) => tr([port(n, i, "&bull;")]))
       const fanins = net.fanin.map((n, i, arr) => tr([port(n, i + net.fanout.length, "&bull;", "left")]))
       const fans = table({rows: [tr([td({content: table({rows: fanins})}), td({content: table({rows: fanouts})})])]});

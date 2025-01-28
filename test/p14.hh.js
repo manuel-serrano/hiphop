@@ -14,7 +14,7 @@ hiphop module P14() {
    }
 }
 
-export const mach = new hh.ReactiveMachine(P14, { sweep: true, dumpNets: true, verbose: 1 });
+export const mach = new hh.ReactiveMachine(P14, { sweep: true, dumpNets: true, verbose: 0 });
 mach.outbuf = "";
 
 mach.addEventListener("O2", v => mach.outbuf += "O2=" + v.nowval + "\n");
