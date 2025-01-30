@@ -15,11 +15,9 @@ hiphop module prg() {
 
 export const mach = new ReactiveMachine(prg);
 mach.outbuf = "";
-mach.addEventListener("C", e => mach.outbuf += ("got C: " + e.nowval + "\n"));
+mach.addEventListener("C", e => mach.outbuf += ("C: " + e.nowval + "\n"));
 mach.outbuf += ("1\n");
 mach.react({});
 mach.outbuf += ("2\n");
 mach.react({A:111});
 mach.outbuf += ("3\n");
-
-console.error("BUG-ABORT should have failed.");
