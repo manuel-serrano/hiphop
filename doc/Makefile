@@ -53,7 +53,7 @@ VPATH=syntax
 	$(HOP) $(HOPFLAGS) $(EFLAGS) -q --no-clear-cache --no-cache --no-server -- \
           $(DOCJS) "compile-library" $< -o $@ \
           || ($(RM) $@; exit 1)
-	mv mermaid*.svg ..
+	cp mermaid*.svg ..
 
 #*---------------------------------------------------------------------*/
 #*    idx.json ...                                                     */
