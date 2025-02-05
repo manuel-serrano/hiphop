@@ -39,7 +39,7 @@ HIPHOP_RESOLVE=".." node --enable-source-maps --no-warnings --loader ../lib/hiph
 Where you should replace `<A-TEST.hh.js>` with your test. For example:
 
 ```
-HIPHOP_RESOLVE=".." node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all.test.js -- ./incr-type.hh.js`
+HIPHOP_RESOLVE=".." node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all.test.js -- ./incr-type.hh.js
 ```
 
 3. Manual compilation
