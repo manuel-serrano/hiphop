@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Jun 14 07:39:47 2024 (serrano)                */
-/*    Copyright   :  2018-24 Manuel Serrano                            */
+/*    Last change :  Mon Feb 10 17:12:28 2025 (serrano)                */
+/*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
 /*=====================================================================*/
@@ -1306,7 +1306,7 @@ function parseLoop(token) {
 /*    parseEvery ...                                                   */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | every  delay block                                          */
+/*       | every delay block                                           */
 /*---------------------------------------------------------------------*/
 function parseEvery(token) {
    const loc = token.location;

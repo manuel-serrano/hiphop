@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Fri Feb  7 11:36:13 2025 (serrano)                */
+/*    Last change :  Mon Feb 10 14:21:56 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -103,12 +103,12 @@ function main(argv) {
       }
    }
 
-   function fanoutPort(src, tgt) {
+   function fanoutPort(src, tgt, polarity) {
       const fanins = tgt.fanin;
       let i;
 
       for (i = 0; i < fanins.length; i++) {
-	 if (fanins[i].id === src.id) break;
+	 if (fanins[i].id === src.id && fanins[i].polarity === polarity) break;
       }
 
       if (i === fanins.length) {
@@ -118,7 +118,7 @@ function main(argv) {
 	 throw "Cannot find fanin:" + fanin.id + " tgt:" + tgt.id;
       }
       
-      return { polarity: fanins[i].polarity, index: tgt.fanout.length + i };
+      return tgt.fanout.length + i;
    }
    
    const info = JSON.parse(readFileSync(argv[2]));
@@ -147,7 +147,8 @@ function main(argv) {
 	    console.error(`*** ERROR: Cannot find ${s.id}'s target ${s.fanout[i].id}`);
 	    process.exit(1);
 	 }
-	 const { polarity, index } = fanoutPort(s, t);
+	 const polarity = s.fanout[i].polarity;
+	 const index = fanoutPort(s, t, polarity);
 	 const style = s.fanout[i].dep ? ["style=dashed", 'color="red"'] : [];
 
 	 if (!polarity) {
