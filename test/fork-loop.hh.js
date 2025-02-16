@@ -4,7 +4,7 @@ import * as hh from "@hop/hiphop";
    in A, B, R; out O;
 
    loop {
-      pragma { mach.outbuf += ("loop" + mach.age() + "\n"); }
+      pragma { mach.outbuf += ("loop " + mach.age() + "\n"); }
       fork {
 	 pragma { mach.outbuf += ("S1\n"); }
       }
