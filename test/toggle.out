@@ -1,10 +1,10 @@
-toogle> ;
+toggle> ;
 --- Output: SEQ(2) STATE1(true) STATE2(false) S TOGGLE(false)
-toogle> ;
+toggle> ;
 --- Output: SEQ(3) STATE1(true) STATE2(false) TOGGLE(true)
-toogle> ;
+toggle> ;
 --- Output: SEQ(4) STATE1(true) STATE2(false) S TOGGLE(false)
-toogle> ;
+toggle> ;
 --- Output: SEQ(5) STATE1(true) STATE2(false) TOGGLE(true)
-toogle> ;
+toggle> ;
 --- Output: SEQ(6) STATE1(true) STATE2(false) S TOGGLE(false)

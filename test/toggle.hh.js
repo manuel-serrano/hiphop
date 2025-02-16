@@ -25,7 +25,7 @@ hiphop module prg() {
       emit STATE1(false);
       emit STATE2(true);
       emit STATE2(false);
-      if(S.pre) {
+      if (S.pre) {
 	 emit TOGGLE(true);
       } else {
 	 emit TOGGLE(false);

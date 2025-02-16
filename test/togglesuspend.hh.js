@@ -4,11 +4,11 @@
 import * as hh from "@hop/hiphop";
 
 hiphop module prog() {
-   inout toogle;
+   inout toggle;
    
-   suspend toggle( toogle.now ) {
+   suspend toggle (toggle.now) {
       loop {
-	 hop { mach.outbuf += ( "plop" ) + "\n"; }
+	 pragma { mach.outbuf += "plop\n"; }
 	 yield;
       }
    }
@@ -22,9 +22,9 @@ mach.debug_emitted_func = val => {
 
 mach.react();
 mach.react();
-mach.inputAndReact( 'toogle' );
+mach.inputAndReact( 'toggle' );
 mach.react();
 mach.react();
-mach.inputAndReact( 'toogle' );
+mach.inputAndReact( 'toggle' );
 mach.react();
 mach.react();
