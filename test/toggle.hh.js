@@ -35,4 +35,4 @@ hiphop module prg() {
    }
 }
 
-export const mach = new hh.ReactiveMachine(prg, "toogle");
+export const mach = new hh.ReactiveMachine(prg, "toggle");

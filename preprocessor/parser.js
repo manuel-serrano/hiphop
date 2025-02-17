@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Mon Feb 10 17:12:28 2025 (serrano)                */
+/*    Last change :  Mon Feb 17 10:15:46 2025 (serrano)                */
 /*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -210,6 +210,7 @@ function parseHHThisExpr(parser, iscnt = false) {
    let accessors = [];
    const { expr: e, accessors: axs } = parser.call(this, accessors);
    const { expr, signames } = hhaccess(e, iscnt, hhname, accessors);
+
    // The vector signames is a list of { id, exprs }. It corresponds
    // to all the accesses of the form "this[expr].(nowval|preval|...)".
    // This signames are ultimately handled by function wrapSignalNames
@@ -350,7 +351,7 @@ function parseDelay(loc, tag, action = "apply", id = false, immediate = false) {
 	 astutils.J2SDataPropertyInit(
 	    loc, astutils.J2SString(loc, "count" + action),
 	    cntfun)];
-      
+
       return { inits: inits, accessors: cntaccessors.concat(accessors), signames: signames1.concat(signames2) };
    } else if (isIdToken(this, this.peekToken(), "immediate")) {
       // immediate(hhexpr)
@@ -410,7 +411,7 @@ function parseHHBlock(consume = true) {
 	 case this.RBRACE: {
 	    const nothing = this.consumeAny();
 	    if (nodes.length === 0) {
-	       return [parseEmpty(nothing, "NOTHING", "nothing")];
+	       return [parseEmpty(nothing, "NOTHING", "NOTHING")];
 	    } else {
 	       return nodes;
 	    }
@@ -929,7 +930,7 @@ function parseExit(token) {
 	 loc,
 	 astutils.J2SString(loc, id.value),
 	 astutils.J2SString(loc, id.value)),
-	locInit(loc), tagInit("break", loc)]);
+	locInit(loc), tagInit("EXIT", loc)]);
    
    return astutils.J2SCall(loc, hhref(loc, "EXIT"), null, [attrs]);
 }
@@ -990,7 +991,8 @@ function parseNamedSequence(id, tagname, consume) {
 /*---------------------------------------------------------------------*/
 function parseFork(token) {
    const loc = token.location;
-   const tag = tagInit("fork", loc);
+   const tag = tagInit("FORK", loc);
+   const tagseq = tagInit("SEQUENCE", loc);
    let id;
    let attrs;
    let body = [];
@@ -1025,7 +1027,7 @@ function parseFork(token) {
       } else {
 	 body.push(astutils.J2SCall(loc, hhref(loc, "SEQUENCE"),
 				    null,
-				    [astutils.J2SObjInit(loc, [locInit(loc), tag])]
+				    [astutils.J2SObjInit(loc, [locInit(loc), tagseq])]
 				       .concat(block)));
       }
 
@@ -1049,7 +1051,7 @@ function parseEmitSustain(token, command) {
    function parseSignalEmit(loc) {
       const locid = this.peekToken().location;
       const signame = parseDollarIdentName.call(this);
-      const tag = tagInit(command.toLowerCase(), loc);
+      const tag = tagInit(command.toUpperCase(), loc);
       let inits = [locInit(locid), tag, astutils.J2SDataPropertyInit(
 	 locid,
 	 astutils.J2SString(locid, "signame"),
@@ -1172,7 +1174,7 @@ function parseIf (token) {
 /*---------------------------------------------------------------------*/
 function parseAbortWeakabort(token, command) {
    const loc = token.location;
-   const tag = tagInit(command.toLowerCase(), loc);
+   const tag = tagInit(command.toUpperCase(), loc);
    const { inits, accessors, signames } = parseDelay.call(this, loc, tag, "apply");
    const stmts = parseHHBlock.call(this);
    const node = astutils.J2SCall(
@@ -1310,7 +1312,7 @@ function parseLoop(token) {
 /*---------------------------------------------------------------------*/
 function parseEvery(token) {
    const loc = token.location;
-   const tag = tagInit("every", loc);
+   const tag = tagInit("EVERY", loc);
 
    const { inits, accessors, signames } = parseDelay.call(this, loc, "every");
 
@@ -1332,7 +1334,7 @@ function parseEvery(token) {
 /*---------------------------------------------------------------------*/
 function parseLoopeach(token) {
    const loc = token.location;
-   const tag = tagInit("do/every", loc);
+   const tag = tagInit("LOOPEACH", loc);
    const stmts = parseHHBlock.call(this);
 
    const tok = this.consumeToken(this.ID);
@@ -1817,7 +1819,7 @@ function parseSignal(token) {
       }
    }
 
-   const tag = tagInit("signal", loc);
+   const tag = tagInit("LOCAL", loc);
    const attrs = astutils.J2SObjInit(loc, [locInit(loc), tag]);
    const args = parseSiglist.call(this);
    const stmts = parseHHBlock.call(this, false);
@@ -1841,11 +1843,11 @@ function parseTrap(token) {
 	 loc,
 	 astutils.J2SString(loc, token.value),
 	 astutils.J2SString(loc, token.value)),
-	locInit(loc), tagInit(token.value, loc)]);
+	locInit(loc), tagInit("TRAP", loc)]);
    
    return astutils.J2SCall(loc, hhref(loc, "TRAP"), 
-			    null,
-			    [attrs].concat([block]));
+			   null,
+			   [attrs].concat([block]));
 }
 
 /*---------------------------------------------------------------------*/
