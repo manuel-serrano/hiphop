@@ -29,5 +29,3 @@ mach.react();
 mach.outbuf += ("4\n");
 mach.react();
 mach.outbuf += ("5\n");
-
-console.error("BUG-ABORT2 should have failed.");
