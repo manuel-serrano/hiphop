@@ -199,7 +199,24 @@ The HipHop compiler generates a net list from a HipHop source using
 the technique described in [The Constructive Semantics of Pure
 Esterel](http://www-sop.inria.fr/members/Gerard.Berry/Papers/EsterelConstructiveBook.pdf).
 This compiled program can be executed by simulating the generated
-circuit. The tools `tools/nets2dot.mjs` can be used in conjunction
+circuit. Two tools `tools/nets2text.mjs` and `tools/nets2dot.mjs`
+can be used to visualize these circuits.
+
+#### The tools `tools/nets2text.mjs` generate a plain text. 
+Here is how to proceed for generating these files, considering
+a HipHop source file named `foo.hh.js`:
+
+  1. Add the option `{ dumpNets: true }` to the reactive machine for 
+  which you want to dump the net list.
+  2. Run your program. This will generate two files: `foo.hh.js.nets-.json`
+  and `foo.hh.js.nets+.json`. The former is the net list before optimizations
+  the latter after optimizations.
+  3. Generate the text files:
+    - bin/nets2text.js foo.hh.js.nets-.json > nets-.txt
+    - bin/nets2text.js foo.hh.js.nets+.json > nets+.txt
+
+
+#### The tools `tools/nets2dot.mjs` can be used in conjunction
 with the [dot](https://graphviz.org) graph visualizer to generate PDF
 files. Here is how to proceed for generating these files, considering
 a HipHop source file named `foo.hh.js`:
