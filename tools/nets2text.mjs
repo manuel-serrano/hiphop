@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Wed Feb 19 13:02:11 2025 (serrano)                */
+/*    Last change :  Thu Feb 20 08:59:14 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a TEXT file from a netlist.                             */
@@ -51,7 +51,9 @@ const PADDINGS = [ "", " ", "  ", "   " ];
 /*    padding ...                                                      */
 /*---------------------------------------------------------------------*/
 function padding(s, pad, right) {
-   if (s.length > pad) {
+   if ((typeof s) !== "string") {
+      padding("", pad, right);
+   } else if (s.length > pad) {
       return s.substring(0, pad);
    } else {
       const p = pad - s.length;
@@ -101,7 +103,10 @@ function expr(n) {
       case "AND":
 	 return "="
 	    + n.fanin.map(f => f.polarity ? f.id : "!" + f.id).join(" ^ ");
-      default: return "???";
+      case "WIRE":
+	 return "";
+      default: 
+ 	 return "???";
    }
 }
 
