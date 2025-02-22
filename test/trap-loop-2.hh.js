@@ -1,6 +1,6 @@
 import * as hh from "@hop/hiphop";
 
-  const prg = hiphop module() {
+const prg = hiphop module() {
    in A, B, R; out O;
 
    loop {
