@@ -16,11 +16,7 @@ hiphop module prg() {
 export const mach = new hh.ReactiveMachine(prg, "atom");
 mach.outbuf = "";
 
-try {
-   mach.outbuf += "---\n";
-   mach.react();
-   mach.outbuf += "---\n";
-   mach.react();
-} catch (e) {
-   mach.outbuf += "causality error.\n";
-}
+mach.outbuf += "---\n";
+mach.react();
+mach.outbuf += "---\n";
+mach.react();
