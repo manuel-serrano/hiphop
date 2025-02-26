@@ -1,50 +1,13 @@
-branch 0
-branch 4
 []
-branch 0
-branch 4
 []
 add 1
-branch 0
-branch 4
-branch 1
 []
-branch 0
-branch 4
-branch 1
 []
 add 2
-branch 2
-branch 0
-branch 4
-branch 1
 []
-branch 0
-branch 4
-branch 1
-branch 2
 []
-branch 0
-branch 4
-branch 1
-branch 2
 []
 add 3
-branch 0
-branch 4
-branch 1
-branch 2
-branch 3
 []
-branch 0
-branch 4
-branch 1
-branch 2
-branch 3
 []
-branch 0
-branch 4
-branch 1
-branch 2
-branch 3
-[]
+cnt=5009-718-20000
