@@ -1,10 +1,10 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/1.3.x/tests/all.test.js              */
+/*    serrano/prgm/project/hiphop/hiphop/test/all.test.js              */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 21 07:42:24 2023                          */
-/*    Last change :  Sat Dec  2 12:02:43 2023 (serrano)                */
-/*    Copyright   :  2023 Manuel Serrano                               */
+/*    Last change :  Thu Feb 27 06:16:31 2025 (serrano)                */
+/*    Copyright   :  2023-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing driver.                                                  */
 /*=====================================================================*/
@@ -18,12 +18,44 @@ import * as assert from 'assert';
 import { batch } from '../lib/batch.js';
 import { fileURLToPath } from 'node:url'
 import { basename, dirname, join } from 'path';
-import { existsSync, readdirSync } from 'fs';
+import { existsSync, readdirSync, copyFileSync, unlinkSync } from 'fs';
+import * as hiphop from "../lib/hiphop.js";
 
 /*---------------------------------------------------------------------*/
 /*    tests ...                                                        */
 /*---------------------------------------------------------------------*/
 let tests = [];
+
+/*---------------------------------------------------------------------*/
+/*    test ...                                                         */
+/*---------------------------------------------------------------------*/
+function test(f) {
+   globalThis.it(basename(f), async () => {
+      let error = true, nerror = true;;
+      const nf = f.replace(/[.]hh[.]js/, ".nosweep.hh.js");
+      copyFileSync(f, nf);
+      
+      try {
+	 const m = await import(f);
+	 error = await batch(m.mach, f);
+	 const nm = await import(nf);
+	 nerror = await batch(nm.mach, f);
+      } catch (e) {
+	 if (existsSync(join(dirname(f), basename(f).replace(/[.]hh[.]js$/, ".err")))) {
+	    error = false;
+	    nerror = false;
+	 } else {
+	    error = e;
+	    nerror = e;
+	 }
+      } finally {
+	 if (existsSync(nf)) unlinkSync(nf);
+      }
+	 
+      assert.equal(error , false);
+      assert.equal(nerror , false);
+   });
+}
 
 /*---------------------------------------------------------------------*/
 /*    main ...                                                         */
@@ -54,27 +86,14 @@ async function main(argv) {
    if (tests.length === 0) {
       
       const files = readdirSync(dir);
-      tests = files.filter(f => f.match(/[.]hh[.]js$/)).map(f => join(dir,f));
+      tests = files
+	 .filter(f => f.match(/.hh[.]js$/))
+	 .map(f => join(dir,f));
    }
 
    // execute all the tests
    globalThis.describe("all.test.js", () => {
-      tests.forEach(async f => {
-	 globalThis.it(basename(f), async () => {
-	    let error = true; // 
-	    try {
-	       const m = await import(f);
-	       error = await batch(m.mach, f);
-	    } catch (e) {
-	       if (existsSync(join(dirname(f), basename(f).replace(/[.]hh[.]js$/, ".err")))) {
-		  error = false;
-	       } else {
-		  error = e;
-	       }
-	    }
-	    assert.equal(error , false);
-	 });
-      })
+      tests.forEach(async f => test(f));
    });
 }
 

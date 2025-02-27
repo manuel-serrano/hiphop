@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 import { format } from "util";
 
@@ -35,5 +32,5 @@ mach.outbuf += ".......\n";
 setTimeout(function() {
    mach.react()
    mach.react()
-}, 1000);
+}, 500);
 

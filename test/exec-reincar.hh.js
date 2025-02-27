@@ -1,6 +1,3 @@
-"use @hop/hiphop"
-"use hopscript"
-
 import * as hh from "@hop/hiphop";
 import { format } from "util";
 
@@ -42,13 +39,13 @@ mach.react()
 
 setTimeout(function() {
    mach.inputAndReact("R")
-}, 500);
+}, 100);
 
 setTimeout(function() {
    mach.react()
-}, 1000);
+}, 500);
 
 setTimeout(function() {
    mach.react({E: true})
-}, 1500);
+}, 900);
 

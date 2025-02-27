@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 export const mach = new hh.ReactiveMachine(
    hiphop module(resolve) {
@@ -9,7 +6,7 @@ export const mach = new hh.ReactiveMachine(
 	 pragma { mach.outbuf += ("every") + "\n" };
 	 async () {
 	    mach.outbuf += ("start") + "\n";
-	    setTimeout(this.notify.bind(this), 500);
+	    setTimeout(this.notify.bind(this), 200);
 	 } kill {
 	    mach.outbuf += ("killed") + "\n";
 	 }
@@ -23,5 +20,5 @@ mach.react();
 mach.outbuf += ('----') + "\n";
 mach.inputAndReact("S");
 mach.outbuf += ('----') + "\n";
-setTimeout((() => mach.inputAndReact("S")), 100);
+setTimeout((() => mach.inputAndReact("S")), 50);
 

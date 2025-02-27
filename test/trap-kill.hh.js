@@ -4,12 +4,12 @@ export const mach = new hh.ReactiveMachine(
    hiphop module(resolve) {
       T: fork {
 	 async () {
-	    setTimeout(this.notify.bind(this), 500);
+	    setTimeout(this.notify.bind(this), 100);
 	 }
 	 break T;
       } par {
       	 async () {
-	    setTimeout(this.notify.bind(this), 1000);
+	    setTimeout(this.notify.bind(this), 500);
 	 } kill {
 	    mach.outbuf = ("been killed\n");
 	 }
