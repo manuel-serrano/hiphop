@@ -16,3 +16,4 @@ export const version = "@VERSION@@MINOR@";
 export const buildid = "@HIPHOPBUILDID@";
 export const CAUSALITY_JSON = "hiphop.causality.json";
 export const isServer = !(typeof window !== 'undefined' && window.document);
+export const Process = globalThis?.process ?? {env: {}, exit: n => n};
