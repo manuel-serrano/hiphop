@@ -1,10 +1,10 @@
 /*=====================================================================*/
-/*    .../hiphop/hiphop/examples/translator/translator-hh.js           */
+/*    .../hiphop/hiphop/examples/translator/translator.hh.js           */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Thu Aug  2 01:01:22 2018                          */
-/*    Last change :  Tue Jan 18 16:53:02 2022 (serrano)                */
-/*    Copyright   :  2018-22 Manuel Serrano                            */
+/*    Last change :  Thu Feb 27 13:38:52 2025 (serrano)                */
+/*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    translator demo, client and hiphop parts.                        */
 /*=====================================================================*/
@@ -40,7 +40,7 @@ function translate(langPair, text) {
 		     .translatedText;
 
 	       // mymemory sometime returns "&" instead of the translation
-	       if (txt != "&") {
+	       if (txt !== "&") {
 		  resolve(txt);
 	       } else {
 		  reject(txt);
@@ -71,7 +71,7 @@ hiphop module execColor(langPair) {
       this.notify(translate(langPair, text.nowval));
    }
 
-   if (result.nowval.resolve) {
+   if (result.nowval?.resolve) {
       emit trans(result.nowval.val);
       emit color("green");
    } else {

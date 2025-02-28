@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 21 07:42:24 2023                          */
-/*    Last change :  Thu Feb 27 06:16:31 2025 (serrano)                */
+/*    Last change :  Thu Feb 27 07:19:08 2025 (serrano)                */
 /*    Copyright   :  2023-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing driver.                                                  */
@@ -84,7 +84,6 @@ async function main(argv) {
 
    // collect the whole tests list if none specified
    if (tests.length === 0) {
-      
       const files = readdirSync(dir);
       tests = files
 	 .filter(f => f.match(/.hh[.]js$/))

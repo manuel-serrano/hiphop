@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Tue Feb 18 16:14:41 2025 (serrano)                */
+/*    Last change :  Thu Feb 27 08:45:09 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -171,8 +171,7 @@ function main(argv) {
       if (i === fanins.length) {
 	 console.error("SRC=", src);
 	 console.error("TGT=", tgt);
-	 console.error("-- ", fanins[0].id === fanin.id);
-	 throw "Cannot find fanin:" + fanin.id + " tgt:" + tgt.id;
+	 throw "Cannot find src:" + src.id + " tgt:" + src.id;
       }
       
       return tgt.fanout.length + i;
