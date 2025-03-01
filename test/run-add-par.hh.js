@@ -19,7 +19,7 @@ hiphop module run2() {
    }
 }
 
-export const mach = new hh.ReactiveMachine(run2, { name: "run2", sweep: false });
+export const mach = new hh.ReactiveMachine(run2, { name: "run2", sweep: false, dynamic: true });
 mach.outbuf = "";
 mach.debug_emitted_func = val => {
    mach.outbuf += format(val) + "\n";

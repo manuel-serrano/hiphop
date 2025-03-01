@@ -21,7 +21,7 @@ function add_emit(mach) {
    return branch;
 }
 
-export const mach = new hh.ReactiveMachine(prg, { name: "incr-branch", sweep: false });
+export const mach = new hh.ReactiveMachine(prg, { name: "incr-branch", sweep: false, dynamic: true });
 mach.outbuf = "";
 mach.debug_emitted_func = val => {
    mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
