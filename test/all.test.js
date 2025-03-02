@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 21 07:42:24 2023                          */
-/*    Last change :  Thu Feb 27 07:19:08 2025 (serrano)                */
+/*    Last change :  Sun Mar  2 08:17:10 2025 (serrano)                */
 /*    Copyright   :  2023-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing driver.                                                  */
@@ -86,7 +86,7 @@ async function main(argv) {
    if (tests.length === 0) {
       const files = readdirSync(dir);
       tests = files
-	 .filter(f => f.match(/.hh[.]js$/))
+	 .filter(f => f.match(/^[^.]+.hh[.]js$/))
 	 .map(f => join(dir,f));
    }
 
