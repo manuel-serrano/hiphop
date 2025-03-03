@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 
 hiphop module prg() {
@@ -15,11 +12,11 @@ hiphop module prg() {
 	 emit X();
       }
 
-      emit A( X.nowval );
+      emit A(X.nowval);
    }
 }
 
-export const mach = new hh.ReactiveMachine( prg );
+export const mach = new hh.ReactiveMachine(prg);
 mach.outbuf = "";
 mach.debug_emitted_func = val => {
    mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
