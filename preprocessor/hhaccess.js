@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Mon Mar  3 13:11:58 2025 (serrano)                */
+/*    Last change :  Mon Mar  3 14:08:20 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -95,7 +95,7 @@ function nodeAccessors(node, axs, iscnt, hhname, accessors) {
    
    function thisAccessor(loc, field) {
       //const ref = new ast.J2SUnresolvedRef({loc: loc, id: "thus"});
-      const ref = makeSignals(loc);
+      const ref = machineSignals(loc);
       return new ast.J2Access({loc: loc, obj: ref, field: field});
    }
 
