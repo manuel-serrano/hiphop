@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 
 hiphop module prg() {
@@ -8,7 +5,7 @@ hiphop module prg() {
    loop {
       signal S;
 
-      if( S.pre ) {
+      if (S.pre) {
 	 emit O1();
       } else {
 	 emit O2();
@@ -20,4 +17,4 @@ hiphop module prg() {
    }
 }
 
-export const mach = new hh.ReactiveMachine( prg, "prepure" );
+export const mach = new hh.ReactiveMachine(prg, "prepure");
