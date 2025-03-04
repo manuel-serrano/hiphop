@@ -30,5 +30,5 @@ try {
    mach.react();
    mach.react();
 } catch( e ) {
-   mach.outbuf += e.message + "\n";
+   mach.outbuf += "error!" + "\n";
 }
