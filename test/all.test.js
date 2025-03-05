@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 21 07:42:24 2023                          */
-/*    Last change :  Wed Mar  5 08:39:06 2025 (serrano)                */
+/*    Last change :  Wed Mar  5 11:36:06 2025 (serrano)                */
 /*    Copyright   :  2023-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing driver.                                                  */
@@ -48,7 +48,7 @@ function test(f) {
       }
 
       if (res.got != res.expected) {
-	 const fail = f.replace(/[.]hh[.]js/, ".sweep.fail");
+	 const fail = f.replace(/[.]hh[.]js/, ".sweep.log");
 	 writeFileSync(fail, res.got);
 
 	 if (!inMocha) {
@@ -58,8 +58,8 @@ function test(f) {
 	 throw new Error(`${f} failed...(see ${fail})`);
       }
       if (nres.got != nres.expected) {
-	 const fail = f.replace(/[.]hh[.]js/, ".nosweep.fail");
-	 writeFileSync(fail, res.got);
+	 const fail = f.replace(/[.]hh[.]js/, ".nosweep.log");
+	 writeFileSync(fail, nres.got);
 	 
 	 if (!inMocha) {
 	    console.error(`${f} failed... `);
