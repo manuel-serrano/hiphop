@@ -43,6 +43,11 @@ const m = new ReactiveMachine(prog);
 m.react();
 m.react();
 EOF
+```
+
+and then:
+
+```shell
 nodejs --enable-source-maps --no-warnings --loader ./node_modules/@hop/hiphop/lib/hiphop-loader.mjs prog.hh.js
 ```
 

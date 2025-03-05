@@ -38,29 +38,35 @@ The JavaScript body may have signal dependencies.
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
 Execute the _then_ block is delay is true, execute the optional _else_
-block otherwise. The `delay` [expression](./syntax/hiphop.bnf#HHDelay)
-can be is a JavaScript that evaluates to a boolean. If that expression
+block otherwise. The `delay` [expression](../syntax/hiphop.bnf#HHDelay)
+can any JavaScript that evaluates to a boolean. If that expression
 uses signal attributes (`now`, `pre`, `nowval`, or `preval`), HipHop computes
 a flow dependency in order to evalute the `delay` only when all the values
-of these attributes are known for the instance. For instance, the
-test:
+of these attributes are known. 
+ 
+For instance, the test:
 
 ```
 if (!SIG.now) { ... }
 ```
 
-depends on the `now` attribute of the signal `SIG`. It cannot be evaluated
-before it is know that `SIG` is now emitted during the reaction. The HipHop
-runtime system computes these dependencies automatically.
+depends on the `now` attribute of the signal `SIG`. It cannot be
+evaluated before it is know that `SIG` is emitted during the reaction
+or not. The HipHop runtime system computes these dependencies
+automatically.
 
-A particular value of a signal can also be checked. For instance:
+A value of a signal can also be checked. For instance:
 
 ```hiphop
-if(SIG.nowval > 10 && SIG.nowval < 100) { host { console.log("signal in range") } }
+if(SIG.nowval > 10 && SIG.nowval < 100) { pragma { console.log("signal in range") } }
 ```
 
 See [staging](../staging.md) for using dynamic signal names in delay
 expressions.
+
+<span class="hiphop">&#x2605;</span> Example: [if1.hh.js](../../test/if1.hh.js)
+<!-- ${doc.includeCode("../../test/if1.hh.js", "hiphop")} -->
+
 
 ### yield ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
@@ -84,6 +90,8 @@ the `react` method of the machine will be called again.
 &#x2606; [Formal syntax](../syntax/hiphop.bnf#HHFork)
 
 Run all the bodies in parallel. Complete when all bodies have completed.
+A body completes because it has executed all its statements or because it
+has exited using `break`.
 
 <span class="hiphop">&#x2605;</span> Example: [parallel-unary.hh.js](../../test/parallel-unary.hh.js)
 <!-- ${doc.includeCode("../../test/parallel-unary.hh.js", "hiphop")} -->
@@ -91,11 +99,18 @@ Run all the bodies in parallel. Complete when all bodies have completed.
 This example uses two nested `fork` constructs. The second is synchronized
 with the first as it waits for an event the first branch is to emit.
 
+<span class="hiphop">&#x2605;</span> Example: [trap-loop-2.hh.js](../../test/trap-loop-2.hh.js)
+<!-- ${doc.includeCode("../../test/trap-loop-2.hh.js", "hiphop")} -->
+
+This second example uses a label and a `break` to terminate a parallel 
+branch.
+
 
 ### halt ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
-Terminate the current thread.
+Block infinitly the current thread. Keep in mind that a blocked thread
+can be suspended or even aborted.
 
 <span class="hiphop">&#x2605;</span> Example: [run-add-par.hh.js](../../test/run-add-par.hh.js)
 <!-- ${doc.includeCode("../../test/run-add-par.hh.js", "hiphop")} -->

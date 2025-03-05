@@ -4,12 +4,26 @@ HipHop Environment
 ==================
 
 > [!NOTE]
-> The source files used in this chapter are avaiable in the HipHop
+> The source files used in this chapter are available in the HipHop
 > [github](https://github.com/manuel-serrano/hiphop/tree/master/examples/web) 
 > repository.
 
-Running HipHop programs on the Web
-----------------------------------
+Shell Variables
+---------------
+
+HipHop uses the following shell variables environment:
+
+  * `HIPHOP_DEBUG`: `true` | `false`.
+  * `HIPHOP_TRACE`: `causality`, `compile`, `connect`, any combination of these keywords.
+  * `HIPHOP_COMPILER`: `orig` | `int` | `new`.
+  * `HIPHOP_NATIVE`: `true` | `false`, compile acyclic net lists to plain JavaScript. 
+  * `HIPHOP_DEBUG_NATIVE`: `true` | `false`, dumps the native JavaScript code when true.
+  * `HIPHOP_SWEEP`: `true` | `false`.
+  * `HIPHOP_DUMPNETS`: `true` | `false`.
+  
+
+Running HipHop programs on the Web (server and client)
+------------------------------------------------------
 <!-- [:web@index] -->
 
 In this chapter, we show how to run HipHop programs on a server-side
@@ -202,12 +216,13 @@ This compiled program can be executed by simulating the generated
 circuit. Two tools `tools/nets2text.mjs` and `tools/nets2dot.mjs`
 can be used to visualize these circuits.
 
-#### The tools `tools/nets2text.mjs` generate a plain text. 
+#### The tool `tools/nets2text.mjs` generates a plain text. 
 Here is how to proceed for generating these files, considering
 a HipHop source file named `foo.hh.js`:
 
   1. Add the option `{ dumpNets: true }` to the reactive machine for 
-  which you want to dump the net list.
+  which you want to dump the net list, or set the shell `HIPHOP_DUMPNETS=true`
+  to dump the net lists of all machines.
   2. Run your program. This will generate two files: `foo.hh.js.nets-.json`
   and `foo.hh.js.nets+.json`. The former is the net list before optimizations
   the latter after optimizations.
@@ -216,7 +231,7 @@ a HipHop source file named `foo.hh.js`:
     - bin/nets2text.js foo.hh.js.nets+.json > nets+.txt
 
 
-#### The tools `tools/nets2dot.mjs` can be used in conjunction
+#### The tool `tools/nets2dot.mjs` can be used in conjunction
 with the [dot](https://graphviz.org) graph visualizer to generate PDF
 files. Here is how to proceed for generating these files, considering
 a HipHop source file named `foo.hh.js`:
@@ -262,10 +277,9 @@ NET-TYPE ::= "REG"
   | "FALSE"
   | "AND"
   | "OR"
+  | "TEST"
   | "ACTION"
-  | "ACTION-"
   | "SIGACTION"
-  | "SIGACTION-"
 
 FAN ::= {
   "id": INTEGER,      # the net the fan points to
@@ -317,3 +331,28 @@ The generated net list is:
 
 <span class="json">&#x2605;</span> [p15.net.json](../examples/netlist/p15.net.json)
 <!-- ${doc.includeCode("../examples/netlist/p15.net.json", "json")} -->
+
+
+#### Executing the Net List
+
+The execution of a HipHop reaction consists in simulating the
+propagation of the electricity in a net list. For that HipHop puts all
+the nets in a queue and removed the nets one by one when all their
+dependencies are known. It initiates the process with the `REG` nets
+whose values are always known at the beginning of the reaction and
+with the `TRUE` and `FALSE` gates.
+
+When a gate has obtained its value in the reaction, it propagates it
+to its fanout. When a net receives a value, it checks if this value
+is sufficient for it to compute its value in the reaction (for instance,
+when an `OR` receives a `true` value, it does not need to wait for all
+its `fanin`, and conversely when an `AND` net receives a `false` value).
+If it is, it compute its values and registers itself and recurisevely 
+propagates its value to its fanout nets.
+
+`TEST`, `ACTION`, and `SIGACTION` nets invokes their associated JavaScript
+action when the value of the net is known and when all their dependencies
+(i.e., the fanins whose `dep` value is `true`) are resolved.
+
+At the end of the reaction, if some nets are left unpropagated, an error
+is raised.

@@ -9,7 +9,7 @@ hiphop module prg() {
 	 emit L();
       } par {
 	 fork {
-	    if( L.now ) emit O();
+	    if (L.now) emit O();
 	 }
       }
 

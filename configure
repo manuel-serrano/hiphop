@@ -25,7 +25,7 @@ license=gpl
 
 hoprepository=$HOME/prgm/distrib
 
-urlbase=http://hop.inria.fr/hiphop
+urlbase=http://www-sop.inria.fr/members/Manuel.Serrano/hiphop
 
 #*---------------------------------------------------------------------*/
 #*    compilers and options                                            */
