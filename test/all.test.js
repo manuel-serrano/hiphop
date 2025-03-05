@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 21 07:42:24 2023                          */
-/*    Last change :  Sun Mar  2 08:17:10 2025 (serrano)                */
+/*    Last change :  Wed Mar  5 08:39:06 2025 (serrano)                */
 /*    Copyright   :  2023-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing driver.                                                  */
@@ -18,42 +18,55 @@ import * as assert from 'assert';
 import { batch } from '../lib/batch.js';
 import { fileURLToPath } from 'node:url'
 import { basename, dirname, join } from 'path';
-import { existsSync, readdirSync, copyFileSync, unlinkSync } from 'fs';
+import { existsSync, readdirSync, copyFileSync, unlinkSync, writeFileSync } from 'fs';
 import * as hiphop from "../lib/hiphop.js";
 
 /*---------------------------------------------------------------------*/
 /*    tests ...                                                        */
 /*---------------------------------------------------------------------*/
 let tests = [];
+let inMocha = true;
 
 /*---------------------------------------------------------------------*/
 /*    test ...                                                         */
 /*---------------------------------------------------------------------*/
 function test(f) {
    globalThis.it(basename(f), async () => {
-      let error = true, nerror = true;;
+      let res = true, nres = true;;
       const nf = f.replace(/[.]hh[.]js/, ".nosweep.hh.js");
       copyFileSync(f, nf);
       
       try {
+	 hiphop.setSweep(true);
 	 const m = await import(f);
-	 error = await batch(m.mach, f);
+	 res = await batch(m.mach, f);
+	 hiphop.setSweep(false);
 	 const nm = await import(nf);
-	 nerror = await batch(nm.mach, f);
-      } catch (e) {
-	 if (existsSync(join(dirname(f), basename(f).replace(/[.]hh[.]js$/, ".err")))) {
-	    error = false;
-	    nerror = false;
-	 } else {
-	    error = e;
-	    nerror = e;
-	 }
+	 nres = await batch(nm.mach, f);
       } finally {
 	 if (existsSync(nf)) unlinkSync(nf);
       }
+
+      if (res.got != res.expected) {
+	 const fail = f.replace(/[.]hh[.]js/, ".sweep.fail");
+	 writeFileSync(fail, res.got);
+
+	 if (!inMocha) {
+	    console.error(`${f} failed... `);
+	    console.error(`\x1B[31m\x1B[1mexpecting: \x1B[0m\n${res.expected}\x1B[32m\x1B[1mgot: \x1B[0m\n${res.got}`);
+	 }
+	 throw new Error(`${f} failed...(see ${fail})`);
+      }
+      if (nres.got != nres.expected) {
+	 const fail = f.replace(/[.]hh[.]js/, ".nosweep.fail");
+	 writeFileSync(fail, res.got);
 	 
-      assert.equal(error , false);
-      assert.equal(nerror , false);
+	 if (!inMocha) {
+	    console.error(`${f} failed... `);
+	    console.error(`\x1B[31m\x1B[1mexpecting: \x1B[0m\n${res.expected}\x1B[32m\x1B[1mgot: \x1B[0m\n${res.got}`);
+	 }
+	 throw new Error(`${f} failed...(see ${fail})`);
+      }
    });
 }
 
@@ -65,16 +78,23 @@ async function main(argv) {
    
    // MOCHA compatible conditional declarations.
    if (!("describe" in globalThis)) {
+      inMocha = false;
       globalThis.describe = function(name, thunk) {
 	 console.log(name);
 	 thunk();
       };
       globalThis.it = async function(name, thunk) {
-	 const r = await thunk();
-	 console.log("  " + name + "...", !r ? "ok" : "error");
-	 
+	 try {
+	    const r = await thunk();
+	    console.log("  " + name + "...", !r ? "ok" : "error");
+	 } catch(e) {
+	    console.log("  " + name + "...", "fail");
+	    console.log(e);
+	 }
       }
       tests = [];
+   } else {
+      inMocha = true;
    }
 
    const idx = argv.indexOf("--");

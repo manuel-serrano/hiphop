@@ -36,19 +36,19 @@ mach.debug_emitted_func = emitted => {
 mach.batchPromise = new Promise((res, rej) => mach.init(res));
 
 mach.react();
-mach.inputAndReact("S");
-mach.inputAndReact("S");
-mach.inputAndReact("S");
-mach.inputAndReact("S");
+mach.react("S");
+mach.react("S");
+mach.react("S");
+mach.react("S");
 mach.react();
 mach.react();
-mach.inputAndReact("S");
+mach.react("S");
 
 setTimeout(function() {
    mach.react();
    mach.react();
-   mach.inputAndReact("RESS");
-   mach.inputAndReact("S");
+   mach.react("RESS");
+   mach.react("S");
    mach.react();
 }, 100);
 

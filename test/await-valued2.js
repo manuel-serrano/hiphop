@@ -38,14 +38,14 @@ m.react();
 m.addEventListener("O", foo2);
 
 console.log("I(34)")
-m.inputAndReact("I", 34);
+m.react({I: 34});
 
 m.addEventListener("O", foo3);
 
 console.log("I(34)");
-m.inputAndReact("I", 34);
+m.react({I: 34});
 
 m.removeEventListener("O", foo3);
 
 console.log("I(15)");
-m.inputAndReact("I", 15);
+m.react({I: 15});

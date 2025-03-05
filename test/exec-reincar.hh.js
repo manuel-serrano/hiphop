@@ -38,7 +38,7 @@ mach.batchPromise = new Promise((res, rej) => mach.init(res));
 mach.react()
 
 setTimeout(function() {
-   mach.inputAndReact("R")
+   mach.react("R")
 }, 100);
 
 setTimeout(function() {

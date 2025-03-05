@@ -47,7 +47,7 @@ const prg = hiphop module() {
    pragma { console.log("DONE"); }
 }
 
-export const mach = new hh.ReactiveMachine(prg, { sweep: true });
+export const mach = new hh.ReactiveMachine(prg, { name: "ACTION" });
 mach.outbuf = "";
 
 mach.addEventListener("y", v => mach.outbuf += ("got y " + v.nowval + "\n" ));

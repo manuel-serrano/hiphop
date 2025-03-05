@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 
 hiphop module prog() {
@@ -22,9 +19,9 @@ mach.debug_emitted_func = val => {
 
 mach.react();
 mach.react();
-mach.inputAndReact( 'toggle' );
+mach.react({toggle: undefined});
 mach.react();
 mach.react();
-mach.inputAndReact( 'toggle' );
+mach.react({toggle: undefined});
 mach.react();
 mach.react();

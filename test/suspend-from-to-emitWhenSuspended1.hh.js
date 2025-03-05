@@ -23,9 +23,9 @@ mach.debug_emitted_func = emitted => {
 
 mach.react()
 mach.react()
-mach.inputAndReact( "S" );
+mach.react({S: undefined});
 mach.react()
 mach.react()
-mach.inputAndReact( "R" );
+mach.react({R: undefined});
 mach.react()
 mach.react()

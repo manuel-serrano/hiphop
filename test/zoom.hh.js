@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 
 function zoom_in_cb() {
@@ -10,12 +7,12 @@ function zoom_in_cb() {
 hiphop module prg() {
    inout ZOOM_LOCK_TOOGLE, ZOOM_IN;
    loop {
-      abort( ZOOM_LOCK_TOOGLE.now ) {
-	 every( ZOOM_IN.now ) {
+      abort (ZOOM_LOCK_TOOGLE.now) {
+	 every (ZOOM_IN.now) {
 	    hop { zoom_in_cb() };
 	 }
       }
-      await( ZOOM_LOCK_TOOGLE.now );
+      await (ZOOM_LOCK_TOOGLE.now);
    }
 }
 
@@ -26,10 +23,10 @@ mach.debug_emitted_func = val => {
 }
 
 mach.react()
-mach.inputAndReact( "ZOOM_IN" )
-mach.inputAndReact( "ZOOM_IN" )
-mach.inputAndReact( "ZOOM_LOCK_TOOGLE" )
-mach.inputAndReact( "ZOOM_IN" )
-mach.inputAndReact( "ZOOM_IN" )
-mach.inputAndReact( "ZOOM_LOCK_TOOGLE" )
-mach.inputAndReact( "ZOOM_IN" )
+mach.react({ZOOM_IN: undefined});
+mach.react({ZOOM_IN: undefined});
+mach.react({ZOOM_LOCK_TOOGLE: undefined});
+mach.react({ZOOM_IN: undefined});
+mach.react({ZOOM_IN: undefined});
+mach.react({ZOOM_LOCK_TOOGLE: undefined});
+mach.react({ZOOM_IN: undefined});

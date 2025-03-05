@@ -19,18 +19,18 @@ hiphop module run2() {
    }
 }
 
-export const mach = new hh.ReactiveMachine(run2, { name: "run2", sweep: false, dynamic: true });
+export const mach = new hh.ReactiveMachine(run2, { name: "run-add-par", dynamic: true });
 mach.outbuf = "";
 mach.debug_emitted_func = val => {
    mach.outbuf += format(val) + "\n";
 }
 
 mach.outbuf += ("m.inputAndReact(S)") + "\n";
-mach.inputAndReact("S")
+mach.react({S: undefined});
 
 mach.getElementById("par").appendChild(hiphop run m1() { S, U, A as Z });
 
 mach.outbuf += ("==================== ADD RUN PARALLEL ==================") + "\n";
 
 mach.outbuf += ("m.inputAndReact(U)") + "\n";
-mach.inputAndReact("U")
+mach.react({U: undefined});

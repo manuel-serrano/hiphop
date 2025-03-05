@@ -33,8 +33,8 @@ mach.debug_emitted_func = emitted => {
 
 mach.react()
 mach.react()
-mach.inputAndReact("C")
+mach.react("C")
 mach.react()
-mach.inputAndReact("C")
-mach.inputAndReact("C")
+mach.react("C")
+mach.react("C")
 

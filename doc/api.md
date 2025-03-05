@@ -60,10 +60,12 @@ The `react` function machine reactions. If called with no argument,
 it proceed to one step. If called with one or several arguments, it
 proceeds as follows for each argument:
 
-  * a `sigset` is a JavaScript object. For each property `pname` with
- value `pval` in `sigset`, the eponym signal is emited with `pval`.
+  * a `sigset` is either
+    * a JavaScript string `signame`. The signal `signame` is emitted with
+	  no value.
+    * a JavaScript object. For each property `pname` with
+      value `pval` in `sigset`, the eponym signal is emitted with `pval`.
   * runs a reaction.
-
 
 The `react` function returns the machine itself. 
 

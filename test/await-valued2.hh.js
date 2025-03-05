@@ -38,14 +38,14 @@ mach.react();
 mach.addEventListener("O", foo2);
 
 mach.outbuf += ("I(34)") + "\n"
-mach.inputAndReact("I", 34);
+mach.react({I: 34});
 
 mach.addEventListener("O", foo3);
 
 mach.outbuf += ("I(34)") + "\n";
-mach.inputAndReact("I", 34);
+mach.react({I: 34});
 
 mach.removeEventListener("O", foo3);
 
 mach.outbuf += ("I(15)") + "\n";
-mach.inputAndReact("I", 15);
+mach.react({I: 15});

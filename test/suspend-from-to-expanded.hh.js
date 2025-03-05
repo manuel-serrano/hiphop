@@ -36,15 +36,15 @@ mach.debug_emitted_func = emitted => {
 mach.react();
 mach.react();
 mach.outbuf += "--\n";
-mach.inputAndReact( "I" );
+mach.react("I");
 mach.react();
 mach.react();
 mach.react();
 mach.outbuf += "--\n";
-mach.inputAndReact( "O" );
+mach.react("O");
 mach.react();
 mach.react();
 mach.react();
 mach.outbuf += "--\n";
-mach.inputAndReact( "I" );
+mach.react("I");
 mach.react();

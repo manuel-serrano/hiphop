@@ -18,5 +18,5 @@ export const mach = new hh.ReactiveMachine(prg, "variable");
 mach.outbuf = "";
 
 mach.react()
-mach.inputAndReact("sig", 0);
-mach.inputAndReact("sig", 10);
+mach.react({sig: 0});
+mach.react({sig: 10});

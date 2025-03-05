@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use strict";
-
 import * as hh from "@hop/hiphop";
 
 
@@ -33,9 +30,9 @@ export const mach = new hh.ReactiveMachine(prog, { verbose: -1});
 mach.outbuf = "";
 
 try{
-    mach.react('A','B');
-    mach.react('A');
-    mach.react('B');
+   mach.react({A: undefined, B: undefined});
+   mach.react('A');
+   mach.react('B');
 } catch(e) { 
-    mach.outbuf += "causality error\n";
+   mach.outbuf += "causality error\n";
 }
