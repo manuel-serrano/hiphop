@@ -46,6 +46,10 @@ npm install @hop/hiphop
 > don't see a `node_modules` created in the local directory, it's because
 > it has been installed in a parent directory.
 
+> [!CAUTION]
+> To update HipHop with a new `npm` package, it might be needed to
+> flush its cache first. For that, run `npm cache clean --force`.
+
 
 Getting started
 ---------------

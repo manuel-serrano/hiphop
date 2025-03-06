@@ -1,6 +1,10 @@
 HipHop Tutorial #2: async forms
 ===============================
 
+Duration: 120 minutes
+HipHop website: http://www-sop.inria.fr/members/Manuel.Serrano/hiphop/
+Github: https://github.com/manuel-serrano/hiphop
+
 The `async` [form](http://hop.inria.fr/home/hiphop/async.html) maps
 the asynchronous JavaScript evaluations into the synchronous world
 of HipHop. By doing so, it enables to use all HipHop constructs

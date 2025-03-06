@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  1 10:20:48 2015                          */
-/*    Last change :  Wed Mar  5 15:16:00 2025 (serrano)                */
+/*    Last change :  Thu Mar  6 09:35:40 2025 (serrano)                */
 /*    Copyright   :  2015-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HSS for the Hop.js documentation                                 */
@@ -318,6 +318,8 @@ body.home h3:before,
 body.library h2:before,
 body.download h2:before,
 body.download h3:before,
+body.tutorials h2:before,
+body.tutorials h3:before,
 h1.nonumber:before,
 h2.nonumber:before,
 h3.nonumber:before,
@@ -570,7 +572,9 @@ button.download a span {
 body.lang ul.toc,
 body.lang h1.toc,
 body.download ul.toc,
-body.download h1.toc {
+body.download h1.toc,
+body.tutorials ul.toc,
+body.tutorials h1.toc {
   display: none;
 }
 
