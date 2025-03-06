@@ -31,6 +31,17 @@ asynchronous tasks (that one needs, for instance, to spawn an HTTP
 request or to start a multimedia playback) from within HipHop.
 
 
+Staging
+-------
+
+[icfp24-artifact](https://github.com/manuel-serrano/icfp2024-sudoku)
+
+In this tutorial you will learn how to use HipHop multi-staging from
+within JavaScript. This tutorial will teach you how to write a JavaScript
+programs that generates a HipHop program that solves Sudoku puzzle.
+
+
 - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 [[main page]](../README.md) | [[documentation]](./README.md)  | [[license]](./license.md)
+
 
