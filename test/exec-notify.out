@@ -4,7 +4,7 @@ in async, emitting T
 []
 exec> ;
 tick 1
-[ 'O(2)' ]
+[ 'O(1)' ]
 exec> ;
 tick 2
 []

@@ -6,7 +6,7 @@ import { format } from "util";
 
 hiphop module prg(resolve) {
    in T; out O;
-   let tick = 0;
+   let tick = 0, tock = 0;
    fork {
       async (T) {
 	 mach.outbuf += "in async, emitting T\n";
@@ -14,8 +14,9 @@ hiphop module prg(resolve) {
       }
    } par {
       await (T.now);
-      emit O(tick);
+      emit O(tock);
    } par {
+      pragma { tock++; }
       loop {
 	 pragma { mach.outbuf += "tick " + tick++ + "\n"; }
 	 yield;
