@@ -4,23 +4,15 @@ function consoleLog(...args) {
    mach.outbuf += args.join("").toString() + "\n";
 }
 
-function foo(preval) {
-   consoleLog("foo: __internal.preval=" + preval);
-   return preval === -1;
-}
 hiphop module prg(resolve) {
    inout X = 1;
-   T: {
-      signal __internal = -1 combine (x, y) => x + y;
+   signal __internal = -1;
 
-      loop {
-         if (foo(__internal.preval)) {
-	    pragma { consoleLog("EMIT __internal X=" + X.nowval); }
-            emit __internal(X.nowval + 5);
-         }
-	 pragma { consoleLog("X=" + X.nowval, " __internal.nowval=" + __internal.nowval, " __internal.preval=" + __internal.preval); }
-	 yield;
+   loop {
+      if (__internal.preval === -1) {
+	 pragma { consoleLog("__internal X=" + X.nowval); }
       }
+      yield;
    }
 }
 

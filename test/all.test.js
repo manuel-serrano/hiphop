@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 21 07:42:24 2023                          */
-/*    Last change :  Wed Mar  5 11:36:06 2025 (serrano)                */
+/*    Last change :  Sun Mar  9 10:20:13 2025 (serrano)                */
 /*    Copyright   :  2023-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing driver.                                                  */
@@ -53,7 +53,7 @@ function test(f) {
 
 	 if (!inMocha) {
 	    console.error(`${f} failed... `);
-	    console.error(`\x1B[31m\x1B[1mexpecting: \x1B[0m\n${res.expected}\x1B[32m\x1B[1mgot: \x1B[0m\n${res.got}`);
+	    console.error(`\x1B[31m\x1B[1mexpecting: \x1B[0m\n${res.expected}\x1B[32m\x1B[1msweep got: \x1B[0m\n${res.got}`);
 	 }
 	 throw new Error(`${f} failed...(see ${fail})`);
       }
@@ -63,7 +63,7 @@ function test(f) {
 	 
 	 if (!inMocha) {
 	    console.error(`${f} failed... `);
-	    console.error(`\x1B[31m\x1B[1mexpecting: \x1B[0m\n${res.expected}\x1B[32m\x1B[1mgot: \x1B[0m\n${res.got}`);
+	    console.error(`\x1B[31m\x1B[1mexpecting: \x1B[0m\n${res.expected}\x1B[32m\x1B[1mnosweep got: \x1B[0m\n${nres.got}`);
 	 }
 	 throw new Error(`${f} failed...(see ${fail})`);
       }

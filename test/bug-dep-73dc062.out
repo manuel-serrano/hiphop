@@ -1,5 +1,3 @@
---------------- 0
-foo: __internal.preval=-1
-EMIT __internal X=1
-X=1 __internal.nowval=6 __internal.preval=-1
---------------- 1
+---------------0
+__internal X=1
+---------------1

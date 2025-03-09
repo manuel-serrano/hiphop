@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 
 hiphop module example() {
@@ -10,7 +7,7 @@ hiphop module example() {
    emit O();
 }
 
-export const mach = new hh.ReactiveMachine(example, { verbose: -1, sweep:false });
+export const mach = new hh.ReactiveMachine(example, { verbose: -1 });
 mach.outbuf = "";
 
 try {
