@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 import { format } from "util";
 
@@ -39,7 +36,7 @@ hiphop module prg() {
    }
 }
 
-export const mach = new hh.ReactiveMachine(prg, "toogle");
+export const mach = new hh.ReactiveMachine(prg, { name: "saverestore3", dynamic: true });
 
 mach.outbuf = "";
 mach.debug_emitted_func = val => {
