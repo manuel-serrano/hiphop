@@ -1,15 +1,12 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 import { format } from "util";
 
 hiphop module prg() {
    inout I; inout O;
    yield;
-   suspend from( I.now ) to( O.now ) {
+   suspend from (I.now) to(O.now) {
       loop {
-	 hop { mach.outbuf += "ploup!\n"; }
+	 pragma { mach.outbuf += "ploup!\n"; }
 	 yield;
       }
    }
@@ -24,15 +21,15 @@ mach.debug_emitted_func = emitted => {
 mach.react();
 mach.react();
 mach.outbuf += "--\n";
-mach.inputAndReact( "I" );
+mach.react({I: undefined});
 mach.react();
 mach.react();
 mach.react();
 mach.outbuf += "--\n";
-mach.inputAndReact( "O" );
+mach.react({O: undefined});
 mach.react();
 mach.react();
 mach.react();
 mach.outbuf += "--\n";
-mach.inputAndReact( "I" );
+mach.react({I: undefined});
 mach.react();

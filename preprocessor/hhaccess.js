@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Sat Jun 15 08:08:16 2024 (serrano)                */
-/*    Copyright   :  2023-24 manuel serrano                            */
+/*    Last change :  Mon Mar  3 14:08:20 2025 (serrano)                */
+/*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
 /*    -------------------------------------------------------------    */
@@ -63,7 +63,7 @@ export function hhaccess(n, iscnt, hhname, accessors) {
 /*    accessorsSigname ...                                             */
 /*    -------------------------------------------------------------    */
 /*    Returns the list of dynamic signal names (i.e., those            */
-/*    using the this[expr] form) and modity the the accessors          */
+/*    using the this[expr] form) and modify the the accessors          */
 /*    to prepare the variable bindings.                                */
 /*---------------------------------------------------------------------*/
 function accessorsSigname(axs) {
@@ -73,17 +73,29 @@ function accessorsSigname(axs) {
 	 const field = ax.obj.field;
 	 ax.obj.field = new ast.J2SUnresolvedRef({loc: ax.loc, id: id});
 	 return { id, field }
+      } else {
+	 return false;
       }
    }).filter(n => n);
 }
 
+/*---------------------------------------------------------------------*/
+/*    machineSignals ...                                               */
+/*---------------------------------------------------------------------*/
+function machineSignals(loc) {
+   const ref = new ast.J2SUnresolvedRef({loc: loc, id: "this"});
+   const field = new ast.J2SString({loc: loc, val: "signals"});
+   return new ast.J2SAccess({loc: loc, obj: ref, field: field});
+}
+   
 /*---------------------------------------------------------------------*/
 /*    nodeAccessors ...                                                */
 /*---------------------------------------------------------------------*/
 function nodeAccessors(node, axs, iscnt, hhname, accessors) {
    
    function thisAccessor(loc, field) {
-      const ref = new ast.J2SUnresolvedRef({loc: loc, id: "this"});
+      //const ref = new ast.J2SUnresolvedRef({loc: loc, id: "thus"});
+      const ref = machineSignals(loc);
       return new ast.J2Access({loc: loc, obj: ref, field: field});
    }
 

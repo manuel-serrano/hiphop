@@ -1,7 +1,5 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
+
 export const mach = new hh.ReactiveMachine(
    hiphop module(resolve) {
       inout S;
@@ -9,11 +7,11 @@ export const mach = new hh.ReactiveMachine(
 	 pragma { mach.outbuf += ("every") + "\n" };
 	 async () {
 	    mach.outbuf += ("start") + "\n";
-	    setTimeout(this.notify.bind(this), 500);
+	    setTimeout(this.notify.bind(this), 200);
 	 } kill {
 	    mach.outbuf += ("killed") + "\n";
 	 }
-      pragma { resolve(false); }
+	 pragma { resolve(false); }
       }
   });
 
@@ -21,7 +19,7 @@ mach.batchPromise = new Promise((res, rej) => mach.init(res));
 mach.outbuf = "";
 mach.react();
 mach.outbuf += ('----') + "\n";
-mach.inputAndReact("S");
+mach.react("S");
 mach.outbuf += ('----') + "\n";
-setTimeout((() => mach.inputAndReact("S")), 100);
+setTimeout((() => mach.react("S")), 50);
 

@@ -38,6 +38,15 @@ When HipHop is officially released, the installation procedure is:
 npm install @hop/hiphop
 ```
 
+> [!CAUTION]
+> `npm install pkg` searches recursively in the parent directories for a 
+> directory named `node_modules` or a file named `package.json`. If it 
+> finds any of the two, it installs `pkg` in that directory instead of
+> the current directory. Hence, if after issuing `npm install hiphop` you
+> don't see a `node_modules` created in the local directory, it's because
+> it has been installed in a parent directory.
+
+
 Getting started
 ---------------
 

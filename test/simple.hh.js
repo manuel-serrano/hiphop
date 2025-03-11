@@ -3,7 +3,7 @@ import { format } from "util";
 
 hiphop module prg() {
    inout OK, O, A, B, C, BBBB, NEVER; in STOP; in AIN;
-   abort(STOP.now) {
+   abort (STOP.now) {
       loop {
 	 JMP: {
 	    emit O();
@@ -34,10 +34,10 @@ hiphop module prg() {
    }
    emit NEVER();
    yield;
-   await(STOP.now);
+   await (STOP.now);
    emit B();
-   await(AIN.now);
-   if(AIN.now) {
+   await (AIN.now);
+   if (AIN.now) {
       emit C();
    }
 }
@@ -51,7 +51,7 @@ hiphop module prg2() {
       yield;
       emit O();
 
-      if(O.now) {
+      if (O.now) {
 	 emit V();
       }
    }
@@ -70,14 +70,14 @@ hiphop module prg3() {
 hiphop module prg4() {
    out OK, O;
    emit O();
-   if(O.now) {
+   if (O.now) {
       emit OK();
    }
 }
 
 hiphop module prg5() {
    out OK, O;
-   if(O.now) {
+   if (O.now) {
       emit OK();
    }
 }
@@ -103,7 +103,7 @@ mach.react();
 mach.outbuf += "will react" + "\n";
 mach.react();
 mach.outbuf += "will react STOP" + "\n";
-mach.inputAndReact("STOP", undefined);
+mach.react({STOP: undefined});
 mach.outbuf += "will react" + "\n";
 mach.react();
 mach.outbuf += "will react" + "\n";
@@ -113,9 +113,9 @@ mach.react();
 mach.outbuf += "will react" + "\n";
 mach.react();
 mach.outbuf += "will react STOP" + "\n";
-mach.inputAndReact("STOP", undefined)
+mach.react({STOP: undefined});
 mach.outbuf += "will react" + "\n";
-mach.inputAndReact("AIN", undefined)
+mach.react({AIN: undefined});
 mach.outbuf += "will react" + "\n";
 mach.react();
 

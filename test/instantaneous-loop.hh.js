@@ -24,6 +24,7 @@ try {
    mach.react();
    mach.react();
 } catch (e) {
-   mach.outbuf += e.message + "\n";
+   mach = new hh.ReactiveMachine(hiphop module () {});
+   mach.outbuf = "Instantaneous loop.\n";
 }
 

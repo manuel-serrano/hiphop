@@ -19,4 +19,4 @@ export const mach = new hh.ReactiveMachine(prg);
 mach.outbuf = "";
 
 mach.react();
-mach.inputAndReact("B");
+mach.react({B: undefined});

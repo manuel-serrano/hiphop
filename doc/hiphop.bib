@@ -10,6 +10,54 @@
 @string{toplas  = "ACM Transactions on Programming Languages and Systems (TOPLAS)"}
 @string{urlbase	= "http://www-sop.inria.fr/members/Manuel.Serrano/publi/"}
 
+@article{sf:icfp24,
+  author = {Serrano, Manuel and Findler, Robert Bruce},
+  title = {The Functional, the Imperative, and the Sudoku: Getting Good, Bad, and Ugly to Get Along (Functional Pearl)},
+  year = {2024},
+  issue_date = {August 2024},
+  publisher = {Association for Computing Machinery},
+  address = {New York, NY, USA},
+  volume = {8},
+  url = {https://doi.org/10.1145/3674631},
+  doi = {10.1145/3674631},
+  journal = {Proceedings of the ACM on Programming Languages (ICFP)},
+  month = {sep},
+  articleno = {242},
+  numpages = {26},
+  keywords = {Esterel, HipHop, JavaScript, Sudoku},
+  video = {https://www.youtube.com/watch?v=HNl4btReIOY},
+  abstract = {Conventional wisdom suggests that the benefits of
+  functional programming no longer apply in the presence of even a
+  small amount of imperative code, as if the addition of imperative
+  code effectively subtracts. And yet, as we show in this paper,
+  combining functional programming with the special imperative
+  language Esterel provides a multiplicative improvement to the
+  benefits of functional programming.
+ 
+  The key to the benefit of both Esterel and functional programming
+  stems from a restriction that both share. As in functional
+  programming, where only the inputs to a function determine its
+  outputs, the state of an Esterel computation is fully determined by
+  the program's input and the state that the computation had in the
+  previous time step, where the notion of a time step is explicit in
+  the language. Esterel's guarantee holds even though Esterel programs
+  feature concurrent threads, mutable state, and the ability to
+  create, suspend, and even terminate threads as the computation
+  proceeds. This similarity is the root of the benefits that
+  programmers accrue as they informally reason about their program's
+  behavior.
+ 
+  To illustrate these benefits, the bulk of this paper consists of an
+  in-depth exploration of HipHop code (a mashup of JavaScript and
+  Esterel) that implements a Sudoku solver, showing how it is possible
+  to write code that is as easy to understand as if it were written in
+  a pure functional programming style, even though it uses multiple
+  threads, mutable state, thread preemption, and even thread
+  abortion. Even better, concurrent composition and task canceling
+  provide significant program structuring benefits that allow a clean
+  decomposition and task separation in the solver.}
+}
+
 @InProceedings{ bs:pldi2020,
   author = {Berry. G. and Serrano, M.},
   title = {{HipHop.js}: (A)Synchronous {W}eb {R}eactive {P}rogramming},

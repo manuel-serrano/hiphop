@@ -14,6 +14,9 @@ It is the responsibility of the programmer to ensure a correct use of
 JavaScript. Instantaneous loops and causality errors are detected by
 HipHop.
 
+Set the shell variable `HIPHOP_DEBUG=causality` to get a report in case
+of an HipHop error.
+
 
 Incorrect JavaScript Expressions
 --------------------------------

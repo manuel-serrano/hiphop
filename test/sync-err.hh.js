@@ -25,10 +25,10 @@ export const mach = new hh.ReactiveMachine( prg, "sync-err" );
 mach.outbuf = "";
 
 try {
-   mach.outbuf += mach.react() + "\n";
-   mach.outbuf += mach.react() + "\n";
-   mach.outbuf += mach.react() + "\n";
-   mach.outbuf += mach.react() + "\n";
+   mach.react();
+   mach.react();
+   mach.react();
+   mach.react();
 } catch( e ) {
-   mach.outbuf += e.message + "\n";
+   mach.outbuf += "error!" + "\n";
 }

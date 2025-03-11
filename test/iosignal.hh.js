@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 import { format } from "util";
 
@@ -15,7 +12,7 @@ mach.debug_emitted_func = val => {
    mach.outbuf += format(val) + "\n";
 }
 
-mach.inputAndReact("I");
-mach.inputAndReact("X", 15);
+mach.react("I");
+mach.react({X: 15});
 mach.react();
-mach.inputAndReact("Y");
+mach.react("Y");

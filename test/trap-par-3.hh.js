@@ -27,8 +27,8 @@ const prg = hiphop module() {
 	       } else {
 		  emit not_S1_and_not_S2();
 	       }
-	       yield;
 	    }
+	    yield;
 	 }
       }
    }

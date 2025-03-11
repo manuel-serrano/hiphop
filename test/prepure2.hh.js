@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 
 hiphop module prg() {
@@ -8,7 +5,7 @@ hiphop module prg() {
    signal S;
    
    loop {
-      if( S.pre ) {
+      if (S.pre) {
 	 emit O1();
       } else {
 	 emit O2();

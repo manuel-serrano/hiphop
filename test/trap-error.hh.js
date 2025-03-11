@@ -11,7 +11,13 @@ hiphop module main() {
    }
 }
 
-prg = new hh.ReactiveMachine( main, "abort-error" );
-export const mach = prg;
+export let mach = undefined;
+
+try {
+   mach = new hh.ReactiveMachine(main, "trap-error");
+} catch (e) {
+   mach = new hh.ReactiveMachine(hiphop module() {}, "trap-error");
+   mach.outbuf = "unbound trap\n";
+}
 
 

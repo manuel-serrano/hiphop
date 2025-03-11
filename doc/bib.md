@@ -12,7 +12,7 @@ ${<pre class="bibtex">
 @software{ hiphop,
    title = {HipHop, (A)Synchronous Web Reactive Programming},
    author = {Berry, G{\'e}rard and Serrano, Manuel},
-   year = {2024},
+   year = {2025},
    url = {${cfg.homepage}}
 }
 </pre>}
@@ -20,11 +20,11 @@ ${<pre class="bibtex">
 For referring to the current release, please use:
 
 ${<pre class="bibtex">
-@softwareversion{ hop-${cfg.version},
+@softwareversion{ hiphop-${cfg.version},
   version = {${cfg.version}},
   year = {${cfg.date.split( " " )[ 2 ]}},
   month = {${cfg.date.split( " " )[ 1 ]}},
-  file = {${cfg.urlbase}/hop-${cfg.version}},
+  file = {${cfg.urlbase}/hiphop.tgz},
 }
 </pre>}
 
@@ -55,7 +55,7 @@ ${ bibtex.load( "./hiphop.bib" )
   <span class="month">${e.month}</span>,
   <span class="year">${e.year}</span>
   <div class="download">
-     <a href=${e.download}>${suffix( e, e.download || e.url )}</a>
+     <a href=${e.download}>${suffix(e, e.download || e.url)}</a>
   </div>
   <div class="abstract">
     ${e.abstract}

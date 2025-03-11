@@ -7,14 +7,14 @@ import { format } from "util";
 
 function make_atom(i) {
    return hiphop do {
-      hop { mach.outbuf += ("branch " + i) + "\n" };
+      hop { mach.cnt1 += i; }
    } every(G0.now)
 }
 
 function make_atom2(i) {
    return hiphop loop {
       await immediate(G0.now);
-      hop { mach.outbuf += ("branch " + i) + "\n" };
+      hop { mach.cnt2 += i; }
       yield;
    }
 }
@@ -22,7 +22,7 @@ function make_atom2(i) {
 function make_atom3(i) {
    return hiphop {
       every immediate(G0.now) {
-	 hop { mach.outbuf += ("branch " + i) + "\n" }
+	 hop { mach.cnt3 += i; }
       }
    }
 }
@@ -36,14 +36,15 @@ hiphop module prg() {
 	 yield;
       }
    } par {
-      ${make_atom(0)}
+      ${make_atom(1)}
    } par {
-      ${make_atom2(4)}
+      ${make_atom2(2)}
    }
 }
 
-export const mach = new hh.ReactiveMachine(prg, { name: "every-dyn-load", sweep: false });
+export const mach = new hh.ReactiveMachine(prg, { name: "every-dyn-load", sweep: false, dynamic: true });
 mach.outbuf = "";
+mach.cnt1 = mach.cnt2 = mach.cnt3 = 0;
 mach.debug_emitted_func = val => {
    mach.outbuf += format(val) + "\n";
 }
@@ -52,21 +53,21 @@ mach.react()
 mach.react()
 
 mach.outbuf += ("add 1") + "\n";
-mach.getElementById("par").appendChild(make_atom2(1));
+mach.getElementById("par").appendChild(make_atom2(100));
 mach.react()
 mach.react()
 
 
 mach.outbuf += ("add 2") + "\n";
-mach.getElementById("par").appendChild(make_atom(2));
+mach.getElementById("par").appendChild(make_atom(1000));
 mach.react()
 
 mach.react()
 mach.react()
 
 mach.outbuf += ("add 3") + "\n";
-mach.getElementById("par").appendChild(make_atom3(3));
+mach.getElementById("par").appendChild(make_atom3(10000));
 mach.react()
 mach.react()
-mach.react()
+mach.outbuf += "cnt=" + `${mach.cnt1}-${mach.cnt2}-${mach.cnt3}` + "\n";
 

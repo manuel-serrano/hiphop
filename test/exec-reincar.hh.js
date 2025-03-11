@@ -1,6 +1,3 @@
-"use @hop/hiphop"
-"use hopscript"
-
 import * as hh from "@hop/hiphop";
 import { format } from "util";
 
@@ -41,14 +38,14 @@ mach.batchPromise = new Promise((res, rej) => mach.init(res));
 mach.react()
 
 setTimeout(function() {
-   mach.inputAndReact("R")
-}, 500);
+   mach.react("R")
+}, 100);
 
 setTimeout(function() {
    mach.react()
-}, 1000);
+}, 500);
 
 setTimeout(function() {
    mach.react({E: true})
-}, 1500);
+}, 900);
 

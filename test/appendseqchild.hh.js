@@ -21,7 +21,7 @@ hiphop module main() {
    }
 }
 
-export const mach = new hh.ReactiveMachine(main, { name: "appendseqchild", sweep: false });
+export const mach = new hh.ReactiveMachine(main, { name: "appendseqchild", sweep: false, dynamic: true });
 mach.outbuf = "";
 mach.react();
 

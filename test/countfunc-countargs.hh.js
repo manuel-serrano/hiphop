@@ -1,6 +1,3 @@
-"use @hop/hiphop"
-"use hopscript"
-
 import * as hh from "@hop/hiphop";
 
 hiphop module prg() {
@@ -19,13 +16,13 @@ mach.debug_emitted_func = val => {
    mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");
 }
 
-mach.react()
-mach.inputAndReact( "X", 1 )
-mach.react()
-mach.react()
-mach.react()
-mach.react()
-mach.react()
-mach.react()
-mach.react()
-mach.react()
+mach.react();
+mach.react({X: 1});
+mach.react();
+mach.react();
+mach.react();
+mach.react();
+mach.react();
+mach.react();
+mach.react();
+mach.react();

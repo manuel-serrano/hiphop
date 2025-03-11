@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 import { format } from "util";
 
@@ -20,8 +17,8 @@ mach.debug_emitted_func = emitted => {
 
 mach.react();
 mach.react();
-mach.inputAndReact("B");
+mach.react("B");
 mach.react();
-mach.inputAndReact("B");
-mach.inputAndReact("B");
+mach.react("B");
+mach.react("B");
 

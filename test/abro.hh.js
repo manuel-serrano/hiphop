@@ -5,12 +5,12 @@ const prg = hiphop module() {
 		  
    do {
       fork {
-	 await(A.now);
+	 await (A.now);
       } par {
-	 await(B.now);
+	 await (B.now);
       }
       emit O();
-   } every(R.now)
+   } every (R.now)
 }
 
 export const mach = new hh.ReactiveMachine(prg, "ABRO");

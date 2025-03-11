@@ -1,21 +1,25 @@
 {
-    "filename": "p15.hh.js",
-    "sweep": true,
+    "filename": "p15.hh.mjs",
+    "sweep": false,
     "nets": [{
         "id": 0,
         "lvl": 0,
         "type": "REG",
         "fanout": [{
-            "id": 22,
+            "id": 50,
+            "polarity": true,
             "dep": false
         }, {
-            "id": 20,
+            "id": 99,
+            "polarity": true,
             "dep": false
         }, {
-            "id": 60,
+            "id": 100,
+            "polarity": true,
             "dep": false
         }, {
-            "id": 58,
+            "id": 101,
+            "polarity": true,
             "dep": false
         }],
         "fanin": [{
@@ -23,11 +27,11 @@
             "polarity": true,
             "dep": false
         }],
-        "$name": "global_boot_register [Module/RegisterNet]:0/0",
+        "$name": "global_boot_register [Module:0/0]",
         "$ast": "Module",
         "$sweepable": false,
         "$loc": {
-            "filename": "p15.hh.js",
+            "filename": "p15.hh.mjs",
             "pos": 43
         },
         "value": true
@@ -37,14 +41,31 @@
         "type": "FALSE",
         "fanout": [{
             "id": 0,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 53,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 102,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 103,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 104,
+            "polarity": true,
             "dep": false
         }],
         "fanin": [],
-        "$name": "global_const0 [Module/LogicalNet]:0/0",
+        "$name": "global_const0 [Module:0/0]",
         "$ast": "Module",
         "$sweepable": false,
         "$loc": {
-            "filename": "p15.hh.js",
+            "filename": "p15.hh.mjs",
             "pos": 43
         }
     }, {
@@ -52,15 +73,20 @@
         "lvl": 0,
         "type": "SIG",
         "fanout": [{
-            "id": 22,
-            "dep": true
+            "id": 50,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 53,
+            "polarity": true,
+            "dep": false
         }],
         "fanin": [],
-        "$name": "I [Module/SignalNet]:0/0",
+        "$name": "I [Module:0/0]",
         "$ast": "Module",
-        "$sweepable": false,
+        "$sweepable": true,
         "$loc": {
-            "filename": "p15.hh.js",
+            "filename": "p15.hh.mjs",
             "pos": 43
         },
         "signame": "I",
@@ -70,15 +96,36 @@
         "lvl": 0,
         "type": "SIG",
         "fanout": [{
-            "id": 60,
-            "dep": true
+            "id": 99,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 100,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 101,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 102,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 103,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 104,
+            "polarity": true,
+            "dep": false
         }],
         "fanin": [],
-        "$name": "J [Module/SignalNet]:0/0",
+        "$name": "J [Module:0/0]",
         "$ast": "Module",
-        "$sweepable": false,
+        "$sweepable": true,
         "$loc": {
-            "filename": "p15.hh.js",
+            "filename": "p15.hh.mjs",
             "pos": 43
         },
         "signame": "J",
@@ -88,312 +135,453 @@
         "lvl": 0,
         "type": "SIG",
         "fanout": [{
-            "id": 44,
-            "dep": true
-        }],
-        "fanin": [{
-            "id": 20,
+            "id": 99,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 102,
             "polarity": true,
             "dep": false
         }],
-        "$name": "O1 [Module/SignalNet]:0/0",
+        "fanin": [{
+            "id": 50,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 53,
+            "polarity": true,
+            "dep": false
+        }],
+        "$name": "O1 [Module:0/0]",
         "$ast": "Module",
         "$sweepable": false,
         "$loc": {
-            "filename": "p15.hh.js",
+            "filename": "p15.hh.mjs",
             "pos": 43
         },
         "signame": "O1",
-        "accessibility": 2
+        "accessibility": 3
     }, {
         "id": 9,
         "lvl": 0,
         "type": "SIG",
         "fanout": [],
         "fanin": [{
-            "id": 42,
+            "id": 100,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 103,
             "polarity": true,
             "dep": false
         }],
-        "$name": "O2 [Module/SignalNet]:0/0",
+        "$name": "O2 [Module:0/0]",
         "$ast": "Module",
         "$sweepable": false,
         "$loc": {
-            "filename": "p15.hh.js",
+            "filename": "p15.hh.mjs",
             "pos": 43
         },
         "signame": "O2",
-        "accessibility": 2
+        "accessibility": 3
     }, {
         "id": 11,
         "lvl": 0,
         "type": "SIG",
         "fanout": [],
         "fanin": [{
-            "id": 43,
+            "id": 101,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 104,
             "polarity": true,
             "dep": false
         }],
-        "$name": "O3 [Module/SignalNet]:0/0",
+        "$name": "O3 [Module:0/0]",
         "$ast": "Module",
         "$sweepable": false,
         "$loc": {
-            "filename": "p15.hh.js",
+            "filename": "p15.hh.mjs",
             "pos": 43
         },
         "signame": "O3",
-        "accessibility": 2
+        "accessibility": 3
     }, {
-        "id": 14,
+        "id": 24,
         "lvl": 0,
         "type": "SIGACTION",
         "fanout": [],
         "fanin": [{
-            "id": 20,
+            "id": 50,
             "polarity": true,
             "dep": false
         }],
-        "$name": "O1_signal_expr [Emit/SignalExpressionNet]:0/1",
+        "$name": "O1_sig_expr [Emit:0/1]",
         "$ast": "Emit",
-        "$sweepable": false,
+        "$sweepable": true,
         "$loc": {
-            "filename": "p15.hh.js",
-            "pos": 126
+            "filename": "p15.hh.mjs",
+            "pos": 218
         },
         "$signals": "",
         "$action": "return 1;",
         "signal": "!O1:0"
     }, {
-        "id": 20,
+        "id": 25,
+        "lvl": 1,
+        "type": "SIGACTION",
+        "fanout": [],
+        "fanin": [{
+            "id": 53,
+            "polarity": true,
+            "dep": false
+        }],
+        "$name": "O1_sig_expr [Emit:1/1]",
+        "$ast": "Emit",
+        "$sweepable": true,
+        "$loc": {
+            "filename": "p15.hh.mjs",
+            "pos": 218
+        },
+        "$signals": "",
+        "$action": "return 1;",
+        "signal": "!O1:0"
+    }, {
+        "id": 50,
         "lvl": 0,
         "type": "AND",
         "fanout": [{
             "id": 7,
+            "polarity": true,
             "dep": false
         }, {
-            "id": 14,
+            "id": 24,
+            "polarity": true,
             "dep": false
         }],
         "fanin": [{
-            "id": 22,
-            "polarity": true,
-            "dep": false
-        }, {
             "id": 0,
             "polarity": true,
             "dep": false
+        }, {
+            "id": 3,
+            "polarity": true,
+            "dep": false
         }],
-        "$name": "and_then [If/LogicalNet]:0/1",
+        "$name": "go_and_s [If:0/1]",
         "$ast": "If",
         "$sweepable": true,
         "$loc": {
-            "filename": "p15.hh.js",
-            "pos": 106
+            "filename": "p15.hh.mjs",
+            "pos": 198
         }
     }, {
-        "id": 22,
-        "lvl": 0,
-        "type": "ACTION",
+        "id": 53,
+        "lvl": 1,
+        "type": "AND",
         "fanout": [{
-            "id": 20,
+            "id": 7,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 25,
+            "polarity": true,
             "dep": false
         }],
         "fanin": [{
-            "id": 3,
+            "id": 1,
             "polarity": true,
-            "dep": true
+            "dep": false
         }, {
-            "id": 0,
+            "id": 3,
             "polarity": true,
             "dep": false
         }],
-        "$name": "testexpr [If/TestExpressionNet]:0/1",
+        "$name": "go_and_s [If:1/1]",
         "$ast": "If",
-        "$sweepable": false,
+        "$sweepable": true,
         "$loc": {
-            "filename": "p15.hh.js",
-            "pos": 106
-        },
-        "$signals": "I?",
-        "$action": "const I=this.I;return I.now;"
+            "filename": "p15.hh.mjs",
+            "pos": 198
+        }
     }, {
-        "id": 34,
+        "id": 71,
         "lvl": 0,
         "type": "SIGACTION",
         "fanout": [],
         "fanin": [{
-            "id": 42,
+            "id": 100,
             "polarity": true,
             "dep": false
         }],
-        "$name": "O2_signal_expr [Emit/SignalExpressionNet]:0/1",
+        "$name": "O2_sig_expr [Emit:0/1]",
         "$ast": "Emit",
-        "$sweepable": false,
+        "$sweepable": true,
         "$loc": {
-            "filename": "p15.hh.js",
-            "pos": 197
+            "filename": "p15.hh.mjs",
+            "pos": 289
         },
         "$signals": "",
         "$action": "return 2;",
         "signal": "!O2:0"
     }, {
-        "id": 38,
+        "id": 72,
+        "lvl": 1,
+        "type": "SIGACTION",
+        "fanout": [],
+        "fanin": [{
+            "id": 103,
+            "polarity": true,
+            "dep": false
+        }],
+        "$name": "O2_sig_expr [Emit:1/1]",
+        "$ast": "Emit",
+        "$sweepable": true,
+        "$loc": {
+            "filename": "p15.hh.mjs",
+            "pos": 289
+        },
+        "$signals": "",
+        "$action": "return 2;",
+        "signal": "!O2:0"
+    }, {
+        "id": 85,
         "lvl": 0,
         "type": "SIGACTION",
         "fanout": [],
         "fanin": [{
-            "id": 43,
+            "id": 101,
             "polarity": true,
             "dep": false
         }],
-        "$name": "O3_signal_expr [Emit/SignalExpressionNet]:0/1",
+        "$name": "O3_sig_expr [Emit:0/1]",
         "$ast": "Emit",
-        "$sweepable": false,
+        "$sweepable": true,
         "$loc": {
-            "filename": "p15.hh.js",
-            "pos": 225
+            "filename": "p15.hh.mjs",
+            "pos": 317
         },
         "$signals": "",
         "$action": "return 3;",
         "signal": "!O3:0"
     }, {
-        "id": 42,
-        "lvl": 0,
-        "type": "AND",
-        "fanout": [{
-            "id": 9,
-            "dep": false
-        }, {
-            "id": 34,
-            "dep": false
-        }],
+        "id": 86,
+        "lvl": 1,
+        "type": "SIGACTION",
+        "fanout": [],
         "fanin": [{
-            "id": 44,
-            "polarity": true,
-            "dep": false
-        }, {
-            "id": 58,
+            "id": 104,
             "polarity": true,
             "dep": false
         }],
-        "$name": "and_then [If/LogicalNet]:0/1",
-        "$ast": "If",
+        "$name": "O3_sig_expr [Emit:1/1]",
+        "$ast": "Emit",
         "$sweepable": true,
         "$loc": {
-            "filename": "p15.hh.js",
-            "pos": 173
-        }
+            "filename": "p15.hh.mjs",
+            "pos": 317
+        },
+        "$signals": "",
+        "$action": "return 3;",
+        "signal": "!O3:0"
     }, {
-        "id": 43,
+        "id": 99,
         "lvl": 0,
         "type": "AND",
         "fanout": [{
-            "id": 11,
+            "id": 100,
+            "polarity": true,
             "dep": false
         }, {
-            "id": 38,
-            "dep": false
-        }],
-        "fanin": [{
-            "id": 44,
+            "id": 101,
             "polarity": false,
-            "dep": false
-        }, {
-            "id": 58,
-            "polarity": true,
-            "dep": false
-        }],
-        "$name": "and_else [If/LogicalNet]:0/1",
-        "$ast": "If",
-        "$sweepable": true,
-        "$loc": {
-            "filename": "p15.hh.js",
-            "pos": 173
-        }
-    }, {
-        "id": 44,
-        "lvl": 0,
-        "type": "ACTION",
-        "fanout": [{
-            "id": 42,
-            "dep": false
-        }, {
-            "id": 43,
             "dep": false
         }],
         "fanin": [{
             "id": 7,
             "polarity": true,
-            "dep": true
-        }, {
-            "id": 58,
-            "polarity": true,
-            "dep": false
-        }],
-        "$name": "testexpr [If/TestExpressionNet]:0/1",
-        "$ast": "If",
-        "$sweepable": false,
-        "$loc": {
-            "filename": "p15.hh.js",
-            "pos": 173
-        },
-        "$signals": "O1?",
-        "$action": "const O1=this.O1;return O1.now;"
-    }, {
-        "id": 58,
-        "lvl": 0,
-        "type": "AND",
-        "fanout": [{
-            "id": 44,
-            "dep": false
-        }, {
-            "id": 42,
-            "dep": false
-        }, {
-            "id": 43,
-            "dep": false
-        }],
-        "fanin": [{
-            "id": 60,
-            "polarity": true,
             "dep": false
         }, {
             "id": 0,
             "polarity": true,
             "dep": false
+        }, {
+            "id": 5,
+            "polarity": true,
+            "dep": false
         }],
-        "$name": "and_then [If/LogicalNet]:0/1",
+        "$name": "testexpr_as_and [If:0/1]",
         "$ast": "If",
         "$sweepable": true,
         "$loc": {
-            "filename": "p15.hh.js",
-            "pos": 158
+            "filename": "p15.hh.mjs",
+            "pos": 265
         }
     }, {
-        "id": 60,
+        "id": 100,
         "lvl": 0,
-        "type": "ACTION",
+        "type": "AND",
         "fanout": [{
-            "id": 58,
+            "id": 9,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 71,
+            "polarity": true,
             "dep": false
         }],
         "fanin": [{
-            "id": 5,
+            "id": 99,
             "polarity": true,
-            "dep": true
+            "dep": false
         }, {
             "id": 0,
             "polarity": true,
             "dep": false
+        }, {
+            "id": 5,
+            "polarity": true,
+            "dep": false
         }],
-        "$name": "testexpr [If/TestExpressionNet]:0/1",
+        "$name": "go_and_s [If:0/1]",
         "$ast": "If",
-        "$sweepable": false,
+        "$sweepable": true,
         "$loc": {
-            "filename": "p15.hh.js",
-            "pos": 158
-        },
-        "$signals": "J?",
-        "$action": "const J=this.J;return J.now;"
+            "filename": "p15.hh.mjs",
+            "pos": 265
+        }
+    }, {
+        "id": 101,
+        "lvl": 0,
+        "type": "AND",
+        "fanout": [{
+            "id": 11,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 85,
+            "polarity": true,
+            "dep": false
+        }],
+        "fanin": [{
+            "id": 99,
+            "polarity": false,
+            "dep": false
+        }, {
+            "id": 0,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 5,
+            "polarity": true,
+            "dep": false
+        }],
+        "$name": "go_and_not_s [If:0/1]",
+        "$ast": "If",
+        "$sweepable": true,
+        "$loc": {
+            "filename": "p15.hh.mjs",
+            "pos": 265
+        }
+    }, {
+        "id": 102,
+        "lvl": 1,
+        "type": "AND",
+        "fanout": [{
+            "id": 103,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 104,
+            "polarity": false,
+            "dep": false
+        }],
+        "fanin": [{
+            "id": 7,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 1,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 5,
+            "polarity": true,
+            "dep": false
+        }],
+        "$name": "testexpr_as_and [If:1/1]",
+        "$ast": "If",
+        "$sweepable": true,
+        "$loc": {
+            "filename": "p15.hh.mjs",
+            "pos": 265
+        }
+    }, {
+        "id": 103,
+        "lvl": 1,
+        "type": "AND",
+        "fanout": [{
+            "id": 9,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 72,
+            "polarity": true,
+            "dep": false
+        }],
+        "fanin": [{
+            "id": 102,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 1,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 5,
+            "polarity": true,
+            "dep": false
+        }],
+        "$name": "go_and_s [If:1/1]",
+        "$ast": "If",
+        "$sweepable": true,
+        "$loc": {
+            "filename": "p15.hh.mjs",
+            "pos": 265
+        }
+    }, {
+        "id": 104,
+        "lvl": 1,
+        "type": "AND",
+        "fanout": [{
+            "id": 11,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 86,
+            "polarity": true,
+            "dep": false
+        }],
+        "fanin": [{
+            "id": 102,
+            "polarity": false,
+            "dep": false
+        }, {
+            "id": 1,
+            "polarity": true,
+            "dep": false
+        }, {
+            "id": 5,
+            "polarity": true,
+            "dep": false
+        }],
+        "$name": "go_and_not_s [If:1/1]",
+        "$ast": "If",
+        "$sweepable": true,
+        "$loc": {
+            "filename": "p15.hh.mjs",
+            "pos": 265
+        }
     }]
 }

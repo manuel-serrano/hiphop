@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  1 10:20:48 2015                          */
-/*    Last change :  Wed Apr 24 12:15:45 2024 (serrano)                */
-/*    Copyright   :  2015-24 Manuel Serrano                            */
+/*    Last change :  Wed Mar  5 15:16:00 2025 (serrano)                */
+/*    Copyright   :  2015-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HSS for the Hop.js documentation                                 */
 /*=====================================================================*/
@@ -74,6 +74,10 @@ body.hop {
   position: relative;
   background-color: #fafafa;
   color: #222;
+}
+
+body {
+  counter-reset: subsection;
 }
 
 /*---------------------------------------------------------------------*/
@@ -324,8 +328,8 @@ h3.nonumber:before,
 }
 
 h2:before {
-  /* counter-increment: subsection; */
-  /* content: counter( section ) "." counter( subsection ) ". "; */
+    counter-increment: subsection;
+    content: counter( subsection ) ". ";
 }
 
 h3 {
@@ -777,6 +781,19 @@ blockquote.CAUTION p.alert-title {
 
 blockquote.CAUTION p.alert-title:before {
     content: "\26A0  Caution";
+}
+
+blockquote.TIP {
+    border-left-color: #3b843c;
+    margin-top: 2ex;
+}
+
+blockquote.TIP p.alert-title {
+    color: #3b843c;
+}
+
+blockquote.TIP p.alert-title:before {
+    content: "\1f4a1  Tip";
 }
 
 /*---------------------------------------------------------------------*/

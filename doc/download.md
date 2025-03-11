@@ -15,7 +15,7 @@ NPM Installation
 npm install https://www-sop.inria.fr/members/Manuel.Serrano/software/npmx/hiphop.tgz
 ```
 
-When HipHop is officially released in 2024, the installation procedure is:
+When HipHop is officially released, the installation procedure is:
 
 ```shell
 npm install @hop/hiphop
@@ -43,8 +43,31 @@ const m = new ReactiveMachine(prog);
 m.react();
 m.react();
 EOF
+```
+
+and then:
+
+```shell
 nodejs --enable-source-maps --no-warnings --loader ./node_modules/@hop/hiphop/lib/hiphop-loader.mjs prog.hh.js
 ```
+
+NPM Update
+----------
+
+Until HipHop is officially available on the NPM repository, HipHop updates
+require manual operations.
+
+  1. First, clean up NPM cache with: `npm cache clean --force`.
+  2. Remove the files `package.json` and `package-lock.json` in the current
+  directory *and* in the parent directories. 
+  3. Remove the directories `node_modules` in the current directory 
+  *and* in the parent directories.
+  
+> [!WARNING]
+> Of course, proceed to step 2 and 3, if and only if these directories
+> contain only HipHop sources. *Do not* remove any of these files and
+> directories if they contain other resources!
+
 
 Installing from the Sources
 ---------------------------

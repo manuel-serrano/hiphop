@@ -27,4 +27,5 @@ const prg =
 const m = new hh.ReactiveMachine(prg);
 
 m.react();
-m.inputAndReact("B");
+mach.react({B: undefined});
+
