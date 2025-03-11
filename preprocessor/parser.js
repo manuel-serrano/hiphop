@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Mon Feb 17 14:42:45 2025 (serrano)                */
+/*    Last change :  Tue Mar 11 14:00:49 2025 (serrano)                */
 /*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1386,7 +1386,7 @@ function parseAsync(token) {
 function parseRunFunExpression(loc, expr, parent) {
    if (!(expr instanceof ast.J2SCall) && expr?.$class !== "J2SCall" && (typeof expr) !== "J2SCall") {
       // Nodejs and Hop do not represent the AST with the same data
-      // structure. This is why we have to make several check here
+      // structure. This is why we have to make several checks here
       throw error.SyntaxError("wrong run expression token `"
 	 + (expr instanceof ast.J2SNode ? expr.generate() : typeof expr)
 	 + "'", loc);
@@ -1517,6 +1517,30 @@ function parseRun(token) {
 			   default: 
 			      throw tokenTypeError(tok);
 			}
+		  }
+		  break;
+		  
+	       case this.DOLLAR:
+		  const d = this.parsePrimaryDollar().node;
+		  const tok = this.consumeToken(this.ID);
+		  const as = this.consumeToken(this.ID);
+
+		  switch (tok.value) {
+		     case "from": 
+		     case "to": 
+		     case "as": 
+			inits.push(astutils.J2SDataPropertyInit(
+			   normalizeLoc(d.loc),
+			   astutils.J2SString(as.location, as.value),
+			   d));
+			if (this.peekToken().type !== this.COMMA
+			   && this.peekToken().type !== this.RBRACE) {
+			   throw tokenTypeError(this.consumeAny());
+			}
+		     	break;
+			
+		     default: 
+			throw tokenTypeError(tok);
 		  }
 		  break;
 		  

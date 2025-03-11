@@ -172,6 +172,17 @@ to an array of strings that will denote the names of the declared signals.
 <!-- ${doc.includeCode("../test/staging-incr-branch2.hh.js", "hiphop")} -->
 
 
+Dynamic Signal Names in Run Expressions
+---------------------------------------
+
+Signals aliased in a `run` command can declared with a dollar-form. This
+enables a generated signal name on the main module to be bound to a static
+signal name on the ran module. Example:
+
+<span class="hiphop">&#x2605;</span> Example: [run6.hh.js](../test/run6.hh.js)
+<!-- ${doc.includeCode("../test/run6.hh.js", "hiphop")} -->
+
+
 Generated Interfaces
 --------------------
 

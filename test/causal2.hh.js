@@ -1,6 +1,3 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 
 hiphop module prg() {
@@ -21,7 +18,7 @@ export const mach = new hh.ReactiveMachine(prg, { verbose: -1 });
 mach.outbuf = "";
 
 try {
-    mach.react();
+   mach.react();
 } catch(e) {
-    mach.outbuf += ("causality error") + "\n";
+   mach.outbuf += ("causality error age=" + mach.age()) + "\n";
 }

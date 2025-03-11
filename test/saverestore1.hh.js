@@ -1,9 +1,6 @@
-"use @hop/hiphop";
-"use hopscript";
-
 import * as hh from "@hop/hiphop";
 import { format } from "util";
-function sum( arg1, arg2 ) {
+function sum(arg1, arg2) {
    return arg1 + arg2;
 }
 
@@ -49,7 +46,7 @@ hiphop module prg() {
    }
 }
 
-export const mach = new hh.ReactiveMachine(prg, "P18");
+export const mach = new hh.ReactiveMachine(prg, { name: "P18", dynamic: true });
 
 let state = mach.save();
 mach.outbuf = "";

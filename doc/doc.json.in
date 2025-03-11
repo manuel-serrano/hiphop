@@ -8,6 +8,7 @@
    "date": "@DATE@",
    "chapters": [ { "name": "Home", "icon": "glyphicon-home", "href": "../index.html" },
 		 { "name": "Download", "icon": "glyphicon-cloud-download", "href": "download.html" },
+		 { "name": "Tutorials", "icon": "glyphicon-education", "href": "tutorials.html" },
 		 { "name": "Dev", "icon": "glyphicon-cog", "href": "dev.html" },
 		 { "name": "Lang", "icon": "glyphicon-blackboard", "href": "lang/README.html", "json": "lang/lang.json" },
 		 { "name": "API", "icon": "glyphicon-book", "href": "api.html" },

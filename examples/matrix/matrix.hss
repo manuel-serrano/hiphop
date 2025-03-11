@@ -1,0 +1,15 @@
+/*=====================================================================*/
+/*    serrano/prgm/project/hiphop/hiphop/examples/matrix/matrix.hss    */
+/*    -------------------------------------------------------------    */
+/*    Author      :  Manuel Serrano                                    */
+/*    Creation    :  Tue Oct 16 09:18:19 2012                          */
+/*    Last change :  Sun Nov 18 10:42:45 2018 (serrano)                */
+/*    Copyright   :  2012-18 Manuel Serrano                            */
+/*    -------------------------------------------------------------    */
+/*    Matrix style sheet                                               */
+/*=====================================================================*/
+
+canvas {
+  border: 1px #999 dashed;
+  background-color: #eee;
+}

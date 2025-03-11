@@ -1,0 +1,10 @@
+{
+   "name": "@hop/hiphop-tutorial-first",
+   "version": "1.4.0",
+   "description": "First steps with HipHop",
+   "license" : "GPL-3.0-or-later",
+   "type": "module",
+   "dependencies": {
+     "@hop/hiphop": "https://www-sop.inria.fr/members/Manuel.Serrano/software/npmx/hiphop.tgz"
+   }
+}
