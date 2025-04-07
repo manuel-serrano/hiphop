@@ -6,6 +6,7 @@
   1. [Introduction](./_index.md), _general introduction to HipHop._
   2. [License](./license.md), _the license of this release._
   3. [Download](./download.md), _how to get HipHop._
+  3. [Tutorials](./tutorials.md), _tutorials and examples._
   4. [Language](./lang/README.md), _the language documentation._
   5. [API](./api.md), _HipHop and JavaScript._
   6. [Standard Modules](./modules/README.md), _HipHop standard modules._
