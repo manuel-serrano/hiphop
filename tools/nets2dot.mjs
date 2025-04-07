@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Thu Feb 27 08:45:09 2025 (serrano)                */
+/*    Last change :  Mon Apr  7 08:27:34 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -80,6 +80,29 @@ function nextLocColor() {
    return locPredefinedColors[locColorIndex];
 }
 
+/*---------------------------------------------------------------------*/
+/*    collectCircuits ...                                              */
+/*    -------------------------------------------------------------    */
+/*    Circuits are designated by source location, i.e., each           */
+/*    source location is associated to exactly one circuit.            */
+/*---------------------------------------------------------------------*/
+function collectCircuits(nets) {
+   let circuits = [];
+   
+   nets.forEach(n => {
+      const pos = n.$loc.pos;
+
+      if (circuits[pos]) {
+	 circuits[pos].push(n);
+      } else {
+	 circuits[pos] = [n];
+      }
+   });
+
+   return circuits;
+}
+
+   
 /*---------------------------------------------------------------------*/
 /*    main ...                                                         */
 /*---------------------------------------------------------------------*/
@@ -182,7 +205,11 @@ function main(argv) {
    }
    
    const info = JSON.parse(readFileSync(argv[2]));
-   console.log(`digraph "${argv[2]}" { graph [splines = true overlap = false rankdir = "LR"];`);
+   
+   const circuits = collectCircuits(info.nets);
+   
+   console.log(`digraph "${argv[2]}" {`);
+   console.log(`  graph [splines = true overlap = false rankdir = "LR"];`);
    info.nets.forEach(net => {
       const typ = netType(net);
       const id = td({content: `${net.id} [${typ}:${net.lvl}]${(net.$sweepable ? "" : "*")}`});
@@ -197,7 +224,7 @@ function main(argv) {
       const node = table({rows: [tr([td({content: header})]), tr([td({content: file})]), tr([td({align: "center", content: fans})])]});
       const colorNode = table({cellpadding: 6, bgcolor: netLocColor(net), rows: [tr([td({content: node})])]});
       
-      console.log(`${net.id} [fontname = "Courier New" shape = "none" label = <${colorNode}>];`);
+      console.log(`  ${net.id} [fontname = "Courier New" shape = "none" label = <${colorNode}>];`);
    });
       
 
