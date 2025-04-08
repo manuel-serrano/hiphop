@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Thu Feb 27 08:45:09 2025 (serrano)                */
+/*    Last change :  Mon Apr  7 11:39:06 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -63,7 +63,18 @@ const locPredefinedColors = [
    "#7ED379", "#012C58"
 ];
 let locColorIndex = 0;
-				  
+
+/*---------------------------------------------------------------------*/
+/*    isBright ...                                                     */
+/*---------------------------------------------------------------------*/
+function isBright(color) {
+   let c = parseInt(color.substring(2, 4), 16)
+      + parseInt(color.substring(4, 6), 16)
+      + parseInt(color.substring(6, 8), 16);
+
+   return c > ( 3 * 130);
+}
+   
 /*---------------------------------------------------------------------*/
 /*    locColors ...                                                    */
 /*---------------------------------------------------------------------*/
@@ -78,6 +89,47 @@ function nextLocColor() {
       locColorIndex = 0;
    }
    return locPredefinedColors[locColorIndex];
+}
+
+/*---------------------------------------------------------------------*/
+/*    netKey ...                                                       */
+/*---------------------------------------------------------------------*/
+function netKey(n) {
+   return `${n.$ast}@${n.$loc.pos}`;
+}
+
+/*---------------------------------------------------------------------*/
+/*    collectCircuits ...                                              */
+/*    -------------------------------------------------------------    */
+/*    Circuits are designated by source location, i.e., each           */
+/*    source location is associated to exactly one circuit.            */
+/*---------------------------------------------------------------------*/
+function collectCircuits(nets) {
+   let circuits = {};
+   let arr = [];
+   
+   nets.forEach(n => {
+      const key = netKey(n);
+
+      if (circuits[key]) {
+	 circuits[key].push(n);
+      } else {
+	 circuits[key] = [n];
+      }
+   });
+
+   for (let k in circuits) {
+      arr.push(circuits[k].sort((n, m) => n.id <= m.id ? -1 : 1));
+   }
+
+   return arr.sort((x, y) => x[0].id <= y[0].id ? -1 : 1);
+}
+
+/*---------------------------------------------------------------------*/
+/*    sameCircuit ...                                                  */
+/*---------------------------------------------------------------------*/
+function sameCircuit(s, t) {
+   return netKey(s) === netKey(t);
 }
 
 /*---------------------------------------------------------------------*/
@@ -182,23 +234,59 @@ function main(argv) {
    }
    
    const info = JSON.parse(readFileSync(argv[2]));
-   console.log(`digraph "${argv[2]}" { graph [splines = true overlap = false rankdir = "LR"];`);
-   info.nets.forEach(net => {
-      const typ = netType(net);
-      const id = td({content: `${net.id} [${typ}:${net.lvl}]${(net.$sweepable ? "" : "*")}`});
-      const name = net.$name ? tr([td({content: escape(net.$name)})]) : "";
-      const sigs = net.signals ? tr([td({content: "[" + net.signals + "]"})]) : (net.signame ? tr([td({content: net.signame})]) : "");
-      const action = net.$action ? tr([td({content: font({content: escape(net.$action)})})]) : (net.value !== undefined? tr([td({content: font({content: net.value})})]) : "");
-      const fanouts = net.fanout.map((n, i, arr) => tr([port(n, i, `${small(n.id)} &bull;`)]))
-      const fanins = net.fanin.map((n, i, arr) => tr([port(n, i + net.fanout.length, `&bull; ${small(n.id)}`, "left")]))
-      const fans = table({rows: [tr([td({content: table({rows: fanins})}), td({content: table({rows: fanouts})})])]});
-      const header = table({bgcolor: netColor(net), rows: [tr([id]), name]});
-      const file = table({cellpadding: 4, rows: [tr([td({content: `${basename(net.$loc.filename)}:${net.$loc.pos}`})]), sigs, action]});;
-      const node = table({rows: [tr([td({content: header})]), tr([td({content: file})]), tr([td({align: "center", content: fans})])]});
-      const colorNode = table({cellpadding: 6, bgcolor: netLocColor(net), rows: [tr([td({content: node})])]});
+   
+   const circuits = collectCircuits(info.nets);
+   
+   console.log(`digraph "${argv[2]}" {`);
+   console.log("  newrank = true;");
+   console.log('  rankdir = "LR";');
+   //console.log(`  graph [splines = true overlap = false rankdir = "LR"];`);
+
+   circuits.forEach((c, i, _) => {
+      const n0 = c[0];
+      const bgcolor = netLocColor(n0);
+      const fgcolor = isBright(bgcolor) ? "#000000" : "#ffffff";
       
-      console.log(`${net.id} [fontname = "Courier New" shape = "none" label = <${colorNode}>];`);
+      console.log(`  subgraph cluster${i} {`);
+      /* 	 console.log(`    color="${netLocColor(c[0])}";`);             */
+      console.log('    color="#eeeeee";');
+      console.log("    style=filled;");
+      console.log(`    label=<<table bgcolor="${bgcolor}"><tr><td>${font({color: fgcolor, content: `${n0.$ast} (@${n0.$loc.pos})`})}</td></tr></table>>;`);
+      c.forEach(net => {
+	 const typ = netType(net);
+	 const id = td({content: `${net.id} [${typ}:${net.lvl}]${(net.$sweepable ? "" : "*")}`});
+	 const name = net.$name ? tr([td({content: escape(net.$name)})]) : "";
+	 const sigs = net.signals ? tr([td({content: "[" + net.signals + "]"})]) : (net.signame ? tr([td({content: net.signame})]) : "");
+	 const action = net.$action ? tr([td({content: font({content: escape(net.$action)})})]) : (net.value !== undefined? tr([td({content: font({content: net.value})})]) : "");
+	 const fanouts = net.fanout.map((n, i, arr) => tr([port(n, i, `${small(n.id)} &bull;`)]))
+	 const fanins = net.fanin.map((n, i, arr) => tr([port(n, i + net.fanout.length, `&bull; ${small(n.id)}`, "left")]))
+	 const fans = table({rows: [tr([td({content: table({rows: fanins})}), td({content: table({rows: fanouts})})])]});
+	 const header = table({bgcolor: netColor(net), rows: [tr([id]), name]});
+	 const file = table({cellpadding: 4, rows: [tr([td({content: `${basename(net.$loc.filename)}:${net.$loc.pos}`})]), sigs, action]});;
+	 const node = table({rows: [tr([td({content: header})]), tr([td({content: file})]), tr([td({align: "center", content: fans})])]});
+	 const colorNode = table({cellpadding: 6, bgcolor: netLocColor(net), rows: [tr([td({content: node})])]});
+	 
+	 console.log(`  ${net.id} [fontname = "Courier New" shape = "none" label = <${colorNode}>];`);
+      });
+      console.log("  }");
    });
+   
+/*    info.nets.forEach(net => {                                       */
+/*       const typ = netType(net);                                     */
+/*       const id = td({content: `${net.id} [${typ}:${net.lvl}]${(net.$sweepable ? "" : "*")}`}); */
+/*       const name = net.$name ? tr([td({content: escape(net.$name)})]) : ""; */
+/*       const sigs = net.signals ? tr([td({content: "[" + net.signals + "]"})]) : (net.signame ? tr([td({content: net.signame})]) : ""); */
+/*       const action = net.$action ? tr([td({content: font({content: escape(net.$action)})})]) : (net.value !== undefined? tr([td({content: font({content: net.value})})]) : ""); */
+/*       const fanouts = net.fanout.map((n, i, arr) => tr([port(n, i, `${small(n.id)} &bull;`)])) */
+/*       const fanins = net.fanin.map((n, i, arr) => tr([port(n, i + net.fanout.length, `&bull; ${small(n.id)}`, "left")])) */
+/*       const fans = table({rows: [tr([td({content: table({rows: fanins})}), td({content: table({rows: fanouts})})])]}); */
+/*       const header = table({bgcolor: netColor(net), rows: [tr([id]), name]}); */
+/*       const file = table({cellpadding: 4, rows: [tr([td({content: `${basename(net.$loc.filename)}:${net.$loc.pos}`})]), sigs, action]});; */
+/*       const node = table({rows: [tr([td({content: header})]), tr([td({content: file})]), tr([td({align: "center", content: fans})])]}); */
+/*       const colorNode = table({cellpadding: 6, bgcolor: netLocColor(net), rows: [tr([td({content: node})])]}); */
+/*                                                                     */
+/*       console.log(`  ${net.id} [fontname = "Courier New" shape = "none" label = <${colorNode}>];`); */
+/*    });                                                              */
       
 
    info.nets.forEach(s => {
@@ -211,15 +299,22 @@ function main(argv) {
 	 const polarity = s.fanout[i].polarity;
 	 const index = fanoutPort(s, t, polarity);
 	 const style = s.fanout[i].dep ? ["style=dashed", 'color="red"'] : [];
+	 const constraint = sameCircuit(s, t) ? " constraint=false" : "";
 
 	 if (!polarity) {
 	    style.push("arrowhead=odot");
 	 }
+
+	 if (sameCircuit(s, t)) {
+	    style.push(" constraint=false");
+	 }
 	 
-	 console.log(`${s.id}:${i} :e -> ${s.fanout[i].id}:${index} :w ${!style.length ? "" : ("[" + style.join() + "]")};`);
+	 console.log(`${s.id}:${i} :e -> ${s.fanout[i].id}:${index} :w${!style.length ? "" : (" [" + style.join() + "]")};`);
       }
    });
-	 
+
+   console.log("  react -> 0");
+   console.log("  react [shape=<diamond> color=red style=filled]");
    console.log("}");
 }
 
