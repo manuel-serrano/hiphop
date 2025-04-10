@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Mon Apr  7 11:39:06 2025 (serrano)                */
+/*    Last change :  Tue Apr  8 08:01:31 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -74,7 +74,41 @@ function isBright(color) {
 
    return c > ( 3 * 130);
 }
-   
+
+
+/*---------------------------------------------------------------------*/
+/*    hex ...                                                          */
+/*---------------------------------------------------------------------*/
+const hex = "0123456789abcdef";
+
+/*---------------------------------------------------------------------*/
+/*    hex2 ...                                                         */
+/*---------------------------------------------------------------------*/
+function hex2(n) {
+   if (n < 16) {
+      return `0${hex[n]}`;
+   } else {
+      return `${hex[n >> 4]}${hex[n & 15]}`;
+   }
+}
+
+/*---------------------------------------------------------------------*/
+/*    lighter ...                                                      */
+/*---------------------------------------------------------------------*/
+function lighter(color) {
+   const f = 1.5;
+   const shift = 30;
+   const r = parseInt(color.substring(1, 3), 16);
+   const g = parseInt(color.substring(3, 5), 16);
+   const b = parseInt(color.substring(5, 7), 16);
+
+   const nr = hex2(Math.round(Math.min(255, (r * f) + shift)));
+   const ng = hex2(Math.round(Math.min(255, (g * f) + shift)));
+   const nb = hex2(Math.round(Math.min(255, (b * f) + shift)));
+
+   return `#${nr}${ng}${nb}`;
+}
+
 /*---------------------------------------------------------------------*/
 /*    locColors ...                                                    */
 /*---------------------------------------------------------------------*/
@@ -92,37 +126,103 @@ function nextLocColor() {
 }
 
 /*---------------------------------------------------------------------*/
+/*    astKey ...                                                       */
+/*---------------------------------------------------------------------*/
+function astKey(ast) {
+   return `${ast.ctor}@${ast.loc.pos}`;
+}
+
+/*---------------------------------------------------------------------*/
 /*    netKey ...                                                       */
 /*---------------------------------------------------------------------*/
 function netKey(n) {
-   return `${n.$ast}@${n.$loc.pos}`;
+   return astKey(n.$ast);
+}
+
+/*---------------------------------------------------------------------*/
+/*    Circuit ...                                                      */
+/*---------------------------------------------------------------------*/
+class Circuit {
+   key;
+   parent = undefined;
+   children = [];
+   nets = [];
+   
+   constructor(key, nets) {
+      this.key = key;
+      this.nets = nets;
+   }
+
+   visit(proc) {
+      proc(this);
+      this.children.forEach(c => c.visit(proc));
+   }
 }
 
 /*---------------------------------------------------------------------*/
 /*    collectCircuits ...                                              */
+/*    -------------------------------------------------------------    */
+/*    This function returns the "main" circuit, i.e., the one which    */
+/*    has no parent. Its children form a tree.                         */
 /*    -------------------------------------------------------------    */
 /*    Circuits are designated by source location, i.e., each           */
 /*    source location is associated to exactly one circuit.            */
 /*---------------------------------------------------------------------*/
 function collectCircuits(nets) {
    let circuits = {};
-   let arr = [];
+   let main = undefined;
    
    nets.forEach(n => {
       const key = netKey(n);
 
       if (circuits[key]) {
-	 circuits[key].push(n);
+	 circuits[key].nets.push(n);
       } else {
-	 circuits[key] = [n];
+	 circuits[key] = new Circuit(netKey(n), [n]);
       }
    });
 
+   // sort all the net of each circuits
    for (let k in circuits) {
-      arr.push(circuits[k].sort((n, m) => n.id <= m.id ? -1 : 1));
+      const c = circuits[k];
+      const n0 = c.nets[0];
+      const p = n0.$parent;
+
+      // sort the net inside the circuit
+      c.nets.sort((n, m) => n.id <= m.id ? -1 : 1);
+
+      // establish the parent relationship
+      if (!p) {
+	 if (main) {
+	    throw new Error("orphan circuit "
+	       + (n0.$ast.loc.filename + ":" + n0.$ast.loc.pos)
+	       + (main.children[0].$ast.loc.filename + ":" + main.children[0].$ast.loc.pos));
+	 } else {
+	    main = c;
+	 }
+      } else {
+	 c.parent = circuits[astKey(p)];
+
+	 if (!c.parent) {
+	    throw new Error('Cannot find parent circuit of "'
+	       + (n0.$ast.loc.filename + ":" + n0.$ast.loc.pos) + `[${astKey(p)}]'"`);
+	 }
+      }
    }
 
-   return arr.sort((x, y) => x[0].id <= y[0].id ? -1 : 1);
+   // establish the children relationship
+   for (let k in circuits) {
+      const c = circuits[k];
+      if (c.parent) {
+	 c.parent.children.push(c);
+      }
+   }
+			    
+   if (!main) {
+      throw new Error("Cannot find main circuit");
+   } else {
+      return main;
+   }
 }
 
 /*---------------------------------------------------------------------*/
@@ -137,6 +237,8 @@ function sameCircuit(s, t) {
 /*---------------------------------------------------------------------*/
 function main(argv) {
 
+   let clusterNum = 0;
+   
    function td({align, port, content}) {
       if (port !== undefined) {
 	 return `<td align="${align ?? "left"}" port="${port}">${content}</td>`;
@@ -185,7 +287,7 @@ function main(argv) {
    }
    
    function netLocColor(net) {
-      const i = net.$loc.pos + 1000 * net.$ast.charCodeAt(0);
+      const i = net.$ast.loc.pos + 1000 * net.$ast.ctor.charCodeAt(0);
       
       if (i in locColors) {
 	 return locColors[i];
@@ -221,8 +323,6 @@ function main(argv) {
       }
 
       if (i === fanins.length) {
-	 console.error("SRC=", src);
-	 console.error("TGT=", tgt);
 	 throw "Cannot find src:" + src.id + " tgt:" + src.id;
       }
       
@@ -232,27 +332,17 @@ function main(argv) {
    function small(txt) {
       return `<font point-size="12">${txt}</font>`
    }
-   
-   const info = JSON.parse(readFileSync(argv[2]));
-   
-   const circuits = collectCircuits(info.nets);
-   
-   console.log(`digraph "${argv[2]}" {`);
-   console.log("  newrank = true;");
-   console.log('  rankdir = "LR";');
-   //console.log(`  graph [splines = true overlap = false rankdir = "LR"];`);
 
-   circuits.forEach((c, i, _) => {
-      const n0 = c[0];
+   function emitCircuit(c, margin) {
+      const n0 = c.nets[0];
       const bgcolor = netLocColor(n0);
-      const fgcolor = isBright(bgcolor) ? "#000000" : "#ffffff";
+      const fgcolor = isBright(bgcolor) ? "black" : "white";
       
-      console.log(`  subgraph cluster${i} {`);
-      /* 	 console.log(`    color="${netLocColor(c[0])}";`);             */
-      console.log('    color="#eeeeee";');
-      console.log("    style=filled;");
-      console.log(`    label=<<table bgcolor="${bgcolor}"><tr><td>${font({color: fgcolor, content: `${n0.$ast} (@${n0.$loc.pos})`})}</td></tr></table>>;`);
-      c.forEach(net => {
+      console.log(`${margin}subgraph cluster${clusterNum++} {`);
+      console.log(`${margin}  color="${lighter(bgcolor)}";`);
+      console.log(`${margin}  style="filled";`);
+      console.log(`${margin}  label=<<table bgcolor="${bgcolor}"><tr><td>${font({color: fgcolor, content: `${n0.$ast.ctor} (@${n0.$ast.loc.pos})`})}</td></tr></table>>;`);
+      c.nets.forEach(net => {
 	 const typ = netType(net);
 	 const id = td({content: `${net.id} [${typ}:${net.lvl}]${(net.$sweepable ? "" : "*")}`});
 	 const name = net.$name ? tr([td({content: escape(net.$name)})]) : "";
@@ -262,34 +352,17 @@ function main(argv) {
 	 const fanins = net.fanin.map((n, i, arr) => tr([port(n, i + net.fanout.length, `&bull; ${small(n.id)}`, "left")]))
 	 const fans = table({rows: [tr([td({content: table({rows: fanins})}), td({content: table({rows: fanouts})})])]});
 	 const header = table({bgcolor: netColor(net), rows: [tr([id]), name]});
-	 const file = table({cellpadding: 4, rows: [tr([td({content: `${basename(net.$loc.filename)}:${net.$loc.pos}`})]), sigs, action]});;
+	 const file = table({cellpadding: 4, rows: [tr([td({content: `${basename(net.$ast.loc.filename)}:${net.$ast.loc.pos}`})]), sigs, action]});;
 	 const node = table({rows: [tr([td({content: header})]), tr([td({content: file})]), tr([td({align: "center", content: fans})])]});
-	 const colorNode = table({cellpadding: 6, bgcolor: netLocColor(net), rows: [tr([td({content: node})])]});
+	 const colorNode = table({cellpadding: 6, bgcolor: bgcolor, rows: [tr([td({content: node})])]});
 	 
-	 console.log(`  ${net.id} [fontname = "Courier New" shape = "none" label = <${colorNode}>];`);
+	 console.log(`${margin}${net.id} [fontname = "Courier New" shape = "none" label = <${colorNode}>];`);
       });
+      c.children.forEach(c => emitCircuit(c, margin + "  "));
       console.log("  }");
-   });
+   }
    
-/*    info.nets.forEach(net => {                                       */
-/*       const typ = netType(net);                                     */
-/*       const id = td({content: `${net.id} [${typ}:${net.lvl}]${(net.$sweepable ? "" : "*")}`}); */
-/*       const name = net.$name ? tr([td({content: escape(net.$name)})]) : ""; */
-/*       const sigs = net.signals ? tr([td({content: "[" + net.signals + "]"})]) : (net.signame ? tr([td({content: net.signame})]) : ""); */
-/*       const action = net.$action ? tr([td({content: font({content: escape(net.$action)})})]) : (net.value !== undefined? tr([td({content: font({content: net.value})})]) : ""); */
-/*       const fanouts = net.fanout.map((n, i, arr) => tr([port(n, i, `${small(n.id)} &bull;`)])) */
-/*       const fanins = net.fanin.map((n, i, arr) => tr([port(n, i + net.fanout.length, `&bull; ${small(n.id)}`, "left")])) */
-/*       const fans = table({rows: [tr([td({content: table({rows: fanins})}), td({content: table({rows: fanouts})})])]}); */
-/*       const header = table({bgcolor: netColor(net), rows: [tr([id]), name]}); */
-/*       const file = table({cellpadding: 4, rows: [tr([td({content: `${basename(net.$loc.filename)}:${net.$loc.pos}`})]), sigs, action]});; */
-/*       const node = table({rows: [tr([td({content: header})]), tr([td({content: file})]), tr([td({align: "center", content: fans})])]}); */
-/*       const colorNode = table({cellpadding: 6, bgcolor: netLocColor(net), rows: [tr([td({content: node})])]}); */
-/*                                                                     */
-/*       console.log(`  ${net.id} [fontname = "Courier New" shape = "none" label = <${colorNode}>];`); */
-/*    });                                                              */
-      
-
-   info.nets.forEach(s => {
+   function emitNet(s) {
       for (let i = 0; i < s.fanout.length > 0; i++) {
 	 const t = info.nets.find(n => n.id === s.fanout[i].id);
 	 if (!t) {
@@ -299,22 +372,30 @@ function main(argv) {
 	 const polarity = s.fanout[i].polarity;
 	 const index = fanoutPort(s, t, polarity);
 	 const style = s.fanout[i].dep ? ["style=dashed", 'color="red"'] : [];
-	 const constraint = sameCircuit(s, t) ? " constraint=false" : "";
 
 	 if (!polarity) {
 	    style.push("arrowhead=odot");
 	 }
 
-	 if (sameCircuit(s, t)) {
+	 if (false && sameCircuit(s, t)) {
 	    style.push(" constraint=false");
 	 }
 	 
 	 console.log(`${s.id}:${i} :e -> ${s.fanout[i].id}:${index} :w${!style.length ? "" : (" [" + style.join() + "]")};`);
       }
-   });
+   }
+   
+   const info = JSON.parse(readFileSync(argv[2]));
+   
+   const main = collectCircuits(info.nets);
+   
+   console.log(`digraph "${argv[2]}" {`);
+   // console.log("  newrank = true;");
+   console.log('  rankdir = "LR";');
 
-   console.log("  react -> 0");
-   console.log("  react [shape=<diamond> color=red style=filled]");
+   emitCircuit(main, "  ");
+   info.nets.forEach(emitNet);
+
    console.log("}");
 }
 
