@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Tue Apr  8 08:01:31 2025 (serrano)                */
+/*    Last change :  Tue Apr 15 07:41:38 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -39,7 +39,8 @@ const LOCAL = 4; //  100
 /*    locPredefinedColors ...                                          */
 /*---------------------------------------------------------------------*/
 const locPredefinedColors = [
-   "#B79762", "#004D43", "#8FB0FF", "#997D87", "#5A0007", "#809693",
+   "#dddddd", "#d24c4c", "#d2ce4c", "#4c5ad2", "#a94cd2", "#52d24c",
+   "#004D43", "#B79762", "#8FB0FF", "#997D87", "#5A0007", "#809693",
    "#FEFFE6", "#1B4400", "#4FC601", "#3B5DFF", "#4A3B53", "#FF2F80",
    "#61615A", "#BA0900", "#6B7900", "#00C2A0", "#FFAA92", "#FF90C9",
    "#B903AA", "#D16100", "#DDEFFF", "#000035", "#7B4F4B", "#A1C299",
@@ -96,8 +97,8 @@ function hex2(n) {
 /*    lighter ...                                                      */
 /*---------------------------------------------------------------------*/
 function lighter(color) {
-   const f = 1.5;
-   const shift = 30;
+   const f = 1.6;
+   const shift = 50;
    const r = parseInt(color.substring(1, 3), 16);
    const g = parseInt(color.substring(3, 5), 16);
    const b = parseInt(color.substring(5, 7), 16);
@@ -255,7 +256,7 @@ function main(argv) {
       if (rows.length === 0) {
 	 return "";
       } else {
-	 return `<table border="0" cellborder="${cellborder ?? "0"}" cellspacing="${cellspacing ?? "0"}" cellpadding="${cellpadding ?? "2"}" bgcolor="${bgcolor ?? "#cccccc"}" color="${color ?? "black"}"> ${rows.join("")}</table>`;
+	 return `<table border="0" cellborder="${cellborder ?? "0"}" cellspacing="${cellspacing ?? "0"}" cellpadding="${cellpadding ?? "2"}" ${bgcolor ? `bgcolor="${bgcolor}"` : ''} color="${color ?? "black"}"> ${rows.join("")}</table>`;
       }
    }
 
@@ -287,7 +288,7 @@ function main(argv) {
    }
    
    function netLocColor(net) {
-      const i = net.$ast.loc.pos + 1000 * net.$ast.ctor.charCodeAt(0);
+      const i = net.$ast.loc.pos + 10 * net.$ast.ctor.charCodeAt(0);
       
       if (i in locColors) {
 	 return locColors[i];
@@ -353,10 +354,12 @@ function main(argv) {
 	 const fans = table({rows: [tr([td({content: table({rows: fanins})}), td({content: table({rows: fanouts})})])]});
 	 const header = table({bgcolor: netColor(net), rows: [tr([id]), name]});
 	 const file = table({cellpadding: 4, rows: [tr([td({content: `${basename(net.$ast.loc.filename)}:${net.$ast.loc.pos}`})]), sigs, action]});;
-	 const node = table({rows: [tr([td({content: header})]), tr([td({content: file})]), tr([td({align: "center", content: fans})])]});
-	 const colorNode = table({cellpadding: 6, bgcolor: bgcolor, rows: [tr([td({content: node})])]});
+	 const node = table({bgcolor: "#cccccc", cellpadding: 0, rows: [tr([td({content: header})]), tr([td({content: file})]), tr([td({align: "center", content: fans})])]});
+	 const shape = net.type === "WIRE" ? "box" : "cds";
+	 const padding = net.type === "WIRE" ? "1" : "8";
+	 const colorNode = table({cellpadding: padding, cellspacing: 0, rows: [tr([td({content: node})])]});
 	 
-	 console.log(`${margin}${net.id} [fontname = "Courier New" shape = "none" label = <${colorNode}>];`);
+	 console.log(`${margin}${net.id} [fontname="Courier New" shape="${shape}" color="${bgcolor}" style="filled" label=<${colorNode}>];`);
       });
       c.children.forEach(c => emitCircuit(c, margin + "  "));
       console.log("  }");
