@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Tue Apr 15 07:41:38 2025 (serrano)                */
+/*    Last change :  Tue Apr 15 13:59:24 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -195,9 +195,7 @@ function collectCircuits(nets) {
       // establish the parent relationship
       if (!p) {
 	 if (main) {
-	    throw new Error("orphan circuit "
-	       + (n0.$ast.loc.filename + ":" + n0.$ast.loc.pos)
-	       + (main.children[0].$ast.loc.filename + ":" + main.children[0].$ast.loc.pos));
+	    c.parent = main;
 	 } else {
 	    main = c;
 	 }
@@ -378,6 +376,8 @@ function main(argv) {
 
 	 if (!polarity) {
 	    style.push("arrowhead=odot");
+	 } else if (t.type === "WIRE") {
+	    style.push("arrowhead=none");
 	 }
 
 	 if (false && sameCircuit(s, t)) {
