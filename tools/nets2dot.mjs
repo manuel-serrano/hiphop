@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Tue Apr 15 13:59:24 2025 (serrano)                */
+/*    Last change :  Wed Apr 16 07:05:37 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -40,7 +40,7 @@ const LOCAL = 4; //  100
 /*---------------------------------------------------------------------*/
 const locPredefinedColors = [
    "#dddddd", "#d24c4c", "#d2ce4c", "#4c5ad2", "#a94cd2", "#52d24c",
-   "#004D43", "#B79762", "#8FB0FF", "#997D87", "#5A0007", "#809693",
+   "#004D43", "#8FB0FF", "#997D87", "#5A0007", "#809693", "#B79762", 
    "#FEFFE6", "#1B4400", "#4FC601", "#3B5DFF", "#4A3B53", "#FF2F80",
    "#61615A", "#BA0900", "#6B7900", "#00C2A0", "#FFAA92", "#FF90C9",
    "#B903AA", "#D16100", "#DDEFFF", "#000035", "#7B4F4B", "#A1C299",
@@ -73,7 +73,7 @@ function isBright(color) {
       + parseInt(color.substring(4, 6), 16)
       + parseInt(color.substring(6, 8), 16);
 
-   return c > ( 3 * 130);
+   return c > (3 * 130);
 }
 
 
@@ -336,11 +336,14 @@ function main(argv) {
       const n0 = c.nets[0];
       const bgcolor = netLocColor(n0);
       const fgcolor = isBright(bgcolor) ? "black" : "white";
+      const sourceLoc = `[${n0.$ast.loc.filename}:${n0.$ast.loc.pos}]`;
+      const ctor = table({bgcolor: "#cccccc", rows: [tr([td({content: font({color: "black", content: `${n0.$ast.ctor} ${font({color: "blue", content: sourceLoc})}`})})])]});
+      const ctort = table({bgcolor, cellpadding: 6, rows: [tr([td({content: ctor})])]});
       
       console.log(`${margin}subgraph cluster${clusterNum++} {`);
       console.log(`${margin}  color="${lighter(bgcolor)}";`);
       console.log(`${margin}  style="filled";`);
-      console.log(`${margin}  label=<<table bgcolor="${bgcolor}"><tr><td>${font({color: fgcolor, content: `${n0.$ast.ctor} (@${n0.$ast.loc.pos})`})}</td></tr></table>>;`);
+      console.log(`${margin}  label=<${table({cellspacing: 0, cellpadding: 0, bgcolor: bgcolor, rows: [tr([td({content: ctort})])]})}>;`);
       c.nets.forEach(net => {
 	 const typ = netType(net);
 	 const id = td({content: `${net.id} [${typ}:${net.lvl}]${(net.$sweepable ? "" : "*")}`});
@@ -351,8 +354,7 @@ function main(argv) {
 	 const fanins = net.fanin.map((n, i, arr) => tr([port(n, i + net.fanout.length, `&bull; ${small(n.id)}`, "left")]))
 	 const fans = table({rows: [tr([td({content: table({rows: fanins})}), td({content: table({rows: fanouts})})])]});
 	 const header = table({bgcolor: netColor(net), rows: [tr([id]), name]});
-	 const file = table({cellpadding: 4, rows: [tr([td({content: `${basename(net.$ast.loc.filename)}:${net.$ast.loc.pos}`})]), sigs, action]});;
-	 const node = table({bgcolor: "#cccccc", cellpadding: 0, rows: [tr([td({content: header})]), tr([td({content: file})]), tr([td({align: "center", content: fans})])]});
+	 const node = table({bgcolor: "#cccccc", cellpadding: 0, rows: [tr([td({content: header})]), tr([td({align: "center", content: fans})])]});
 	 const shape = net.type === "WIRE" ? "box" : "cds";
 	 const padding = net.type === "WIRE" ? "1" : "8";
 	 const colorNode = table({cellpadding: padding, cellspacing: 0, rows: [tr([td({content: node})])]});
