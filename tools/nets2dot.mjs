@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Wed Apr 16 07:05:37 2025 (serrano)                */
+/*    Last change :  Wed Apr 16 07:45:23 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -343,6 +343,7 @@ function main(argv) {
       console.log(`${margin}subgraph cluster${clusterNum++} {`);
       console.log(`${margin}  color="${lighter(bgcolor)}";`);
       console.log(`${margin}  style="filled";`);
+      console.log(`${margin}  fontname="Courier New";`);
       console.log(`${margin}  label=<${table({cellspacing: 0, cellpadding: 0, bgcolor: bgcolor, rows: [tr([td({content: ctort})])]})}>;`);
       c.nets.forEach(net => {
 	 const typ = netType(net);
