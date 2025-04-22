@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Wed Apr 16 07:45:23 2025 (serrano)                */
+/*    Last change :  Thu Apr 17 17:57:32 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -97,11 +97,11 @@ function hex2(n) {
 /*    lighter ...                                                      */
 /*---------------------------------------------------------------------*/
 function lighter(color) {
-   const f = 1.6;
-   const shift = 50;
    const r = parseInt(color.substring(1, 3), 16);
    const g = parseInt(color.substring(3, 5), 16);
    const b = parseInt(color.substring(5, 7), 16);
+   const f = (r + g + b) > 600 ? 1.1 : 1.6;
+   const shift = (r + g + b) > 600 ? 50 : 20;
 
    const nr = hex2(Math.round(Math.min(255, (r * f) + shift)));
    const ng = hex2(Math.round(Math.min(255, (g * f) + shift)));
@@ -271,7 +271,7 @@ function main(argv) {
 	 case "OR": return "yellow";
 	 case "AND": return "green";
 	 case "REG": return "#d4aaff";
-	 case "WIRE": return "#777777";
+	 case "WIRE": return "#999999";
 	 case "ACTION": return "orange";
 	 case "ACTION-": return "orange";
 	 case "SIGACTION": return "#98bb39";
@@ -339,23 +339,28 @@ function main(argv) {
       const sourceLoc = `[${n0.$ast.loc.filename}:${n0.$ast.loc.pos}]`;
       const ctor = table({bgcolor: "#cccccc", rows: [tr([td({content: font({color: "black", content: `${n0.$ast.ctor} ${font({color: "blue", content: sourceLoc})}`})})])]});
       const ctort = table({bgcolor, cellpadding: 6, rows: [tr([td({content: ctor})])]});
+      const unpropagateColor = 
+	 c.nets.find(n => n.$propagated === false) ? "#ff3333" : "#cccccc";
       
       console.log(`${margin}subgraph cluster${clusterNum++} {`);
       console.log(`${margin}  color="${lighter(bgcolor)}";`);
       console.log(`${margin}  style="filled";`);
       console.log(`${margin}  fontname="Courier New";`);
       console.log(`${margin}  label=<${table({cellspacing: 0, cellpadding: 0, bgcolor: bgcolor, rows: [tr([td({content: ctort})])]})}>;`);
+      
       c.nets.forEach(net => {
+	 const gatecolor = net.$propagated ? "#cccccc" : unpropagateColor;
 	 const typ = netType(net);
 	 const id = td({content: `${net.id} [${typ}:${net.lvl}]${(net.$sweepable ? "" : "*")}`});
 	 const name = net.$name ? tr([td({content: escape(net.$name)})]) : "";
 	 const sigs = net.signals ? tr([td({content: "[" + net.signals + "]"})]) : (net.signame ? tr([td({content: net.signame})]) : "");
-	 const action = net.$action ? tr([td({content: font({content: escape(net.$action)})})]) : (net.value !== undefined? tr([td({content: font({content: net.value})})]) : "");
+	 const action = net.$action ? tr([td({content: font({content: escape(net.$action)})})]) : (net.$propagated || net.$value !== undefined? tr([td({content: font({content: net.$value})})]) : "");
 	 const fanouts = net.fanout.map((n, i, arr) => tr([port(n, i, `${small(n.id)} &bull;`)]))
 	 const fanins = net.fanin.map((n, i, arr) => tr([port(n, i + net.fanout.length, `&bull; ${small(n.id)}`, "left")]))
 	 const fans = table({rows: [tr([td({content: table({rows: fanins})}), td({content: table({rows: fanouts})})])]});
 	 const header = table({bgcolor: netColor(net), rows: [tr([id]), name]});
-	 const node = table({bgcolor: "#cccccc", cellpadding: 0, rows: [tr([td({content: header})]), tr([td({align: "center", content: fans})])]});
+	 const file = sigs || action ? table({cellpadding: 4, rows: [sigs, action]}) : "";
+	 const node = table({bgcolor: gatecolor, cellpadding: 0, rows: [tr([td({content: header})]), tr([td({content: file})]), tr([td({align: "center", content: fans})])]});
 	 const shape = net.type === "WIRE" ? "box" : "cds";
 	 const padding = net.type === "WIRE" ? "1" : "8";
 	 const colorNode = table({cellpadding: padding, cellspacing: 0, rows: [tr([td({content: node})])]});
