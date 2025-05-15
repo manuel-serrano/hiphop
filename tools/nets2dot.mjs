@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Thu Apr 17 17:57:32 2025 (serrano)                */
+/*    Last change :  Tue Apr 22 08:03:50 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -179,7 +179,7 @@ function collectCircuits(nets) {
       if (circuits[key]) {
 	 circuits[key].nets.push(n);
       } else {
-	 circuits[key] = new Circuit(netKey(n), [n]);
+	 circuits[key] = new Circuit(key, [n]);
       }
    });
 
@@ -203,8 +203,8 @@ function collectCircuits(nets) {
 	 c.parent = circuits[astKey(p)];
 
 	 if (!c.parent) {
-	    throw new Error('Cannot find parent circuit of "'
-	       + (n0.$ast.loc.filename + ":" + n0.$ast.loc.pos) + `[${astKey(p)}]'"`);
+	    throw new Error('Cannot find parent circuit of net ' + n0.id + ' "'
+	       + (n0.$ast.ctor + "@" + n0.$ast.loc.filename + ":" + n0.$ast.loc.pos) + ` [${astKey(p)}]'"`);
 	 }
       }
    }
@@ -237,6 +237,7 @@ function sameCircuit(s, t) {
 function main(argv) {
 
    let clusterNum = 0;
+   let unpropagateColor = "#cccccc";
    
    function td({align, port, content}) {
       if (port !== undefined) {
@@ -286,7 +287,7 @@ function main(argv) {
    }
    
    function netLocColor(net) {
-      const i = net.$ast.loc.pos + 10 * net.$ast.ctor.charCodeAt(0);
+      const i = net.$ast.loc.pos + 10 * (net.$ast.ctor.length + net.$ast.ctor.charCodeAt(0));
       
       if (i in locColors) {
 	 return locColors[i];
@@ -339,8 +340,6 @@ function main(argv) {
       const sourceLoc = `[${n0.$ast.loc.filename}:${n0.$ast.loc.pos}]`;
       const ctor = table({bgcolor: "#cccccc", rows: [tr([td({content: font({color: "black", content: `${n0.$ast.ctor} ${font({color: "blue", content: sourceLoc})}`})})])]});
       const ctort = table({bgcolor, cellpadding: 6, rows: [tr([td({content: ctor})])]});
-      const unpropagateColor = 
-	 c.nets.find(n => n.$propagated === false) ? "#ff3333" : "#cccccc";
       
       console.log(`${margin}subgraph cluster${clusterNum++} {`);
       console.log(`${margin}  color="${lighter(bgcolor)}";`);
@@ -386,6 +385,7 @@ function main(argv) {
 	    style.push("arrowhead=odot");
 	 } else if (t.type === "WIRE") {
 	    style.push("arrowhead=none");
+	    style.push('color="#333333"');
 	 }
 
 	 if (false && sameCircuit(s, t)) {
@@ -397,11 +397,16 @@ function main(argv) {
    }
    
    const info = JSON.parse(readFileSync(argv[2]));
-   
+   	 
+
+
    const main = collectCircuits(info.nets);
+
+   if (info.nets.find(n => n.$propagated === true)) {
+      unpropagateColor = "#ff3333";
+   }
    
    console.log(`digraph "${argv[2]}" {`);
-   // console.log("  newrank = true;");
    console.log('  rankdir = "LR";');
 
    emitCircuit(main, "  ");

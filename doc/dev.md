@@ -14,12 +14,12 @@ Shell Variables
 HipHop uses the following shell variables environment:
 
   * `HIPHOP_DEBUG`: `true` | `false`.
-  * `HIPHOP_TRACE`: `causality`, `compile`, `connect`, any combination of these keywords.
+  * `HIPHOP_TRACE`: `causality`, `compile`, `connect`, `nets`, any combination of these keywords.
   * `HIPHOP_COMPILER`: `orig` | `int` | `new`.
   * `HIPHOP_NATIVE`: `true` | `false`, compile acyclic net lists to plain JavaScript. 
   * `HIPHOP_DEBUG_NATIVE`: `true` | `false`, dumps the native JavaScript code when true.
   * `HIPHOP_SWEEP`: `true` | `false`.
-  * `HIPHOP_DUMPNETS`: `true` | `false`.
+  * `HIPHOP_SWEEP_LEVEL`: integer.
   
 
 Running HipHop programs on the Web (server and client)
@@ -221,7 +221,7 @@ Here is how to proceed for generating these files, considering
 a HipHop source file named `foo.hh.js`:
 
   1. Add the option `{ dumpNets: true }` to the reactive machine for 
-  which you want to dump the net list, or set the shell `HIPHOP_DUMPNETS=true`
+  which you want to dump the net list, or set the shell `HIPHOP_TRACE=nets`
   to dump the net lists of all machines.
   2. Run your program. This will generate two files: `foo.hh.js.nets-.json`
   and `foo.hh.js.nets+.json`. The former is the net list before optimizations
