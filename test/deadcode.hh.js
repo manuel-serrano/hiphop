@@ -17,4 +17,4 @@ export const mach = new hh.ReactiveMachine(prg);
 mach.outbuf = "";
 mach.react({});
 mach.react({});
-mach.outbuf = "ok";
+mach.outbuf = "ok\n";

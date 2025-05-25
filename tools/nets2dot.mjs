@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Tue Apr 22 08:03:50 2025 (serrano)                */
+/*    Last change :  Wed May 21 14:17:47 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -148,10 +148,12 @@ class Circuit {
    parent = undefined;
    children = [];
    nets = [];
+   ast;
    
-   constructor(key, nets) {
+   constructor(key, nets, ast) {
       this.key = key;
       this.nets = nets;
+      this.ast = ast;
    }
 
    visit(proc) {
@@ -174,12 +176,21 @@ function collectCircuits(nets) {
    let main = undefined;
    
    nets.forEach(n => {
-      const key = netKey(n);
+      const key = n.$ast.id;
 
       if (circuits[key]) {
 	 circuits[key].nets.push(n);
       } else {
-	 circuits[key] = new Circuit(key, [n]);
+	 circuits[key] = new Circuit(key, [n], n.$ast);
+      }
+      
+      if (n.$parent) {
+	 const pkey = n.$parent.id;
+	 if (!circuits[pkey]) {
+	    circuits[n.$parent.id] = new Circuit(pkey, [], n.$parent);
+	 }
+      } else {
+	 if (!main) main = new Circuit("main", [], { ctor: "main", loc: { filename: n.$ast.loc.filename, pos: 0 } });
       }
    });
 
@@ -196,15 +207,13 @@ function collectCircuits(nets) {
       if (!p) {
 	 if (main) {
 	    c.parent = main;
-	 } else {
-	    main = c;
 	 }
       } else {
-	 c.parent = circuits[astKey(p)];
+	 c.parent = circuits[p.id];
 
 	 if (!c.parent) {
 	    throw new Error('Cannot find parent circuit of net ' + n0.id + ' "'
-	       + (n0.$ast.ctor + "@" + n0.$ast.loc.filename + ":" + n0.$ast.loc.pos) + ` [${astKey(p)}]'"`);
+	       + (n0.$ast.ctor + "@" + n0.$ast.loc.filename + ":" + n0.$ast.loc.pos) + ` [${p.id}]"`);
 	 }
       }
    }
@@ -286,8 +295,8 @@ function main(argv) {
       }
    }
    
-   function netLocColor(net) {
-      const i = net.$ast.loc.pos + 10 * (net.$ast.ctor.length + net.$ast.ctor.charCodeAt(0));
+   function astLocColor(ast) {
+      const i = ast.loc.pos + 10 * (ast.ctor.length + ast.ctor.charCodeAt(0));
       
       if (i in locColors) {
 	 return locColors[i];
@@ -295,6 +304,10 @@ function main(argv) {
 	 locColors[i] = nextLocColor();
 	 return locColors[i];
       }
+   }
+   
+   function netLocColor(net) {
+      return astLocColor(net.$ast);
    }
    
    function escape(str) {
@@ -334,40 +347,43 @@ function main(argv) {
    }
 
    function emitCircuit(c, margin) {
-      const n0 = c.nets[0];
-      const bgcolor = netLocColor(n0);
-      const fgcolor = isBright(bgcolor) ? "black" : "white";
-      const sourceLoc = `[${n0.$ast.loc.filename}:${n0.$ast.loc.pos}]`;
-      const ctor = table({bgcolor: "#cccccc", rows: [tr([td({content: font({color: "black", content: `${n0.$ast.ctor} ${font({color: "blue", content: sourceLoc})}`})})])]});
-      const ctort = table({bgcolor, cellpadding: 6, rows: [tr([td({content: ctor})])]});
-      
-      console.log(`${margin}subgraph cluster${clusterNum++} {`);
-      console.log(`${margin}  color="${lighter(bgcolor)}";`);
-      console.log(`${margin}  style="filled";`);
-      console.log(`${margin}  fontname="Courier New";`);
-      console.log(`${margin}  label=<${table({cellspacing: 0, cellpadding: 0, bgcolor: bgcolor, rows: [tr([td({content: ctort})])]})}>;`);
-      
-      c.nets.forEach(net => {
-	 const gatecolor = net.$propagated ? "#cccccc" : unpropagateColor;
-	 const typ = netType(net);
-	 const id = td({content: `${net.id} [${typ}:${net.lvl}]${(net.$sweepable ? "" : "*")}`});
-	 const name = net.$name ? tr([td({content: escape(net.$name)})]) : "";
-	 const sigs = net.signals ? tr([td({content: "[" + net.signals + "]"})]) : (net.signame ? tr([td({content: net.signame})]) : "");
-	 const action = net.$action ? tr([td({content: font({content: escape(net.$action)})})]) : (net.$propagated || net.$value !== undefined? tr([td({content: font({content: net.$value})})]) : "");
-	 const fanouts = net.fanout.map((n, i, arr) => tr([port(n, i, `${small(n.id)} &bull;`)]))
-	 const fanins = net.fanin.map((n, i, arr) => tr([port(n, i + net.fanout.length, `&bull; ${small(n.id)}`, "left")]))
-	 const fans = table({rows: [tr([td({content: table({rows: fanins})}), td({content: table({rows: fanouts})})])]});
-	 const header = table({bgcolor: netColor(net), rows: [tr([id]), name]});
-	 const file = sigs || action ? table({cellpadding: 4, rows: [sigs, action]}) : "";
-	 const node = table({bgcolor: gatecolor, cellpadding: 0, rows: [tr([td({content: header})]), tr([td({content: file})]), tr([td({align: "center", content: fans})])]});
-	 const shape = net.type === "WIRE" ? "box" : "cds";
-	 const padding = net.type === "WIRE" ? "1" : "8";
-	 const colorNode = table({cellpadding: padding, cellspacing: 0, rows: [tr([td({content: node})])]});
+      if (c === main && c.nets.length === 0) {
+	 c.children.forEach(c => emitCircuit(c, margin + "  "));
+      } else {
+	 const bgcolor = astLocColor(c.ast);
+	 const fgcolor = isBright(bgcolor) ? "black" : "white";
+	 const sourceLoc = `[${c.ast.loc.filename}:${c.ast.loc.pos}]`;
+	 const ctor = table({bgcolor: "#cccccc", rows: [tr([td({content: font({color: "black", content: `${c.ast.ctor} ${font({color: "blue", content: sourceLoc})}`})})])]});
+	 const ctort = table({bgcolor, cellpadding: 6, rows: [tr([td({content: ctor})])]});
 	 
-	 console.log(`${margin}${net.id} [fontname="Courier New" shape="${shape}" color="${bgcolor}" style="filled" label=<${colorNode}>];`);
-      });
-      c.children.forEach(c => emitCircuit(c, margin + "  "));
-      console.log("  }");
+	 console.log(`${margin}subgraph cluster${clusterNum++} {`);
+	 console.log(`${margin}  color="${lighter(bgcolor)}";`);
+	 console.log(`${margin}  style="filled";`);
+	 console.log(`${margin}  fontname="Courier New";`);
+	 console.log(`${margin}  label=<${table({cellspacing: 0, cellpadding: 0, bgcolor: bgcolor, rows: [tr([td({content: ctort})])]})}>;`);
+	 
+	 c.nets.forEach(net => {
+	    const gatecolor = net.$propagated ? "#cccccc" : unpropagateColor;
+	    const typ = netType(net);
+	    const id = td({content: `${net.id} [${typ}:${net.lvl}]${(net.$sweepable ? "" : "*")}`});
+	    const name = net.$name ? tr([td({content: escape(net.$name)})]) : "";
+	    const sigs = net.signals ? tr([td({content: "[" + net.signals + "]"})]) : (net.signame ? tr([td({content: net.signame})]) : "");
+	    const action = net.$action ? tr([td({content: font({content: escape(net.$action)})})]) : (net.$propagated || net.$value !== undefined? tr([td({content: font({content: net.$value})})]) : "");
+	    const fanouts = net.fanout.map((n, i, arr) => tr([port(n, i, `${small(n.id)} &bull;`)]))
+	    const fanins = net.fanin.map((n, i, arr) => tr([port(n, i + net.fanout.length, `&bull; ${small(n.id)}`, "left")]))
+	    const fans = table({rows: [tr([td({content: table({rows: fanins})}), td({content: table({rows: fanouts})})])]});
+	    const header = table({bgcolor: netColor(net), rows: [tr([id]), name]});
+	    const file = sigs || action ? table({cellpadding: 4, rows: [sigs, action]}) : "";
+	    const node = table({bgcolor: gatecolor, cellpadding: 0, rows: [tr([td({content: header})]), tr([td({content: file})]), tr([td({align: "center", content: fans})])]});
+	    const shape = net.type === "WIRE" ? "box" : "cds";
+	    const padding = net.type === "WIRE" ? "1" : "8";
+	    const colorNode = table({cellpadding: padding, cellspacing: 0, rows: [tr([td({content: node})])]});
+	    
+	    console.log(`${margin}${net.id} [fontname="Courier New" shape="${shape}" color="${bgcolor}" style="filled" label=<${colorNode}>];`);
+	 });
+	 c.children.forEach(c => emitCircuit(c, margin + "  "));
+	 console.log("  }");
+      }
    }
    
    function emitNet(s) {
@@ -397,9 +413,6 @@ function main(argv) {
    }
    
    const info = JSON.parse(readFileSync(argv[2]));
-   	 
-
-
    const main = collectCircuits(info.nets);
 
    if (info.nets.find(n => n.$propagated === true)) {

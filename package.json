@@ -36,6 +36,7 @@
    },
    "scripts": {
      "test": "HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js",
+     "test_new": "HIPHOP_COMPILER=new HIPHOP_UNROLL=true HIPHOP_SYNCREG=true REINCARNATION=false HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js",
      "prepare": "node etc/configure.js package.json lib/config.js.in lib/config.js && node etc/buildmodules.js"
    }
 }
