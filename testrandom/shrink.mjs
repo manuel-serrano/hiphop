@@ -1,5 +1,5 @@
-import * as hh from "@hop/hiphop";
-import * as hhapi from "@hop/hiphop/lib/ast.js";
+import * as hh from "../lib/hiphop.js";
+import * as hhapi from "../lib/ast.js";
 
 export { shrinker };
 

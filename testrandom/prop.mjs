@@ -1,7 +1,20 @@
-import * as hh from "@hop/hiphop";
-import * as hhapi from "@hop/hiphop/lib/ast.js";
-import beautify from 'js-beautify';
+/*=====================================================================*/
+/*    serrano/prgm/project/hiphop/hiphop/testrandom/prop.mjs           */
+/*    -------------------------------------------------------------    */
+/*    Author      :  robby findler & manuel serrano                    */
+/*    Creation    :  Tue May 27 16:44:27 2025                          */
+/*    Last change :                                                    */
+/*    Copyright   :  2025 robby findler & manuel serrano               */
+/*    -------------------------------------------------------------    */
+/*    Testing execution engines and compilers                          */
+/*=====================================================================*/
+import * as hh from "../lib/hiphop.js";
+import * as hhapi from "../lib/ast.js";
+import { jsonToHiphop } from "./dump.mjs";
 
+/*---------------------------------------------------------------------*/
+/*    run ...                                                          */
+/*---------------------------------------------------------------------*/
 function run(mach, count = 10) {
    const res = [];
    let sigs = [];
@@ -21,24 +34,19 @@ function run(mach, count = 10) {
    return res;
 }
 
-hhapi.Module.prototype.dump = function() {
-   return { node: "module", children: this.children.map(c => c.dump()) };
-}
-hhapi.Nothing.prototype.dump = function(){ return { node: "nothing" }; }
-hhapi.Pause.prototype.dump = function() { return { node: "pause" }; }
-hhapi.Sequence.prototype.dump = function() {
-   return { node: "seq", children: this.children.map(c => c.dump()) };
-}
-hhapi.Fork.prototype.dump = function() {
-   return { node: "par", children: this.children.map(c => c.dump()) };
-}
-hhapi.Loop.prototype.dump = function() {
-   return { node: "loop", children: this.children.map(c => c.dump()) };
-}
 
-function failure(prog, mach0, machN, msg) {
-   return `${beautify.js(JSON.stringify(prog.dump()), { indent_size: 2, space_in_empty_paren: true })}`
-      + `"${mach0.name()}"/"${machN.name()}": ${msg}`;
+function failure(prog, mach0, machN, msg, fmt = "src") {
+   const jsonprog = prog.tojson();
+   const jsonstr = JSON.stringify(jsonprog);
+   if (fmt === "src") {
+      const hhprog = jsonToHiphop(jsonprog);
+      console.error(`${jsonstr}` + `"${mach0.name()}"/"${machN.name()}": ${msg}`);
+      console.error(hhprog);
+      
+      return hhprog;
+   } else {
+      return `${jsonstr}` + `"${mach0.name()}"/"${machN.name()}": ${msg}`;
+   }
 }
 
 function equal(x, y) {

@@ -1,4 +1,4 @@
-import * as hh from "@hop/hiphop";
+import * as hh from "../lib/hiphop.js";
 
 export { gen };
 
