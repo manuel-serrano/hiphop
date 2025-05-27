@@ -34,11 +34,10 @@ const prg = hiphop module() {
    }
 }
 
-mach = new hh.ReactiveMachine(prg);
+mach = new hh.ReactiveMachine(prg, { verbose: -1 });
 mach.outbuf = "";
 
 try {
-   mach.react({});
    mach.react({});
 } catch(e) {
    mach = new hh.ReactiveMachine(hiphop module () {});
