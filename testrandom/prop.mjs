@@ -3,14 +3,13 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :                                                    */
+/*    Last change :  Tue May 27 20:33:21 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
 /*=====================================================================*/
 import * as hh from "../lib/hiphop.js";
 import * as hhapi from "../lib/ast.js";
-import { jsonToHiphop } from "./dump.mjs";
 
 /*---------------------------------------------------------------------*/
 /*    run ...                                                          */
@@ -34,21 +33,20 @@ function run(mach, count = 10) {
    return res;
 }
 
-
-function failure(prog, mach0, machN, msg, fmt = "src") {
+/*---------------------------------------------------------------------*/
+/*    failure ...                                                      */
+/*---------------------------------------------------------------------*/
+function failure(prog, mach0, machN, msg) {
    const jsonprog = prog.tojson();
    const jsonstr = JSON.stringify(jsonprog);
-   if (fmt === "src") {
-      const hhprog = jsonToHiphop(jsonprog);
-      console.error(`${jsonstr}` + `"${mach0.name()}"/"${machN.name()}": ${msg}`);
-      console.error(hhprog);
+   const machines = [ mach0, machN ];
       
-      return hhprog;
-   } else {
-      return `${jsonstr}` + `"${mach0.name()}"/"${machN.name()}": ${msg}`;
-   }
+   return { status: "failure", prog, msg, machines };
 }
 
+/*---------------------------------------------------------------------*/
+/*    equal ...                                                        */
+/*---------------------------------------------------------------------*/
 function equal(x, y) {
    if ((x instanceof Array) && (y instanceof Array)) {
       if (x.length === y.length) {
@@ -66,31 +64,40 @@ function equal(x, y) {
    }
 }
 
+/*---------------------------------------------------------------------*/
+/*    makeProp ...                                                     */
+/*---------------------------------------------------------------------*/
 function makeProp(...machCtor) {
    return prog => {
       const machs = machCtor.map(ctor => ctor(prog));
-      const v0 = run(machs[0]);
+      const r0 = run(machs[0]);
 
       for (let i = 1; i < machCtor.length; i++) {
-	 const v = run(machs[i]);
+	 const ri = run(machs[i]);
 
-	 for (let r = 0; r < Math.max(v0.length, v.length); r++) {
-	    if (r >= v0.length || r >= v.length) {
-	       return failure(prog, machs[0], machs[i], `Number of reactions differs`);
+	 for (let j = 0; j < Math.max(r0.length, ri.length); j++) {
+	    if (j >= r0.length || j >= ri.length) {
+	       return failure(prog, machs[0], machs[i], `reaction numbers ${r0.length} / ${ri.length}`);
 	    }
-	    if (!equal(v0[r], v[r])) {
-	       return failure(prog, machs[0], machs[i], `Results differ at reaction #${r}\n  v0=${v0[r]}\n  vr=${v[r]}`);
+	    if (r0[j].status !== ri[j].status) {
+	       return failure(prog, machs[0], machs[i], `status @ #${j}: ${r0[j].status} / ${ri[j].status}`);
+	    }
+	    if (!equal(r0[j].result, ri[j].result)) {
+	       return failure(prog, machs[0], machs[i], `results @ #${j}: ${JSON.stringify(r0[j].result)} / ${JSON.stringify(ri[j].result)}`);
 	    }
 	 }
       }
+      return { status: "success" };
    }
-   return false;
 }
 
 export const prop = makeProp(
-   prg => new hh.ReactiveMachine(prg, { name: "colin" }),
-   prg => new hh.ReactiveMachine(prg, { name: "new", compiler: "new", unrollLoops: true, syncReg: true }),
-   prg => new hh.ReactiveMachine(prg, { name: "new-nounroll", compiler: "new", unrollLoops: false, syncReg: true }));
+   prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", verbose: -1, sweep: 0 }),
+   prg => new hh.ReactiveMachine(prg, { name: "colin-sweep-wire", verbose: -1, sweep: -1 }),
+   prg => new hh.ReactiveMachine(prg, { name: "colin-sweep", verbose: -1 })
+   //prg => new hh.ReactiveMachine(prg, { name: "new", compiler: "new", unrollLoops: true, syncReg: true }),
+/*    prg => new hh.ReactiveMachine(prg, { name: "new-nounroll", compiler: "new", unrollLoops: false, syncReg: true }) */
+);
 
 
 
