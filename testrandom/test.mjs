@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Sat May 31 09:04:31 2025 (serrano)                */
+/*    Last change :  Sun Jun  1 13:13:06 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -75,7 +75,7 @@ function findBugGen(out, iterCount = 1000) {
    for (let i = 0; i < iterCount; i++) {
       const events = Array.from({length: 10}).map(i => { return {}; });
       const prog = gen();
-      console.error("###", i);
+      console.error("#", i);
 
       findBugInProg(out, prog, events);
    }
@@ -95,9 +95,10 @@ async function main(argv) {
 import * as hh from "@hop/hiphop";
 		     
 const events = ${JSON.stringify(events)};
-const prg = hiphop ${jsonToHiphop(json, 0)}
-const opts = { name: "${mach.name()}", compiler: "${mach.compiler}", unrollLoop: ${mach.unrollLoop}, syncReg: ${mach.syncReg}, verbose: ${mach.verbose || 0} };
 
+const prg = hiphop ${jsonToHiphop(json, 0)}
+
+const opts = { name: "${mach.name()}", compiler: "${mach.compiler}", unrollLoop: ${mach.unrollLoop}, syncReg: ${mach.syncReg}, verbose: ${mach.verbose || 0} };
 export const mach = new hh.ReactiveMachine(prg, opts);
 mach.outbuf = "";
 events.forEach((e, i) => mach.outbuf += (i + ': ' + JSON.stringify(mach.react(e)) + '\\n'));
