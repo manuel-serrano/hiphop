@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:45:26 2025                          */
-/*    Last change :  Tue May 27 20:51:50 2025 (serrano)                */
+/*    Last change :  Sat May 31 09:23:41 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Json dump and pretty-printing HipHop programs                    */
@@ -14,7 +14,7 @@ import * as hhapi from "../lib/ast.js";
 /*---------------------------------------------------------------------*/
 /*    export                                                           */
 /*---------------------------------------------------------------------*/
-export { jsonToHiphop };
+export { jsonToHiphop, jsonToAst };
 
 /*---------------------------------------------------------------------*/
 /*    tojson ...                                                       */
@@ -72,6 +72,39 @@ hhapi.Emit.prototype.tojson = function() {
 }
 
 /*---------------------------------------------------------------------*/
+/*    jsonToAst ...                                                    */
+/*---------------------------------------------------------------------*/
+function jsonToAst(obj) {
+   const { node, children } = obj;
+   
+   switch(node) {
+      case "module":
+	 return hh.MODULE({}, ...children.map(jsonToAst));
+
+      case "nothing":
+	 return hh.NOTHING({});
+
+      case "pause":
+	 return hh.PAUSE({});
+
+      case "seq":
+	 return hh.SEQUENCE({}, ...children.map(jsonToAst));
+
+      case "par":
+	 return hh.FORK({}, ...children.map(jsonToAst));
+
+      case "loop":
+	 return hh.LOOP({}, ...children.map(jsonToAst));
+
+      case "emit":
+	 return hh.EMIT({});
+	 
+      case "local":
+	 return hh.LOCALS({});
+   }
+}
+
+/*---------------------------------------------------------------------*/
 /*    margins ...                                                      */
 /*---------------------------------------------------------------------*/
 const margins = [ "", " ", "  ", "   ", "    ", "     ", "      "];
@@ -94,7 +127,7 @@ function jsonToHiphop(obj, m = 0) {
 
    switch(node) {
       case "module": 
-	 return margin(m) + 'module () {\n'
+	 return margin(m) + 'module() {\n'
 	    + children.map(c => jsonToHiphop(c, m + 2)).join(';\n')
 	    + '\n' + margin(m) + '}';
 
@@ -122,7 +155,7 @@ function jsonToHiphop(obj, m = 0) {
 	       + '\n' + margin(m) + '}'
 	       + children
 		  .slice(1, children.length)
-		  .flatMap(c => ` par {\n${jsonToHiphop(c, m + 2)}\n${margin(m)}}`);
+		  .flatMap(c => ` par {\n${jsonToHiphop(c, m + 2)}\n${margin(m)}}`).join('');
 	 }
 
       case "loop":

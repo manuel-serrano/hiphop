@@ -3,13 +3,14 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :                                                    */
+/*    Last change :  Sat May 31 10:26:09 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
 /*=====================================================================*/
 import * as hh from "../lib/hiphop.js";
 import * as hhapi from "../lib/ast.js";
+import { jsonToHiphop } from "./dump.mjs";
 
 export { shrinker };
 
@@ -42,6 +43,7 @@ function shrinkInt(i) {
 /*---------------------------------------------------------------------*/
 function shrinkArray(a) {
    let ans = [];
+   
    for (let i = 0; i < a.length; i++) {
       ans.push(a.slice(0, i).concat(a.slice(i + 1, a.length)));
    }
@@ -51,6 +53,7 @@ function shrinkArray(a) {
 	 ans.push(a.map((v, k) => (i === k) ? si[j] : v));
       }
    }
+   
    return ans;
 }
 
@@ -62,9 +65,9 @@ function shrinkArray(a) {
 /*---------------------------------------------------------------------*/
 function shrinkASTNode(ctor, children) {
    if (children.length === 0) {
-      return [hh.NOTHING({})];
+      return [ hh.NOTHING({}) ];
    } else if (children.length === 1) {
-      return children;
+      return shrinker(children[0]).map(c => ctor({}, c)).concat(children);
    } else {
       const el = shrinkArray(children);
       return el.map(a => ctor({}, a));
@@ -83,11 +86,11 @@ hhapi.$ASTNode.prototype.shrink = function() {
 /*---------------------------------------------------------------------*/
 hhapi.Module.prototype.shrink = function() {
    const el = shrinkArray(this.children);
-   return el.map(a => {
+   return el.flatMap(a => {
       if (a.length === 0) {
-	 return hh.MODULE({}, [ hh.NOTHING({}) ]);
+	 return [];
       } else {
-	 return hh.MODULE({}, a);
+	 return [ hh.MODULE({}, a) ];
       }
    });
 }

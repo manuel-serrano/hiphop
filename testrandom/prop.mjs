@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Tue May 27 20:33:21 2025 (serrano)                */
+/*    Last change :  Sat May 31 09:04:51 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -11,22 +11,18 @@
 import * as hh from "../lib/hiphop.js";
 import * as hhapi from "../lib/ast.js";
 
+export { makeProp };
+
 /*---------------------------------------------------------------------*/
 /*    run ...                                                          */
 /*---------------------------------------------------------------------*/
 function run(mach, count = 10) {
    const res = [];
-   let sigs = [];
-   mach.debug_emitted_func = emitted => {
-      sigs = emitted.map(n => n);
-   }
    for (let i = 0; i < count; i++) {
       try {
-	 sigs = "";
-	 mach.react();
-	 res.push(sigs);
+	 res.push({ status: "success", signals: mach.react() });
       } catch(e) {
-	 res.push("error");
+	 res.push({ status: "failure" });
 	 return res;
       }
    }
@@ -59,6 +55,18 @@ function equal(x, y) {
       } else {
 	 return false;
       }
+   } else if ((x instanceof Object) && (y instanceof Object)) {
+      for (let k in x) {
+	 if (!equal(x[k], y[k])) {
+	    return false;
+	 }
+      }
+      for (let k in y) {
+	 if (!equal(x[k], y[k])) {
+	    return false;
+	 }
+      }
+      return true;
    } else {
       return x === y;
    }
@@ -76,29 +84,23 @@ function makeProp(...machCtor) {
 	 const ri = run(machs[i]);
 
 	 for (let j = 0; j < Math.max(r0.length, ri.length); j++) {
+	    if (r0[r0.length - 1 ].status === "failure" && ri[ri.length - 1].status === "failure") {
+	       break;
+	    }
 	    if (j >= r0.length || j >= ri.length) {
 	       return failure(prog, machs[0], machs[i], `reaction numbers ${r0.length} / ${ri.length}`);
 	    }
 	    if (r0[j].status !== ri[j].status) {
 	       return failure(prog, machs[0], machs[i], `status @ #${j}: ${r0[j].status} / ${ri[j].status}`);
 	    }
-	    if (!equal(r0[j].result, ri[j].result)) {
-	       return failure(prog, machs[0], machs[i], `results @ #${j}: ${JSON.stringify(r0[j].result)} / ${JSON.stringify(ri[j].result)}`);
+	    if (!equal(r0[j].signals, ri[j].signals)) {
+	       return failure(prog, machs[0], machs[i], `results @ #${j}: ${JSON.stringify(r0[j].signals)} / ${JSON.stringify(ri[j].signals)}`);
 	    }
 	 }
       }
       return { status: "success" };
    }
 }
-
-export const prop = makeProp(
-   prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", verbose: -1, sweep: 0 }),
-   prg => new hh.ReactiveMachine(prg, { name: "colin-sweep-wire", verbose: -1, sweep: -1 }),
-   prg => new hh.ReactiveMachine(prg, { name: "colin-sweep", verbose: -1 })
-   //prg => new hh.ReactiveMachine(prg, { name: "new", compiler: "new", unrollLoops: true, syncReg: true }),
-/*    prg => new hh.ReactiveMachine(prg, { name: "new-nounroll", compiler: "new", unrollLoops: false, syncReg: true }) */
-);
-
 
 
 

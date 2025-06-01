@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :                                                    */
+/*    Last change :  Sat May 31 09:03:55 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -105,7 +105,6 @@ function genEnv(env, size) {
 	       return hh.NOTHING({});
 	    } else {
 	       const i = Math.round(Math.random() * env.signals.length);
-	       console.error("EMIT: ", env.signals[i]);
 	       return hh.EMIT({signame: env.signals[i]});
 	    }
 	 }]);
@@ -130,18 +129,18 @@ function genEnv(env, size) {
 	 }],
 	 [1, () => {
 	    return hh.LOOP({}, genEnv(env, size - 1));
-	 }],
-	 [1, () => {
-	    const l = Math.round(Math.random() * 5);
-	    const names = Array.from({length: l}).map(c => gensym());
-	    const attrs = {};
-	    const signals = env.signals.concat(names);
-	    const nenv = Object.assign(env, { signals });
-	    names.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT });
-
-	    console.error("LOCALS: ", names);
-	    return hh.LOCAL(attrs, genEnv(nenv, size - 1));
 	 }]
+/* 	 [1, () => {                                                   */
+/* 	    const l = Math.round(Math.random() * 5);                   */
+/* 	    const names = Array.from({length: l}).map(c => gensym());  */
+/* 	    const attrs = {};                                          */
+/* 	    const signals = env.signals.concat(names);                 */
+/* 	    const nenv = Object.assign(env, { signals });              */
+/* 	    names.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT }); */
+/*                                                                     */
+/* 	    console.error("LOCALS: ", names);                          */
+/* 	    return hh.LOCAL(attrs, genEnv(nenv, size - 1));            */
+/* 	 }]                                                            */
       );
    }
 }
