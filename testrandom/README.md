@@ -3,6 +3,16 @@
 A quickcheck-inspired library to test that various different options
 of HipHop evaluate programs to the same results.
 
+To run the randon tester:
+
+```
+cd hiphop
+npm install
+npm run --silent test_random
+```
+
+The content of this directory is:
+
 - test.mjs: runs the random testing
 
 - gen.mjs: generates random HipHop modules

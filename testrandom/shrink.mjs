@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Sat May 31 10:26:09 2025 (serrano)                */
+/*    Last change :  Fri Jun  6 08:44:51 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -63,14 +63,14 @@ function shrinkArray(a) {
 /*---------------------------------------------------------------------*/
 /*    shrinkASTNode ...                                                */
 /*---------------------------------------------------------------------*/
-function shrinkASTNode(ctor, children) {
+function shrinkASTNode(ctor, attr, children) {
    if (children.length === 0) {
       return [ hh.NOTHING({}) ];
    } else if (children.length === 1) {
-      return shrinker(children[0]).map(c => ctor({}, c)).concat(children);
+      return shrinker(children[0]).map(c => ctor(attr, c)).concat(children);
    } else {
       const el = shrinkArray(children);
-      return el.map(a => ctor({}, a));
+      return el.map(a => ctor(attr, a));
    }
 }
 
@@ -113,20 +113,35 @@ hhapi.Pause.prototype.shrink = function() {
 /*    shrink ::Sequence ...                                            */
 /*---------------------------------------------------------------------*/
 hhapi.Sequence.prototype.shrink = function() {
-   return shrinkASTNode(hh.SEQUENCE, this.children);
+   return shrinkASTNode(hh.SEQUENCE, {}, this.children);
 }
 
 /*---------------------------------------------------------------------*/
 /*    shrink ::Fork ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Fork.prototype.shrink = function() {
-   return shrinkASTNode(hh.FORK, this.children);
+   return shrinkASTNode(hh.FORK, {}, this.children);
 }
 
 /*---------------------------------------------------------------------*/
 /*    shrink ::Loop ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Loop.prototype.shrink = function() {
-   return shrinkASTNode(hh.LOOP, this.children);
+   return shrinkASTNode(hh.LOOP, {}, this.children);
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrink ::Trap ...                                                */
+/*---------------------------------------------------------------------*/
+hhapi.Trap.prototype.shrink = function() {
+   const attrs = { [this.trapName]: this.traName };
+   return shrinkASTNode(hh.TRAP, attrs, this.children);
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrink ::Exit ...                                                */
+/*---------------------------------------------------------------------*/
+hhapi.Exit.prototype.shrink = function() {
+   return [hh.PAUSE({})];
 }
 

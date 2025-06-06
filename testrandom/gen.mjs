@@ -3,14 +3,15 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Sat May 31 09:03:55 2025 (serrano)                */
+/*    Last change :  Thu Jun  5 13:50:10 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
 /*=====================================================================*/
 import * as hh from "../lib/hiphop.js";
+import { jsonToHiphop } from "./dump.mjs";
 
-export { gen };
+export { gen, wrap, gensym };
 
 /*---------------------------------------------------------------------*/
 /*    gensymCnt ...                                                    */
@@ -20,8 +21,8 @@ let gensymCnt = 1;
 /*---------------------------------------------------------------------*/
 /*    gensym ...                                                       */
 /*---------------------------------------------------------------------*/
-function gensym() {
-   return "g" + gensymCnt++;
+function gensym(base = "g") {
+   return base + gensymCnt++;
 }
 
 /*---------------------------------------------------------------------*/
@@ -89,46 +90,61 @@ function testRandomInRange() {
 // testRandomInRange();
 
 /*---------------------------------------------------------------------*/
-/*    genEnv ...                                                       */
+/*    genStmt ...                                                      */
 /*    -------------------------------------------------------------    */
 /*    returns an esterel expression of size `size`,                    */
 /*    that might refer to the variables in `env`                       */
 /*    (at the moment, never generates references nor binders, alas)    */
 /*---------------------------------------------------------------------*/
-function genEnv(env, size) {
+function genStmt(env, size) {
    if (size === 0) {
       return choose(
-	 [1, () => hh.NOTHING({})],
-	 [1, () => hh.PAUSE({})],
-	 [1, () => {
+	 [3, () => hh.NOTHING({})],
+	 [3, () => hh.PAUSE({})],
+	 [3, () => {
 	    if (env.signals.length === 0) {
 	       return hh.NOTHING({});
 	    } else {
 	       const i = Math.round(Math.random() * env.signals.length);
 	       return hh.EMIT({signame: env.signals[i]});
 	    }
+	 }],
+	 [3, () => {
+	    if (env.traps.length > 0) {
+	       const idx = Math.floor(Math.random() * env.traps.length);
+	       const attr = { [env.traps[idx]]: env.traps[idx] };
+	       return hh.EXIT(attr);
+	    } else {
+	       return hh.PAUSE({})
+	    }
 	 }]);
    } else {
       return choose(
-	 [1, () => {
+	 [3, () => {
 	    const n = randomInRange(0, size - 1);
-	    return hh.SEQUENCE({}, genEnv(env, size - n - 1), genEnv(env, n))
+	    return hh.SEQUENCE({}, genStmt(env, size - n - 1), genStmt(env, n))
 	 }],
-	 [1, () => {
+	 [3, () => {
 	    const l = Math.round(Math.random() * 5);
 	    let children = [];
 	    for (let i = 0; i < l - 1; i++) {
 	       const n = randomInRange(0, size - 1);
-	       children[ i ] = genEnv(env, size - n - 1);
+	       children[ i ] = genStmt(env, size - n - 1);
 	       size -= n;
 	    }
 	    if (l > 0) {
-	       children[ l - 1 ] = genEnv(env, size);
+	       children[ l - 1 ] = genStmt(env, size);
 	    }
 	    return hh.FORK({}, ...children);
 	 }],
+	 [3, () => {
+	    return hh.LOOP({}, genStmt(env, size - 1));
+	 }],
 	 [1, () => {
-	    return hh.LOOP({}, genEnv(env, size - 1));
+	    const trap = gensym("trap");
+	    const nenv = Object.assign({}, env);
+	    nenv.traps = [trap, ...nenv.traps];
+	    return hh.TRAP({[trap]: trap}, genStmt(nenv, size - 1));
 	 }]
 /* 	 [1, () => {                                                   */
 /* 	    const l = Math.round(Math.random() * 5);                   */
@@ -139,7 +155,7 @@ function genEnv(env, size) {
 /* 	    names.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT }); */
 /*                                                                     */
 /* 	    console.error("LOCALS: ", names);                          */
-/* 	    return hh.LOCAL(attrs, genEnv(nenv, size - 1));            */
+/* 	    return hh.LOCAL(attrs, genStmt(nenv, size - 1));            */
 /* 	 }]                                                            */
       );
    }
@@ -151,5 +167,20 @@ function genEnv(env, size) {
 /*    Generates a random program.                                      */
 /*---------------------------------------------------------------------*/
 function gen(size = 20) {
-   return hh.MODULE({}, genEnv({signals: []}, size));
+   const body = genStmt({signals: [], traps: []}, size);
+   return hh.MODULE({}, body);
+}
+
+/*---------------------------------------------------------------------*/
+/*    wrap ...                                                         */
+/*---------------------------------------------------------------------*/
+function wrap(prog, ctor, depth) {
+   const children = prog.children;
+   let body = children.length === 1 ? children : hh.SEQUENCE({}, children);
+   
+   while (depth-- > 0) {
+      body = ctor({}, body);
+   }
+
+   return hh.MODULE({}, body);
 }

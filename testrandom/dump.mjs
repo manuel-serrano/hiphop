@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:45:26 2025                          */
-/*    Last change :  Sat May 31 09:23:41 2025 (serrano)                */
+/*    Last change :  Fri Jun  6 08:42:32 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Json dump and pretty-printing HipHop programs                    */
@@ -55,6 +55,22 @@ hhapi.Loop.prototype.tojson = function() {
    };
 }
 
+hhapi.Trap.prototype.tojson = function() {
+   return {
+      node: "trap",
+      trapName: this.trapName,
+      children: this.children.map(c => c.tojson())
+   };
+}
+
+hhapi.Exit.prototype.tojson = function() {
+   return {
+      node: "exit",
+      trapName: this.trapName,
+      children: this.children.map(c => c.tojson())
+   };
+}
+
 hhapi.Local.prototype.tojson = function() {
   return {
      node: "local",
@@ -95,6 +111,12 @@ function jsonToAst(obj) {
 
       case "loop":
 	 return hh.LOOP({}, ...children.map(jsonToAst));
+
+      case "trap":
+	 return hh.TRAP({trapName: this.trapName}, ...children.map(jsonToAst));
+
+      case "exit":
+	 return hh.EXIT({trapName: this.trapName});
 
       case "emit":
 	 return hh.EMIT({});
@@ -162,6 +184,14 @@ function jsonToHiphop(obj, m = 0) {
 	 return margin(m) + 'loop {\n'
 	    + children.map(c => jsonToHiphop(c, m + 2)).join(';\n')
 	    + '\n' + margin(m) + '}';
+
+      case "trap":
+	 return margin(m) + `${obj.trapName}: {\n`
+	    + children.map(c => jsonToHiphop(c, m + 2)).join(';\n')
+	    + '\n' + margin(m) + '}';
+
+      case "exit":
+	 return margin(m) + `break ${obj.trapName};`;
 
       case "emit":
 	 return margin(m) + `emit ${obj.signal}();`;
