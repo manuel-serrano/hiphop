@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Thu Jun  5 11:14:10 2025 (serrano)                */
+/*    Last change :  Fri Jun  6 09:26:34 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -44,7 +44,7 @@ function loop(attrs, body) {
 /*---------------------------------------------------------------------*/
 function loopfork(n) {
    return (attrs, body) => {
-      if (n++ & 1 == 1) {
+      if (n++ & 1 === 1) {
 	 return fork2(attrs, body);
       } else {
 	 return loop(attrs, body);
@@ -55,7 +55,6 @@ function loopfork(n) {
 /*---------------------------------------------------------------------*/
 /*    prop ...                                                         */
 /*---------------------------------------------------------------------*/
-
 export const prop = makeProp(
    prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", verbose: -1, sweep: 0 }),
    prg => new hh.ReactiveMachine(prg, { name: "colin-sweep-wire", verbose: -1, sweep: -1 }),
@@ -163,6 +162,8 @@ console.log(`// HIPHOP_SYNCDUP=${mach.syncDup ? "true" : "false"} HIPHOP_SYNCREG
    } else if (existsSync(argv[2])) {
       const { events, prog } = JSON.parse(readFileSync(argv[2]));
       findBugInProg(outSource, jsonToAst(prog), events);
+   } else if (argv[2] === "gen") {
+      console.log(jsonToHiphop(gen().tojson()));
    } else {
       throw new Error(`Illegal command line: "${argv.join(" ")}"`);
    }

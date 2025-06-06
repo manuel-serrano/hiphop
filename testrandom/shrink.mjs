@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Fri Jun  6 08:44:51 2025 (serrano)                */
+/*    Last change :  Fri Jun  6 09:51:25 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -65,7 +65,7 @@ function shrinkArray(a) {
 /*---------------------------------------------------------------------*/
 function shrinkASTNode(ctor, attr, children) {
    if (children.length === 0) {
-      return [ hh.NOTHING({}) ];
+      return [hh.NOTHING({})];
    } else if (children.length === 1) {
       return shrinker(children[0]).map(c => ctor(attr, c)).concat(children);
    } else {
@@ -90,7 +90,7 @@ hhapi.Module.prototype.shrink = function() {
       if (a.length === 0) {
 	 return [];
       } else {
-	 return [ hh.MODULE({}, a) ];
+	 return [hh.MODULE({}, a)];
       }
    });
 }
@@ -134,8 +134,7 @@ hhapi.Loop.prototype.shrink = function() {
 /*    shrink ::Trap ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Trap.prototype.shrink = function() {
-   const attrs = { [this.trapName]: this.traName };
-   return shrinkASTNode(hh.TRAP, attrs, this.children);
+   return shrinkASTNode(hh.TRAP, this.attrs, this.children);
 }
 
 /*---------------------------------------------------------------------*/
@@ -143,5 +142,33 @@ hhapi.Trap.prototype.shrink = function() {
 /*---------------------------------------------------------------------*/
 hhapi.Exit.prototype.shrink = function() {
    return [hh.PAUSE({})];
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrink ::Emit ...                                                */
+/*---------------------------------------------------------------------*/
+hhapi.Emit.prototype.shrink = function() {
+   return [hh.NOTHING({})];
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrink ::Local ...                                               */
+/*---------------------------------------------------------------------*/
+hhapi.Local.prototype.shrink = function() {
+   return shrinkASTNode(hh.LOCAL, this.attrs, this.children);
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrink ::If ...                                                  */
+/*---------------------------------------------------------------------*/
+hhapi.If.prototype.shrink = function() {
+   return shrinkASTNode(hh.If, this.attrs, this.children);
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrink ::Atom ...                                                */
+/*---------------------------------------------------------------------*/
+hhapi.Atom.prototype.shrink = function() {
+   return [hh.NOTHING({})];
 }
 

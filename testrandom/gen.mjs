@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Thu Jun  5 13:50:10 2025 (serrano)                */
+/*    Last change :  Fri Jun  6 09:30:10 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -90,6 +90,30 @@ function testRandomInRange() {
 // testRandomInRange();
 
 /*---------------------------------------------------------------------*/
+/*    genTestExpr ...                                                  */
+/*---------------------------------------------------------------------*/
+function genTestExpr(env, size) {
+   if (size === 0 || env.signals.length === 0) {
+      return (Math.random() >= 0.5) ? "true" : "false";
+   } else if (size === 1) {
+      const i = Math.floor(Math.random() * env.signals.length);
+      const sig = env.signals[i];
+      const axs = (Math.random() >= 0.8) ? "pre" : "now";
+      return `this.${sig}.${axs}`;
+   } else {
+      switch (Math.floor(Math.random() * 6)) {
+	 case 0: return `!(${genTestExpr(env, size - 1)})`;
+	 case 1:
+	 case 2:
+	 case 3: return `(${genTestExpr(env, size - 1)} && ${genTestExpr(env, size - 1)})`;
+	 case 4:
+	 case 5:
+	 case 6: return `(${genTestExpr(env, size - 1)} || ${genTestExpr(env, size - 1)})`;
+      }
+   }
+}
+
+/*---------------------------------------------------------------------*/
 /*    genStmt ...                                                      */
 /*    -------------------------------------------------------------    */
 /*    returns an esterel expression of size `size`,                    */
@@ -99,20 +123,31 @@ function testRandomInRange() {
 function genStmt(env, size) {
    if (size === 0) {
       return choose(
-	 [3, () => hh.NOTHING({})],
+	 // nothing
+	 [2, () => hh.NOTHING({})],
+	 // pause
 	 [3, () => hh.PAUSE({})],
+	 // atom
+	 [2, () => {
+	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
+	    const func = eval(`(function() { return ${expr}; })`);
+	    return hh.ATOM({apply: func});
+	 }],
+	 // emit
 	 [3, () => {
 	    if (env.signals.length === 0) {
 	       return hh.NOTHING({});
 	    } else {
-	       const i = Math.round(Math.random() * env.signals.length);
+	       const i = Math.floor(Math.random() * env.signals.length);
+	       const sig = env.signals[i];
 	       return hh.EMIT({signame: env.signals[i]});
 	    }
 	 }],
-	 [3, () => {
+	 // exit
+	 [1, () => {
 	    if (env.traps.length > 0) {
-	       const idx = Math.floor(Math.random() * env.traps.length);
-	       const attr = { [env.traps[idx]]: env.traps[idx] };
+	       const i = Math.floor(Math.random() * env.traps.length);
+	       const attr = { [env.traps[i]]: env.traps[i] };
 	       return hh.EXIT(attr);
 	    } else {
 	       return hh.PAUSE({})
@@ -120,11 +155,13 @@ function genStmt(env, size) {
 	 }]);
    } else {
       return choose(
-	 [3, () => {
+	 // sequence
+	 [10, () => {
 	    const n = randomInRange(0, size - 1);
 	    return hh.SEQUENCE({}, genStmt(env, size - n - 1), genStmt(env, n))
 	 }],
-	 [3, () => {
+	 // fork
+	 [10, () => {
 	    const l = Math.round(Math.random() * 5);
 	    let children = [];
 	    for (let i = 0; i < l - 1; i++) {
@@ -137,26 +174,35 @@ function genStmt(env, size) {
 	    }
 	    return hh.FORK({}, ...children);
 	 }],
-	 [3, () => {
+	 // loop
+	 [10, () => {
 	    return hh.LOOP({}, genStmt(env, size - 1));
 	 }],
+	 // local
+	 [3, () => {
+	    const l = Math.round(Math.random() * 5);
+	    const names = Array.from({length: l}).map(c => gensym());
+	    const attrs = {};
+	    const signals = env.signals.concat(names);
+	    const nenv = Object.assign({}, env);
+	    nenv.signals = nenv.signals.concat(signals);
+	    names.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT });
+
+	    return hh.LOCAL(attrs, genStmt(nenv, size - 1));
+	 }],
+	 // if
+	 [1, () => {
+	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
+	    const func = eval(`(function() { return ${expr}; })`);
+	    return hh.IF({apply: func}, genStmt(env, size - 1), genStmt(env, size - 1));
+	 }],
+	 // trap
 	 [1, () => {
 	    const trap = gensym("trap");
 	    const nenv = Object.assign({}, env);
 	    nenv.traps = [trap, ...nenv.traps];
 	    return hh.TRAP({[trap]: trap}, genStmt(nenv, size - 1));
-	 }]
-/* 	 [1, () => {                                                   */
-/* 	    const l = Math.round(Math.random() * 5);                   */
-/* 	    const names = Array.from({length: l}).map(c => gensym());  */
-/* 	    const attrs = {};                                          */
-/* 	    const signals = env.signals.concat(names);                 */
-/* 	    const nenv = Object.assign(env, { signals });              */
-/* 	    names.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT }); */
-/*                                                                     */
-/* 	    console.error("LOCALS: ", names);                          */
-/* 	    return hh.LOCAL(attrs, genStmt(nenv, size - 1));            */
-/* 	 }]                                                            */
+	 }],
       );
    }
 }

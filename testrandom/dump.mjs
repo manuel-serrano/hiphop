@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:45:26 2025                          */
-/*    Last change :  Fri Jun  6 08:42:32 2025 (serrano)                */
+/*    Last change :  Fri Jun  6 09:35:53 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Json dump and pretty-printing HipHop programs                    */
@@ -74,7 +74,7 @@ hhapi.Exit.prototype.tojson = function() {
 hhapi.Local.prototype.tojson = function() {
   return {
      node: "local",
-     signals: this.sigDeclList,
+     signals: this.sigDeclList.map(p => p.name),
      children: this.children.map(c => c.tojson())
   };
 }
@@ -82,7 +82,23 @@ hhapi.Local.prototype.tojson = function() {
 hhapi.Emit.prototype.tojson = function() {
    return {
       node: "emit",
-      signal: this.signame_list[0],
+      signame: this.signame_list[0],
+      children: []
+   }
+}
+
+hhapi.If.prototype.tojson = function() {
+   return {
+      node: "if",
+      func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
+      children: this.children.map(c => c.tojson())
+   }
+}
+
+hhapi.Atom.prototype.tojson = function() {
+   return {
+      node: "atom",
+      func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
       children: []
    }
 }
@@ -113,16 +129,29 @@ function jsonToAst(obj) {
 	 return hh.LOOP({}, ...children.map(jsonToAst));
 
       case "trap":
-	 return hh.TRAP({trapName: this.trapName}, ...children.map(jsonToAst));
+	 return hh.TRAP({trapName: obj.trapName}, ...children.map(jsonToAst));
 
       case "exit":
-	 return hh.EXIT({trapName: this.trapName});
+	 return hh.EXIT({trapName: obj.trapName});
 
       case "emit":
-	 return hh.EMIT({});
+	 return hh.EMIT({signame: obj.signame_list[0]});
 	 
-      case "local":
-	 return hh.LOCALS({});
+      case "local": {
+	 const attrs = {};
+	 obj.signals.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT });
+	 return hh.LOCALS(attrs, ...children.map(jsonToAst));
+      }
+	 
+      case "if": {
+	 const attrs = {apply: eval(`(function() { return ${obj.func} })`)};
+	 return hh.IF(attrs, ...children.map(jsonToAst));
+      }
+	 
+      case "atom": {
+	 const attrs = {apply: eval(`(function() { return ${obj.func} })`)};
+	 return hh.ATOM(attrs);
+      }
    }
 }
 
@@ -194,12 +223,22 @@ function jsonToHiphop(obj, m = 0) {
 	 return margin(m) + `break ${obj.trapName};`;
 
       case "emit":
-	 return margin(m) + `emit ${obj.signal}();`;
+	 return margin(m) + `emit ${obj.signame}();`;
 	 
       case "local":
 	 return margin(m) + '{\n'
-	    + obj.signals.map(s => margin(m + 2) + s + ";\n")
-	       + children.map(c => jsonToHiphop(c, m + 2)).join('\n')  
+	    + margin(m + 2) + "signal " + obj.signals.join(", ") + ";\n"
+	    + children.map(c => jsonToHiphop(c, m + 2)).join('\n')  
 	    + '\n' + margin(m) + '}';
+
+      case "if":
+	 return margin(m) + `if (${obj.func}) {\n`
+	    + jsonToHiphop(children[0], m + 2) + '\n'
+	    + margin(m) + "} else {\n"
+	    + jsonToHiphop(children[1], m + 2)+ '\n'
+	    + margin(m) + '}';
+	 
+      case "atom":
+	 return margin(m) + `pragma { ${obj.func}; }`;
    }
 }
