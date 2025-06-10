@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Fri Jun  6 09:51:25 2025 (serrano)                */
+/*    Last change :  Tue Jun 10 09:06:28 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -162,7 +162,7 @@ hhapi.Local.prototype.shrink = function() {
 /*    shrink ::If ...                                                  */
 /*---------------------------------------------------------------------*/
 hhapi.If.prototype.shrink = function() {
-   return shrinkASTNode(hh.If, this.attrs, this.children);
+   return shrinkASTNode(hh.IF, this.attrs, this.children);
 }
 
 /*---------------------------------------------------------------------*/
