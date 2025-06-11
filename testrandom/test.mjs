@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Fri Jun  6 09:26:34 2025 (serrano)                */
+/*    Last change :  Tue Jun 10 15:14:20 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -51,7 +51,7 @@ function loopfork(n) {
       }
    }
 }
-	 
+
 /*---------------------------------------------------------------------*/
 /*    prop ...                                                         */
 /*---------------------------------------------------------------------*/
@@ -161,7 +161,7 @@ console.log(`// HIPHOP_SYNCDUP=${mach.syncDup ? "true" : "false"} HIPHOP_SYNCREG
       findBugGen(out);
    } else if (existsSync(argv[2])) {
       const { events, prog } = JSON.parse(readFileSync(argv[2]));
-      findBugInProg(outSource, jsonToAst(prog), events);
+      findBugInProg(outSource, prog, events);
    } else if (argv[2] === "gen") {
       console.log(jsonToHiphop(gen().tojson()));
    } else {

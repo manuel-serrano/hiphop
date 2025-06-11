@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Sat May 31 09:04:51 2025 (serrano)                */
+/*    Last change :  Tue Jun 10 15:34:57 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -101,7 +101,3 @@ function makeProp(...machCtor) {
       return { status: "success" };
    }
 }
-
-
-
-

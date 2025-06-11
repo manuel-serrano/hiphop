@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Tue Jun 10 09:06:28 2025 (serrano)                */
+/*    Last change :  Tue Jun 10 14:38:09 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -134,7 +134,7 @@ hhapi.Loop.prototype.shrink = function() {
 /*    shrink ::Trap ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Trap.prototype.shrink = function() {
-   return shrinkASTNode(hh.TRAP, this.attrs, this.children);
+   return shrinkASTNode(hh.TRAP, {[this.trap]: this.trap}, this.children);
 }
 
 /*---------------------------------------------------------------------*/
@@ -155,14 +155,26 @@ hhapi.Emit.prototype.shrink = function() {
 /*    shrink ::Local ...                                               */
 /*---------------------------------------------------------------------*/
 hhapi.Local.prototype.shrink = function() {
-   return shrinkASTNode(hh.LOCAL, this.attrs, this.children);
+   const sigDeclList = this.sigDeclList;
+   return shrinkASTNode(hh.LOCAL, {sigDeclList}, this.children);
 }
 
 /*---------------------------------------------------------------------*/
 /*    shrink ::If ...                                                  */
 /*---------------------------------------------------------------------*/
 hhapi.If.prototype.shrink = function() {
-   return shrinkASTNode(hh.IF, this.attrs, this.children);
+   const [ child0, child1 ] = this.children;
+   const c0 = shrinker(child0);
+   const c1 = shrinker(child1);
+   const res = [];
+
+   for (let i = 0; i < c0.length; i++) {
+      for (let j = 0; j < c1.length; j++) {
+	 res.push(hh.IF({apply: this.func}, c0[i], c1[j]));
+      }
+   }
+   
+   return res;
 }
 
 /*---------------------------------------------------------------------*/

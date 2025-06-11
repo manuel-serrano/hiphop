@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:45:26 2025                          */
-/*    Last change :  Fri Jun  6 09:35:53 2025 (serrano)                */
+/*    Last change :  Tue Jun 10 15:22:53 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Json dump and pretty-printing HipHop programs                    */
@@ -144,12 +144,12 @@ function jsonToAst(obj) {
       }
 	 
       case "if": {
-	 const attrs = {apply: eval(`(function() { return ${obj.func} })`)};
+	 const attrs = {apply: eval(`(function() { return ${obj.func}; })`)};
 	 return hh.IF(attrs, ...children.map(jsonToAst));
       }
 	 
       case "atom": {
-	 const attrs = {apply: eval(`(function() { return ${obj.func} })`)};
+	 const attrs = {apply: eval(`(function() { return ${obj.func}; })`)};
 	 return hh.ATOM(attrs);
       }
    }
