@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:45:26 2025                          */
-/*    Last change :  Tue Jun 10 15:22:53 2025 (serrano)                */
+/*    Last change :  Wed Jun 11 08:57:02 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Json dump and pretty-printing HipHop programs                    */
@@ -44,7 +44,9 @@ hhapi.Sequence.prototype.tojson = function() {
 hhapi.Fork.prototype.tojson = function() {
    return {
       node: "par",
-      children: this.children.map(c => c.tojson())
+      children: this.children
+	 .filter(c => !(c instanceof hhapi.Sync))
+	 .map(c => c.tojson())
    };
 }
 
@@ -129,13 +131,13 @@ function jsonToAst(obj) {
 	 return hh.LOOP({}, ...children.map(jsonToAst));
 
       case "trap":
-	 return hh.TRAP({trapName: obj.trapName}, ...children.map(jsonToAst));
+	 return hh.TRAP({[obj.trapName]: obj.trapName}, ...children.map(jsonToAst));
 
       case "exit":
-	 return hh.EXIT({trapName: obj.trapName});
+	 return hh.EXIT({[obj.trapName]: obj.trapName});
 
       case "emit":
-	 return hh.EMIT({signame: obj.signame_list[0]});
+	 return hh.EMIT({[obj.signame_list[0]]: obj.signame_list[0]});
 	 
       case "local": {
 	 const attrs = {};

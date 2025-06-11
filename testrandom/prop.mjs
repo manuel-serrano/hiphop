@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Tue Jun 10 15:34:57 2025 (serrano)                */
+/*    Last change :  Wed Jun 11 10:38:23 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -14,13 +14,13 @@ import * as hhapi from "../lib/ast.js";
 export { makeProp };
 
 /*---------------------------------------------------------------------*/
-/*    run ...                                                          */
+/*    runMach ...                                                      */
 /*---------------------------------------------------------------------*/
-function run(mach, count = 10) {
+function runMach(mach, events) {
    const res = [];
-   for (let i = 0; i < count; i++) {
+   for (let i = 0; i < events.length; i++) {
       try {
-	 res.push({ status: "success", signals: mach.react() });
+	 res.push({ status: "success", signals: mach.react(events[i]) });
       } catch(e) {
 	 res.push({ status: "failure" });
 	 return res;
@@ -35,7 +35,7 @@ function run(mach, count = 10) {
 function failure(prog, mach0, machN, msg) {
    const jsonprog = prog.tojson();
    const jsonstr = JSON.stringify(jsonprog);
-   const machines = [ mach0, machN ];
+   const machines = [mach0, machN];
       
    return { status: "failure", prog, msg, machines };
 }
@@ -66,7 +66,7 @@ function equal(x, y) {
 	    return false;
 	 }
       }
-      return true;
+      return x.constructor === y.constructor;
    } else {
       return x === y;
    }
@@ -76,12 +76,12 @@ function equal(x, y) {
 /*    makeProp ...                                                     */
 /*---------------------------------------------------------------------*/
 function makeProp(...machCtor) {
-   return prog => {
+   return (prog, events) => {
       const machs = machCtor.map(ctor => ctor(prog));
-      const r0 = run(machs[0]);
+      const r0 = runMach(machs[0], events);
 
       for (let i = 1; i < machCtor.length; i++) {
-	 const ri = run(machs[i]);
+	 const ri = runMach(machs[i], events);
 
 	 for (let j = 0; j < Math.max(r0.length, ri.length); j++) {
 	    if (r0[r0.length - 1 ].status === "failure" && ri[ri.length - 1].status === "failure") {

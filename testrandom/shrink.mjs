@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Tue Jun 10 14:38:09 2025 (serrano)                */
+/*    Last change :  Wed Jun 11 09:20:49 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -120,7 +120,8 @@ hhapi.Sequence.prototype.shrink = function() {
 /*    shrink ::Fork ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Fork.prototype.shrink = function() {
-   return shrinkASTNode(hh.FORK, {}, this.children);
+   return shrinkASTNode(hh.FORK, {}, this.children)
+      .concat(hh.SEQUENCE({}, this.children));
 }
 
 /*---------------------------------------------------------------------*/
@@ -134,7 +135,17 @@ hhapi.Loop.prototype.shrink = function() {
 /*    shrink ::Trap ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Trap.prototype.shrink = function() {
-   return shrinkASTNode(hh.TRAP, {[this.trap]: this.trap}, this.children);
+   const children = this.children;
+   const attr = {[this.trapName]: this.trapName};
+
+   if (children.length === 0) {
+      return [hh.NOTHING({})];
+   } else if (children.length === 1) {
+      return shrinker(children[0]).map(c => hh.TRAP(attr, c));
+   } else {
+      const el = shrinkArray(children);
+      return el.map(a => hh.TRAP(attr, a));
+   }
 }
 
 /*---------------------------------------------------------------------*/
@@ -182,5 +193,12 @@ hhapi.If.prototype.shrink = function() {
 /*---------------------------------------------------------------------*/
 hhapi.Atom.prototype.shrink = function() {
    return [hh.NOTHING({})];
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrink ::Sync ...                                                */
+/*---------------------------------------------------------------------*/
+hhapi.Sync.prototype.shrink = function() {
+   return [];
 }
 
