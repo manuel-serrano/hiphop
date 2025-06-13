@@ -44,7 +44,9 @@ hhapi.Sequence.prototype.tojson = function() {
 hhapi.Fork.prototype.tojson = function() {
    return {
       node: "par",
-      children: this.children.map(c => c.tojson())
+      children: this.children
+	 .filter(c => !(c instanceof hhapi.Sync))
+	 .map(c => c.tojson())
    };
 }
 

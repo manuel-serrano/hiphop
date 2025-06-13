@@ -120,7 +120,8 @@ hhapi.Sequence.prototype.shrink = function() {
 /*    shrink ::Fork ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Fork.prototype.shrink = function() {
-   return shrinkASTNode(hh.FORK, {}, this.children);
+   return shrinkASTNode(hh.FORK, {}, this.children)
+      .concat(hh.SEQUENCE({}, this.children));
 }
 
 /*---------------------------------------------------------------------*/
@@ -134,15 +135,17 @@ hhapi.Loop.prototype.shrink = function() {
 /*    shrink ::Trap ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Trap.prototype.shrink = function() {
-   const ctor = (attr, ...nodes) => {
-      console.error("N=", nodes.length);
-      if (nodes.length > 0) {
-	 hh.TRAP(attr, nodes);
-      } else {
-	 return hh.NOTHING({});
-      }
+   const children = this.children;
+   const attr = {[this.trapName]: this.trapName};
+
+   if (children.length === 0) {
+      return [hh.NOTHING({})];
+   } else if (children.length === 1) {
+      return shrinker(children[0]).map(c => hh.TRAP(attr, c));
+   } else {
+      const el = shrinkArray(children);
+      return el.map(a => hh.TRAP(attr, a));
    }
-   return shrinkASTNode(ctor, {[this.trapName]: this.trapName}, this.children, true);
 }
 
 /*---------------------------------------------------------------------*/
@@ -191,5 +194,12 @@ hhapi.If.prototype.shrink = function() {
 /*---------------------------------------------------------------------*/
 hhapi.Atom.prototype.shrink = function() {
    return [hh.NOTHING({})];
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrink ::Sync ...                                                */
+/*---------------------------------------------------------------------*/
+hhapi.Sync.prototype.shrink = function() {
+   return [];
 }
 
