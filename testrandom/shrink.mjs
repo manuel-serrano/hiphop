@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Tue Jun 10 14:38:09 2025 (serrano)                */
+/*    Last change :  Fri Jun 13 18:52:40 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -63,10 +63,10 @@ function shrinkArray(a) {
 /*---------------------------------------------------------------------*/
 /*    shrinkASTNode ...                                                */
 /*---------------------------------------------------------------------*/
-function shrinkASTNode(ctor, attr, children) {
+function shrinkASTNode(ctor, attr, children, forceCtor = false) {
    if (children.length === 0) {
       return [hh.NOTHING({})];
-   } else if (children.length === 1) {
+   } else if (children.length === 1 && !forceCtor) {
       return shrinker(children[0]).map(c => ctor(attr, c)).concat(children);
    } else {
       const el = shrinkArray(children);
@@ -134,7 +134,15 @@ hhapi.Loop.prototype.shrink = function() {
 /*    shrink ::Trap ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Trap.prototype.shrink = function() {
-   return shrinkASTNode(hh.TRAP, {[this.trap]: this.trap}, this.children);
+   const ctor = (attr, ...nodes) => {
+      console.error("N=", nodes.length);
+      if (nodes.length > 0) {
+	 hh.TRAP(attr, nodes);
+      } else {
+	 return hh.NOTHING({});
+      }
+   }
+   return shrinkASTNode(ctor, {[this.trapName]: this.trapName}, this.children, true);
 }
 
 /*---------------------------------------------------------------------*/
@@ -155,8 +163,9 @@ hhapi.Emit.prototype.shrink = function() {
 /*    shrink ::Local ...                                               */
 /*---------------------------------------------------------------------*/
 hhapi.Local.prototype.shrink = function() {
-   const sigDeclList = this.sigDeclList;
-   return shrinkASTNode(hh.LOCAL, {sigDeclList}, this.children);
+   const attrs = {};
+   this.sigDeclList.forEach(p => attrs[p.name] = { signal: p.name, name: p.name, accessibility: hh.INOUT }, true);
+   return shrinkASTNode(hh.LOCAL, attrs, this.children);
 }
 
 /*---------------------------------------------------------------------*/

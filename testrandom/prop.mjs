@@ -3,13 +3,14 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Tue Jun 10 15:34:57 2025 (serrano)                */
+/*    Last change :  Fri Jun 13 18:32:21 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
 /*=====================================================================*/
 import * as hh from "../lib/hiphop.js";
 import * as hhapi from "../lib/ast.js";
+import { jsonToHiphop } from "./dump.mjs";
 
 export { makeProp };
 
@@ -77,27 +78,34 @@ function equal(x, y) {
 /*---------------------------------------------------------------------*/
 function makeProp(...machCtor) {
    return prog => {
-      const machs = machCtor.map(ctor => ctor(prog));
-      const r0 = run(machs[0]);
+      try {
+	 const machs = machCtor.map(ctor => ctor(prog));
+	 const r0 = run(machs[0]);
 
-      for (let i = 1; i < machCtor.length; i++) {
-	 const ri = run(machs[i]);
+	 for (let i = 1; i < machCtor.length; i++) {
+	    const ri = run(machs[i]);
 
-	 for (let j = 0; j < Math.max(r0.length, ri.length); j++) {
-	    if (r0[r0.length - 1 ].status === "failure" && ri[ri.length - 1].status === "failure") {
-	       break;
-	    }
-	    if (j >= r0.length || j >= ri.length) {
-	       return failure(prog, machs[0], machs[i], `reaction numbers ${r0.length} / ${ri.length}`);
-	    }
-	    if (r0[j].status !== ri[j].status) {
-	       return failure(prog, machs[0], machs[i], `status @ #${j}: ${r0[j].status} / ${ri[j].status}`);
-	    }
-	    if (!equal(r0[j].signals, ri[j].signals)) {
-	       return failure(prog, machs[0], machs[i], `results @ #${j}: ${JSON.stringify(r0[j].signals)} / ${JSON.stringify(ri[j].signals)}`);
+	    for (let j = 0; j < Math.max(r0.length, ri.length); j++) {
+	       if (r0[r0.length - 1 ].status === "failure" && ri[ri.length - 1].status === "failure") {
+		  break;
+	       }
+	       if (j >= r0.length || j >= ri.length) {
+		  return failure(prog, machs[0], machs[i], `reaction numbers ${r0.length} / ${ri.length}`);
+	       }
+	       if (r0[j].status !== ri[j].status) {
+		  return failure(prog, machs[0], machs[i], `status @ #${j}: ${r0[j].status} / ${ri[j].status}`);
+	       }
+	       if (!equal(r0[j].signals, ri[j].signals)) {
+		  return failure(prog, machs[0], machs[i], `results @ #${j}: ${JSON.stringify(r0[j].signals)} / ${JSON.stringify(ri[j].signals)}`);
+	       }
 	    }
 	 }
+	 return { status: "success" };
+      } catch(e) {
+	 console.error("*** Execution error...");
+	 console.error(jsonToHiphop(prog.tojson()));
+	 console.error(JSON.stringify(prog.tojson()));
+	 throw e;
       }
-      return { status: "success" };
    }
 }

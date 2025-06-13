@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Tue Jun 10 15:14:20 2025 (serrano)                */
+/*    Last change :  Fri Jun 13 18:04:38 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -59,9 +59,10 @@ export const prop = makeProp(
    prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", verbose: -1, sweep: 0 }),
    prg => new hh.ReactiveMachine(prg, { name: "colin-sweep-wire", verbose: -1, sweep: -1 }),
    prg => new hh.ReactiveMachine(prg, { name: "colin-sweep", verbose: -1 }),
-   prg => new hh.ReactiveMachine(wrap(prg, fork2, 4), { name: "colin-wrap-fork", verbose: -1 }),
-   prg => new hh.ReactiveMachine(wrap(prg, loop, 4), { name: "colin-wrap-loop", verbose: -1 }),
-   prg => new hh.ReactiveMachine(wrap(prg, loopfork(0), 6), { name: "colin-wrap-loop-fork", verbose: -1 }),
+/*    prg => new hh.ReactiveMachine(wrap(prg, fork2, 4), { name: "colin-wrap-fork", verbose: -1 }), */
+/*    prg => new hh.ReactiveMachine(wrap(prg, loop, 4), { name: "colin-wrap-loop", verbose: -1 }), */
+/*    prg => new hh.ReactiveMachine(wrap(prg, loopfork(0), 6), { name: "colin-wrap-loop-fork", verbose: -1 }), */
+   prg => new hh.ReactiveMachine(prg, { name: "new-syncreg", compiler: "new", unrollLoop: false, reincarnation: false, dupLoop: true, verbose: -1 }),
 /*    prg => new hh.ReactiveMachine(prg, { name: "new-syncreg", compiler: "new", unrollLoops: false, reincarnation: false, syncReg: true, verbose: -1 }) */
 );
 
