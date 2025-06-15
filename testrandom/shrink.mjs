@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Fri Jun 13 18:52:40 2025 (serrano)                */
+/*    Last change :  Fri Jun 13 20:34:01 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -63,10 +63,10 @@ function shrinkArray(a) {
 /*---------------------------------------------------------------------*/
 /*    shrinkASTNode ...                                                */
 /*---------------------------------------------------------------------*/
-function shrinkASTNode(ctor, attr, children, forceCtor = false) {
+function shrinkASTNode(ctor, attr, children) {
    if (children.length === 0) {
       return [hh.NOTHING({})];
-   } else if (children.length === 1 && !forceCtor) {
+   } else if (children.length === 1) {
       return shrinker(children[0]).map(c => ctor(attr, c)).concat(children);
    } else {
       const el = shrinkArray(children);
@@ -166,9 +166,18 @@ hhapi.Emit.prototype.shrink = function() {
 /*    shrink ::Local ...                                               */
 /*---------------------------------------------------------------------*/
 hhapi.Local.prototype.shrink = function() {
+   const children = this.children;
    const attrs = {};
    this.sigDeclList.forEach(p => attrs[p.name] = { signal: p.name, name: p.name, accessibility: hh.INOUT }, true);
-   return shrinkASTNode(hh.LOCAL, attrs, this.children);
+   
+   if (children.length === 0) {
+      return [hh.NOTHING({})];
+   } else if (children.length === 1) {
+      return shrinker(children[0]).map(c => hh.LOCAL(attrs, c));
+   } else {
+      const el = shrinkArray(children);
+      return el.map(a => hh.LOCAL(attrs, a));
+   }
 }
 
 /*---------------------------------------------------------------------*/

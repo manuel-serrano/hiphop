@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Fri Jun 13 19:05:48 2025 (serrano)                */
+/*    Last change :  Sat Jun 14 11:26:24 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -62,8 +62,8 @@ export const prop = makeProp(
 /*    prg => new hh.ReactiveMachine(wrap(prg, fork2, 4), { name: "colin-wrap-fork", verbose: -1, wrap: true }), */
 /*    prg => new hh.ReactiveMachine(wrap(prg, loop, 4), { name: "colin-wrap-loop", verbose: -1, wrap: true }), */
 /*    prg => new hh.ReactiveMachine(wrap(prg, loopfork(0), 6), { name: "colin-wrap-loop-fork", verbose: -1, wrap: true }), */
-   prg => new hh.ReactiveMachine(prg, { name: "new-dupcircuit", compiler: "new", unrollLoop: false, reincarnation: false, dupLoop: true, verbose: -1 }),
-/*    prg => new hh.ReactiveMachine(prg, { name: "new-syncreg", compiler: "new", unrollLoops: false, reincarnation: false, syncReg: true, verbose: -1 }) */
+   prg => new hh.ReactiveMachine(prg, { name: "new-dupcircuit", compiler: "new", loopUnroll: false, reincarnation: false, loopDup: true, verbose: -1 }),
+/*    prg => new hh.ReactiveMachine(prg, { name: "new-syncreg", compiler: "new", loopUnrolls: false, reincarnation: false, syncReg: true, verbose: -1 }) */
 );
 
 /*---------------------------------------------------------------------*/
@@ -136,7 +136,8 @@ const events = ${JSON.stringify(events)};
 
 const prg = hiphop ${jsonToHiphop(json, 0)}
 
-const opts = { name: "${mach0.name()}", compiler: "${mach0.compiler}", unrollLoop: ${mach0.unrollLoop}, reincarnation: ${mach0.reincarnation}, syncDup: ${mach0.syncDup}, syncReg: ${mach0.syncReg} };
+const opts = { name: "${mach0.name()}", compiler: "${mach0.compiler}", loopUnroll: ${mach0.loopUnroll}, loopDup: ${mach0.loopDup}, reincarnation: ${mach0.reincarnation}, syncDup: ${mach0.syncDup}, syncReg: ${mach0.syncReg} };
+const opts2 = { name: "${mach1.name()}", compiler: "${mach1.compiler}", loopUnroll: ${mach1.loopUnroll}, loopDup: ${mach1.loopDup}, reincarnation: ${mach1.reincarnation}, syncDup: ${mach1.syncDup}, syncReg: ${mach1.syncReg} };
 export const mach = new hh.ReactiveMachine(prg, opts);
 mach.outbuf = "";
 events.forEach((e, i) => mach.outbuf += (i + ': ' + JSON.stringify(mach.react(e)) + '\\n'));
@@ -147,7 +148,7 @@ console.log(mach.outbuf);`);
 	 console.log(`
 const prg1 = hiphop ${jsonToHiphop(json1, 0)}
 
-const opts1 = { name: "${mach1.name()}", compiler: "${mach1.compiler}", unrollLoop: ${mach1.unrollLoop}, reincarnation: ${mach1.reincarnation}, syncDup: ${mach1.syncDup}, syncReg: ${mach1.syncReg} };
+const opts1 = { name: "${mach1.name()}", compiler: "${mach1.compiler}", loopUnroll: ${mach1.loopUnroll}, reincarnation: ${mach1.reincarnation}, syncDup: ${mach1.syncDup}, syncReg: ${mach1.syncReg} };
 export const mach1 = new hh.ReactiveMachine(prg1, opts1);
 console.log("---------------");
 mach1.outbuf = "";
@@ -157,7 +158,7 @@ console.log(mach1.outbuf);`);
       
 	 console.log("");
 console.log(`// HIPHOP_SYNCDUP=false HIPHOP_SYNCREG=false HIPHOP_REINCARNATION=true xHIPHOP_SWEEP=-1 HIPHOP_COMPILER=int HIPHOP_UNROLL=false  NODE_OPTIONS="--enable-source-maps --no-warnings --loader @hop/hiphop/lib/hiphop-loader.mjs" node bug.hh.mjs`);
-console.log(`// HIPHOP_SYNCDUP=${mach0.syncDup ? "true" : "false"} HIPHOP_SYNCREG=${mach0.syncReg ? "true" : "false"} HIPHOP_REINCARNATION=${mach0.compiler === "new" ? "false" : "true"} xHIPHOP_SWEEP=-1 HIPHOP_COMPILER=${mach0.compiler} HIPHOP_UNROLL=${mach0.unrollLoop ? "true" : "false"} NODE_OPTIONS="--enable-source-maps --no-warnings --loader @hop/hiphop/lib/hiphop-loader.mjs" node bug.hh.mjs`);
+console.log(`// HIPHOP_SYNCDUP=${mach0.syncDup ? "true" : "false"} HIPHOP_SYNCREG=${mach0.syncReg ? "true" : "false"} HIPHOP_REINCARNATION=${mach0.compiler === "new" ? "false" : "true"} xHIPHOP_SWEEP=-1 HIPHOP_COMPILER=${mach0.compiler} HIPHOP_UNROLL=${mach0.loopUnroll ? "true" : "false"} NODE_OPTIONS="--enable-source-maps --no-warnings --loader @hop/hiphop/lib/hiphop-loader.mjs" node bug.hh.mjs`);
    }
 
    function outJson(headers, [mach0, mach1], [prog0, prog1], events) {
