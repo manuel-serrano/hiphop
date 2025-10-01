@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Tue Mar 11 16:26:47 2025 (serrano)                */
+#*    Last change :  Wed Oct  1 18:22:50 2025 (serrano)                */
 #*    Copyright   :  2006-25 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -94,6 +94,7 @@ npm-hiphop:
 	cp -r modules/*.js npm/$(HIPHOPNPMDIR)/modules
 	cp -r modules/*.d.ts npm/$(HIPHOPNPMDIR)/modules
 	cp -r test npm/$(HIPHOPNPMDIR)
+	cp -r testrandom npm/$(HIPHOPNPMDIR)
 	cp -r etc/configure.js npm/$(HIPHOPNPMDIR)/etc
 	cp -r etc/buildmodules.js npm/$(HIPHOPNPMDIR)/etc
 	echo "#!/usr/bin/env node" > npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
