@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Sat Jun 14 11:26:24 2025 (serrano)                */
+/*    Last change :  Fri Oct  3 14:38:54 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -62,7 +62,7 @@ export const prop = makeProp(
 /*    prg => new hh.ReactiveMachine(wrap(prg, fork2, 4), { name: "colin-wrap-fork", verbose: -1, wrap: true }), */
 /*    prg => new hh.ReactiveMachine(wrap(prg, loop, 4), { name: "colin-wrap-loop", verbose: -1, wrap: true }), */
 /*    prg => new hh.ReactiveMachine(wrap(prg, loopfork(0), 6), { name: "colin-wrap-loop-fork", verbose: -1, wrap: true }), */
-   prg => new hh.ReactiveMachine(prg, { name: "new-dupcircuit", compiler: "new", loopUnroll: false, reincarnation: false, loopDup: true, verbose: -1 }),
+   prg => new hh.ReactiveMachine(prg, { name: "new-unroll", compiler: "new", loopUnroll: true, reincarnation: false, loopDup: false, forkNoGo: true, verbose: -1 }),
 /*    prg => new hh.ReactiveMachine(prg, { name: "new-syncreg", compiler: "new", loopUnrolls: false, reincarnation: false, syncReg: true, verbose: -1 }) */
 );
 
