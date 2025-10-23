@@ -16,6 +16,10 @@ try {
    mach.react({});
 } catch(e) {
    mach = new hh.ReactiveMachine(hiphop module () {});
-   mach.outbuf = e.message + "\n";
+   if (e.message === "Instantaneous loop detected") {
+      mach.outbuf = "Instantaneous loop.\n";
+   } else {
+      mach.outbuf = e.message + "\n";
+   }
 }
    
