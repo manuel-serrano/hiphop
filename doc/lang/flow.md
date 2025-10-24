@@ -214,13 +214,13 @@ Derived Forms
 
 &#x2606; [Formal syntax](../syntax/hiphop.bnf#HHEvery)
 
-A loop executed each time the `delay` is true. Abort the execution of 
-the body when `delay` is true. Delays are documented [here](./signal#test-await-and-emit).
+A loop executed each time the `delay` is true. Delays are documented [here](./signal#test-await-and-emit).
 
 <span class="hiphop">&#x2605;</span> Example: [every1.hh.js](../../test/every1.hh.js)
 <!-- ${doc.includeCode("../../test/every1.hh.js", "hiphop")} -->
 
 All the delay forms can be used with `every`.
+
 <span class="hiphop">&#x2605;</span> Example: [every-delay.hh.js](../../test/every-delay.hh.js)
 <!-- ${doc.includeCode("../../test/every-delay.hh.js", "hiphop")} -->
 

@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Wed May 21 14:17:47 2025 (serrano)                */
+/*    Last change :  Fri Oct 24 08:47:17 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -184,7 +184,7 @@ function collectCircuits(nets) {
 	 circuits[key] = new Circuit(key, [n], n.$ast);
       }
       
-      if (n.$parent) {
+      if (n.$parent && n.$parent.id !== n.$ast.id) {
 	 const pkey = n.$parent.id;
 	 if (!circuits[pkey]) {
 	    circuits[n.$parent.id] = new Circuit(pkey, [], n.$parent);
@@ -198,23 +198,26 @@ function collectCircuits(nets) {
    for (let k in circuits) {
       const c = circuits[k];
       const n0 = c.nets[0];
-      const p = n0.$parent;
+      
+      if (n0){
+      	 const p = n0.$parent;
 
-      // sort the net inside the circuit
-      c.nets.sort((n, m) => n.id <= m.id ? -1 : 1);
+      	 // sort the net inside the circuit
+      	 c.nets.sort((n, m) => n.id <= m.id ? -1 : 1);
 
-      // establish the parent relationship
-      if (!p) {
-	 if (main) {
-	    c.parent = main;
-	 }
-      } else {
-	 c.parent = circuits[p.id];
+      	 // establish the parent relationship
+      	 if (!p) {
+	    if (main) {
+	       c.parent = main;
+	    }
+      	 } else {
+	    c.parent = circuits[p.id];
 
-	 if (!c.parent) {
-	    throw new Error('Cannot find parent circuit of net ' + n0.id + ' "'
-	       + (n0.$ast.ctor + "@" + n0.$ast.loc.filename + ":" + n0.$ast.loc.pos) + ` [${p.id}]"`);
-	 }
+	    if (!c.parent) {
+	       throw new Error('Cannot find parent circuit of net ' + n0.id + ' "'
+	       	     + (n0.$ast.ctor + "@" + n0.$ast.loc.filename + ":" + n0.$ast.loc.pos) + ` [${p.id}]"`);
+	    }
+      	 }
       }
    }
 
