@@ -29,6 +29,7 @@
   | <HHExpression> ; 
 
 <HHPragma> --> pragma { <Statement> }
+  | <Identifier> = <HHExpression>
 
 <HHBlock> --> {}
   | { <HHStatement> }

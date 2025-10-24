@@ -27,12 +27,21 @@ The JavaScript body may have signal dependencies.
 <span class="hiphop">&#x2605;</span> Example: [atom-dep-par.hh.js](../../test/atom-dep-par.hh.js)
 <!-- ${doc.includeCode("../../test/atom-dep-par.hh.js", "hiphop")} -->
 
+Variable assignments without any tag are also recognized as legal
+pragma forms. This enables a compact way to assign new values to `let`
+variable.
+
+<span class="hiphop">&#x2605;</span> Example: [variable-assig.hh.js](../../test/variable-assig.hh.js)
+<!-- ${doc.includeCode("../../test/variable-assig.hh.js", "hiphop")} -->
+
+
 > [!CAUTION]
 > Under no circumstances JavaScript side effects must be observable
 > from within a HipHop reaction. It is the responsability of the
 > JavaScript program not to execute visible side effects. If such
 > a side effect happen and is observed from within a HipHop reaction,
 > its behavior becomes unpredictable.
+
 
 ### if (delay) { block } [else { block }] ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->

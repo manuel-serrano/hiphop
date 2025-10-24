@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Tue Mar 11 14:00:49 2025 (serrano)                */
+/*    Last change :  Fri Oct 24 12:05:09 2025 (serrano)                */
 /*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -849,6 +849,34 @@ function parsePragma(token) {
    return wrapSignalNames(node, signames);
 }
 
+/*---------------------------------------------------------------------*/
+/*    parsePragmaAssig ...                                             */
+/*---------------------------------------------------------------------*/
+function parsePragmaAssig(token) {
+   const loc = token.location;
+   const op = this.consumeAny();
+   const { expr, accessors, signames } = parseHHExpression.call(this, true);
+   const assig = (op.type === this.EGAL)
+      ? astutils.J2SAssig(loc,
+			  astutils.J2SUnresolvedRef(loc, token.value),
+			  expr)
+      : astutils.J2SAssigOp(loc,
+			    astutils.J2SUnresolvedRef(loc, token.value),
+			    expr, op.value);
+   const stmt = astutils.J2SStmtExpr(loc, assig);
+   const block = astutils.J2SBlock(loc, loc, [stmt]);
+   const appl = astutils.J2SDataPropertyInit(
+      loc, 
+      astutils.J2SString(loc, "apply"),
+      astutils.J2SMethod(loc, "atomfun", [], block, self(loc)));
+   const tag = tagInit("pragma", loc);
+   const attrs = astutils.J2SObjInit(loc, [locInit(loc), tag, appl]);
+   const node = astutils.J2SCall(loc, hhref(loc, "ATOM"), null,
+				 [attrs].concat(accessors));
+   return wrapSignalNames(node, signames);
+}
+      
+   
 /*---------------------------------------------------------------------*/
 /*    parseEmpty ...                                                   */
 /*---------------------------------------------------------------------*/
@@ -1875,12 +1903,26 @@ function parseStmt(token, declaration) {
 	       return parseAsync.call(this, next);
 	    case "run":
 	       return parseRun.call(this, next);
-	    default:
-	       if (this.peekToken().type === this.COLUMN) {
+	    default: {
+	       const pt = this.peekToken().type;
+	       if (pt === this.COLUMN) {
 		  return parseTrap.call(this, next);
+	       } else if (pt === this.EGAL
+		  || pt === this.PLUSEGAL
+		  || pt === this.MINUSEGAL
+		  || pt === this.MULEGAL
+		  || pt === this.DIVEGAL
+		  || pt === this.SHIFTLEGAL
+		  || pt === this.SHIFTREGAL
+		  || pt === this.USHIFTREGAL
+		  || pt === this.AMPEGAL
+		  || pt === this.HATEGAL
+		  || pt === this.PERCENTEGAL) {
+		  return parsePragmaAssig.call(this, next);
 	       } else {
 		  throw tokenValueError(next);
 	       }
+	    }
 	 }
 	 
       case this.do:
@@ -1906,8 +1948,11 @@ function parseStmt(token, declaration) {
 
       case this.STRING:
 	 return parseNamedSequence.call(this, next, "sequence", false);
+
+      case this.ID:
 	 
       default:
+	 console.log("NEXT=", next.type);
 	 throw tokenTypeError(this.consumeAny());
    }
 }

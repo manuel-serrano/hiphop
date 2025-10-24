@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Fri Jun 14 14:17:26 2024 (serrano)                */
-/*    Copyright   :  2018-24 Manuel Serrano                            */
+/*    Last change :  Fri Oct 24 13:42:51 2025 (serrano)                */
+/*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
 /*=====================================================================*/
@@ -691,6 +691,17 @@ export function J2SAssig(loc, lhs, rhs) {
       null /* hint */,
       undefined /* range */,
       lhs, rhs);
+}
+
+/*---------------------------------------------------------------------*/
+/*    J2SAssigOp ...                                                   */
+/*---------------------------------------------------------------------*/
+export function J2SAssigOp(loc, lhs, rhs, op) {
+   return new ast.J2SAssigOp(loc, 
+      Symbol("any") /* type */, 
+      null /* hint */,
+      undefined /* range */,
+      lhs, rhs, op);
 }
 
 /*---------------------------------------------------------------------*/
