@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Fri Oct 24 18:20:24 2025 (serrano)                */
+/*    Last change :  Fri Oct 24 18:52:21 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing some programs with racket/esterel                        */
@@ -23,22 +23,37 @@ function json2racket(o) {
 
    function expr2racket(expr) {
       if (expr === "false") {
-	 return "#f";
+	 return { racket: "#f", expr: expr };
       } else if (expr === "true") {
-	 return "#t";
+	 return { racket: "#t", expr: expr };
       } else {
 	 let m = expr.match(/![(](.*)[)]/);
 
 	 if (m) {
-	    return `(not ${expr2racket(m[1])})`;
+	    return { racket: `(not ${expr2racket(m[1])})`, expr: expr };
 	 }
 
 	 if (m = expr.match(/this[.]([a-zA-Z0-9_]*)[.]now/)) {
-	    return `(present? ${m[1]})`;
+	    return { racket: `(present? ${m[1]})`, expr: expr };
 	 }
 
 	 if (m = expr.match(/this[.]([a-zA-Z0-9_]*)[.]pre/)) {
-	    return `(present? ${m[1]} #:pre 1)`;
+	    return { racket: `(present? ${m[1]} #:pre 1)`, expr: expr };
+	 }
+
+	 if (expr[0] === "(") {
+	    const { racket: lhs, expr: subexpr } = expr2racket(expr.substr(1));
+	    const nexpr = expr.substr(1 + subexpr.length);
+
+	    if (nexpr.match(/[ ]*&&[ ]*(.*)[)]/)) {
+	       const { racket: rhs, expr } = expr2racket(m[1]);
+	       return { racket: `(and ${lhs} ${rhs}`, expr: expr};
+	    }
+	    
+	    if (nexpr.match(/[ ]*||[ ]*(.*)[)]/)) {
+	       const { racket: rhs, expr } = expr2racket(m[1]);
+	       return { racket: `(or ${lhs} ${rhs}`, expr: expr};
+	    }
 	 }
 
 	 throw TypeError(`Unsupported expression ${expr}`);
