@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Fri Oct 24 18:23:40 2025 (serrano)                */
+/*    Last change :  Mon Oct 27 06:48:09 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -121,39 +121,7 @@ function genTestExpr(env, size) {
 /*    (at the moment, never generates references nor binders, alas)    */
 /*---------------------------------------------------------------------*/
 function genStmt(env, size) {
-   if (size === 0) {
-      return choose(
-	 // nothing
-	 [2, () => hh.NOTHING({})],
-	 // pause
-	 [3, () => hh.PAUSE({})],
-	 // atom
-	 [2, () => {
-	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
-	    const func = eval(`(function() { return ${expr}; })`);
-	    return hh.ATOM({apply: func});
-	 }],
-	 // emit
-	 [3, () => {
-	    if (env.signals.length === 0) {
-	       return hh.NOTHING({});
-	    } else {
-	       const i = Math.floor(Math.random() * env.signals.length);
-	       const sig = env.signals[i];
-	       return hh.EMIT({signame: env.signals[i]});
-	    }
-	 }],
-	 // exit
-	 [1, () => {
-	    if (env.traps.length > 0) {
-	       const i = Math.floor(Math.random() * env.traps.length);
-	       const attr = { [env.traps[i]]: env.traps[i] };
-	       return hh.EXIT(attr);
-	    } else {
-	       return hh.PAUSE({})
-	    }
-	 }]);
-   } else {
+   if (size !== 0) {
       return choose(
 	 // sequence
 	 [10, () => {
@@ -203,7 +171,79 @@ function genStmt(env, size) {
 	    nenv.traps = [trap, ...nenv.traps];
 	    return hh.TRAP({[trap]: trap}, genStmt(nenv, size - 1));
 	 }],
-      );
+      )
+   } else if (env.signals.length === 0 && env.traps.length === 0) {
+      return choose(
+	 // nothing
+	 [2, () => hh.NOTHING({})],
+	 // pause
+	 [3, () => hh.PAUSE({})],
+	 // atom
+	 [2, () => {
+	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
+	    const func = eval(`(function() { return ${expr}; })`);
+	    return hh.ATOM({apply: func});
+	 }]);
+   } else if (env.signals.length === 0) {
+      return choose(
+	 // nothing
+	 [2, () => hh.NOTHING({})],
+	 // pause
+	 [3, () => hh.PAUSE({})],
+	 // atom
+	 [2, () => {
+	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
+	    const func = eval(`(function() { return ${expr}; })`);
+	    return hh.ATOM({apply: func});
+	 }],
+	 // exit
+	 [1, () => {
+	    const i = Math.floor(Math.random() * env.traps.length);
+	    const attr = { [env.traps[i]]: env.traps[i] };
+	    return hh.EXIT(attr);
+	 }]);
+   } else if (env.traps.length === 0) {
+      return choose(
+	 // nothing
+	 [2, () => hh.NOTHING({})],
+	 // pause
+	 [3, () => hh.PAUSE({})],
+	 // atom
+	 [2, () => {
+	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
+	    const func = eval(`(function() { return ${expr}; })`);
+	    return hh.ATOM({apply: func});
+	 }],
+	 // emit
+	 [3, () => {
+	    const i = Math.floor(Math.random() * env.signals.length);
+	    const sig = env.signals[i];
+	    return hh.EMIT({signame: env.signals[i]});
+	 }]);
+   } else {
+      return choose(
+	 // nothing
+	 [2, () => hh.NOTHING({})],
+	 // pause
+	 [3, () => hh.PAUSE({})],
+	 // atom
+	 [2, () => {
+	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
+	    const func = eval(`(function() { return ${expr}; })`);
+	    return hh.ATOM({apply: func});
+	 }],
+	 // emit
+	 [3, () => {
+	    const i = Math.floor(Math.random() * env.signals.length);
+	    const sig = env.signals[i];
+	    return hh.EMIT({signame: env.signals[i]});
+	 }],
+	 // exit
+	 [1, () => {
+	    const i = Math.floor(Math.random() * env.traps.length);
+	    const attr = { [env.traps[i]]: env.traps[i] };
+	    return hh.EXIT(attr);
+	 }]);
    }
 }
 

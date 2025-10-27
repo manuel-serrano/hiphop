@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Fri Oct 24 17:17:59 2025 (serrano)                */
+/*    Last change :  Mon Oct 27 09:41:51 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -21,9 +21,10 @@ function runMach(mach, events) {
    let res = [];
    for (let i = 0; i < events.length; i++) {
       try {
-	 res.push({ status: "success", signals: mach.react(events[i]) });
+	 const signals = mach.react(events[i]);
+	 res.push({ status: "success", signals });
       } catch(e) {
-	 res.push({ status: "failure" });
+	 res.push({ status: "failure", msg: e.toString() });
 	 return res;
       }
    }
@@ -37,12 +38,12 @@ function runMach(mach, events) {
 /*---------------------------------------------------------------------*/
 /*    failure ...                                                      */
 /*---------------------------------------------------------------------*/
-function failure(prog, mach0, machN, msg) {
+function failure(prog, mach0, machN, msg, reason) {
    const jsonprog = prog.tojson();
    const jsonstr = JSON.stringify(jsonprog);
    const machines = [mach0, machN];
       
-   return { status: "failure", prog, msg, machines };
+   return { status: "failure", msg, prog, machines, reason };
 }
 
 /*---------------------------------------------------------------------*/
@@ -81,6 +82,15 @@ function equal(x, y) {
 /*    makeProp ...                                                     */
 /*---------------------------------------------------------------------*/
 function makeProp(...machCtor) {
+   
+   function resStatus(res) {
+      if (res.status === "failure") {
+	 return `failure (${res.msg})`;
+      } else {
+	 return res.status;
+      }
+   }
+	 
    return (prog, events) => {
       try {
 	 const machs = machCtor.map(ctor => ctor(prog));
@@ -92,13 +102,13 @@ function makeProp(...machCtor) {
 	    if (r0[r0.length - 1].status !== "failure" || ri[ri.length - 1].status !== "failure") {
 	       for (let j = 0; j < Math.max(r0.length, ri.length); j++) {
 		  if (j >= r0.length || j >= ri.length) {
-		     return failure(prog, machs[0], machs[i], `reaction numbers ${r0.length} / ${ri.length}`);
+		     return failure(prog, machs[0], machs[i], `reaction numbers ${r0.length} / ${ri.length}`, "reactions");
 		  }
 		  if (r0[j].status !== ri[j].status) {
-		     return failure(prog, machs[0], machs[i], `status @ #${j}: ${r0[j].status} / ${ri[j].status}`);
+		     return failure(prog, machs[0], machs[i], `status @ #${j}: ${resStatus(r0[j])} / ${resStatus(ri[j])}`, "status");
 		  }
 		  if (!equal(r0[j].signals, ri[j].signals)) {
-		     return failure(prog, machs[0], machs[i], `results @ #${j}: ${JSON.stringify(r0[j].signals)} / ${JSON.stringify(ri[j].signals)}`);
+		     return failure(prog, machs[0], machs[i], `results @ #${j}: ${JSON.stringify(r0[j].signals)} / ${JSON.stringify(ri[j].signals)}`, "signals");
 		  }
 	       }
 	    }

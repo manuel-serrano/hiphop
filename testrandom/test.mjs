@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Fri Oct 24 16:27:36 2025 (serrano)                */
+/*    Last change :  Mon Oct 27 09:39:44 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -71,16 +71,19 @@ export const prop = makeProp(
 /*---------------------------------------------------------------------*/
 /*    shrinkProgram ...                                                */
 /*---------------------------------------------------------------------*/
-function shrinkProgram(prog, prop, events) {
+function shrinkProgram(prog, prop, events, reason) {
    const progs = shrinker(prog);
 
    if (progs.length === 0) {
       return prog;
    } else {
       for (let i = 0; i < progs.length; i++) {
-	 if (prop(progs[i], events).status === "failure") {
+	 const res = prop(progs[i], events);
+	 if (res.status === "failure" && res.reason === reason) {
+	    console.error("   size: ", progs.length);
+	    // console.error("FAIL=", progs.length, res.status, res.msg, res.reason, reason);
 	    // we still have an error, shrink more
-	    return shrinkProgram(progs[i], prop, events);
+	    return shrinkProgram(progs[i], prop, events, reason);
 	 }
       }
       return prog;
@@ -94,12 +97,14 @@ function findBugInProg(out, prog, events) {
    const res = prop(prog, events);
 
    if (res.status === "failure") {
+      console.error("shrinking...");
       const [mach0, mach1] = res.machines;
-      const shrunk0 = shrinkProgram(prog, prop, events);
+      const shrunk0 = shrinkProgram(prog, prop, events, res.reason);
       const shrunk1 = mach1.opts.wrap ? jsonToAst(mach1.ast.tojson()) : false;
 
       const headers = [`${mach0.name()} / ${mach1.name()}`, res.msg];
 
+      //out(headers, res.machines, [shrunk0, shrunk1] , events);
       out(headers, res.machines, [shrunk0, shrunk1] , events);
 	 
       process.exit(0);
@@ -138,8 +143,8 @@ const events = ${JSON.stringify(events)};
 
 const prg = hiphop ${jsonToHiphop(json, 0)}
 
-const opts = { name: "${mach0.name()}", compiler: "${mach0.compiler}", loopUnroll: ${mach0.loopUnroll}, loopDup: ${mach0.loopDup}, reincarnation: ${mach0.reincarnation}, sweep: ${mach0.sweep} };
-const opts2 = { name: "${mach1.name()}", compiler: "${mach1.compiler}", loopUnroll: ${mach1.loopUnroll}, loopDup: ${mach1.loopDup}, reincarnation: ${mach1.reincarnation}, sweep: ${mach1.sweep} };
+const opts = ${JSON.stringify(mach0.opts)};
+const opts2 = ${JSON.stringify(mach1.opts)};
 export const mach = new hh.ReactiveMachine(prg, opts);
 mach.outbuf = "";
 events.forEach((e, i) => mach.outbuf += (i + ': ' + JSON.stringify(mach.react(e)) + '\\n'));
@@ -150,7 +155,7 @@ console.log(mach.outbuf);`);
 	 console.log(`
 const prg1 = hiphop ${jsonToHiphop(json1, 0)}
 
-const opts1 = { name: "${mach1.name()}", compiler: "${mach1.compiler}", loopUnroll: ${mach1.loopUnroll}, reincarnation: ${mach1.reincarnation}, sweep: ${mach1.sweep} };
+const opts1 = ${JSON.stringify(mach1.opts)};
 export const mach1 = new hh.ReactiveMachine(prg1, opts1);
 console.log("---------------");
 mach1.outbuf = "";
@@ -159,8 +164,7 @@ console.log(mach1.outbuf);`);
       }
       
 	 console.log("");
-console.log(`// HIPHOP_SWEEP=false HIPHOP_REINCARNATION=true xHIPHOP_SWEEP=-1 HIPHOP_COMPILER=int HIPHOP_UNROLL=false  NODE_OPTIONS="--enable-source-maps --no-warnings --loader @hop/hiphop/lib/hiphop-loader.mjs" node bug.hh.mjs`);
-console.log(`// HIPHOP_SWEEP=${mach0.sweep ? "true" : "false"} HIPHOP_REINCARNATION=${mach0.compiler === "new" ? "false" : "true"} xHIPHOP_SWEEP=-1 HIPHOP_COMPILER=${mach0.compiler} HIPHOP_UNROLL=${mach0.loopUnroll ? "true" : "false"} NODE_OPTIONS="--enable-source-maps --no-warnings --loader @hop/hiphop/lib/hiphop-loader.mjs" node bug.hh.mjs`);
+console.log(`// NODE_OPTIONS="--enable-source-maps --no-warnings --loader @hop/hiphop/lib/hiphop-loader.mjs" node bug.hh.mjs`);
    }
 
    function outJson(headers, [mach0, mach1], [prog0, prog1], events) {
