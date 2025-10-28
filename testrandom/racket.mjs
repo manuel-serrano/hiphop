@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Mon Oct 27 07:07:16 2025 (serrano)                */
+/*    Last change :  Tue Oct 28 09:34:47 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing some programs with racket/esterel                        */
@@ -154,7 +154,7 @@ function ReactiveMachine(prog, opts) {
       + (`(define machine ${json2racket(prog.tojson())})\n`)
       + ('\n')
       + (`(let ((events (call-with-input-file "/tmp/prog.events.rkt" read)))\n`)
-      + (`   (with-handlers ([exn:fail? (lambda (x) (display (exn-message x) (current-error-port)) (newline (current-error-port)) (display "[{\\\"status\\\": \\\"failure\\\", \\\"msg\\\": \\\"") (display (exn-message x)) (display "\\\", \\\"reason\\\": \\\"exception\\\"}]"))])\n`)
+      + (`   (with-handlers ([exn:fail? (lambda (x) (display (exn-message x) (current-error-port)) (newline (current-error-port)) (display "[{\\\"status\\\": \\\"failure\\\", \\\"msg\\\": \\\"") (display (regexp-replace* #rx"\n" (exn-message x) " ")) (display "\\\", \\\"reason\\\": \\\"exception\\\"}]"))])\n`)
       + ('      (display (apply string-append (run-mach machine events)))))\n');
    
 
