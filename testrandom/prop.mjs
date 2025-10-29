@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Mon Oct 27 09:41:51 2025 (serrano)                */
+/*    Last change :  Wed Oct 29 07:34:05 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -24,7 +24,7 @@ function runMach(mach, events) {
 	 const signals = mach.react(events[i]);
 	 res.push({ status: "success", signals });
       } catch(e) {
-	 res.push({ status: "failure", msg: e.toString() });
+	 res.push({ status: "error", msg: e.toString() });
 	 return res;
       }
    }
@@ -81,7 +81,7 @@ function equal(x, y) {
 /*---------------------------------------------------------------------*/
 /*    makeProp ...                                                     */
 /*---------------------------------------------------------------------*/
-function makeProp(...machCtor) {
+function makeProp(verbose, ...machCtor) {
    
    function resStatus(res) {
       if (res.status === "failure") {
@@ -96,14 +96,23 @@ function makeProp(...machCtor) {
 	 const machs = machCtor.map(ctor => ctor(prog));
 	 const r0 = runMach(machs[0], events);
 
+	 if (verbose) {
+	    console.log(`   ${machs[0].name()}: ${r0[r0.length-1].status} (${r0.length})`);
+	 }
+	 
 	 for (let i = 1; i < machCtor.length; i++) {
 	    const ri = runMach(machs[i], events);
 
-	    if (r0[r0.length - 1].status !== "failure" || ri[ri.length - 1].status !== "failure") {
-	       for (let j = 0; j < Math.max(r0.length, ri.length); j++) {
-		  if (j >= r0.length || j >= ri.length) {
-		     return failure(prog, machs[0], machs[i], `reaction numbers ${r0.length} / ${ri.length}`, "reactions");
-		  }
+	    if (verbose) {
+	       console.log(`   ${machs[i].name()}: ${ri[ri.length-1].status} (${ri.length})`);
+	    }
+	    
+	    if (r0.length !== ri.length) {
+	       return failure(prog, machs[0], machs[i], `reaction numbers ${r0.length} / ${ri.length}`, "reactions");
+	    }
+	    
+	    if (r0[r0.length - 1].status !== "error" || ri[ri.length - 1].status !== "error") {
+	       for (let j = 0; j < r0.length; j++) {
 		  if (r0[j].status !== ri[j].status) {
 		     return failure(prog, machs[0], machs[i], `status @ #${j}: ${resStatus(r0[j])} / ${resStatus(ri[j])}`, "status");
 		  }
