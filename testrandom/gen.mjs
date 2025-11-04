@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Mon Oct 27 06:48:09 2025 (serrano)                */
+/*    Last change :  Tue Nov  4 14:04:39 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -11,7 +11,7 @@
 import * as hh from "../lib/hiphop.js";
 import { jsonToHiphop } from "./dump.mjs";
 
-export { gen, wrap, gensym };
+export { gen, gensym };
 
 /*---------------------------------------------------------------------*/
 /*    gensymCnt ...                                                    */

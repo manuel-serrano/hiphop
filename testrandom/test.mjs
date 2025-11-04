@@ -3,14 +3,14 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Wed Oct 29 07:29:36 2025 (serrano)                */
+/*    Last change :  Tue Nov  4 12:38:01 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
 /*=====================================================================*/
 import * as hh from "../lib/hiphop.js";
 import { makeProp } from "./prop.mjs";
-import { gen, wrap, gensym } from "./gen.mjs";
+import { gen, gensym } from "./gen.mjs";
 import { shrinker } from "./shrink.mjs";
 import { jsonToHiphop, jsonToAst } from "./dump.mjs";
 import { parse } from "../preprocessor/parser.js";
@@ -56,151 +56,131 @@ function loopfork(n) {
 /*---------------------------------------------------------------------*/
 /*    prop ...                                                         */
 /*---------------------------------------------------------------------*/
-export const prop = makeProp(true, 
-/*    prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", verbose: -1, sweep: 0 }), */
+export const prop = makeProp(
+   prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", verbose: -1, sweep: 0 }),
 /*    prg => new hh.ReactiveMachine(prg, { name: "colin-sweep-wire", verbose: -1, sweep: -1 }), */
 /*    prg => new hh.ReactiveMachine(prg, { name: "colin-sweep", verbose: -1 }), */
    prg => new hh.ReactiveMachine(prg, { name: "new-unroll", compiler: "new", loopUnroll: true, reincarnation: false, loopDup: false, verbose: -1 }),
-   prg => new racket.ReactiveMachine(prg, { name: "racket" })
-   
+/*    prg => new racket.ReactiveMachine(prg, { name: "racket" })       */
 );
 
 /*---------------------------------------------------------------------*/
-/*    shrinkProgram ...                                                */
+/*    shrinkBugInProg ...                                              */
 /*---------------------------------------------------------------------*/
-function shrinkProgram(prog, prop, events, reason) {
-   const progs = shrinker(prog);
+function shrinkBugInProg(prog, machines, events, reason) {
+   /*    const [mach0, mach1] = machines;                                 */
 
-   if (progs.length === 0) {
-      return prog;
-   } else {
-      for (let i = 0; i < progs.length; i++) {
-	 const res = prop(progs[i], events);
-	 if (res.status === "failure" && res.reason === reason) {
-	    console.error("   size: ", progs.length);
-	    // console.error("FAIL=", progs.length, res.status, res.msg, res.reason, reason);
-	    // we still have an error, shrink more
-	    return shrinkProgram(progs[i], prop, events, reason);
+   const prop = makeProp(...machines.map(m => prg => new m.constructor(prg, m.opts)));
+   /*          prg => new mach0.constructor(prg, mach0.opts),             */
+   /*          prg => new mach1.constructor(prg, mach1.opts));            */
+
+   function shrink(prog) {
+      const progs = shrinker(prog);
+      
+      console.error("  |  size: ", progs.length);
+      
+      if (progs.length === 0) {
+	 return { prog, machines, events };
+      } else {
+	 for (let i = 0; i < progs.length; i++) {
+	    const res = prop(progs[i], events);
+	    if (res.status === "failure" && res.reason === reason) {
+	       // we still have an error, shrink more
+	       return shrink(progs[i]);
+	    }
 	 }
+	 
+	 return { prog, machines, events };
       }
-      return prog;
    }
+
+   console.error(` \\ shrinking...${machines.map(m => m.name()).join(", ")}`);
+
+   return shrink(prog);
 }
 
 /*---------------------------------------------------------------------*/
 /*    findBugInProg ...                                                */
 /*---------------------------------------------------------------------*/
-function findBugInProg(out, prog, events) {
-   const res = prop(prog, events);
+function findBugInProg(prog, events) {
+   const res = prop(prog, events, true);
 
    if (res.status === "failure") {
-      const [mach0, mach1] = res.machines;
-
-      const prop = makeProp(false, 
-	 prg => new mach0.constructor(prg, mach0.opts),
-	 prg => new mach1.constructor(prg, mach1.opts));
-
-      console.error(`! shrinking...(${mach0.name()}, ${mach1.name()})`);
-      
-      const shrunk0 = shrinkProgram(prog, prop, events, res.reason);
-      const shrunk1 = mach1.opts.wrap ? jsonToAst(mach1.ast.tojson()) : false;
-      const headers = [`${mach0.name()} / ${mach1.name()}`, res.msg];
-
-      out(headers, res.machines, [shrunk0, shrunk1] , events);
-	 
-      process.exit(0);
+      console.log(`+- ${res.msg}: ${res.machines.map(m => m.name()).join(" / ")}`);
+      return shrinkBugInProg(prog, res.machines, events, res.reason);
    } else {
-      ;
+      return false;
    }
 }
    
 /*---------------------------------------------------------------------*/
-/*    findBugGen ...                                                   */
+/*    findBugInGen ...                                                 */
 /*---------------------------------------------------------------------*/
-function findBugGen(out, iterCount = COUNT) {
+function findBugInGen(iterCount = COUNT) {
    for (let i = 0; i < iterCount; i++) {
       const events = Array.from({length: 20}).map(i => { return {}; });
       const prog = gen();
+      
       console.error("#", i);
 
-      findBugInProg(out, prog, events);
+      const bug = findBugInProg(prog, events);
+
+      if (bug) return bug;
    }
+   return false;
+}
+
+/*---------------------------------------------------------------------*/
+/*    outJson ...                                                      */
+/*---------------------------------------------------------------------*/
+function outJson(target, prog, events) {
+   writeFileSync(target, JSON.stringify({ events: events, prog: prog.tojson() }));
+}
+
+/*---------------------------------------------------------------------*/
+/*    outProg ...                                                      */
+/*---------------------------------------------------------------------*/
+function outProg(mach, prog, events) {
+   const target = mach.name() + ".hh.mjs";
+   const json = prog.tojson();
+   let buf = "// generated by testrandom\n";
+   
+   buf += (`
+import * as hh from "@hop/hiphop";
+
+const events = ${JSON.stringify(events)};
+
+const prg = hiphop ${jsonToHiphop(json, 0)}
+const opts = ${JSON.stringify(mach.opts)};
+
+export const mach = new hh.ReactiveMachine(prg, opts);
+mach.outbuf = "";
+events.forEach((e, i) => { console.log(mach.name() + ":", i); mach.outbuf += (i + ': ' + JSON.stringify(mach.react(e)) + '\\n') });
+console.log(mach.outbuf);
+`);
+
+   buf += "\n";
+   buf += `// NODE_OPTIONS="--enable-source-maps --no-warnings --loader @hop/hiphop/lib/hiphop-loader.mjs" node ${target}\n`;
+
+   writeFileSync(target, buf);
+   return target;
 }
 
 /*---------------------------------------------------------------------*/
 /*    main                                                             */
 /*---------------------------------------------------------------------*/
 async function main(argv) {
-
-   const outFile = "/tmp/prog.hh.mjs";
-   
-   function outResults(headers) {
-      console.log("// generated by testrandom");
-      headers.forEach(h => console.log(`// ${h}`));
-   }
-   
-   function outSource(headers, [mach0, mach1], [prog0, prog1], events) {
-      const json = prog0.tojson();
-      let buf = "// generated by testrandom\n";
-      
-      headers.forEach(h => buf += `// ${h}\n`);
-      buf += (`
-import * as hh from "@hop/hiphop";
-		     
-const events = ${JSON.stringify(events)};
-
-const prg = hiphop ${jsonToHiphop(json, 0)}
-
-const opts0 = ${JSON.stringify(mach0.opts)};
-const opts1 = ${JSON.stringify(mach1.opts)};
-export const mach = new hh.ReactiveMachine(prg, process.env?.HIPHOP_MACHINE === "mach1" ? opts1 : opts0);
-mach.outbuf = "";
-events.forEach((e, i) => { console.log(mach.name() + ":", i); mach.outbuf += (i + ': ' + JSON.stringify(mach.react(e)) + '\\n') });
-console.log(mach.outbuf);
-`);
-
-      if (prog1) {
-	 const json1 = prog1.tojson();
-	 buf += (`
-const prg1 = hiphop ${jsonToHiphop(json1, 0)}
-
-const opts1 = ${JSON.stringify(mach1.opts)};
-export const mach1 = new hh.ReactiveMachine(prg1, opts1);
-console.log("---------------");
-mach1.outbuf = "";
-events.forEach((e, i) => mach1.outbuf += (i + ': ' + JSON.stringify(mach1.react(e)) + '\\n'));
-console.log(mach1.outbuf);
-`);
-      }
-
-      buf += "\n";
-      buf += `// HIPHOP_MACHINE=mach0 NODE_OPTIONS="--enable-source-maps --no-warnings --loader @hop/hiphop/lib/hiphop-loader.mjs" node ${outFile}\n`;
-
-      writeFileSync(outFile, buf);
-
-      console.log(`// see "${outFile}"`);
-   }
-
-   function outJson(headers, [mach0, mach1], [prog0, prog1], events) {
-      writeFileSync("/tmp/prog.hh.json",
-		    JSON.stringify({ events: events, prog: prog0.tojson() }));
-      if (prog1) {
-	 writeFileSync("/tmp/prog1.hh.json",
-		       JSON.stringify({ events: events, prog: prog1.tojson() }));
-      }
-   }
-
-   function out(headers, machines, progs, events) {
-      outResults(headers, machines, progs, events);
-      outSource(headers, machines, progs, events);
-      outJson(headers, machines, progs, events);
-   }
-   
    if (argv.length < 3) {
-      findBugGen(out);
-   } else if (existsSync(argv[2])) {
-      const { events, prog } = JSON.parse(readFileSync(argv[2]));
-      findBugInProg(outSource, jsonToAst(prog), events);
+      const bug = findBugInGen();
+
+      if (bug) {
+	 const jsonfile = "bug.hh.json";
+	 outJson(jsonfile, bug.prog, bug.events);
+	 console.log(`  +- see ${jsonfile}`);
+	 bug.machines.forEach(m =>
+	    console.log("  +- see", m.outProg?.(bug.prog, bug.events) || outProg(m, bug.prog, bug.events),
+			`(${m.name()})`));
+      }
    } else if (argv[2] === "gen") {
       console.log(jsonToHiphop(gen().tojson()));
    } else {

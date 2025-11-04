@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Wed Oct 29 07:34:05 2025 (serrano)                */
+/*    Last change :  Tue Nov  4 14:02:26 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -13,27 +13,6 @@ import * as hhapi from "../lib/ast.js";
 import { jsonToHiphop } from "./dump.mjs";
 
 export { makeProp };
-
-/*---------------------------------------------------------------------*/
-/*    runMach ...                                                      */
-/*---------------------------------------------------------------------*/
-function runMach(mach, events) {
-   let res = [];
-   for (let i = 0; i < events.length; i++) {
-      try {
-	 const signals = mach.react(events[i]);
-	 res.push({ status: "success", signals });
-      } catch(e) {
-	 res.push({ status: "error", msg: e.toString() });
-	 return res;
-      }
-   }
-   if ("end" in mach) {
-      res = mach.end();
-   }
-
-   return res;
-}
 
 /*---------------------------------------------------------------------*/
 /*    failure ...                                                      */
@@ -79,9 +58,30 @@ function equal(x, y) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    runMach ...                                                      */
+/*---------------------------------------------------------------------*/
+function runMach(mach, events) {
+   let res = [];
+   for (let i = 0; i < events.length; i++) {
+      try {
+	 const signals = mach.react(events[i]);
+	 res.push({ status: "success", signals });
+      } catch(e) {
+	 res.push({ status: "error", msg: e.toString() });
+	 return res;
+      }
+   }
+   if ("end" in mach) {
+      res = mach.end();
+   }
+
+   return res;
+}
+
+/*---------------------------------------------------------------------*/
 /*    makeProp ...                                                     */
 /*---------------------------------------------------------------------*/
-function makeProp(verbose, ...machCtor) {
+function makeProp(...machCtor) {
    
    function resStatus(res) {
       if (res.status === "failure") {
@@ -91,7 +91,7 @@ function makeProp(verbose, ...machCtor) {
       }
    }
 	 
-   return (prog, events) => {
+   return (prog, events, verbose = false) => {
       try {
 	 const machs = machCtor.map(ctor => ctor(prog));
 	 const r0 = runMach(machs[0], events);
@@ -108,16 +108,16 @@ function makeProp(verbose, ...machCtor) {
 	    }
 	    
 	    if (r0.length !== ri.length) {
-	       return failure(prog, machs[0], machs[i], `reaction numbers ${r0.length} / ${ri.length}`, "reactions");
+	       return failure(prog, machs[0], machs[i], `reaction numbers ${r0.length} vs ${ri.length}`, "reactions (${r0.length}/${ri.length})");
 	    }
 	    
 	    if (r0[r0.length - 1].status !== "error" || ri[ri.length - 1].status !== "error") {
 	       for (let j = 0; j < r0.length; j++) {
 		  if (r0[j].status !== ri[j].status) {
-		     return failure(prog, machs[0], machs[i], `status @ #${j}: ${resStatus(r0[j])} / ${resStatus(ri[j])}`, "status");
+		     return failure(prog, machs[0], machs[i], `status @ #${j}: ${resStatus(r0[j])} vs ${resStatus(ri[j])}`, "status");
 		  }
 		  if (!equal(r0[j].signals, ri[j].signals)) {
-		     return failure(prog, machs[0], machs[i], `results @ #${j}: ${JSON.stringify(r0[j].signals)} / ${JSON.stringify(ri[j].signals)}`, "signals");
+		     return failure(prog, machs[0], machs[i], `results @ #${j}: ${JSON.stringify(r0[j].signals)} vs ${JSON.stringify(ri[j].signals)}`, "signals");
 		  }
 	       }
 	    }
