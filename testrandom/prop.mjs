@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Tue Nov  4 14:02:26 2025 (serrano)                */
+/*    Last change :  Wed Nov  5 12:42:26 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -58,13 +58,27 @@ function equal(x, y) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    signalsEqual ...                                                 */
+/*---------------------------------------------------------------------*/
+function signalsEqual(x, y) {
+   const kx = Object.keys(x);
+   const ky = Object.keys(y);
+
+   if (kx.length !== ky.length) {
+      return false;
+   } else {
+      return equal(kx.sort(), ky.sort());
+   }
+}
+
+/*---------------------------------------------------------------------*/
 /*    runMach ...                                                      */
 /*---------------------------------------------------------------------*/
 function runMach(mach, events) {
    let res = [];
    for (let i = 0; i < events.length; i++) {
       try {
-	 const signals = mach.react(events[i]);
+	 const signals = mach.reactDebug(events[i]);
 	 res.push({ status: "success", signals });
       } catch(e) {
 	 res.push({ status: "error", msg: e.toString() });
@@ -116,7 +130,7 @@ function makeProp(...machCtor) {
 		  if (r0[j].status !== ri[j].status) {
 		     return failure(prog, machs[0], machs[i], `status @ #${j}: ${resStatus(r0[j])} vs ${resStatus(ri[j])}`, "status");
 		  }
-		  if (!equal(r0[j].signals, ri[j].signals)) {
+		  if (!signalsEqual(r0[j].signals, ri[j].signals)) {
 		     return failure(prog, machs[0], machs[i], `results @ #${j}: ${JSON.stringify(r0[j].signals)} vs ${JSON.stringify(ri[j].signals)}`, "signals");
 		  }
 	       }

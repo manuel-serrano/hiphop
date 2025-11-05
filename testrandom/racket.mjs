@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Tue Nov  4 12:26:07 2025 (serrano)                */
+/*    Last change :  Wed Nov  5 10:00:42 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with racket/esterel                      */
@@ -119,7 +119,7 @@ function makeProg(prog, events) {
       + ("   (if (null? x) a (cons a (consx x))))\n")
       + ('\n')
       + ('(define (hash-to-json hash)\n')
-      + ('   (let ((keys (hash-keys hash)))\n')
+      + ('   (let ((keys (filter (lambda (k) (hash-ref hash k #f)) (hash-keys hash))))\n')
       + ('      (if (null? keys)\n')
       + ("          '(\"{}\")\n")
       + ("          (append '(\"{\")\n")
@@ -130,22 +130,32 @@ function makeProg(prog, events) {
       + ("                       '())))\n")
       + ("             '(\"}\")))))\n")
       + ('\n')
+      + ('(define (handler x)\n')
+      + ('    (display (exn-message x) (current-error-port))\n')
+      + ('    (newline (current-error-port))\n')
+      + ('    (list "{\\\"status\\\": \\\"error\\\", \\\"msg\\\": \\\""\n')
+      + ('       (regexp-replace* #rx"\n" (exn-message x) " ")\n')
+      + ('       "\\\", \\\"reason\\\": \\\"exception\\\"}"))\n')
+      + ('\n')
       + (`(define (run-mach machine events)\n`)
       + (`   (cons "["\n`)
-      + (`      (let loop ((events events))\n`)
-      + (`         (cons* "{"\n`)
-      + (`           "\\\"status\\\": \\\"success\\\", \\\"signals\\\":"\n`)
-      + (`           (append (hash-to-json (react! machine))\n`)
-      + (`              (cons "}"\n`)
-      + (`                 (if (pair? (cdr events))\n`)
-      + (`                     (cons* "," (loop (cdr events)))\n`)
-      + (`                     '("]"))))))))\n`)
+      + (`      (let loop ((events events) (i 0))\n`)
+      + ('         (display "racket: " (current-error-port))\n')
+      + ('         (display i (current-error-port))\n')
+      + ('         (newline (current-error-port))\n')
+      + ('         (let ((step (with-handlers ([exn:fail? (lambda (x) (set! events (list (car events))) (handler x))])\n')
+      + (`                        (append '("{ \\\"status\\\": \\\"success\\\", \\\"signals\\\":")\n`)
+      + (`                           (hash-to-json (react! machine))\n`)
+      + ('                           \'("}")))))\n')
+      + (`            (append step\n`)
+      + (`              (if (pair? (cdr events))\n`)
+      + (`                  (cons* "," (loop (cdr events) (+ i 1)))\n`)
+      + (`                  '("]")))))))\n`)
       + ('\n')
       + (`(define machine ${json2racket(prog.tojson())})\n`)
       + ('\n')
       + (`(let ((events ${evts}))\n`)
-      + (`   (with-handlers ([exn:fail? (lambda (x) (display (exn-message x) (current-error-port)) (newline (current-error-port)) (display "[{\\\"status\\\": \\\"error\\\", \\\"msg\\\": \\\"") (display (regexp-replace* #rx"\n" (exn-message x) " ")) (display "\\\", \\\"reason\\\": \\\"exception\\\"}]"))])\n`)
-      + ('      (display (apply string-append (run-mach machine events)))))\n');
+      + ('   (display (apply string-append (run-mach machine events))))\n');
    
 }
 
@@ -177,6 +187,10 @@ class ReactiveMachine {
       this.events.push("()")
    }
 
+   reactDebug(e) {
+      this.react(e)
+   }
+
    end() {
       writeFileSync(this.eventsfile, `(${this.events.join(" ")})`);
       this.events = [];
@@ -190,8 +204,8 @@ class ReactiveMachine {
    }
 
    outProg(prog, events) {
-      const target = "bug.hh.rkt";
+      const target = "racket.hh.rkt";
       writeFileSync(target, makeProg(prog, events) + `\n;; racket ${target}`);
-      return "bug.hh.rkt";
+      return target;
    }
 }

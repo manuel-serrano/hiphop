@@ -99,6 +99,14 @@ value is an object whose property names are the names of the signal
 emitted during the reaction and the property values the values
 associated to these signals.
 
+### mach.reactDebug(sigset) ###
+<!-- [:@glyphicon glyphicon-tag function] -->
+
+Similar to `mach.react` but returns an object containing information
+about *all* the emitted signals, including local signals. This function
+is only intented for debugging and its behaviour may change in future
+versions.
+
 
 ### mach.init(values) ###
 <!-- [:@glyphicon glyphicon-tag function] -->

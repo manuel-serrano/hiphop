@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Tue Nov  4 12:38:01 2025 (serrano)                */
+/*    Last change :  Wed Nov  5 09:52:32 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -57,22 +57,18 @@ function loopfork(n) {
 /*    prop ...                                                         */
 /*---------------------------------------------------------------------*/
 export const prop = makeProp(
-   prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", verbose: -1, sweep: 0 }),
+/*    prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", verbose: -1, sweep: 0 }), */
 /*    prg => new hh.ReactiveMachine(prg, { name: "colin-sweep-wire", verbose: -1, sweep: -1 }), */
 /*    prg => new hh.ReactiveMachine(prg, { name: "colin-sweep", verbose: -1 }), */
    prg => new hh.ReactiveMachine(prg, { name: "new-unroll", compiler: "new", loopUnroll: true, reincarnation: false, loopDup: false, verbose: -1 }),
-/*    prg => new racket.ReactiveMachine(prg, { name: "racket" })       */
+   prg => new racket.ReactiveMachine(prg, { name: "racket" })
 );
 
 /*---------------------------------------------------------------------*/
 /*    shrinkBugInProg ...                                              */
 /*---------------------------------------------------------------------*/
 function shrinkBugInProg(prog, machines, events, reason) {
-   /*    const [mach0, mach1] = machines;                                 */
-
    const prop = makeProp(...machines.map(m => prg => new m.constructor(prg, m.opts)));
-   /*          prg => new mach0.constructor(prg, mach0.opts),             */
-   /*          prg => new mach1.constructor(prg, mach1.opts));            */
 
    function shrink(prog) {
       const progs = shrinker(prog);
@@ -118,7 +114,7 @@ function findBugInProg(prog, events) {
 /*---------------------------------------------------------------------*/
 function findBugInGen(iterCount = COUNT) {
    for (let i = 0; i < iterCount; i++) {
-      const events = Array.from({length: 20}).map(i => { return {}; });
+      const events = Array.from({length: 20}).map(i => { return null; });
       const prog = gen();
       
       console.error("#", i);
@@ -155,7 +151,7 @@ const opts = ${JSON.stringify(mach.opts)};
 
 export const mach = new hh.ReactiveMachine(prg, opts);
 mach.outbuf = "";
-events.forEach((e, i) => { console.log(mach.name() + ":", i); mach.outbuf += (i + ': ' + JSON.stringify(mach.react(e)) + '\\n') });
+events.forEach((e, i) => { console.log(mach.name() + ":", i); mach.outbuf += (i + ': ' + JSON.stringify(mach.reactDebug(e)) + '\\n') });
 console.log(mach.outbuf);
 `);
 
@@ -170,19 +166,30 @@ console.log(mach.outbuf);
 /*    main                                                             */
 /*---------------------------------------------------------------------*/
 async function main(argv) {
+
+   function dumpBug(bug, jsonfile) {
+      console.log(`  +- see ${jsonfile}`);
+      console.log('  |');
+      bug.machines.forEach(m =>
+	 console.log("  +- see", m.outProg?.(bug.prog, bug.events) || outProg(m, bug.prog, bug.events),
+		     `(${m.name()})`));
+   }
+      
    if (argv.length < 3) {
       const bug = findBugInGen();
 
       if (bug) {
 	 const jsonfile = "bug.hh.json";
 	 outJson(jsonfile, bug.prog, bug.events);
-	 console.log(`  +- see ${jsonfile}`);
-	 bug.machines.forEach(m =>
-	    console.log("  +- see", m.outProg?.(bug.prog, bug.events) || outProg(m, bug.prog, bug.events),
-			`(${m.name()})`));
+	 dumpBug(bug, jsonfile);
       }
-   } else if (argv[2] === "gen") {
-      console.log(jsonToHiphop(gen().tojson()));
+   } else if (existsSync(argv[2])) {
+      const { events, prog } = JSON.parse(readFileSync(argv[2]));
+      const bug = findBugInProg(jsonToAst(prog), events);
+
+      if (bug) {
+	 dumpBug(bug, argv[2]);
+      }
    } else {
       throw new Error(`Illegal command line: "${argv.join(" ")}"`);
    }

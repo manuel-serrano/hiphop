@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Tue Nov  4 14:04:39 2025 (serrano)                */
+/*    Last change :  Wed Nov  5 11:59:19 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -114,6 +114,13 @@ function genTestExpr(env, size) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    genEmitValue ...                                                 */
+/*---------------------------------------------------------------------*/
+function genEmitValue() {
+   return Math.floor(Math.random() * 100);
+}
+
+/*---------------------------------------------------------------------*/
 /*    genStmt ...                                                      */
 /*    -------------------------------------------------------------    */
 /*    returns an esterel expression of size `size`,                    */
@@ -218,7 +225,8 @@ function genStmt(env, size) {
 	 [3, () => {
 	    const i = Math.floor(Math.random() * env.signals.length);
 	    const sig = env.signals[i];
-	    return hh.EMIT({signame: env.signals[i]});
+	    const val = genEmitValue();
+	    return hh.EMIT({signame: env.signals[i], apply: () => val});
 	 }]);
    } else {
       return choose(
@@ -236,7 +244,8 @@ function genStmt(env, size) {
 	 [3, () => {
 	    const i = Math.floor(Math.random() * env.signals.length);
 	    const sig = env.signals[i];
-	    return hh.EMIT({signame: env.signals[i]});
+	    const val = genEmitValue();
+	    return hh.EMIT({signame: env.signals[i], apply: () => val});
 	 }],
 	 // exit
 	 [1, () => {

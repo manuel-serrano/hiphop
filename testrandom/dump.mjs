@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:45:26 2025                          */
-/*    Last change :  Fri Jun 13 18:38:30 2025 (serrano)                */
+/*    Last change :  Wed Nov  5 11:52:36 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Json dump and pretty-printing HipHop programs                    */
@@ -85,6 +85,7 @@ hhapi.Emit.prototype.tojson = function() {
    return {
       node: "emit",
       signame: this.signame_list[0],
+      value: ("func" in this ? this.func() : null),
       children: []
    }
 }
@@ -137,12 +138,13 @@ function jsonToAst(obj) {
 	 return hh.EXIT({[obj.trapName]: obj.trapName});
 
       case "emit":
-	 return hh.EMIT({[obj.signame_list[0]]: obj.signame_list[0]});
+	 const func = eval(`(function() { return ${obj.value}; })`);
+	 return hh.EMIT({[obj.signame]: obj.signame, apply: func});
 	 
       case "local": {
 	 const attrs = {};
 	 obj.signals.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT });
-	 return hh.LOCALS(attrs, ...children.map(jsonToAst));
+	 return hh.LOCAL(attrs, ...children.map(jsonToAst));
       }
 	 
       case "if": {
@@ -225,7 +227,7 @@ function jsonToHiphop(obj, m = 0) {
 	 return margin(m) + `break ${obj.trapName};`;
 
       case "emit":
-	 return margin(m) + `emit ${obj.signame}();`;
+	 return margin(m) + `emit ${obj.signame}(${obj.value});`;
 	 
       case "local":
 	 return margin(m) + '{\n'
