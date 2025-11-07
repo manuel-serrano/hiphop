@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Wed Nov  5 09:52:32 2025 (serrano)                */
+/*    Last change :  Fri Nov  7 11:00:47 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -21,6 +21,7 @@ import * as racket from "./racket.mjs";
 /*    COUNT                                                            */
 /*---------------------------------------------------------------------*/
 const COUNT = 2000;
+const LOOPSAFE = process.env?.HIPHOP_HR_LOOP !== "false";
 
 /*---------------------------------------------------------------------*/
 /*    fork2 ...                                                        */
@@ -113,9 +114,26 @@ function findBugInProg(prog, events) {
 /*    findBugInGen ...                                                 */
 /*---------------------------------------------------------------------*/
 function findBugInGen(iterCount = COUNT) {
+
+   function genCorrect() {
+      const prog = gen();
+
+      if (!LOOPSAFE) {
+	 return prog;
+      } else {
+	 try {
+	    new hh.ReactiveMachine(prog, { loopSafe: true });
+	    return prog;
+	 } catch(e) {
+	    console.error("gen rejecting instantaneous loop...");
+	    return genCorrect();
+	 }
+      }
+   }
+   
    for (let i = 0; i < iterCount; i++) {
       const events = Array.from({length: 20}).map(i => { return null; });
-      const prog = gen();
+      const prog = genCorrect();
       
       console.error("#", i);
 

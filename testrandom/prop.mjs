@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Wed Nov  5 12:42:26 2025 (serrano)                */
+/*    Last change :  Fri Nov  7 11:49:30 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -104,7 +104,7 @@ function makeProp(...machCtor) {
 	 return res.status;
       }
    }
-	 
+
    return (prog, events, verbose = false) => {
       try {
 	 const machs = machCtor.map(ctor => ctor(prog));

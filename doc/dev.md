@@ -17,9 +17,10 @@ HipHop uses the following shell variables environment:
   * `HIPHOP_TRACE`: `causality`, `compile`, `connect`, `nets`, any combination of these keywords.
   * `HIPHOP_COMPILER`: `orig` | `int` | `new`.
   * `HIPHOP_NATIVE`: `true` | `false`, compile acyclic net lists to plain JavaScript. 
-  * `HIPHOP_DEBUG_NATIVE`: `true` | `false`, dumps the native JavaScript code when true.
+  * `HIPHOP_DEBUG_NATIVE`: `true` | `false`, dump the native JavaScript code when true.
   * `HIPHOP_SWEEP`: `true` | `false`.
   * `HIPHOP_SWEEP_LEVEL`: integer.
+  * `HIPHOP_LOOPSAFE`: `true` | `false`, reject non loop-safe programs.
   
 
 Running HipHop programs on the Web (server and client)
