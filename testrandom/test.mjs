@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Fri Nov  7 11:00:47 2025 (serrano)                */
+/*    Last change :  Fri Nov  7 14:42:04 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -24,43 +24,26 @@ const COUNT = 2000;
 const LOOPSAFE = process.env?.HIPHOP_HR_LOOP !== "false";
 
 /*---------------------------------------------------------------------*/
-/*    fork2 ...                                                        */
+/*    loopSafep ...                                                    */
 /*    -------------------------------------------------------------    */
-/*    Create a binary fork for testing.                                */
+/*    Is a program loop-safe?                                          */
 /*---------------------------------------------------------------------*/
-function fork2(attrs, body) {
-   return hh.FORK(attrs, hh.NOTHING({}), body);
-}
-
-/*---------------------------------------------------------------------*/
-/*    loop ...                                                         */
-/*---------------------------------------------------------------------*/
-function loop(attrs, body) {
-   const trap = gensym("trap");
-   const attr = {[trap]: trap};
-   return hh.TRAP(attr, hh.LOOP({}, hh.SEQUENCE({}, body, hh.EXIT(attr))));
-}
-
-/*---------------------------------------------------------------------*/
-/*    loopfork ...                                                     */
-/*---------------------------------------------------------------------*/
-function loopfork(n) {
-   return (attrs, body) => {
-      if (n++ & 1 === 1) {
-	 return fork2(attrs, body);
-      } else {
-	 return loop(attrs, body);
-      }
+function loopSafep(prog) {
+   try {
+      new hh.ReactiveMachine(prog, { loopSafe: true });
+      return true;
+   } catch(e) {
+      return false;
    }
 }
-	 
+   
 /*---------------------------------------------------------------------*/
 /*    prop ...                                                         */
 /*---------------------------------------------------------------------*/
 export const prop = makeProp(
-/*    prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", verbose: -1, sweep: 0 }), */
-/*    prg => new hh.ReactiveMachine(prg, { name: "colin-sweep-wire", verbose: -1, sweep: -1 }), */
-/*    prg => new hh.ReactiveMachine(prg, { name: "colin-sweep", verbose: -1 }), */
+   prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", verbose: -1, sweep: 0 }),
+   prg => new hh.ReactiveMachine(prg, { name: "colin-sweep-wire", verbose: -1, sweep: -1 }),
+   prg => new hh.ReactiveMachine(prg, { name: "colin-sweep", verbose: -1 }),
    prg => new hh.ReactiveMachine(prg, { name: "new-unroll", compiler: "new", loopUnroll: true, reincarnation: false, loopDup: false, verbose: -1 }),
    prg => new racket.ReactiveMachine(prg, { name: "racket" })
 );
@@ -70,15 +53,16 @@ export const prop = makeProp(
 /*---------------------------------------------------------------------*/
 function shrinkBugInProg(prog, machines, events, reason) {
    const prop = makeProp(...machines.map(m => prg => new m.constructor(prg, m.opts)));
+   const pred = LOOPSAFE ? loopSafep : x => true;
 
    function shrink(prog) {
-      const progs = shrinker(prog);
-      
-      console.error("  |  size: ", progs.length);
-      
+      const progs = shrinker(prog).filter(pred);
+
       if (progs.length === 0) {
 	 return { prog, machines, events };
       } else {
+	 console.error("  |  size: ", progs.length);
+      
 	 for (let i = 0; i < progs.length; i++) {
 	    const res = prop(progs[i], events);
 	    if (res.status === "failure" && res.reason === reason) {
@@ -114,26 +98,9 @@ function findBugInProg(prog, events) {
 /*    findBugInGen ...                                                 */
 /*---------------------------------------------------------------------*/
 function findBugInGen(iterCount = COUNT) {
-
-   function genCorrect() {
-      const prog = gen();
-
-      if (!LOOPSAFE) {
-	 return prog;
-      } else {
-	 try {
-	    new hh.ReactiveMachine(prog, { loopSafe: true });
-	    return prog;
-	 } catch(e) {
-	    console.error("gen rejecting instantaneous loop...");
-	    return genCorrect();
-	 }
-      }
-   }
-   
    for (let i = 0; i < iterCount; i++) {
       const events = Array.from({length: 20}).map(i => { return null; });
-      const prog = genCorrect();
+      const prog = gen({pred: LOOPSAFE ? loopSafep : false});
       
       console.error("#", i);
 

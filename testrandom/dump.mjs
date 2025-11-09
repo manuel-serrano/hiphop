@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:45:26 2025                          */
-/*    Last change :  Wed Nov  5 11:52:36 2025 (serrano)                */
+/*    Last change :  Fri Nov  7 15:15:16 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Json dump and pretty-printing HipHop programs                    */
@@ -231,7 +231,7 @@ function jsonToHiphop(obj, m = 0) {
 	 
       case "local":
 	 return margin(m) + '{\n'
-	    + margin(m + 2) + "signal " + obj.signals.join(", ") + ";\n"
+	    + margin(m + 2) + "signal " + obj.signals.map(s => `${s} combine (x, y) => x`).join(", ") + ";\n"
 	    + children.map(c => jsonToHiphop(c, m + 2)).join('\n')  
 	    + '\n' + margin(m) + '}';
 

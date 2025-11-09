@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Wed Nov  5 11:59:19 2025 (serrano)                */
+/*    Last change :  Fri Nov  7 14:40:26 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -102,7 +102,7 @@ function genTestExpr(env, size) {
       return `this.${sig}.${axs}`;
    } else {
       switch (Math.floor(Math.random() * 6)) {
-	 case 0: return `!(${genTestExpr(env, size - 1)})`;
+	 case 0: return `!${genTestExpr(env, size - 1)}`;
 	 case 1:
 	 case 2:
 	 case 3: return `(${genTestExpr(env, size - 1)} && ${genTestExpr(env, size - 1)})`;
@@ -161,7 +161,7 @@ function genStmt(env, size) {
 	    const signals = env.signals.concat(names);
 	    const nenv = Object.assign({}, env);
 	    nenv.signals = nenv.signals.concat(signals);
-	    names.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT });
+	    names.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT, combine: (x, y) => x });
 
 	    return hh.LOCAL(attrs, genStmt(nenv, size - 1));
 	 }],
@@ -261,9 +261,15 @@ function genStmt(env, size) {
 /*    -------------------------------------------------------------    */
 /*    Generates a random program.                                      */
 /*---------------------------------------------------------------------*/
-function gen(size = 20) {
-   const body = genStmt({signals: [], traps: []}, size);
-   return hh.MODULE({}, body);
+function gen({pred, size=20}) {
+   while (true) {
+      const body = genStmt({signals: [], traps: []}, size);
+      const prog = hh.MODULE({}, body);
+
+      if (!pred || pred(prog)) {
+	 return prog;
+      }
+   }
 }
 
 /*---------------------------------------------------------------------*/
