@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Fri Nov  7 15:05:39 2025 (serrano)                */
+/*    Last change :  Wed Nov 12 05:22:17 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -153,6 +153,13 @@ hhapi.Trap.prototype.shrink = function() {
 /*    shrink ::Exit ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Exit.prototype.shrink = function() {
+   return [hh.PAUSE({})];
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrink ::Halt ...                                                */
+/*---------------------------------------------------------------------*/
+hhapi.Halt.prototype.shrink = function() {
    return [hh.PAUSE({})];
 }
 

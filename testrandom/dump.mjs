@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:45:26 2025                          */
-/*    Last change :  Fri Nov  7 15:15:16 2025 (serrano)                */
+/*    Last change :  Wed Nov 12 05:18:55 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Json dump and pretty-printing HipHop programs                    */
@@ -73,6 +73,13 @@ hhapi.Exit.prototype.tojson = function() {
    };
 }
 
+hhapi.Halt.prototype.tojson = function() {
+   return {
+      node: "halt",
+      trapName: this.trapName
+   };
+}
+
 hhapi.Local.prototype.tojson = function() {
   return {
      node: "local",
@@ -136,6 +143,9 @@ function jsonToAst(obj) {
 
       case "exit":
 	 return hh.EXIT({[obj.trapName]: obj.trapName});
+
+      case "halt":
+	 return hh.HALT({});
 
       case "emit":
 	 const func = eval(`(function() { return ${obj.value}; })`);
@@ -225,6 +235,9 @@ function jsonToHiphop(obj, m = 0) {
 
       case "exit":
 	 return margin(m) + `break ${obj.trapName};`;
+
+      case "halt":
+	 return margin(m) + `halt;`;
 
       case "emit":
 	 return margin(m) + `emit ${obj.signame}(${obj.value});`;

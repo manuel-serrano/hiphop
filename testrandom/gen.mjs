@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Fri Nov  7 14:40:26 2025 (serrano)                */
+/*    Last change :  Wed Nov 12 05:14:23 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -166,7 +166,7 @@ function genStmt(env, size) {
 	    return hh.LOCAL(attrs, genStmt(nenv, size - 1));
 	 }],
 	 // if
-	 [1, () => {
+	 [3, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
 	    const func = eval(`(function() { return ${expr}; })`);
 	    return hh.IF({apply: func}, genStmt(env, size - 1), genStmt(env, size - 1));
@@ -177,8 +177,8 @@ function genStmt(env, size) {
 	    const nenv = Object.assign({}, env);
 	    nenv.traps = [trap, ...nenv.traps];
 	    return hh.TRAP({[trap]: trap}, genStmt(nenv, size - 1));
-	 }],
-      )
+	 }]
+      );
    } else if (env.signals.length === 0 && env.traps.length === 0) {
       return choose(
 	 // nothing
@@ -190,24 +190,33 @@ function genStmt(env, size) {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
 	    const func = eval(`(function() { return ${expr}; })`);
 	    return hh.ATOM({apply: func});
-	 }]);
+	 }],
+	 // halt
+	 [1, () => {
+	    return hh.HALT({});
+	 }]
+	 );
    } else if (env.signals.length === 0) {
       return choose(
 	 // nothing
-	 [2, () => hh.NOTHING({})],
+	 [3, () => hh.NOTHING({})],
 	 // pause
-	 [3, () => hh.PAUSE({})],
+	 [4, () => hh.PAUSE({})],
 	 // atom
-	 [2, () => {
+	 [3, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
 	    const func = eval(`(function() { return ${expr}; })`);
 	    return hh.ATOM({apply: func});
 	 }],
 	 // exit
-	 [1, () => {
+	 [2, () => {
 	    const i = Math.floor(Math.random() * env.traps.length);
 	    const attr = { [env.traps[i]]: env.traps[i] };
 	    return hh.EXIT(attr);
+	 }],
+	 // halt
+	 [1, () => {
+	    return hh.HALT({});
 	 }]);
    } else if (env.traps.length === 0) {
       return choose(
@@ -227,7 +236,12 @@ function genStmt(env, size) {
 	    const sig = env.signals[i];
 	    const val = genEmitValue();
 	    return hh.EMIT({signame: env.signals[i], apply: () => val});
-	 }]);
+	 }],
+      	 // halt
+	 [1, () => {
+	    return hh.HALT({});
+	 }]
+      );
    } else {
       return choose(
 	 // nothing
@@ -252,7 +266,12 @@ function genStmt(env, size) {
 	    const i = Math.floor(Math.random() * env.traps.length);
 	    const attr = { [env.traps[i]]: env.traps[i] };
 	    return hh.EXIT(attr);
-	 }]);
+	 }],
+      	 // halt
+	 [1, () => {
+	    return hh.HALT({});
+	 }]
+      );
    }
 }
 

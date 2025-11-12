@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Fri Nov  7 15:17:30 2025 (serrano)                */
+/*    Last change :  Wed Nov 12 05:22:44 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with racket/esterel                      */
@@ -122,6 +122,8 @@ function json2racket(o) {
 	 return `(with-trap ${o.trapName} ${childrenOf(o)})`;
       case "exit":
 	 return `(exit-trap ${o.trapName})`;
+      case "halt":
+	 return `(loop (pause))`;
       case "par":
 	 return `(par ${o.children.map(json2racket).join("\n")})`;
       case "atom":
@@ -234,8 +236,8 @@ class ReactiveMachine {
       return JSON.parse(out);
    }
 
-   outProg(prog, events) {
-      const target = "racket.hh.rkt";
+   outProg(suffix, prog, events) {
+      const target = `racket${suffix}.hh.rkt`;
       writeFileSync(target, makeProg(prog, events) + `\n;; racket ${target}`);
       return target;
    }
