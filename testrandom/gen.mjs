@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Wed Nov 12 05:14:23 2025 (serrano)                */
+/*    Last change :  Wed Nov 12 08:28:14 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -11,7 +11,7 @@
 import * as hh from "../lib/hiphop.js";
 import { jsonToHiphop } from "./dump.mjs";
 
-export { gen, gensym };
+export { gen, genreactsigs, gensym };
 
 /*---------------------------------------------------------------------*/
 /*    gensymCnt ...                                                    */
@@ -131,12 +131,12 @@ function genStmt(env, size) {
    if (size !== 0) {
       return choose(
 	 // sequence
-	 [10, () => {
+	 [100, () => {
 	    const n = randomInRange(0, size - 1);
 	    return hh.SEQUENCE({}, genStmt(env, size - n - 1), genStmt(env, n))
 	 }],
 	 // fork
-	 [10, () => {
+	 [100, () => {
 	    const l = Math.round(Math.random() * 5);
 	    let children = [];
 	    for (let i = 0; i < l - 1; i++) {
@@ -150,11 +150,11 @@ function genStmt(env, size) {
 	    return hh.FORK({}, ...children);
 	 }],
 	 // loop
-	 [10, () => {
+	 [100, () => {
 	    return hh.LOOP({}, genStmt(env, size - 1));
 	 }],
 	 // local
-	 [3, () => {
+	 [30, () => {
 	    const l = Math.round(1 + Math.random() * 4);
 	    const names = Array.from({length: l}).map(c => gensym());
 	    const attrs = {};
@@ -166,27 +166,45 @@ function genStmt(env, size) {
 	    return hh.LOCAL(attrs, genStmt(nenv, size - 1));
 	 }],
 	 // if
-	 [3, () => {
+	 [50, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
 	    const func = eval(`(function() { return ${expr}; })`);
 	    return hh.IF({apply: func}, genStmt(env, size - 1), genStmt(env, size - 1));
 	 }],
 	 // trap
-	 [1, () => {
+	 [10, () => {
 	    const trap = gensym("trap");
 	    const nenv = Object.assign({}, env);
 	    nenv.traps = [trap, ...nenv.traps];
 	    return hh.TRAP({[trap]: trap}, genStmt(nenv, size - 1));
-	 }]
+	 }],
+	 // abort
+	 [20, () => {
+	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
+	    const func = eval(`(function() { return ${expr}; })`);
+	    return hh.ABORT({apply: func}, genStmt(env, size -1));
+	 }],
+	 // every
+	 [20, () => {
+	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
+	    const func = eval(`(function() { return ${expr}; })`);
+	    return hh.EVERY({apply: func}, genStmt(env, size -1));
+	 }],
+	 // loopeach
+	 [20, () => {
+	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
+	    const func = eval(`(function() { return ${expr}; })`);
+	    return hh.LOOPEACH({apply: func}, genStmt(env, size -1));
+	 }],
       );
    } else if (env.signals.length === 0 && env.traps.length === 0) {
       return choose(
 	 // nothing
-	 [2, () => hh.NOTHING({})],
+	 [10, () => hh.NOTHING({})],
 	 // pause
-	 [3, () => hh.PAUSE({})],
+	 [20, () => hh.PAUSE({})],
 	 // atom
-	 [2, () => {
+	 [10, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
 	    const func = eval(`(function() { return ${expr}; })`);
 	    return hh.ATOM({apply: func});
@@ -280,14 +298,46 @@ function genStmt(env, size) {
 /*    -------------------------------------------------------------    */
 /*    Generates a random program.                                      */
 /*---------------------------------------------------------------------*/
-function gen({pred, size=20}) {
+function gen({pred, size = 20}) {
    while (true) {
-      const body = genStmt({signals: [], traps: []}, size);
-      const prog = hh.MODULE({}, body);
+      const l = Math.round(Math.random() * 4);
+      const signals = Array.from({length: l}).map(c => gensym());
+      const body = genStmt({signals: signals, traps: []}, size);
+      const attrs = {};
+      signals.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT, combine: (x, y) => x });
 
-      if (!pred || pred(prog)) {
-	 return prog;
+      try {
+	 const prog = hh.MODULE(attrs, body);
+
+	 if (!pred || pred(prog)) {
+	    return { prog, signals };
+	 }
+      } catch(e) {
+	 console.error("Cannot construct module");
+	 console.error(e.toString());
+	 throw e;
       }
+   }
+}
+
+/*---------------------------------------------------------------------*/
+/*    genreactsigs ...                                                 */
+/*---------------------------------------------------------------------*/
+function genreactsigs(signals) {
+   const l = Math.floor(Math.random() * signals.length);
+
+   if (l === 0) {
+      return null;
+   } else {
+      const obj = {};
+      for (let i = 0; i < l; i++) {
+	 const j = Math.floor(Math.random() * (l - i));
+	 const s = signals[j];
+	 obj[s] = genEmitValue();
+	 signals[j] = signals[i];
+	 signals[i] = s;
+      }
+      return obj;
    }
 }
 
@@ -304,3 +354,4 @@ function wrap(prog, ctor, depth) {
 
    return hh.MODULE({}, body);
 }
+

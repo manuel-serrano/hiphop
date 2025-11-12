@@ -23,7 +23,6 @@
       "hop": ">=3.7.0" ,
       "node": ">=18.13.0" 
    },
-   "os": [ "darwin", "linux" ],
    "main": "lib/hiphop.js",
    "types": "lib/hiphop.d.ts",
    "type": "module",

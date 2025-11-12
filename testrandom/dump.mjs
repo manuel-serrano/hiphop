@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:45:26 2025                          */
-/*    Last change :  Wed Nov 12 05:18:55 2025 (serrano)                */
+/*    Last change :  Wed Nov 12 08:40:45 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Json dump and pretty-printing HipHop programs                    */
@@ -22,6 +22,7 @@ export { jsonToHiphop, jsonToAst };
 hhapi.Module.prototype.tojson = function() {
    return {
       node: "module",
+      signals: this.sigDeclList.map(s => s.name),
       children: this.children.map(c => c.tojson())
    };
 }
@@ -105,6 +106,30 @@ hhapi.If.prototype.tojson = function() {
    }
 }
 
+hhapi.Abort.prototype.tojson = function() {
+   return {
+      node: "abort",
+      func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
+      children: this.children.map(c => c.tojson())
+   }
+}
+
+hhapi.Every.prototype.tojson = function() {
+   return {
+      node: "every",
+      func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
+      children: this.children.map(c => c.tojson())
+   }
+}
+
+hhapi.LoopEach.prototype.tojson = function() {
+   return {
+      node: "loopeach",
+      func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
+      children: this.children.map(c => c.tojson())
+   }
+}
+
 hhapi.Atom.prototype.tojson = function() {
    return {
       node: "atom",
@@ -113,15 +138,31 @@ hhapi.Atom.prototype.tojson = function() {
    }
 }
 
+hhapi.Await.prototype.tojson = function() {
+   return {
+      node: "await",
+      func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
+      children: []
+   }
+}
+
+hhapi.$ASTNode.prototype.tojson = function() {
+   console.error(`*** ERROR: ${this.constructor.name} -- tojson not implemented`);
+   throw "tojson not implemented.";
+}
+
 /*---------------------------------------------------------------------*/
 /*    jsonToAst ...                                                    */
 /*---------------------------------------------------------------------*/
 function jsonToAst(obj) {
    const { node, children } = obj;
    
-   switch(node) {
-      case "module":
-	 return hh.MODULE({}, ...children.map(jsonToAst));
+   switch (node) {
+      case "module": { 
+	 const attrs = {};
+	 obj.signals.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT, combine: (x, y) => x });
+	 return hh.MODULE(attrs, ...children.map(jsonToAst));
+      }
 
       case "nothing":
 	 return hh.NOTHING({});
@@ -162,9 +203,29 @@ function jsonToAst(obj) {
 	 return hh.IF(attrs, ...children.map(jsonToAst));
       }
 	 
+      case "abort": {
+	 const attrs = {apply: eval(`(function() { return ${obj.func}; })`)};
+	 return hh.ABORT(attrs, ...children.map(jsonToAst));
+      }
+	 
+      case "every": {
+	 const attrs = {apply: eval(`(function() { return ${obj.func}; })`)};
+	 return hh.EVERY(attrs, ...children.map(jsonToAst));
+      }
+	 
+      case "loopeach": {
+	 const attrs = {apply: eval(`(function() { return ${obj.func}; })`)};
+	 return hh.LOOPEACH(attrs, ...children.map(jsonToAst));
+      }
+	 
       case "atom": {
 	 const attrs = {apply: eval(`(function() { return ${obj.func}; })`)};
 	 return hh.ATOM(attrs);
+      }
+	 
+      case "await": {
+	 const attrs = {apply: eval(`(function() { return ${obj.func}; })`)};
+	 return hh.AWAIT(attrs);
       }
    }
 }
@@ -190,9 +251,10 @@ function margin(m) {
 function jsonToHiphop(obj, m = 0) {
    const { node, children } = obj;
 
-   switch(node) {
+   switch (node) {
       case "module": 
 	 return margin(m) + 'module() {\n'
+	    + (obj.signals ? (margin(m + 2) + "inout " + obj.signals.map(s => `${s} combine (x, y) => x`).join(", ") + ";\n") : "")
 	    + children.map(c => jsonToHiphop(c, m + 2)).join(';\n')
 	    + '\n' + margin(m) + '}';
 
@@ -245,15 +307,30 @@ function jsonToHiphop(obj, m = 0) {
       case "local":
 	 return margin(m) + '{\n'
 	    + margin(m + 2) + "signal " + obj.signals.map(s => `${s} combine (x, y) => x`).join(", ") + ";\n"
-	    + children.map(c => jsonToHiphop(c, m + 2)).join('\n')  
-	    + '\n' + margin(m) + '}';
+	    + children.map(c => jsonToHiphop(c, m + 2)).join('\n') + '\n'
+	    + margin(m) + '}';
 
       case "if":
 	 return margin(m) + `if (${obj.func}) {\n`
 	    + jsonToHiphop(children[0], m + 2) + '\n'
 	    + margin(m) + "} else {\n"
-	    + jsonToHiphop(children[1], m + 2)+ '\n'
+	    + jsonToHiphop(children[1], m + 2) + '\n'
 	    + margin(m) + '}';
+	 
+      case "abort":
+	 return margin(m) + `abort (${obj.func}) {\n`
+	    + jsonToHiphop(children[0], m + 2) + '\n' 
+	    + margin(m) + '}';
+	 
+      case "every":
+	 return margin(m) + `every (${obj.func}) {\n`
+	    + jsonToHiphop(children[0], m + 2) + '\n' 
+	    + margin(m) + '}';
+	 
+      case "loopeach":
+	 return margin(m) + `do {\n`
+	    + jsonToHiphop(children[0], m + 2) + '\n' 
+	    + margin(m) + `} every (${obj.func});`;
 	 
       case "atom":
 	 return margin(m) + `pragma { ${obj.func}; }`;

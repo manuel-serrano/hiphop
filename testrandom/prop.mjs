@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Fri Nov  7 11:49:30 2025 (serrano)                */
+/*    Last change :  Wed Nov 12 08:26:38 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -122,7 +122,7 @@ function makeProp(...machCtor) {
 	    }
 	    
 	    if (r0.length !== ri.length) {
-	       return failure(prog, machs[0], machs[i], `reaction numbers ${r0.length} vs ${ri.length}`, "reactions (${r0.length}/${ri.length})");
+	       return failure(prog, machs[0], machs[i], `reaction numbers ${r0.length}/${ri.length}`, `reactions (${r0.length}/${ri.length})`);
 	    }
 	    
 	    if (r0[r0.length - 1].status !== "error" || ri[ri.length - 1].status !== "error") {
@@ -131,12 +131,13 @@ function makeProp(...machCtor) {
 		     return failure(prog, machs[0], machs[i], `status @ #${j}: ${resStatus(r0[j])} vs ${resStatus(ri[j])}`, "status");
 		  }
 		  if (!signalsEqual(r0[j].signals, ri[j].signals)) {
-		     return failure(prog, machs[0], machs[i], `results @ #${j}: ${JSON.stringify(r0[j].signals)} vs ${JSON.stringify(ri[j].signals)}`, "signals");
+		     return failure(prog, machs[0], machs[i], `results @ #${j}: ${JSON.stringify(r0[j].signals)} vs ${JSON.stringify(ri[j].signals)}`,
+				    JSON.stringify(r0[j].signals) + JSON.stringify(ri[j].signals));
 		  }
 	       }
 	    }
 	 }
-	 return { status: "success" };
+	 return { status: "success", reason: `(${events.length})` };
       } catch(e) {
 	 console.error("*** Execution error...");
 	 console.error(jsonToHiphop(prog.tojson()));

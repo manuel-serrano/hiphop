@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Wed Nov 12 05:22:17 2025 (serrano)                */
+/*    Last change :  Wed Nov 12 08:45:57 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -90,7 +90,9 @@ hhapi.Module.prototype.shrink = function() {
       if (a.length === 0) {
 	 return [];
       } else {
-	 return [hh.MODULE({}, a)];
+	 const attrs = {};
+	 this.sigDeclList.forEach(sig => attrs[sig.name] = { signal: sig.name, name: sig.name, accessibility: hh.INOUT, combine: (x, y) => x });
+	 return [hh.MODULE(attrs, a)];
       }
    });
 }
@@ -207,10 +209,56 @@ hhapi.If.prototype.shrink = function() {
 }
 
 /*---------------------------------------------------------------------*/
+/*    shrink ::Abort ...                                               */
+/*---------------------------------------------------------------------*/
+hhapi.Abort.prototype.shrink = function() {
+   const child0 = this.children[0];
+   const c0 = shrinker(child0);
+   const res = [];
+
+   c0.forEach(c => res.push(hh.ABORT({apply: this.func}, c)));
+
+   return res.concat(c0);
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrink ::Every ...                                               */
+/*---------------------------------------------------------------------*/
+hhapi.Every.prototype.shrink = function() {
+   const child0 = this.children[0];
+   const c0 = shrinker(child0);
+   const res = [];
+
+   c0.forEach(c => res.push(hh.EVERY({apply: this.func}, c)));
+
+   return res.concat(c0);
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrink ::LoopEach ...                                            */
+/*---------------------------------------------------------------------*/
+hhapi.LoopEach.prototype.shrink = function() {
+   const child0 = this.children[0];
+   const c0 = shrinker(child0);
+   const res = [];
+
+   c0.forEach(c => res.push(hh.LOOPEACH({apply: this.func}, c)));
+
+   return res.concat(c0);
+}
+
+/*---------------------------------------------------------------------*/
 /*    shrink ::Atom ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Atom.prototype.shrink = function() {
    return [hh.NOTHING({})];
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrink ::Await ...                                               */
+/*---------------------------------------------------------------------*/
+hhapi.Await.prototype.shrink = function() {
+   return [hh.PAUSE({})];
 }
 
 /*---------------------------------------------------------------------*/
