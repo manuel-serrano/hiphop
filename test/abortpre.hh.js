@@ -6,7 +6,7 @@ import * as hh from "@hop/hiphop";
 hiphop module prg() {
    inout O; inout S;
    loop {
-      abort( S.pre ) {
+      abort (S.pre) {
 	 emit S();
 	 yield;
 	 emit O();
@@ -14,7 +14,5 @@ hiphop module prg() {
       yield;
    }
 }
-
-//console.error(prg.pretty_print())
 
 export const mach = new hh.ReactiveMachine(prg, "abortpre");

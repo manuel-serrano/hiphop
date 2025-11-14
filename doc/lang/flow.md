@@ -193,7 +193,7 @@ by _breaking_ to that exit form.
 
 Abort the execution of the current statement and continue the execution
 after the statement that follows that break label. The `break` form 
-can be used to abord an execution thread when used to escape a `fork`/`par`
+can be used to abort an execution thread when used to escape a `fork`/`par`
 form.
 
 <span class="hiphop">&#x2605;</span> Example: [timeout.hh.js](../../test/timeout.hh.js)
@@ -289,12 +289,6 @@ loop {
 
 Execute the `abort`'s body and abort the execution when delay is true.
 
-<span class="hiphop">&#x2605;</span> Example: [abort-par.hh.js](../../test/abort-par.hh.js)
-<!-- ${doc.includeCode("../../test/abort-par.hh.js", "hiphop")} -->
-
-<span class="hiphop">&#x2605;</span> Example: [abortpre.hh.js](../../test/abortpre.hh.js)
-<!-- ${doc.includeCode("../../test/abortpre.hh.js", "hiphop")} -->
-
 The form:
 
 ```javascript
@@ -312,6 +306,13 @@ exit: fork {
   break exit;
 }
 ```
+
+<span class="hiphop">&#x2605;</span> Example: [abort-par.hh.js](../../test/abort-par.hh.js)
+<!-- ${doc.includeCode("../../test/abort-par.hh.js", "hiphop")} -->
+
+<span class="hiphop">&#x2605;</span> Example: [abortpre.hh.js](../../test/abortpre.hh.js)
+<!-- ${doc.includeCode("../../test/abortpre.hh.js", "hiphop")} -->
+
 
 ### weakabort delay { ... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->

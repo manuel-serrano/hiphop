@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Thu Nov 13 07:42:09 2025 (serrano)                */
+/*    Last change :  Fri Nov 14 11:20:47 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -21,10 +21,11 @@ import * as racket from "./racket.mjs";
 /*    COUNT                                                            */
 /*---------------------------------------------------------------------*/
 const COUNT = 5000;
-const LOOPSAFE = process.env?.HIPHOP_RT_LOOP !== "false";
-const VERBOSE = false;
+const LOOPSAFE = process.env?.HIPHOP_RT_LOOPSAFE !== "false";
+const REASON = process.env?.HIPHOP_RT_REASON === "true";
+const VERBOSE = parseInt(process.env.HIPHOP_RT_VERBOSE) || 0;
 const MACHINES = process.env.HIPHOP_RT_MACHINES?.split()
-   ?? ["default", "colin", "new-unroll" ];
+   ?? ["default", "colin" ];
 
 /*---------------------------------------------------------------------*/
 /*    M ...                                                            */
@@ -36,13 +37,12 @@ function M(name) {
 /*---------------------------------------------------------------------*/
 /*    prop ...                                                         */
 /*---------------------------------------------------------------------*/
-export const prop = makeProp(...[
+export const prop = makeProp(loopSafep, [
    M("default") && (prg => new hh.ReactiveMachine(prg, { name: "default" })),
    M("colin") && (prg => new hh.ReactiveMachine(prg, { name: "colin", compiler: "int" })),
    M("colin-no-sweep") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: 0 })),
    M("colin-sweep-wire") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: -1 })),
-   M("new-unroll") && (prg => new hh.ReactiveMachine(prg, { name: "new-unroll", compiler: "new", loopUnroll: true, reincarnation: false, loopDup: false })),
-   M("new-unroll-no-unreachable") && (prg => new hh.ReactiveMachine(prg, { name: "new-unroll-no-unreachable", compiler: "new", loopUnroll: true, reincarnation: false, loopDup: false, unreachable: false })),
+   M("default-unreachable") && (prg => new hh.ReactiveMachine(prg, { name: "new-unroll-no-unreachable", unreachable: false })),
    M("racket") && (prg => new racket.ReactiveMachine(prg, { name: "racket" }))
 ].filter(x => x));
 
@@ -52,27 +52,29 @@ export const prop = makeProp(...[
 /*    Is a program loop-safe?                                          */
 /*---------------------------------------------------------------------*/
 function loopSafep(prog) {
-   try {
-      new hh.ReactiveMachine(prog, { loopSafe: true });
+   if (LOOPSAFE) {
+      try {
+	 new hh.ReactiveMachine(prog, { loopSafe: true });
+	 return true;
+      } catch (e) {
+	 return false;
+      }
+   } else {
       return true;
-   } catch (e) {
-      return false;
    }
 }
 
 /*---------------------------------------------------------------------*/
 /*    shrinkBugInProg ...                                              */
 /*---------------------------------------------------------------------*/
-function shrinkBugInProg(orig, machines, events, reason) {
+function shrinkBugInProg(prog, events, machines, reason) {
    const prop = makeProp(...machines.map(m => prg => new m.constructor(prg, m.opts)));
-   const pred = LOOPSAFE ? loopSafep : x => true;
 
-   function shrink(prog) {
-      const p = shrinker(prog);
-      const progs = shrinker(prog).filter(pred);
+   function shrinker(prog) {
+      const progs = shrink(prog);
 
       if (progs.length === 0) {
-	 return { orig, prog, machines, events };
+	 return { prog, machines, events };
       } else {
 	 if (VERBOSE) {
 	    console.error("  |  progs.length:", progs.length);
@@ -84,31 +86,31 @@ function shrinkBugInProg(orig, machines, events, reason) {
 	    if (VERBOSE) {
 	       console.error("  |    +- ", res.status, res.reason);
 	    }
-	    if (res.status === "failure" && res.reason === reason) {
+	    if (res.status === "failure" && (REASON === false || res.reason === reason)) {
 	       // we still have an error, shrink more
-	       return shrink(progs[i]);
+	       return shrinker(progs[i]);
 	    }
 	 }
 
-	 return { orig, prog, machines, events };
+	 return { prog, machines, events };
       }
    }
 
    console.error(` \\ shrinking...${machines.map(m => m.name()).join(", ")}`);
 
-   return shrink(orig);
+   return Object.assign(shrinker(prog), { orig: prog });
 }
 
 /*---------------------------------------------------------------------*/
 /*    findBugInProg ...                                                */
 /*---------------------------------------------------------------------*/
 function findBugInProg(prog, events) {
-   const res = prop(prog, events);
+   const res = prop(prog, events, VERBOSE);
 
    if (res.status === "failure") {
       console.log();
       console.log(`+- ${res.msg}: ${res.machines.map(m => m.name()).join(" / ")}`);
-      return shrinkBugInProg(prog, res.machines, events, res.reason);
+      return shrinkBugInProg(prog, events, res.machines, res.reason);
    } else {
       return false;
    }
