@@ -15,7 +15,7 @@ function add_emit(machine) {
    machine.getElementById("par").appendChild(hiphop emit O(1));
 }
 
-export const mach = new hh.ReactiveMachine(prg, { name: "incr-branch", sweep: false, dynamic: true });
+export const mach = new hh.ReactiveMachine(prg, { name: "incr-branch", sweep: false, dynamic: true, loopUnroll: false, reincarnation: true });
 mach.outbuf = "";
 mach.debug_emitted_func = val => {
    mach.outbuf += (val.toString() ? "[ '" + val + "' ]\n" : "[]\n");

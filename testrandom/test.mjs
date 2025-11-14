@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Wed Nov 12 07:39:27 2025 (serrano)                */
+/*    Last change :  Thu Nov 13 07:42:09 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -21,8 +21,30 @@ import * as racket from "./racket.mjs";
 /*    COUNT                                                            */
 /*---------------------------------------------------------------------*/
 const COUNT = 5000;
-const LOOPSAFE = process.env?.HIPHOP_HR_LOOP !== "false";
+const LOOPSAFE = process.env?.HIPHOP_RT_LOOP !== "false";
 const VERBOSE = false;
+const MACHINES = process.env.HIPHOP_RT_MACHINES?.split()
+   ?? ["default", "colin", "new-unroll" ];
+
+/*---------------------------------------------------------------------*/
+/*    M ...                                                            */
+/*---------------------------------------------------------------------*/
+function M(name) {
+   return MACHINES.indexOf(name) >= 0;
+}
+
+/*---------------------------------------------------------------------*/
+/*    prop ...                                                         */
+/*---------------------------------------------------------------------*/
+export const prop = makeProp(...[
+   M("default") && (prg => new hh.ReactiveMachine(prg, { name: "default" })),
+   M("colin") && (prg => new hh.ReactiveMachine(prg, { name: "colin", compiler: "int" })),
+   M("colin-no-sweep") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: 0 })),
+   M("colin-sweep-wire") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: -1 })),
+   M("new-unroll") && (prg => new hh.ReactiveMachine(prg, { name: "new-unroll", compiler: "new", loopUnroll: true, reincarnation: false, loopDup: false })),
+   M("new-unroll-no-unreachable") && (prg => new hh.ReactiveMachine(prg, { name: "new-unroll-no-unreachable", compiler: "new", loopUnroll: true, reincarnation: false, loopDup: false, unreachable: false })),
+   M("racket") && (prg => new racket.ReactiveMachine(prg, { name: "racket" }))
+].filter(x => x));
 
 /*---------------------------------------------------------------------*/
 /*    loopSafep ...                                                    */
@@ -37,17 +59,6 @@ function loopSafep(prog) {
       return false;
    }
 }
-
-/*---------------------------------------------------------------------*/
-/*    prop ...                                                         */
-/*---------------------------------------------------------------------*/
-export const prop = makeProp(
-   prg => new hh.ReactiveMachine(prg, { name: "colin", verbose: -1 }),
-   prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", verbose: -1, sweep: 0 }),
-//   prg => new hh.ReactiveMachine(prg, { name: "colin-sweep-wire", verbose: -1, sweep: -1 }),
-   prg => new hh.ReactiveMachine(prg, { name: "new-unroll", compiler: "new", loopUnroll: true, reincarnation: false, loopDup: false, verbose: -1 }),
-   // prg => new racket.ReactiveMachine(prg, { name: "racket" })
-);
 
 /*---------------------------------------------------------------------*/
 /*    shrinkBugInProg ...                                              */

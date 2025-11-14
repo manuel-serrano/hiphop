@@ -25,15 +25,12 @@ const prg = hiphop module() {
    } every (this.g43194.now);
 }
 
-export const mach = new hh.ReactiveMachine(prg, opts);
+export const mach = new hh.ReactiveMachine(prg);
 mach.outbuf = "";
 try {
    events.forEach((e, i) => {
-      mach.outbuf += (mach.name() + '[' + i + ']: '
-         + JSON.stringify(mach.reactDebug(e)) + '\n')
+      mach.outbuf += (i + ': ' + JSON.stringify(mach.reactDebug(e)) + '\n')
    });
 } catch (e) {
-   mach.outbuf = "causality error " + mach.age();
-} finally {
-   console.log(mach.outbuf);
+   mach.outbuf = "causality error " + mach.age() + '\n';
 }

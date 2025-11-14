@@ -8,18 +8,26 @@ const prg = hiphop module() {
    }
 }
 
-mach = new hh.ReactiveMachine(prg);
+mach = new hh.ReactiveMachine(prg, { loopSafe: false });
+mach.outbuf = "";
 
 try {
    mach.react({});
    mach.react({});
    mach.react({});
 } catch(e) {
-   mach = new hh.ReactiveMachine(hiphop module () {});
    if (e.message === "Instantaneous loop detected") {
-      mach.outbuf = "Instantaneous loop.\n";
+      mach.outbuf += "error dynamic.\n";
+   } else if (e.message === "Causality error.") {
+      mach.outbuf += "error dynamic.\n";
    } else {
-      mach.outbuf = e.message + "\n";
+      mach.outbuf += e.message + "\n";
    }
+}
+   
+try {
+   new hh.ReactiveMachine(prg, { loopSafe: true });
+} catch (e) {
+   mach.outbuf += "error static.\n";
 }
    

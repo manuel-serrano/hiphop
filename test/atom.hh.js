@@ -10,7 +10,7 @@ function func() {
 hiphop module prg() {
    loop {
       yield;
-      hop { func() };
+      pragma { func() };
    }
 }
 

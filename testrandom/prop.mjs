@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Wed Nov 12 08:26:38 2025 (serrano)                */
+/*    Last change :  Thu Nov 13 14:02:40 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -112,6 +112,7 @@ function makeProp(...machCtor) {
 
 	 if (verbose) {
 	    console.log(`   ${machs[0].name()}: ${r0[r0.length-1].status} (${r0.length})`);
+	    console.log("prog=", jsonToHiphop(prog.tojson()));
 	 }
 	 
 	 for (let i = 1; i < machCtor.length; i++) {

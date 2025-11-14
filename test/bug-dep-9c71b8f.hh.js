@@ -17,8 +17,8 @@ hiphop module prg(resolve) {
 export const mach = new hh.ReactiveMachine(prg);
 mach.outbuf = "";
 
-consoleLog("---------------", mach.age());
+consoleLog("--------------- ", mach.age());
 mach.react();
-consoleLog("---------------", mach.age());
+consoleLog("--------------- ", mach.age());
 
  
