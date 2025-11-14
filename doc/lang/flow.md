@@ -289,6 +289,13 @@ loop {
 
 Execute the `abort`'s body and abort the execution when delay is true.
 
+<span class="hiphop">&#x2605;</span> Example: [abort-par.hh.js](../../test/abort-par.hh.js)
+<!-- ${doc.includeCode("../../test/abort-par.hh.js", "hiphop")} -->
+
+<span class="hiphop">&#x2605;</span> Example: [abortpre.hh.js](../../test/abortpre.hh.js)
+<!-- ${doc.includeCode("../../test/abortpre.hh.js", "hiphop")} -->
+
+
 The form:
 
 ```javascript
@@ -306,13 +313,6 @@ exit: fork {
   break exit;
 }
 ```
-
-<span class="hiphop">&#x2605;</span> Example: [abort-par.hh.js](../../test/abort-par.hh.js)
-<!-- ${doc.includeCode("../../test/abort-par.hh.js", "hiphop")} -->
-
-<span class="hiphop">&#x2605;</span> Example: [abortpre.hh.js](../../test/abortpre.hh.js)
-<!-- ${doc.includeCode("../../test/abortpre.hh.js", "hiphop")} -->
-
 
 ### weakabort delay { ... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->

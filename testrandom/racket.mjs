@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Wed Nov 12 05:22:44 2025 (serrano)                */
+/*    Last change :  Fri Nov 14 14:51:35 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with racket/esterel                      */
@@ -14,83 +14,43 @@
 /*---------------------------------------------------------------------*/
 export { ReactiveMachine };
 import { writeFileSync, existsSync, renameSync, unlinkSync } from "node:fs";
+import { parseExpr } from "./expr.mjs";
 import { spawnSync } from "child_process";
 
 /*---------------------------------------------------------------------*/
-/*    makeTokenizer ...                                                */
+/*    unary ...                                                        */
 /*---------------------------------------------------------------------*/
-function makeTokenizer(buf) {
-   let index = 0;
-   
-   return function next() {
-      if (index === buf.length) {
-	 return { kind: "eoi", value: null };
-      } else if (buf[index] === " ") {
-	 index++;
-	 return next();
-      } else if (buf[index] === "(" || buf[index] === ")" || buf[index] === "!") {
-	 const m = buf[index++];
-	 return { kind: m, value: m };
-      } else {
-	 const s = buf.substr(index);
-	 let m = s.match(/^false|^true/);
-	 if (m) {
-	    index += m[0].length;
-	    return { kind: "constant", value: m[0] };
-	 } else if (m = s.match(/^this[.]([a-zA-Z0-9_]*)[.]now/)) {
-	    index += m[0].length;
-	    return { kind: "now", value: m[1] };
-	 } else if (m = s.match(/^this[.]([a-zA-Z0-9_]*)[.]pre/)) {
-	    index += m[0].length;
-	    return { kind: "pre", value: m[1] };
-	 } else if (m = s.match(/^&&|^\|\|/)) {
-	    index += m[0].length;
-	    return { kind: "binary", value: m[0] };
-	 } else {
-	    index++;
-	    return { kind: "error", value: s };
-	 }
-      }
-   }
-}
+const unary = { "!": "not" };
+const binary = { "||": "or", "&&" : "and" };
 
 /*---------------------------------------------------------------------*/
 /*    json2racket ...                                                  */
 /*---------------------------------------------------------------------*/
 function json2racket(o) {
 
-   function parseExpr(next) {
-      let tok = next();
+   function expr2racket(expr) {
 
-      switch (tok.kind) {
-	 case "constant": return tok.value === "true" ? "#t" : "#f";
-	 case "now": return `(present? ${tok.value})`;
-	 case "pre": return `(present? ${tok.value} #:pre 1)`;
-	 case "!": return `(not ${parseExpr(next)})`;
-	 case "(": {
-	    const lhs = parseExpr(next);
-	    const op = next();
-	    const rhs = parseExpr(next);
-
-	    if (next().kind === ")") {
-	       if (op.kind === "binary") {
-		  return `(${op.value === "||" ? "or" : "and"} ${lhs} ${rhs})`;
+      function toRacket(obj) {
+	 switch (obj.kind) {
+	    case "constant":
+	       return obj.value === "true" ? "#t" : "#f";
+	    case "sig":
+	       if (obj.prop === "now") {
+		  return `(present? ${obj.value})`;
 	       } else {
-		  throw SyntaxError("Illegal operator:" + op.value);
+		  return `(present? ${obj.value} #:pre 1)`;
 	       }
-	    } else {
-	       throw SyntaxError("Missing parenthesis");
-	    }
+	    case "unary":
+	       return `(${unary[obj.op]} ${toRacket(obj.expr)})`;
+	    case "binary": 
+	       return `(${binary[obj.op]} ${toRacket(obj.lhs)} ${toRacket(obj.rhs)})`;
+	    default: throw SyntaxError("Unsupported obj: " + obj.kind);
 	 }
-	 case "eoi": throw SyntaxError("Unexpected eof");
-	 default: throw SyntaxError("Illegal token: " + token.kind);
       }
+
+      return toRacket(parseExpr(expr));
    }
       
-   function expr2racket(expr) {
-      return parseExpr(makeTokenizer(expr));
-   }
-   
    function childrenOf(o) {
       if (o.children.length === 1) {
 	 return json2racket(o.children[0]);

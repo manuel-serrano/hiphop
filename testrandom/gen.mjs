@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Wed Nov 12 08:28:14 2025 (serrano)                */
+/*    Last change :  Fri Nov 14 11:45:24 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -136,7 +136,7 @@ function genStmt(env, size) {
 	    return hh.SEQUENCE({}, genStmt(env, size - n - 1), genStmt(env, n))
 	 }],
 	 // fork
-	 [100, () => {
+	 [50, () => {
 	    const l = Math.round(Math.random() * 5);
 	    let children = [];
 	    for (let i = 0; i < l - 1; i++) {
@@ -150,7 +150,7 @@ function genStmt(env, size) {
 	    return hh.FORK({}, ...children);
 	 }],
 	 // loop
-	 [100, () => {
+	 [10, () => {
 	    return hh.LOOP({}, genStmt(env, size - 1));
 	 }],
 	 // local
@@ -182,19 +182,19 @@ function genStmt(env, size) {
 	 [20, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
 	    const func = eval(`(function() { return ${expr}; })`);
-	    return hh.ABORT({apply: func}, genStmt(env, size -1));
+	    return hh.ABORT({apply: func}, genStmt(env, size - 1));
 	 }],
 	 // every
-	 [20, () => {
+	 [30, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
 	    const func = eval(`(function() { return ${expr}; })`);
-	    return hh.EVERY({apply: func}, genStmt(env, size -1));
+	    return hh.EVERY({apply: func}, genStmt(env, size - 1));
 	 }],
 	 // loopeach
-	 [20, () => {
+	 [30, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
 	    const func = eval(`(function() { return ${expr}; })`);
-	    return hh.LOOPEACH({apply: func}, genStmt(env, size -1));
+	    return hh.LOOPEACH({apply: func}, genStmt(env, size - 1));
 	 }],
       );
    } else if (env.signals.length === 0 && env.traps.length === 0) {
@@ -298,10 +298,11 @@ function genStmt(env, size) {
 /*    -------------------------------------------------------------    */
 /*    Generates a random program.                                      */
 /*---------------------------------------------------------------------*/
-function gen({pred, size = 20}) {
+function gen({pred, minsize = 5}) {
    while (true) {
       const l = Math.round(Math.random() * 4);
       const signals = Array.from({length: l}).map(c => gensym());
+      const size = randomInRange(minsize, minsize * 4);
       const body = genStmt({signals: signals, traps: []}, size);
       const attrs = {};
       signals.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT, combine: (x, y) => x });
@@ -324,7 +325,7 @@ function gen({pred, size = 20}) {
 /*    genreactsigs ...                                                 */
 /*---------------------------------------------------------------------*/
 function genreactsigs(signals) {
-   const l = Math.floor(Math.random() * signals.length);
+   const l = Math.round(Math.random() * signals.length);
 
    if (l === 0) {
       return null;
