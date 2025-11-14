@@ -7,14 +7,14 @@ import { format } from "util";
 
 function make_atom(i) {
    return hiphop do {
-      hop { mach.cnt1 += i; }
+      pragma { mach.cnt1 += i; }
    } every(G0.now)
 }
 
 function make_atom2(i) {
    return hiphop loop {
       await immediate(G0.now);
-      hop { mach.cnt2 += i; }
+      pragma { mach.cnt2 += i; }
       yield;
    }
 }
@@ -22,7 +22,7 @@ function make_atom2(i) {
 function make_atom3(i) {
    return hiphop {
       every immediate(G0.now) {
-	 hop { mach.cnt3 += i; }
+	 pragma { mach.cnt3 += i; }
       }
    }
 }

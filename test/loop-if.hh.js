@@ -5,7 +5,7 @@ export let mach = undefined;
 const prg = hiphop module() {
    loop {
       if (false) {
-	 ;
+	 yield;
       } else {
 	 yield;
       }

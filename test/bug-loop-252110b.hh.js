@@ -8,6 +8,8 @@ const prg = hiphop module() {
          loop {
             yield;
          }
+      } else {
+	 yield;
       }
    }
 }
