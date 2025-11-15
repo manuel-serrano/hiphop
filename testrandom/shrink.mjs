@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Fri Nov 14 14:04:36 2025 (serrano)                */
+/*    Last change :  Sat Nov 15 07:36:38 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -15,6 +15,53 @@ import { parseExpr, exprToHiphop } from "./expr.mjs"
 
 export { shrink };
 
+const DEBUG = process.env.HIPHOP_RT_DEBUG === "true";
+const MAX_SHRINK = 1000;
+
+/*---------------------------------------------------------------------*/
+/*    debug                                                            */
+/*---------------------------------------------------------------------*/
+let index = 0;
+let stack = [undefined];
+let margins = [""];
+
+/*---------------------------------------------------------------------*/
+/*    enter ...                                                        */
+/*---------------------------------------------------------------------*/
+function enter(n) {
+   if (DEBUG) {
+      const { heapUsed, heapTotal } = process.memoryUsage();
+
+      if (index === stack.length) {
+	 stack.push(n);
+	 margins.push(margins[index - 1] + " ");
+      } else {
+	 stack[index] = n;
+      }
+      console.log(margins[index++], ">>>", n);
+      
+      if (heapUsed > heapTotal * 0.9) {
+	 throw new Error("Heap exhausted!");
+      }
+   }
+}
+
+/*---------------------------------------------------------------------*/
+/*    leave ...                                                        */
+/*---------------------------------------------------------------------*/
+function leave(value = undefined) {
+   if (DEBUG) {
+      index--;
+      console.log(margins[index], "<<<", stack[index], value ? value.length : "");
+   }
+
+   if (value && value.length > MAX_SHRINK) {
+      return value.slice(0, MAX_SHRINK);
+   } else {
+      return value;
+   }
+}
+   
 /*---------------------------------------------------------------------*/
 /*    shrink ...                                                       */
 /*---------------------------------------------------------------------*/
@@ -63,8 +110,18 @@ function shrinkArray(a) {
 /*---------------------------------------------------------------------*/
 function shrinkFunc(func) {
 
+   function equal(x, y) {
+      if (x.kind === y.kind && x.prop === y.prop && x.value === y.value) {
+	 return exprToHiphop(x) === exprToHiphop(y);
+      } else {
+	 return false;
+      }
+   }
+   
    function newBinary(op, lhs, rhs) {
-      if (lhs.kind === "constant") {
+      if (equal(lhs, rhs)) {
+	 return lhs;
+      } else if (lhs.kind === "constant") {
 	 if (lhs.value === "true") {
 	    if (op === "||") {
 	       return lhs;
@@ -90,36 +147,44 @@ function shrinkFunc(func) {
    function shrink(obj) {
       switch (obj.kind) {
 	 case "constant":
-	    return [obj];
+	    return [];
 	 case "sig":
 	    return [{kind: "constant", value: "true"}];
 	 case "unary": {
-	    const expr = shrink(obj.expr);
-	    return expr.concat(expr.map(x => {
-	       return {
-		  kind: "unary",
-		  op: obj.op,
-		  expr: x }
-	    }));
+	    const xs = shrink(obj.expr);
+	    
+	    return [obj.expr]
+	       .concat(xs.map(x => {
+		  return {
+		     kind: "unary",
+		     op: obj.op,
+		     expr: x }
+	       }));
 	 }
 	 case "binary": {
 	    const slhs = shrink(obj.lhs);
 	    const srhs = shrink(obj.rhs);
-	    
-	    return shrink(obj.lhs)
-	       .concat(shrink(obj.rhs))
-	       .concat(slhs.flatMap(l => srhs.map(r => newBinary(obj.op, l, r))))
-	       .concat(srhs.map(r => newBinary(obj.op, obj.lhs, r)))
-	       .concat(slhs.map(l => newBinary(obj.op, l, obj.rhs)));
+
+	    return [obj.lhs, obj.rhs]
+	       .concat(slhs.flatMap(l => srhs.map(r => newBinary(obj.op, l, r))));
+/* 	       .concat(srhs.map(r => newBinary(obj.op, obj.lhs, r)))   */
+/* 	       .concat(slhs.map(l => newBinary(obj.op, l, obj.rhs)));  */
 	 }
 	 default:
 	    throw SyntaxError("Unsupported obj: " + obj.kind);
       }
    }
+
+   function unique(arr) {
+      return [...new Set(arr)];
+   }
+   
+   enter(func.toString());
    const x = func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, "");
    const xs = shrink(parseExpr(x));
+   const fs = unique(xs.map(x => `(function() { return ${exprToHiphop(x)}; })`));
 
-   return xs.map(x => eval(`(function() { return ${exprToHiphop(x)}; })`));
+   return leave(fs.map(f => eval(f)));
 }
 
 //console.error(shrinkArray([1]));
@@ -128,14 +193,16 @@ function shrinkFunc(func) {
 /*---------------------------------------------------------------------*/
 /*    shrinkASTNode ...                                                */
 /*---------------------------------------------------------------------*/
-function shrinkASTNode(ctor, attr, children) {
+function shrinkASTNode(node, ctor, attr, children) {
+   enter(node.constructor.name);
+   
    if (children.length === 0) {
-      return [hh.NOTHING({})];
+      return leave([hh.NOTHING({})]);
    } else if (children.length === 1) {
-      return shrink(children[0]).map(c => ctor(attr, c)).concat(children);
+      return leave(shrink(children[0]).map(c => ctor(attr, c)).concat(children));
    } else {
       const el = shrinkArray(children);
-      return el.map(a => ctor(attr, a));
+      return leave(el.map(a => ctor(attr, a)));
    }
 }
 
@@ -180,14 +247,14 @@ hhapi.Pause.prototype.shrink = function() {
 /*    shrink ::Sequence ...                                            */
 /*---------------------------------------------------------------------*/
 hhapi.Sequence.prototype.shrink = function() {
-   return shrinkASTNode(hh.SEQUENCE, {}, this.children);
+   return shrinkASTNode(this, hh.SEQUENCE, {}, this.children);
 }
 
 /*---------------------------------------------------------------------*/
 /*    shrink ::Fork ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Fork.prototype.shrink = function() {
-   return shrinkASTNode(hh.FORK, {}, this.children)
+   return shrinkASTNode(this, hh.FORK, {}, this.children)
       .concat(hh.SEQUENCE({}, this.children));
 }
 
@@ -195,7 +262,7 @@ hhapi.Fork.prototype.shrink = function() {
 /*    shrink ::Loop ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Loop.prototype.shrink = function() {
-   return shrinkASTNode(hh.LOOP, {}, this.children)
+   return shrinkASTNode(this, hh.LOOP, {}, this.children)
       .concat(hh.SEQUENCE({}, this.children));
 }
 
@@ -203,16 +270,18 @@ hhapi.Loop.prototype.shrink = function() {
 /*    shrink ::Trap ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Trap.prototype.shrink = function() {
+   enter(this.constructor.name);
+   
    const children = this.children;
    const attr = {[this.trapName]: this.trapName};
 
    if (children.length === 0) {
-      return [hh.NOTHING({})];
+      return leave([hh.NOTHING({})]);
    } else if (children.length === 1) {
-      return shrink(children[0]).map(c => hh.TRAP(attr, c));
+      return leave(shrink(children[0]).map(c => hh.TRAP(attr, c)));
    } else {
       const el = shrinkArray(children);
-      return el.map(a => hh.TRAP(attr, a));
+      return leave(el.map(a => hh.TRAP(attr, a)));
    }
 }
 
@@ -241,17 +310,19 @@ hhapi.Emit.prototype.shrink = function() {
 /*    shrink ::Local ...                                               */
 /*---------------------------------------------------------------------*/
 hhapi.Local.prototype.shrink = function() {
+   enter(this.constructor.name);
+   
    const children = this.children;
    const attrs = {};
    this.sigDeclList.forEach(p => attrs[p.name] = { signal: p.name, name: p.name, accessibility: hh.INOUT }, true);
    
    if (children.length === 0) {
-      return [hh.NOTHING({})];
+      return leave([hh.NOTHING({})]);
    } else if (children.length === 1) {
-      return shrink(children[0]).map(c => hh.LOCAL(attrs, c));
+      return leave(shrink(children[0]).map(c => hh.LOCAL(attrs, c)));
    } else {
       const el = shrinkArray(children);
-      return el.map(a => hh.LOCAL(attrs, a));
+      return leave(el.map(a => hh.LOCAL(attrs, a)));
    }
 }
 
@@ -259,87 +330,104 @@ hhapi.Local.prototype.shrink = function() {
 /*    shrink ::If ...                                                  */
 /*---------------------------------------------------------------------*/
 hhapi.If.prototype.shrink = function() {
+   enter(this.constructor.name);
+   
    const [ child0, child1 ] = this.children;
    const c0 = shrink(child0);
    const c1 = shrink(child1);
    const res = [child0, child1];
    const funcs = shrinkFunc(this.func);
 
+   enter(`-- ${this.constructor.name} (${child0.constructor.name}:${c0.length}) (${child1.constructor.name}:${c1.length}) ${funcs.length}`);
    for (let i = 0; i < c0.length; i++) {
       for (let j = 0; j < c1.length; j++) {
 	 res.push(hh.IF({apply: this.func}, c0[i], c1[j]));
 	 funcs.forEach(f => res.push(hh.IF({apply: f}, c0[i], c1[j])));
       }
    }
+   leave(undefined);
 
-   return res
+   return leave(res
       .concat(funcs.map(f => hh.IF({apply: f}, child0, child1)))
-      .concat(c0, c1);
+      .concat(c0, c1));
 }
 
 /*---------------------------------------------------------------------*/
 /*    shrink ::Abort ...                                               */
 /*---------------------------------------------------------------------*/
 hhapi.Abort.prototype.shrink = function() {
+   enter(this.constructor.name);
+   
    const child0 = this.children[0];
    const c0 = shrink(child0);
    const res = [child0];
    const funcs = shrinkFunc(this.func);
 
+   enter(`-- ${this.constructor.name} (${child0.constructor.name}:${c0.length}) ${funcs.length}`);
    c0.forEach(c => {
       res.push(hh.ABORT({apply: this.func}, c));
       funcs.forEach(f => res.push(hh.ABORT({apply: f}, c)));
    });
+   leave(undefined);
 
-   return res
+   return leave(res
       .concat(funcs.map(f => hh.ABORT({apply: f}, child0)))
-      .concat(c0);
+      .concat(c0));
 }
 
 /*---------------------------------------------------------------------*/
 /*    shrink ::Every ...                                               */
 /*---------------------------------------------------------------------*/
 hhapi.Every.prototype.shrink = function() {
+   enter(this.constructor.name);
+   
    const child0 = this.children[0];
    const c0 = shrink(child0);
    const res = [child0];
    const funcs = shrinkFunc(this.func);
 
+   enter(`-- ${this.constructor.name} (${child0.constructor.name}:${c0.length}) ${funcs.length}`);
    c0.forEach(c => {
       res.push(hh.EVERY({apply: this.func}, c));
       funcs.forEach(f => res.push(hh.EVERY({apply: f}, c)));
    });
+   leave();
 
-   return res
+   return leave(res
       .concat(funcs.map(f => hh.EVERY({apply: f}, child0)))
-      .concat(c0);
+      .concat(c0));
 }
 
 /*---------------------------------------------------------------------*/
 /*    shrink ::LoopEach ...                                            */
 /*---------------------------------------------------------------------*/
 hhapi.LoopEach.prototype.shrink = function() {
+   enter(this.constructor.name);
+   
    const child0 = this.children[0];
    const c0 = shrink(child0);
    const res = [child0];
    const funcs = shrinkFunc(this.func);
 
+   enter(`-- ${this.constructor.name} (${child0.constructor.name}:${c0.length}) ${funcs.length}`);
    c0.forEach(c => {
       res.push(hh.LOOPEACH({apply: this.func}, c));
       funcs.forEach(f => res.push(hh.LOOPEACH({apply: f}, c)));
    });
+   leave();
 
-   return res
+   return leave(res
       .concat(funcs.map(f => hh.LOOPEACH({apply: f}, child0)))
-      .concat(c0);
+      .concat(c0));
 }
 
 /*---------------------------------------------------------------------*/
 /*    shrink ::Atom ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Atom.prototype.shrink = function() {
+   enter(this.constructor.name);
    const funcs = shrinkFunc(this.func);
-   return [hh.NOTHING({})].concat(funcs.map(f => hh.ATOM({apply: f})));
+   return leave([hh.NOTHING({})].concat(funcs.map(f => hh.ATOM({apply: f}))));
 }
 
 /*---------------------------------------------------------------------*/
