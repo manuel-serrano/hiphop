@@ -230,6 +230,7 @@ A loop executed each time the `delay` is true. Delays are documented [here](./si
 
 All the delay forms can be used with `every`.
 
+
 <span class="hiphop">&#x2605;</span> Example: [every-delay.hh.js](../../test/every-delay.hh.js)
 <!-- ${doc.includeCode("../../test/every-delay.hh.js", "hiphop")} -->
 
