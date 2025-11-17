@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Mon Nov 17 16:49:13 2025 (serrano)                */
+/*    Last change :  Mon Nov 17 18:50:01 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with racket/esterel                      */
@@ -211,9 +211,7 @@ class ReactiveMachine {
 
    outConf(suffix, {prog, events}) {
       const target = `racket${suffix}.hh.rkt`;
-      writeFileSync(target, makeProg(prog, this.#eventsfile) + `\n;; racket ${target}`);
-      const evt = `(${events.map(e => e ? `(${Object.keys(e).join(" ")})` : "()").join(" ")})`;
-      writeFileSync(this.eventsfile, evt);
+      writeFileSync(target, makeProg(prog, events) + `\n;; racket ${target}`);
       return target;
    }
 }
