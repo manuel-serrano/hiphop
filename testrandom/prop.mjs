@@ -3,14 +3,17 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Fri Nov 14 13:15:10 2025 (serrano)                */
+/*    Last change :  Mon Nov 17 09:25:38 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
 /*=====================================================================*/
 import * as hh from "../lib/hiphop.js";
 import * as hhapi from "../lib/ast.js";
-import { jsonToHiphop } from "./dump.mjs";
+import { jsonToHiphop } from "./json.mjs";
+// debug
+import { jsonToAst } from "./json.mjs";
+import * as fs from "node:fs";
 
 export { makeProp };
 
@@ -80,7 +83,11 @@ function runMach(mach, events) {
       try {
 	 const signals = mach.reactDebug(events[i]);
 	 res.push({ status: "success", signals });
-      } catch(e) {
+      } catch (e) {
+	 if (e.message !== "Causality error.") {
+	    console.error("runMach", e.toString());
+	    throw e;
+	 }
 	 res.push({ status: "error", msg: e.toString() });
 	 return res;
       }
@@ -105,20 +112,23 @@ function makeProp(filter, machCtor) {
       }
    }
 
-   return (prog, events, verbose = 0) => {
+
+   if (machCtor.length === 0) {
+      throw new TypeError("makeProp: no machines defined");
+   }
+   
+   return ({prog, events}, verbose = 0) => {
       if (filter(prog)) {
 	 try {
 	    const machs = machCtor.map(ctor => ctor(prog));
+
 	    const r0 = runMach(machs[0], events);
 
 	    if (verbose >= 1) {
 	       console.error(`   ${machs[0].name()}: ${r0[r0.length-1].status} (${r0.length})`);
-	       if (verbose >= 2) {
-		  console.error("prog=", jsonToHiphop(prog.tojson()));
-	       }
 	    }
 	    
-	    for (let i = 1; i < machCtor.length; i++) {
+	    for (let i = 1; i < machs.length; i++) {
 	       const ri = runMach(machs[i], events);
 
 	       if (verbose >= 1) {

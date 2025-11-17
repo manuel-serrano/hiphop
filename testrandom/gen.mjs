@@ -3,13 +3,13 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Fri Nov 14 11:45:24 2025 (serrano)                */
+/*    Last change :  Mon Nov 17 09:23:51 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
 /*=====================================================================*/
 import * as hh from "../lib/hiphop.js";
-import { jsonToHiphop } from "./dump.mjs";
+import { jsonToHiphop } from "./json.mjs";
 
 export { gen, genreactsigs, gensym };
 
@@ -302,6 +302,7 @@ function gen({pred, minsize = 5}) {
    while (true) {
       const l = Math.round(Math.random() * 4);
       const signals = Array.from({length: l}).map(c => gensym());
+      const events = Array.from({length: 20}).map(i => genreactsigs(signals))
       const size = randomInRange(minsize, minsize * 4);
       const body = genStmt({signals: signals, traps: []}, size);
       const attrs = {};
@@ -311,7 +312,8 @@ function gen({pred, minsize = 5}) {
 	 const prog = hh.MODULE(attrs, body);
 
 	 if (!pred || pred(prog)) {
-	    return { prog, signals };
+	    
+	    return { prog, events };
 	 }
       } catch(e) {
 	 console.error("Cannot construct module");

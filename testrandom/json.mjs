@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/hiphop/testrandom/dump.mjs           */
+/*    serrano/prgm/project/hiphop/hiphop/testrandom/json.mjs           */
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:45:26 2025                          */
-/*    Last change :  Wed Nov 12 08:40:45 2025 (serrano)                */
+/*    Last change :  Mon Nov 17 18:20:31 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Json dump and pretty-printing HipHop programs                    */
@@ -194,7 +194,7 @@ function jsonToAst(obj) {
 	 
       case "local": {
 	 const attrs = {};
-	 obj.signals.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT });
+	 obj.signals.forEach(name => attrs[name] = { signal: name, name, combine: (x, y) => x });
 	 return hh.LOCAL(attrs, ...children.map(jsonToAst));
       }
 	 
@@ -251,10 +251,18 @@ function margin(m) {
 function jsonToHiphop(obj, m = 0) {
    const { node, children } = obj;
 
+   function block(obj, margin) {
+      if (obj.node === "seq") {
+	 return obj.children.map(o => jsonToHiphop(o, margin)).join('\n');
+      } else {
+	 return jsonToHiphop(obj, margin);
+      }
+   }
+   
    switch (node) {
-      case "module": 
+      case "module":
 	 return margin(m) + 'module() {\n'
-	    + (obj.signals ? (margin(m + 2) + "inout " + obj.signals.map(s => `${s} combine (x, y) => x`).join(", ") + ";\n") : "")
+	    + (obj.signals.length > 0 ? (margin(m + 2) + "inout " + obj.signals.map(s => `${s} combine (x, y) => x`).join(", ") + ";\n") : "")
 	    + children.map(c => jsonToHiphop(c, m + 2)).join(';\n')
 	    + '\n' + margin(m) + '}';
 
@@ -306,30 +314,30 @@ function jsonToHiphop(obj, m = 0) {
 	 
       case "local":
 	 return margin(m) + '{\n'
-	    + margin(m + 2) + "signal " + obj.signals.map(s => `${s} combine (x, y) => x`).join(", ") + ";\n"
+	    + (margin(m + 2) + "signal " + obj.signals.map(s => `${s} combine (x, y) => x`).join(", ") + ";\n")
 	    + children.map(c => jsonToHiphop(c, m + 2)).join('\n') + '\n'
 	    + margin(m) + '}';
 
       case "if":
 	 return margin(m) + `if (${obj.func}) {\n`
-	    + jsonToHiphop(children[0], m + 2) + '\n'
+	    + block(children[0], m + 2) + '\n'
 	    + margin(m) + "} else {\n"
-	    + jsonToHiphop(children[1], m + 2) + '\n'
+	    + block(children[1], m + 2) + '\n'
 	    + margin(m) + '}';
 	 
       case "abort":
 	 return margin(m) + `abort (${obj.func}) {\n`
-	    + jsonToHiphop(children[0], m + 2) + '\n' 
+	    + block(children[0], m + 2) + '\n' 
 	    + margin(m) + '}';
 	 
       case "every":
 	 return margin(m) + `every (${obj.func}) {\n`
-	    + jsonToHiphop(children[0], m + 2) + '\n' 
+	    + block(children[0], m + 2) + '\n' 
 	    + margin(m) + '}';
 	 
       case "loopeach":
 	 return margin(m) + `do {\n`
-	    + jsonToHiphop(children[0], m + 2) + '\n' 
+	    + block(children[0], m + 2) + '\n' 
 	    + margin(m) + `} every (${obj.func});`;
 	 
       case "atom":

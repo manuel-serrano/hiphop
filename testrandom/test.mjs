@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Sat Nov 15 08:23:31 2025 (serrano)                */
+/*    Last change :  Mon Nov 17 08:54:55 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -12,7 +12,7 @@ import * as hh from "../lib/hiphop.js";
 import { makeProp } from "./prop.mjs";
 import { gen, gensym, genreactsigs } from "./gen.mjs";
 import { shrink } from "./shrink.mjs";
-import { jsonToHiphop, jsonToAst } from "./dump.mjs";
+import { jsonToHiphop, jsonToAst } from "./json.mjs";
 import { parse } from "../preprocessor/parser.js";
 import { existsSync, readFileSync, writeFileSync, chmodSync } from "node:fs";
 import * as racket from "./racket.mjs";
@@ -24,8 +24,10 @@ const COUNT = parseInt(process.env.HIPHOP_RT_COUNT) || 5000;
 const LOOPSAFE = process.env?.HIPHOP_RT_LOOPSAFE !== "false";
 const REASON = process.env?.HIPHOP_RT_REASON === "true";
 const VERBOSE = parseInt(process.env.HIPHOP_RT_VERBOSE) || 0;
-const MACHINES = process.env.HIPHOP_RT_MACHINES?.split()
+const MACHINES = process.env.HIPHOP_RT_MACHINES?.split(" ")
    ?? ["default", "colin" ];
+
+console.log("Testing:", MACHINES);
 
 /*---------------------------------------------------------------------*/
 /*    M ...                                                            */
@@ -57,11 +59,12 @@ function loopSafep(prog) {
 	 new hh.ReactiveMachine(prog, { loopSafe: true });
 	 return true;
       } catch (e) {
-	 if (VERBOSE >= 3) {
+	 if (e.toString() !== "TypeError: Instantaneous loop detected") {
 	    console.error("*** ERROR: ", e.toString());
 	    console.error(jsonToHiphop(prog.tojson()));
-	    if (e.toString() !== "TypeError: Instantaneous loop detected")
-	       throw e;
+	    throw e;
+	 } else if (VERBOSE >= 3) {
+	    console.error("*** ERROR: ", e.toString());
 	 }
 	 return false;
       }
@@ -71,41 +74,44 @@ function loopSafep(prog) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    shrinkBugInProg ...                                              */
+/*    shrinkBugInConf ...                                              */
 /*---------------------------------------------------------------------*/
-function shrinkBugInProg(prog, events, machines, reason) {
+function shrinkBugInConf(conf, machines, reason) {
    const prop = makeProp(loopSafep, machines.map(m => prg => new m.constructor(prg, m.opts)));
 
-   function shrinker(prog) {
-      const progs = shrink(prog);
+   function shrinker(conf, margin) {
+      const confs = shrink(conf);
 
-      if (progs.length === 0) {
-	 return { prog, machines, events };
+      if (confs.length === 0) {
+	 return conf;
       } else {
 	 if (VERBOSE) {
-	    console.error("  |  progs.length:", progs.length);
+	    console.error("  |" + margin + "confs.length:", confs.length);
 	 }
       
-	 for (let i = 0; i < progs.length; i++) {
-	    const res = prop(progs[i], events);
+	 for (let i = 0; i < confs.length; i++) {
+	    const res = prop(confs[i]);
 	    
 	    if (VERBOSE) {
-	       console.error("  |    +- ", res.status, res.reason);
+	       console.error("  |" + margin + " +- ", res.status, res.reason);
+	       if (VERBOSE >= 4) {
+		  console.error(jsonToHiphop(confs[i].prog.tojson()));
+	       }
 	    }
 	    if (res.status === "failure" && (REASON === false || res.reason === reason)) {
 	       // we still have an error, shrink more
-	       return shrinker(progs[i]);
+	       return shrinker(confs[i], margin + " ");
 	    }
 	 }
 
-	 return { prog, machines, events };
+	 return conf;
       }
    }
 
    console.error(` \\ shrinking...${machines.map(m => m.name()).join(", ")}`);
 
    try {
-      return Object.assign(shrinker(prog), { orig: prog });
+      return shrinker(conf, "  ");
    } catch(e) {
       console.error("*** SHRINK ERROR:", e.toString());
       throw e;
@@ -113,15 +119,19 @@ function shrinkBugInProg(prog, events, machines, reason) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    findBugInProg ...                                                */
+/*    findBugInConf ...                                                */
 /*---------------------------------------------------------------------*/
-function findBugInProg(prog, events) {
-   const res = prop(prog, events, VERBOSE);
+function findBugInConf(conf) {
+   const res = prop(conf, VERBOSE);
 
    if (res.status === "failure") {
       console.log();
       console.log(`+- ${res.msg}: ${res.machines.map(m => m.name()).join(" / ")}`);
-      return shrinkBugInProg(prog, events, res.machines, res.reason);
+      return {
+	 orig: conf,
+	 shrink: shrinkBugInConf(conf, res.machines, res.reason),
+	 machines: res.machines,
+      }
    } else {
       return false;
    }
@@ -144,10 +154,8 @@ function findBugInGen(iterCount = COUNT) {
       }
       writeFileSync(1, ".");
       
-      const { prog, signals } = gen({pred: loopSafep});
-      const events = Array.from({length: 20}).map(i => genreactsigs(signals));
-
-      const bug = findBugInProg(prog, events);
+      const conf = gen({pred: loopSafep});
+      const bug = findBugInConf(conf);
 
       if (bug) return bug;
    }
@@ -157,18 +165,18 @@ function findBugInGen(iterCount = COUNT) {
 /*---------------------------------------------------------------------*/
 /*    outJson ...                                                      */
 /*---------------------------------------------------------------------*/
-function outJson(target, prog, events) {
+function outJson(target, {prog, events}) {
    writeFileSync(target, JSON.stringify({ events: events, prog: prog.tojson() }));
 }
 
 /*---------------------------------------------------------------------*/
 /*    outProg ...                                                      */
 /*---------------------------------------------------------------------*/
-hh.ReactiveMachine.prototype.outProg = function(suffix, prog, events) {
+hh.ReactiveMachine.prototype.outConf = function(suffix, {prog, events}) {
    const target = this.name() + suffix + ".hh.mjs";
    const json = prog.tojson();
    let buf = "#!/bin/env -S node --enable-source-maps --no-warnings --loader @hop/hiphop/lib/hiphop-loader.mjs\n"
-   buf += "// generated by testrandom";
+   buf += `// generated by testrandom (${hh.version} - ${hh.buildid})`;
    
    buf += (`
 import * as hh from "@hop/hiphop";
@@ -178,9 +186,9 @@ const events = ${JSON.stringify(events)};
 const prg = hiphop ${jsonToHiphop(json, 0)}
 
 const opts = ${JSON.stringify(this.opts)};
-
 export const mach = new hh.ReactiveMachine(prg, opts);
 mach.outbuf = "";
+
 try {
    events.forEach((e, i) => {
       mach.outbuf += (mach.name() + '[' + i + ']: '
@@ -204,8 +212,8 @@ try {
 /*---------------------------------------------------------------------*/
 function dumpBug(bug) {
    bug.machines.forEach(m => {
-      console.log("  +- see", m.outProg("", bug.prog, bug.events), `(${m.name()})`);
-      console.log("  +- see", m.outProg("-orig", bug.orig, bug.events), `(${m.name()})`);
+      console.log("  +- see", m.outConf("", bug.shrink), `(${m.name()})`);
+      console.log("  +- see", m.outConf(".orig", bug.orig), `(${m.name()})`);
    });
 }
 
@@ -223,13 +231,13 @@ async function main(argv) {
 	 console.log(`  +- see ${jsonfile}`);
 	 console.log(`  +- see ${jsonfileorig}`);
 	 console.log('  |');
-	 outJson(jsonfile, bug.prog, bug.events);
-	 outJson(jsonfileorig, bug.orig, bug.events);
+	 outJson(jsonfile, bug.shrink);
+	 outJson(jsonfileorig, bug.orig);
 	 dumpBug(bug);
       }
    } else if (existsSync(argv[2])) {
       const { events, prog } = JSON.parse(readFileSync(argv[2]));
-      const bug = findBugInProg(jsonToAst(prog), events);
+      const bug = findBugInConf({ prog: jsonToAst(prog), events });
 
       if (bug) {
 	 dumpBug(bug);

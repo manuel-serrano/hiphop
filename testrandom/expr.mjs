@@ -3,12 +3,12 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Nov 14 14:49:15 2025                          */
-/*    Last change :  Fri Nov 14 15:37:40 2025 (serrano)                */
+/*    Last change :  Mon Nov 17 10:41:34 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Simple JS expression parser                                      */
 /*=====================================================================*/
-export { parseExpr, exprToHiphop };
+export { parseExpr, exprToHiphop, exprEqual, newBinary };
 
 /*---------------------------------------------------------------------*/
 /*    makeTokenizer ...                                                */
@@ -89,6 +89,9 @@ function parse(next) {
 /*    parseExpr ...                                                    */
 /*---------------------------------------------------------------------*/
 function parseExpr(expr) {
+   if (expr === undefined) {
+      throw new Error("UNDEF");
+   }
    return parse(makeTokenizer(expr));
 }
    
@@ -109,3 +112,41 @@ function exprToHiphop(obj) {
 	 throw SyntaxError("Unsupported obj: " + obj);
    }
 }
+
+/*---------------------------------------------------------------------*/
+/*    exprEqual ...                                                    */
+/*---------------------------------------------------------------------*/
+function exprEqual(x, y) {
+   if (x.kind === y.kind && x.prop === y.prop && x.value === y.value) {
+      if (x.kind === "constant" || x.kind === "sig") {
+	 return true;
+      } else {
+	 return exprToHiphop(x) === exprToHiphop(y);
+      }
+   } else {
+      return false;
+   }
+}
+
+/*---------------------------------------------------------------------*/
+/*    newBinary ...                                                    */
+/*---------------------------------------------------------------------*/
+function newBinary(op, lhs, rhs) {
+   if (exprEqual(lhs, rhs)) {
+      return lhs;
+   } else if (lhs.kind === "constant") {
+      if (lhs.value === "true") {
+	 return (op === "||") ? lhs : rhs;
+      } else if (lhs.value === "false") {
+	 return (op === "||") ? rhs : lhs;
+      }
+   } else if (rhs.kind === "constant") {
+      return newBinary(op, rhs, lhs);
+   } else {
+      return {
+	 kind: "binary", op, lhs, rhs
+      }
+   }
+}
+
+//console.error("newB=", newBinary("||", parseExpr("this.xxx.now"),  parseExpr("this.xxx.now")));

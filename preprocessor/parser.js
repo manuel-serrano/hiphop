@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Oct 24 12:05:09 2025 (serrano)                */
+/*    Last change :  Mon Nov 17 15:36:46 2025 (serrano)                */
 /*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1835,15 +1835,26 @@ function parseSignal(token) {
       }
    }
 
-   const tag = tagInit("LOCAL", loc);
-   const attrs = astutils.J2SObjInit(loc, [locInit(loc), tag]);
-   const args = parseSiglist.call(this);
-   const stmts = parseHHBlock.call(this, false);
+   if (this.peekToken().type == this.SEMICOLON) {
+      // no signal declared;
+      const tag = tagInit("LOCAL", loc);
+      const attrs = astutils.J2SObjInit(loc, [locInit(loc), tag]);
+      const stmts = parseHHBlock.call(this, false);
 
-   const node = astutils.J2SCall(loc, hhref(loc, "LOCAL"), 
-				 null,
-				 [attrs].concat(args, stmts));
-   return wrapSignalNames(node, signames);
+      return astutils.J2SCall(loc, hhref(loc, "LOCAL"), 
+			      null,
+			      [attrs].concat(stmts));
+   } else {
+      const tag = tagInit("LOCAL", loc);
+      const attrs = astutils.J2SObjInit(loc, [locInit(loc), tag]);
+      const args = parseSiglist.call(this);
+      const stmts = parseHHBlock.call(this, false);
+
+      const node = astutils.J2SCall(loc, hhref(loc, "LOCAL"), 
+				    null,
+				    [attrs].concat(args, stmts));
+      return wrapSignalNames(node, signames);
+   }
 }
 
 /*---------------------------------------------------------------------*/
@@ -1851,7 +1862,7 @@ function parseSignal(token) {
 /*---------------------------------------------------------------------*/
 function parseTrap(token) {
    const col = this.consumeToken(this.COLUMN);
-   const block = parseStmt.call(this, this.peekToken, false);
+   const block = parseStmt.call(this, this.peekToken(), false);
    const loc = token.location;
    const attrs = astutils.J2SObjInit(
       loc,
