@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Mon Nov 17 08:54:55 2025 (serrano)                */
+/*    Last change :  Tue Nov 18 05:17:33 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -39,7 +39,7 @@ function M(name) {
 /*---------------------------------------------------------------------*/
 /*    prop ...                                                         */
 /*---------------------------------------------------------------------*/
-export const prop = makeProp(loopSafep, [
+export const prop = makeProp(...[
    M("default") && (prg => new hh.ReactiveMachine(prg, { name: "default" })),
    M("colin") && (prg => new hh.ReactiveMachine(prg, { name: "colin", compiler: "int" })),
    M("colin-no-sweep") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: 0 })),
@@ -49,35 +49,10 @@ export const prop = makeProp(loopSafep, [
 ].filter(x => x));
 
 /*---------------------------------------------------------------------*/
-/*    loopSafep ...                                                    */
-/*    -------------------------------------------------------------    */
-/*    Is a program loop-safe?                                          */
-/*---------------------------------------------------------------------*/
-function loopSafep(prog) {
-   if (LOOPSAFE) {
-      try {
-	 new hh.ReactiveMachine(prog, { loopSafe: true });
-	 return true;
-      } catch (e) {
-	 if (e.toString() !== "TypeError: Instantaneous loop detected") {
-	    console.error("*** ERROR: ", e.toString());
-	    console.error(jsonToHiphop(prog.tojson()));
-	    throw e;
-	 } else if (VERBOSE >= 3) {
-	    console.error("*** ERROR: ", e.toString());
-	 }
-	 return false;
-      }
-   } else {
-      return true;
-   }
-}
-
-/*---------------------------------------------------------------------*/
 /*    shrinkBugInConf ...                                              */
 /*---------------------------------------------------------------------*/
 function shrinkBugInConf(conf, machines, reason) {
-   const prop = makeProp(loopSafep, machines.map(m => prg => new m.constructor(prg, m.opts)));
+   const prop = makeProp(machines.map(m => prg => new m.constructor(prg, m.opts)));
 
    function shrinker(conf, margin) {
       const confs = shrink(conf);
@@ -154,7 +129,7 @@ function findBugInGen(iterCount = COUNT) {
       }
       writeFileSync(1, ".");
       
-      const conf = gen({pred: loopSafep});
+      const conf = gen({filters: [loopfilter]});
       const bug = findBugInConf(conf);
 
       if (bug) return bug;

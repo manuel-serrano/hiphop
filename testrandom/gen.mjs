@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Mon Nov 17 09:23:51 2025 (serrano)                */
+/*    Last change :  Tue Nov 18 05:20:57 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -11,7 +11,7 @@
 import * as hh from "../lib/hiphop.js";
 import { jsonToHiphop } from "./json.mjs";
 
-export { gen, genreactsigs, gensym };
+export { gen, genreactsigs, gensym, loopfilter };
 
 /*---------------------------------------------------------------------*/
 /*    gensymCnt ...                                                    */
@@ -298,7 +298,7 @@ function genStmt(env, size) {
 /*    -------------------------------------------------------------    */
 /*    Generates a random program.                                      */
 /*---------------------------------------------------------------------*/
-function gen({pred, minsize = 5}) {
+function gen({filters, minsize = 5}) {
    while (true) {
       const l = Math.round(Math.random() * 4);
       const signals = Array.from({length: l}).map(c => gensym());
@@ -309,12 +309,30 @@ function gen({pred, minsize = 5}) {
       signals.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT, combine: (x, y) => x });
 
       try {
-	 const prog = hh.MODULE(attrs, body);
+	 let prog = hh.MODULE(attrs, body);
 
-	 if (!pred || pred(prog)) {
-	    
-	    return { prog, events };
-	 }
+	 filters.forEach(f => {
+	    if (!f.pred(prog)) {
+	       if (f.patch) {
+		  let fixed = false;
+		  for (let i = 0; i < f?.repeat ?? 5; i++) {
+		     prog = f.patch(prog);
+		     if (f.pred(prog)) {
+			fixed = true;
+			break;
+		     }
+		  }
+
+		  if (!fixed) {
+		     return false;
+		  }
+	       } else {
+		  return false;
+	       }
+	    }
+	 });
+	 
+	 return { prog, events, filters };
       } catch(e) {
 	 console.error("Cannot construct module");
 	 console.error(e.toString());
@@ -358,3 +376,32 @@ function wrap(prog, ctor, depth) {
    return hh.MODULE({}, body);
 }
 
+/*---------------------------------------------------------------------*/
+/*    loopfilter ...                                                   */
+/*---------------------------------------------------------------------*/
+const loopfilter = {
+   pred(prog) {
+      if (LOOPSAFE) {
+	 try {
+	    new hh.ReactiveMachine(prog, { loopSafe: true });
+	    return true;
+	 } catch (e) {
+	    if (e instanceof hh.LoopError) {
+	       if (VERBOSE >= 3) {
+		  console.error("*** ERROR: ", e.toString());
+	       }
+	    } else {
+	       console.error("*** ERROR: ", e.toString());
+	       console.error(jsonToHiphop(prog.tojson()));
+	       throw e;
+	    }
+	    return false;
+	 }
+      } else {
+	 return true;
+      }
+   },
+   patch(prog) {
+      return prog;
+   }
+}

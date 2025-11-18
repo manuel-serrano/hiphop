@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Mon Nov 17 09:25:38 2025 (serrano)                */
+/*    Last change :  Tue Nov 18 05:39:12 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -102,7 +102,7 @@ function runMach(mach, events) {
 /*---------------------------------------------------------------------*/
 /*    makeProp ...                                                     */
 /*---------------------------------------------------------------------*/
-function makeProp(filter, machCtor) {
+function makeProp(...machCtor) {
    
    function resStatus(res) {
       if (res.status === "failure") {
@@ -117,8 +117,8 @@ function makeProp(filter, machCtor) {
       throw new TypeError("makeProp: no machines defined");
    }
    
-   return ({prog, events}, verbose = 0) => {
-      if (filter(prog)) {
+   return ({prog, events, filters}, verbose = 0) => {
+      if (filters.every(f => f.pred(prog))) {
 	 try {
 	    const machs = machCtor.map(ctor => ctor(prog));
 
