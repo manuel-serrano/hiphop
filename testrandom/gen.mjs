@@ -3,15 +3,16 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Tue Nov 18 05:20:57 2025 (serrano)                */
+/*    Last change :  Tue Nov 18 07:22:56 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
 /*=====================================================================*/
 import * as hh from "../lib/hiphop.js";
+import * as config from "./config.mjs";
 import { jsonToHiphop } from "./json.mjs";
 
-export { gen, genreactsigs, gensym, loopfilter };
+export { gen, genreactsigs, gensym };
 
 /*---------------------------------------------------------------------*/
 /*    gensymCnt ...                                                    */
@@ -310,29 +311,30 @@ function gen({filters, minsize = 5}) {
 
       try {
 	 let prog = hh.MODULE(attrs, body);
-
+	 let isok = true;
+	 
 	 filters.forEach(f => {
-	    if (!f.pred(prog)) {
-	       if (f.patch) {
-		  let fixed = false;
-		  for (let i = 0; i < f?.repeat ?? 5; i++) {
-		     prog = f.patch(prog);
-		     if (f.pred(prog)) {
-			fixed = true;
-			break;
+	    if (isok) {
+	       let err;
+	       if (err = f.check(prog)) {
+		  isok = false;
+		  
+		  if (f.patch) {
+		     for (let i = (f?.repeat ?? 5); i > 0 ; i--) {
+			prog = f.patch(prog, err);
+			if (!f.check(prog)) {
+			   isok = true;
+			   break;
+			}
 		     }
 		  }
-
-		  if (!fixed) {
-		     return false;
-		  }
-	       } else {
-		  return false;
 	       }
 	    }
 	 });
-	 
-	 return { prog, events, filters };
+
+	 if (isok) {
+	    return { prog, events, filters };
+	 }
       } catch(e) {
 	 console.error("Cannot construct module");
 	 console.error(e.toString());
@@ -376,32 +378,3 @@ function wrap(prog, ctor, depth) {
    return hh.MODULE({}, body);
 }
 
-/*---------------------------------------------------------------------*/
-/*    loopfilter ...                                                   */
-/*---------------------------------------------------------------------*/
-const loopfilter = {
-   pred(prog) {
-      if (LOOPSAFE) {
-	 try {
-	    new hh.ReactiveMachine(prog, { loopSafe: true });
-	    return true;
-	 } catch (e) {
-	    if (e instanceof hh.LoopError) {
-	       if (VERBOSE >= 3) {
-		  console.error("*** ERROR: ", e.toString());
-	       }
-	    } else {
-	       console.error("*** ERROR: ", e.toString());
-	       console.error(jsonToHiphop(prog.tojson()));
-	       throw e;
-	    }
-	    return false;
-	 }
-      } else {
-	 return true;
-      }
-   },
-   patch(prog) {
-      return prog;
-   }
-}

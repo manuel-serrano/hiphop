@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Tue Nov 18 05:17:33 2025 (serrano)                */
+/*    Last change :  Tue Nov 18 07:22:23 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -11,23 +11,13 @@
 import * as hh from "../lib/hiphop.js";
 import { makeProp } from "./prop.mjs";
 import { gen, gensym, genreactsigs } from "./gen.mjs";
+import { filterinstantaneous } from "./filters.mjs";
 import { shrink } from "./shrink.mjs";
 import { jsonToHiphop, jsonToAst } from "./json.mjs";
 import { parse } from "../preprocessor/parser.js";
 import { existsSync, readFileSync, writeFileSync, chmodSync } from "node:fs";
+import { COUNT, MACHINES, VERBOSE, REASON } from "./config.mjs";
 import * as racket from "./racket.mjs";
-
-/*---------------------------------------------------------------------*/
-/*    COUNT                                                            */
-/*---------------------------------------------------------------------*/
-const COUNT = parseInt(process.env.HIPHOP_RT_COUNT) || 5000;
-const LOOPSAFE = process.env?.HIPHOP_RT_LOOPSAFE !== "false";
-const REASON = process.env?.HIPHOP_RT_REASON === "true";
-const VERBOSE = parseInt(process.env.HIPHOP_RT_VERBOSE) || 0;
-const MACHINES = process.env.HIPHOP_RT_MACHINES?.split(" ")
-   ?? ["default", "colin" ];
-
-console.log("Testing:", MACHINES);
 
 /*---------------------------------------------------------------------*/
 /*    M ...                                                            */
@@ -39,7 +29,7 @@ function M(name) {
 /*---------------------------------------------------------------------*/
 /*    prop ...                                                         */
 /*---------------------------------------------------------------------*/
-export const prop = makeProp(...[
+export const prop = makeProp([
    M("default") && (prg => new hh.ReactiveMachine(prg, { name: "default" })),
    M("colin") && (prg => new hh.ReactiveMachine(prg, { name: "colin", compiler: "int" })),
    M("colin-no-sweep") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: 0 })),
@@ -129,7 +119,7 @@ function findBugInGen(iterCount = COUNT) {
       }
       writeFileSync(1, ".");
       
-      const conf = gen({filters: [loopfilter]});
+      const conf = gen({filters: [filterinstantaneous]});
       const bug = findBugInConf(conf);
 
       if (bug) return bug;
@@ -196,6 +186,8 @@ function dumpBug(bug) {
 /*    main                                                             */
 /*---------------------------------------------------------------------*/
 async function main(argv) {
+   console.log("Testing:", MACHINES);
+   
    if (argv.length < 3) {
       const bug = findBugInGen();
 

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Mon Nov 17 07:47:07 2025 (serrano)                */
+/*    Last change :  Tue Nov 18 07:55:57 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -65,7 +65,7 @@ function leave(value, limit = SHRINK_LIMIT) {
 /*---------------------------------------------------------------------*/
 /*    shrink ...                                                       */
 /*---------------------------------------------------------------------*/
-function shrink({prog, events}) {
+function shrink({prog, events, filters}) {
    const progs = shrinkProg(prog);
    
    const sprogs =  progs.flatMap(m => {
@@ -85,11 +85,11 @@ function shrink({prog, events}) {
 	       return ne;
 	    }
 	 });
-	 return { prog: mod, events: nevents };
+	 return { prog: mod, events: nevents, filters };
       });
    });
 
-   return progs.map(prog => { return { prog, events } })
+   return progs.map(prog => { return { prog, events, filters } })
       .concat(sprogs);
 }
 
