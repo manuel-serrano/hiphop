@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Tue Nov 18 07:56:25 2025 (serrano)                */
+/*    Last change :  Tue Nov 18 12:06:07 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -11,9 +11,7 @@
 import * as hh from "../lib/hiphop.js";
 import * as hhapi from "../lib/ast.js";
 import { jsonToHiphop } from "./json.mjs";
-// debug
-import { jsonToAst } from "./json.mjs";
-import * as fs from "node:fs";
+import * as config from "./config.mjs";
 
 export { makeProp };
 
@@ -153,9 +151,9 @@ function makeProp(machCtor) {
 	    }
 	    return { status: "success", reason: `(${events.length})` };
 	 } catch(e) {
-	    console.error("*** Execution error...");
-	    console.error(jsonToHiphop(prog.tojson()));
-	    console.error(JSON.stringify(prog.tojson()));
+	    if (config.VERBOSE >= 3) {
+	       console.error("*** Execution error...", e.toString());
+	    }
 	    throw e;
 	 }
       } else {

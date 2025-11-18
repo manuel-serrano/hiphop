@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Tue Nov 18 07:22:23 2025 (serrano)                */
+/*    Last change :  Tue Nov 18 12:02:11 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -31,6 +31,7 @@ function M(name) {
 /*---------------------------------------------------------------------*/
 export const prop = makeProp([
    M("default") && (prg => new hh.ReactiveMachine(prg, { name: "default" })),
+   M("no-loopunroll") && (prg => new hh.ReactiveMachine(prg, { name: "no-loopunroll", loopUnroll: false })),
    M("colin") && (prg => new hh.ReactiveMachine(prg, { name: "colin", compiler: "int" })),
    M("colin-no-sweep") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: 0 })),
    M("colin-sweep-wire") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: -1 })),
@@ -55,17 +56,22 @@ function shrinkBugInConf(conf, machines, reason) {
 	 }
       
 	 for (let i = 0; i < confs.length; i++) {
-	    const res = prop(confs[i]);
-	    
-	    if (VERBOSE) {
-	       console.error("  |" + margin + " +- ", res.status, res.reason);
-	       if (VERBOSE >= 4) {
-		  console.error(jsonToHiphop(confs[i].prog.tojson()));
+	    try {
+	       const res = prop(confs[i]);
+	       
+	       if (VERBOSE >= 1) {
+		  console.error("  |" + margin + " +- ", res.status, res.reason);
+		  if (VERBOSE >= 4) {
+		     console.error(jsonToHiphop(confs[i].prog.tojson()));
+		  }
 	       }
-	    }
-	    if (res.status === "failure" && (REASON === false || res.reason === reason)) {
-	       // we still have an error, shrink more
-	       return shrinker(confs[i], margin + " ");
+	       if (res.status === "failure" && (REASON === false || res.reason === reason)) {
+		  // we still have an error, shrink more
+		  return shrinker(confs[i], margin + " ");
+	       }
+	    } catch(e) {
+	       // an error occured, ignore that program
+	       ;
 	    }
 	 }
 
