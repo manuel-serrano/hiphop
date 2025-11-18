@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Tue Nov 18 07:22:56 2025 (serrano)                */
+/*    Last change :  Tue Nov 18 11:22:31 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -220,15 +220,15 @@ function genStmt(env, size) {
 	 // nothing
 	 [3, () => hh.NOTHING({})],
 	 // pause
-	 [4, () => hh.PAUSE({})],
+	 [10, () => hh.PAUSE({})],
 	 // atom
-	 [3, () => {
+	 [6, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
 	    const func = eval(`(function() { return ${expr}; })`);
 	    return hh.ATOM({apply: func});
 	 }],
 	 // exit
-	 [2, () => {
+	 [1, () => {
 	    const i = Math.floor(Math.random() * env.traps.length);
 	    const attr = { [env.traps[i]]: env.traps[i] };
 	    return hh.EXIT(attr);
@@ -240,17 +240,17 @@ function genStmt(env, size) {
    } else if (env.traps.length === 0) {
       return choose(
 	 // nothing
-	 [2, () => hh.NOTHING({})],
+	 [3, () => hh.NOTHING({})],
 	 // pause
-	 [3, () => hh.PAUSE({})],
+	 [10, () => hh.PAUSE({})],
 	 // atom
-	 [2, () => {
+	 [5, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
 	    const func = eval(`(function() { return ${expr}; })`);
 	    return hh.ATOM({apply: func});
 	 }],
 	 // emit
-	 [3, () => {
+	 [5, () => {
 	    const i = Math.floor(Math.random() * env.signals.length);
 	    const sig = env.signals[i];
 	    const val = genEmitValue();
@@ -264,17 +264,17 @@ function genStmt(env, size) {
    } else {
       return choose(
 	 // nothing
-	 [2, () => hh.NOTHING({})],
+	 [5, () => hh.NOTHING({})],
 	 // pause
-	 [3, () => hh.PAUSE({})],
+	 [10, () => hh.PAUSE({})],
 	 // atom
-	 [2, () => {
+	 [4, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
 	    const func = eval(`(function() { return ${expr}; })`);
 	    return hh.ATOM({apply: func});
 	 }],
 	 // emit
-	 [3, () => {
+	 [6, () => {
 	    const i = Math.floor(Math.random() * env.signals.length);
 	    const sig = env.signals[i];
 	    const val = genEmitValue();
@@ -310,7 +310,7 @@ function gen({filters, minsize = 5}) {
       signals.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT, combine: (x, y) => x });
 
       try {
-	 let prog = hh.MODULE(attrs, body);
+	 let prog = hh.MODULE(attrs, body), prog0 = prog;
 	 let isok = true;
 	 
 	 filters.forEach(f => {
@@ -321,8 +321,9 @@ function gen({filters, minsize = 5}) {
 		  
 		  if (f.patch) {
 		     for (let i = (f?.repeat ?? 5); i > 0 ; i--) {
-			prog = f.patch(prog, err);
-			if (!f.check(prog)) {
+			prog = f.patch(err.prog, err);
+			if (err = f.check(prog)) {
+			} else {
 			   isok = true;
 			   break;
 			}
@@ -334,6 +335,11 @@ function gen({filters, minsize = 5}) {
 
 	 if (isok) {
 	    return { prog, events, filters };
+	 } else {
+	    if (config.VERBOSE > 3) {
+	       console.error("*** Cannot fix program");
+	       console.error(jsonToHiphop(prog.tojson()));
+	    }
 	 }
       } catch(e) {
 	 console.error("Cannot construct module");

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 18 07:40:33 2025                          */
-/*    Last change :  Tue Nov 18 09:23:31 2025 (serrano)                */
+/*    Last change :  Tue Nov 18 11:14:48 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop filters                                                   */
@@ -23,7 +23,7 @@ const filterinstantaneous = {
       // return false if no error found, otherwise, returns an error object
       if (config.LOOPSAFE) {
 	 try {
-	    new hh.ReactiveMachine(prog, { loopSafe: true, cloneAst: false });
+	    new hh.ReactiveMachine(prog.clone(), { loopSafe: true, cloneAst: false });
 	    return false;
 	 } catch (e) {
 	    if (e instanceof hh.LoopError) {
@@ -41,10 +41,10 @@ const filterinstantaneous = {
 	 return false;
       }
    },
-   xpatch(prog, err) {
+   patch(prog, err) {
       if (err.node) {
-	 if (true || config.VERBOSE >= 3) {
-	    console.error("patching instantaneous loop...");
+	 if (config.VERBOSE >= 3) {
+	    console.error("patching instantaneous loop...", err.node.key);
 	 }
 	 return prog.fixIL(err.node);
       }
@@ -59,15 +59,22 @@ hhapi.$ASTNode.prototype.fixIL = function(node) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    fixIL ...                                                        */
+/*    fixIL ::Loop ...                                                 */
 /*---------------------------------------------------------------------*/
 hhapi.Loop.prototype.fixIL = function(node) {
    if (this === node) {
-      console.error("GOT IT!!!");
+      const l = this.children.length;
+
+      if (l === 1) {
+	 return this.copy([this.children[0].patchIL()]);
+      } else {
+	 const i = Math.floor(Math.random() * l);
+	 return this.copy(this.children.map((c, j) =>
+	    i === j ? c.patchIL() : c));
+      }
    } else {
-      console.error("PAS LOOP...", this.key, node.key);
+      return this.copy(this.children.map(c => c.fixIL(node)));
    }
-   return this.copy(this.children.map(c => c.fixIL(node)));
 }
 
 /*---------------------------------------------------------------------*/
@@ -77,7 +84,30 @@ hhapi.$ASTNode.prototype.patchIL = function() {
    if (Math.random() >= 0.5) {
       return hh.SEQUENCE({}, [ hh.PAUSE({}), this ]);
    } else {
-      return hh.SEQUENCE({}, [ hh.PAUSE({}), this ]);
+      return hh.SEQUENCE({}, [ this, hh.PAUSE({}) ]);
    }
 }
    
+/*---------------------------------------------------------------------*/
+/*    patchIL ::If ...                                                 */
+/*---------------------------------------------------------------------*/
+hhapi.If.prototype.patchIL = function() {
+   return this.copy(this.children.map(c => c.patchIL()));
+}
+   
+/*---------------------------------------------------------------------*/
+/*    patchIL ::Fork ...                                               */
+/*---------------------------------------------------------------------*/
+hhapi.Fork.prototype.patchIL = function() {
+   const l = this.children.length;
+   
+   if (l === 0) {
+      return hh.SEQUENCE({}, [ hh.PAUSE({}), this ]);
+   } else if (l === 1) {
+      return this.copy([this.children[0].patchIL()]);
+   } else {
+      const i = Math.floor(Math.random() * l);
+      return this.copy(this.children.map((c, j) =>
+	 i === j ? c.patchIL() : c));
+   }
+}
