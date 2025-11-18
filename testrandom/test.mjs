@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Tue Nov 18 12:02:11 2025 (serrano)                */
+/*    Last change :  Tue Nov 18 16:02:52 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -32,6 +32,7 @@ function M(name) {
 export const prop = makeProp([
    M("default") && (prg => new hh.ReactiveMachine(prg, { name: "default" })),
    M("no-loopunroll") && (prg => new hh.ReactiveMachine(prg, { name: "no-loopunroll", loopUnroll: false })),
+   M("native") && (prg => new hh.ReactiveMachine(prg, { name: "native", native: "try" })),
    M("colin") && (prg => new hh.ReactiveMachine(prg, { name: "colin", compiler: "int" })),
    M("colin-no-sweep") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: 0 })),
    M("colin-sweep-wire") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: -1 })),
@@ -141,7 +142,7 @@ function outJson(target, {prog, events}) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    outProg ...                                                      */
+/*    outConf ...                                                      */
 /*---------------------------------------------------------------------*/
 hh.ReactiveMachine.prototype.outConf = function(suffix, {prog, events}) {
    const target = this.name() + suffix + ".hh.mjs";
