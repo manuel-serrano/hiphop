@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Tue Nov 18 12:06:07 2025 (serrano)                */
+/*    Last change :  Wed Nov 19 07:47:53 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -117,9 +117,20 @@ function makeProp(machCtor) {
 
    return ({prog, events, filters}, verbose = 0) => {
       if (!filters || filters.every(f => !f.check(prog))) {
-	 try {
-	    const machs = machCtor.map(ctor => ctor(prog));
+	 const machs = machCtor.map(ctor => {
+	    try {
+	       return ctor(prog);
+	    } catch (e) {
+	       if (config.VERBOSE >= 2) {
+		  console.error("*** Compilation error...", e.toString());
+		  console.error("ctor=", ctor.toString());
+		  console.error("prog=", jsonToHiphop(prog.tojson()));
+	       }
+	       throw e;
+	    }
+	 });
 
+	 try {
 	    const r0 = runMach(machs[0], events);
 
 	    if (verbose >= 1) {
