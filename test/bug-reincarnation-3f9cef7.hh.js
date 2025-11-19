@@ -10,7 +10,7 @@ const prg = hiphop module() {
          emit g4189(84);
          yield;
       } par {
-	 pragma { mach.outbuf += (g4189.pre ? "false" : "true")); }
+	 pragma { mach.outbuf += ((g4189.pre ? g4189.preval : "-") + "\n") }
       }
    }
 }
