@@ -25,4 +25,4 @@ jobs:
     - run: npm install
     - run: npm run prepare
     - run: npm test
-    - run: npm run test_random
+    - run: npm run testrandom
