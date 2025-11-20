@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Thu Nov 20 09:09:43 2025 (serrano)                */
+/*    Last change :  Thu Nov 20 11:47:10 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -34,6 +34,7 @@ export const prop = makeProp([
    M("forkorkill") && (prg => new hh.ReactiveMachine(prg, { name: "forkorkill", forkOrKill: true })),
    M("no-loopunroll") && (prg => new hh.ReactiveMachine(prg, { name: "no-loopunroll", loopUnroll: false })),
    M("native") && (prg => new hh.ReactiveMachine(prg, { name: "native", native: "try" })),
+   M("forcenative") && (prg => new hh.ReactiveMachine(prg, { name: "native", native: "force" })),
    M("colin") && (prg => new hh.ReactiveMachine(prg, { name: "colin", compiler: "int" })),
    M("colin-no-sweep") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: 0 })),
    M("colin-sweep-wire") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: -1 })),

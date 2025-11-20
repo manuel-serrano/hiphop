@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Tue Nov 18 12:11:16 2025 (serrano)                */
+/*    Last change :  Thu Nov 20 16:45:16 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -66,6 +66,7 @@ function leave(value, limit = SHRINK_LIMIT) {
 /*    shrink ...                                                       */
 /*---------------------------------------------------------------------*/
 function shrink({prog, events, filters}) {
+   try {
    const progs = shrinkProg(prog);
 
    const sprogs = shrinkSignals(prog.sigDeclList, prog.children, hh.MODULE)
@@ -89,6 +90,11 @@ function shrink({prog, events, filters}) {
 
    return progs.map(prog => { return { prog, events, filters } })
       .concat(sprogs);
+   } catch(e) {
+      console.error("CANNOT SHRINK...");
+      console.error(e.toString());
+      throw e;
+   }
 }
 
 /*---------------------------------------------------------------------*/
@@ -161,7 +167,7 @@ function shrinkSignals(decl, children, ctor, accessibility) {
 	    }
 	 });
 
-	 res.push(ctor(attrs, children.map(c => c.shrinkSignal(d.name))));
+	 res.push(ctor(attrs, ...children.map(c => c.shrinkSignal(d.name))));
       });
       
       return res;
@@ -217,7 +223,7 @@ function shrinkSignalFunc(func, sig) {
 /*    shrinkSignalASTNode ...                                          */
 /*---------------------------------------------------------------------*/
 function shrinkSignalASTNode(node, ctor, attr, sig) {
-   return ctor(attr, node.children.map(c => c.shrinkSignal(sig)));
+   return ctor(attr, ...node.children.map(c => c.shrinkSignal(sig)));
 }
 
 /*---------------------------------------------------------------------*/
@@ -245,7 +251,7 @@ hhapi.Fork.prototype.shrinkSignal = function(sig) {
 /*    shrinkSignal ::Loop ...                                          */
 /*---------------------------------------------------------------------*/
 hhapi.Loop.prototype.shrinkSignal = function(sig) {
-   return shrinkSignalASTNode(this, hh.LOOP, {}, sig);
+   return this.children.concat(shrinkSignalASTNode(this, hh.LOOP, {}, sig));
 }
 
 /*---------------------------------------------------------------------*/
@@ -350,9 +356,8 @@ function shrinkFunc(func) {
 	    const slhs = shrink(obj.lhs);
 	    const srhs = shrink(obj.rhs);
 	    return [obj.lhs, obj.rhs]
-	       .concat(slhs.flatMap(l => srhs.map(r => newBinary(obj.op, l, r))));
-/* 	       .concat(srhs.map(r => newBinary(obj.op, obj.lhs, r)))   */
-/* 	       .concat(slhs.map(l => newBinary(obj.op, l, obj.rhs)));  */
+	       .concat(slhs.map(l => newBinary(obj.op, l, obj.rhs)))
+	       .concat(srhs.map(r => newBinary(obj.op, obj.lhs, r)));
 	 }
 	 default:
 	    throw SyntaxError("Unsupported obj: " + obj.kind);
@@ -435,16 +440,16 @@ hhapi.Sequence.prototype.shrink = function() {
 /*    shrink ::Fork ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Fork.prototype.shrink = function() {
-   return shrinkASTNode(this, hh.FORK, {}, this.children)
-      .concat(hh.SEQUENCE({}, this.children));
+   return [hh.SEQUENCE({}, this.children)]
+      .concat(...shrinkASTNode(this, hh.FORK, {}, this.children));
 }
 
 /*---------------------------------------------------------------------*/
 /*    shrink ::Loop ...                                                */
 /*---------------------------------------------------------------------*/
 hhapi.Loop.prototype.shrink = function() {
-   return shrinkASTNode(this, hh.LOOP, {}, this.children)
-      .concat(hh.SEQUENCE({}, this.children));
+   return [hh.SEQUENCE({}, this.children)]
+      .concat(...shrinkASTNode(this, hh.LOOP, {}, this.children));
 }
 
 /*---------------------------------------------------------------------*/
@@ -522,15 +527,17 @@ hhapi.If.prototype.shrink = function() {
    enter(this.constructor.name);
    
    const [ child0, child1 ] = this.children;
+   const funcs = shrinkFunc(this.func);
    const c0 = shrinkProg(child0);
    const c1 = shrinkProg(child1);
    const res = [child0, child1];
-   const funcs = shrinkFunc(this.func);
 
    for (let i = 0; i < c0.length; i++) {
-      for (let j = 0; j < c1.length; j++) {
-	 res.push(hh.IF({apply: this.func}, c0[i], c1[j]));
-      }
+      res.push(hh.IF({apply: this.func}, c0[i], child1));
+   }
+
+   for (let i = 0; i < c1.length; i++) {
+      res.push(hh.IF({apply: this.func}, child0, c1[i]));
    }
 
    return leave(res
