@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Fri Nov 21 19:30:41 2025 (serrano)                */
+/*    Last change :  Fri Nov 21 20:10:02 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with racket/esterel                      */
@@ -55,9 +55,9 @@ function json2esterel(o, m) {
 	       return obj.value;
 	    case "sig":
 	       if (obj.prop === "now") {
-		  return obj.value;
+		  return `? ${obj.value}`;
 	       } else {
-		  return `pre(${obj.value})`;
+		  return `pre(? ${obj.value})`;
 	       }
 	    case "unary":
 	       return `${unary[obj.op]} ${toEsterel(obj.expr)}`;
