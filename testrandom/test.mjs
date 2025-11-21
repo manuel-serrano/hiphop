@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Fri Nov 21 08:24:36 2025 (serrano)                */
+/*    Last change :  Fri Nov 21 17:38:51 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -18,6 +18,7 @@ import { parse } from "../preprocessor/parser.js";
 import { existsSync, readFileSync, writeFileSync, chmodSync } from "node:fs";
 import { COUNT, MACHINES, VERBOSE, REASON } from "./config.mjs";
 import * as racket from "./racket.mjs";
+import * as esterel from "./esterel.mjs";
 
 /*---------------------------------------------------------------------*/
 /*    M ...                                                            */
@@ -39,7 +40,8 @@ export const prop = makeProp([
    M("colin") && (prg => new hh.ReactiveMachine(prg, { name: "colin", compiler: "int" })),
    M("colin-no-sweep") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: 0 })),
    M("colin-sweep-wire") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: -1 })),
-   M("racket") && (prg => new racket.ReactiveMachine(prg, { name: "racket" }))
+   M("racket") && (prg => new racket.ReactiveMachine(prg, { name: "racket" })),
+   M("esterel") && (prg => new esterel.ReactiveMachine(prg, { name: "esterel" }))
 ].filter(x => x));
 
 /*---------------------------------------------------------------------*/
