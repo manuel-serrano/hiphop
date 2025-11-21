@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Fri Nov 21 08:13:54 2025 (serrano)                */
+/*    Last change :  Fri Nov 21 10:37:09 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -403,7 +403,7 @@ hhapi.Exit.prototype.shrinkTrap = function(trap) {
 /*---------------------------------------------------------------------*/
 hhapi.Local.prototype.shrinkTrap = function(trap) {
    const attrs = {};
-   this.trapDeclList.forEach(p => attrs[p.name] = { signal: p.name, name: p.name, combine: (x, y) => x }, true);
+   this.sigDeclList.forEach(p => attrs[p.name] = { signal: p.name, name: p.name, combine: (x, y) => x }, true);
    return shrinkTrapASTNode(this, hh.LOCAL, attrs, trap);
 }
 
@@ -411,7 +411,7 @@ hhapi.Local.prototype.shrinkTrap = function(trap) {
 /*    shrinkTrap ::If ...                                              */
 /*---------------------------------------------------------------------*/
 hhapi.If.prototype.shrinkTrap = function(trap) {
-   const attrs = {apply: shrinkTrapFunc(this.func, trap)};
+   const attrs = {apply: this.func};
    return shrinkTrapASTNode(this, hh.IF, attrs, trap);
 }
 
@@ -419,7 +419,7 @@ hhapi.If.prototype.shrinkTrap = function(trap) {
 /*    shrinkTrap ::Abort ...                                           */
 /*---------------------------------------------------------------------*/
 hhapi.Abort.prototype.shrinkTrap = function(trap) {
-   const attrs = {apply: shrinkTrapFunc(this.func, trap)};
+   const attrs = {apply: this.func};
    return shrinkTrapASTNode(this, hh.ABORT, attrs, trap);
 }
 
@@ -427,7 +427,7 @@ hhapi.Abort.prototype.shrinkTrap = function(trap) {
 /*    shrinkTrap ::Every ...                                           */
 /*---------------------------------------------------------------------*/
 hhapi.Every.prototype.shrinkTrap = function(trap) {
-   const attrs = {apply: shrinkTrapFunc(this.func, trap)};
+   const attrs = {apply: this.func};
    return shrinkTrapASTNode(this, hh.EVERY, attrs, trap);
 }
 
@@ -435,7 +435,7 @@ hhapi.Every.prototype.shrinkTrap = function(trap) {
 /*    shrinkTrap ::LoopEach ...                                        */
 /*---------------------------------------------------------------------*/
 hhapi.LoopEach.prototype.shrinkTrap = function(trap) {
-   const attrs = {apply: shrinkTrapFunc(this.func, trap)};
+   const attrs = {apply: this.func};
    return shrinkTrapASTNode(this, hh.LOOPEACH, attrs, trap);
 }
 

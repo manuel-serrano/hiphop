@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Thu Nov 20 12:24:20 2025 (serrano)                */
+/*    Last change :  Fri Nov 21 10:55:45 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with racket/esterel                      */
@@ -212,6 +212,7 @@ function makeStandaloneProg(prog, events) {
       + (`   (case s\n`)
       + (`      ${o.signals.map(s => `((${s}) ${s})`).join("\n      ")}\n`)
       + (`      (else (error "unknown signal ~s" s))))\n`)
+      + ('\n')
       + (`(define machine ${json2racket(o)})\n`)
       + ('\n')
       + (`(let ((events ${evts}))\n`)
