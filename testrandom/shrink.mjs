@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Thu Nov 20 16:45:16 2025 (serrano)                */
+/*    Last change :  Fri Nov 21 08:13:54 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -67,29 +67,44 @@ function leave(value, limit = SHRINK_LIMIT) {
 /*---------------------------------------------------------------------*/
 function shrink({prog, events, filters}) {
    try {
-   const progs = shrinkProg(prog);
+      const progs = shrinkProg(prog);
 
-   const sprogs = shrinkSignals(prog.sigDeclList, prog.children, hh.MODULE)
-      .map(mod => {
-	 const signames = mod.sigDeclList.map(s => s.name);
-	 const nevents = events.map(e => {
-	    if (!e) {
-	       return e;
-	    } else {
-	       const ne = {};
-	       signames.forEach(n => {
-		  if (n in e) {
-		     ne[n] = e[n];
+      if (progs.length === 0) {
+	 if (events.length === 0) {
+	    return [];
+	 } else {
+	    let sevents = [];
+	    for (let i = 0; i < events.length; i++) {
+	       const evt = events.slice(i - 1, i)
+		  .concat(events.slice(i + 1, events.length));
+	       sevents.push(evt);
+	    }
+	    return sevents.map(events => { return { prog, events, filters } });
+	 }
+      } else {
+	 const sprogs = shrinkSignals(prog.sigDeclList, prog.children, hh.MODULE)
+	    .map(mod => {
+	       const signames = mod.sigDeclList.map(s => s.name);
+	       const nevents = events.map(e => {
+		  if (!e) {
+		     return e;
+		  } else {
+		     const ne = {};
+		     signames.forEach(n => {
+			if (n in e) {
+			   ne[n] = e[n];
+			}
+		     });
+		     return ne;
 		  }
 	       });
-	       return ne;
-	    }
-	 });
-	 return { prog: mod, events: nevents, filters };
-      });
+	       return { prog: mod, events: nevents, filters };
+	    });
 
-   return progs.map(prog => { return { prog, events, filters } })
-      .concat(sprogs);
+	 return progs.map(prog => { return { prog, events, filters } })
+	    .concat(sprogs);
+      }
+      
    } catch(e) {
       console.error("CANNOT SHRINK...");
       console.error(e.toString());
@@ -144,37 +159,6 @@ function shrinkArray(a) {
 //console.error(shrinkArray([1,2,3]), "vs", [[2,3],[1,3],[1,2],[0,2,3],[1,1,3],[1,2,2]]);
 
 /*---------------------------------------------------------------------*/
-/*    shrinkSignals ...                                                */
-/*    -------------------------------------------------------------    */
-/*    Remove one signal at a time.                                     */
-/*---------------------------------------------------------------------*/
-function shrinkSignals(decl, children, ctor, accessibility) {
-   if (decl.length === 0) {
-      return [];
-   } else {
-      const res = [];
-      
-      decl.forEach((d, i) => {
-	 const attrs = {};
-	 decl.forEach((s, j) => {
-	    if (i !== j) {
-	       attrs[s.name] = {
-		  signal: s.name,
-		  name: s.name,
-		  accessibility: hh.INOUT,
-		  combine: (x, y) => x
-	       }
-	    }
-	 });
-
-	 res.push(ctor(attrs, ...children.map(c => c.shrinkSignal(d.name))));
-      });
-      
-      return res;
-   }
-}
-
-/*---------------------------------------------------------------------*/
 /*    shrinkSignalFunc ...                                             */
 /*---------------------------------------------------------------------*/
 function shrinkSignalFunc(func, sig) {
@@ -216,8 +200,38 @@ function shrinkSignalFunc(func, sig) {
    return eval(`(function() { return ${exprToHiphop(f)}; })`);
 }
 
-
 //console.error(shrinkSignalFunc(function() { return (this.xxx.now || (this.yyy.pre || this.xxx.now)) }, "xxx").toString());
+
+/*---------------------------------------------------------------------*/
+/*    shrinkSignals ...                                                */
+/*    -------------------------------------------------------------    */
+/*    Remove one signal at a time.                                     */
+/*---------------------------------------------------------------------*/
+function shrinkSignals(decl, children, ctor, accessibility) {
+   if (decl.length === 0) {
+      return [];
+   } else {
+      const res = [];
+      
+      decl.forEach((d, i) => {
+	 const attrs = {};
+	 decl.forEach((s, j) => {
+	    if (i !== j) {
+	       attrs[s.name] = {
+		  signal: s.name,
+		  name: s.name,
+		  accessibility: hh.INOUT,
+		  combine: (x, y) => x
+	       }
+	    }
+	 });
+
+	 res.push(ctor(attrs, ...children.map(c => c.shrinkSignal(d.name))));
+      });
+      
+      return res;
+   }
+}
 
 /*---------------------------------------------------------------------*/
 /*    shrinkSignalASTNode ...                                          */
@@ -251,7 +265,7 @@ hhapi.Fork.prototype.shrinkSignal = function(sig) {
 /*    shrinkSignal ::Loop ...                                          */
 /*---------------------------------------------------------------------*/
 hhapi.Loop.prototype.shrinkSignal = function(sig) {
-   return this.children.concat(shrinkSignalASTNode(this, hh.LOOP, {}, sig));
+   return shrinkSignalASTNode(this, hh.LOOP, {}, sig);
 }
 
 /*---------------------------------------------------------------------*/
@@ -328,6 +342,101 @@ hhapi.Await.prototype.shrinkSignal = function(sig) {
 hhapi.Atom.prototype.shrinkSignal = function(sig) {
    const attrs = {apply: shrinkSignalFunc(this.func, sig)};
    return hh.ATOM(attrs);
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrinkTrapASTNode ...                                            */
+/*---------------------------------------------------------------------*/
+function shrinkTrapASTNode(node, ctor, attr, trap) {
+   return ctor(attr, ...node.children.map(c => c.shrinkTrap(trap)));
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrinkTrap ::$ASTNode ...                                        */
+/*---------------------------------------------------------------------*/
+hhapi.$ASTNode.prototype.shrinkTrap = function(trap) {
+   return this;
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrinkTrap ::Sequence ...                                        */
+/*---------------------------------------------------------------------*/
+hhapi.Sequence.prototype.shrinkTrap = function(trap) {
+   return shrinkTrapASTNode(this, hh.SEQUENCE, {}, trap);
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrinkTrap ::Fork ...                                            */
+/*---------------------------------------------------------------------*/
+hhapi.Fork.prototype.shrinkTrap = function(trap) {
+   return shrinkTrapASTNode(this, hh.FORK, {}, trap);
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrinkTrap ::Loop ...                                            */
+/*---------------------------------------------------------------------*/
+hhapi.Loop.prototype.shrinkTrap = function(trap) {
+   return shrinkTrapASTNode(this, hh.LOOP, {}, trap);
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrinkTrap ::Trap ...                                            */
+/*---------------------------------------------------------------------*/
+hhapi.Trap.prototype.shrinkTrap = function(trap) {
+   const attrs = { [this.trapName]: this.trapName };
+   return shrinkTrapASTNode(this, hh.TRAP, attrs, trap);
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrinkTrap ::Exit ...                                            */
+/*---------------------------------------------------------------------*/
+hhapi.Exit.prototype.shrinkTrap = function(trap) {
+   if (this.trapName === trap) {
+      return hh.NOTHING({});
+   } else {
+      return this;
+   }
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrinkTrap ::Local ...                                           */
+/*---------------------------------------------------------------------*/
+hhapi.Local.prototype.shrinkTrap = function(trap) {
+   const attrs = {};
+   this.trapDeclList.forEach(p => attrs[p.name] = { signal: p.name, name: p.name, combine: (x, y) => x }, true);
+   return shrinkTrapASTNode(this, hh.LOCAL, attrs, trap);
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrinkTrap ::If ...                                              */
+/*---------------------------------------------------------------------*/
+hhapi.If.prototype.shrinkTrap = function(trap) {
+   const attrs = {apply: shrinkTrapFunc(this.func, trap)};
+   return shrinkTrapASTNode(this, hh.IF, attrs, trap);
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrinkTrap ::Abort ...                                           */
+/*---------------------------------------------------------------------*/
+hhapi.Abort.prototype.shrinkTrap = function(trap) {
+   const attrs = {apply: shrinkTrapFunc(this.func, trap)};
+   return shrinkTrapASTNode(this, hh.ABORT, attrs, trap);
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrinkTrap ::Every ...                                           */
+/*---------------------------------------------------------------------*/
+hhapi.Every.prototype.shrinkTrap = function(trap) {
+   const attrs = {apply: shrinkTrapFunc(this.func, trap)};
+   return shrinkTrapASTNode(this, hh.EVERY, attrs, trap);
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrinkTrap ::LoopEach ...                                        */
+/*---------------------------------------------------------------------*/
+hhapi.LoopEach.prototype.shrinkTrap = function(trap) {
+   const attrs = {apply: shrinkTrapFunc(this.func, trap)};
+   return shrinkTrapASTNode(this, hh.LOOPEACH, attrs, trap);
 }
 
 /*---------------------------------------------------------------------*/
@@ -460,14 +569,16 @@ hhapi.Trap.prototype.shrink = function() {
    
    const children = this.children;
    const attr = {[this.trapName]: this.trapName};
+   const res = [children[0].shrinkTrap(this.trapName)];
 
    if (children.length === 0) {
-      return leave([hh.NOTHING({})]);
+      return leave(res);
    } else if (children.length === 1) {
-      return leave(shrinkProg(children[0]).map(c => hh.TRAP(attr, c)));
+      return leave(res
+	 .concat(shrinkProg(children[0]).map(c => hh.TRAP(attr, c))));
    } else {
       const el = shrinkArray(children);
-      return leave(el.map(a => hh.TRAP(attr, a)));
+      return leave(res.concat(el.map(a => hh.TRAP(attr, a))));
    }
 }
 
@@ -569,10 +680,10 @@ hhapi.Abort.prototype.shrink = function() {
 /*---------------------------------------------------------------------*/
 hhapi.Every.prototype.shrink = function() {
    enter(this.constructor.name);
-   
+
    const child0 = this.children[0];
    const c0 = shrinkProg(child0);
-   const res = [child0];
+   const res = [child0, hh.IF({apply: this.func}, child0)];
    const funcs = shrinkFunc(this.func);
 
    c0.forEach(c => {

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Wed Nov 19 07:54:34 2025 (serrano)                */
+/*    Last change :  Fri Nov 21 08:26:37 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -303,7 +303,7 @@ function gen({filters, minsize = config.MINSIZE, maxsize = config.MAXSIZE}) {
    while (true) {
       const l = Math.round(Math.random() * 4);
       const signals = Array.from({length: l}).map(c => gensym());
-      const events = Array.from({length: 20}).map(i => genreactsigs(signals))
+      const events = Array.from({length: 8}).map(i => genreactsigs(signals))
       const size = randomInRange(minsize, maxsize);
       const body = genStmt({signals: signals, traps: []}, size);
       const attrs = {};
