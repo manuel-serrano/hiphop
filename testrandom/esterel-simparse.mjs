@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Nov 21 17:27:45 2025                          */
-/*    Last change :  Sat Nov 22 06:19:50 2025 (serrano)                */
+/*    Last change :  Sat Nov 22 08:36:39 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Parses the output of an esterel simulation.                      */
@@ -36,6 +36,8 @@ function parseSignals(lines, i) {
 	 return { signals, i };
       } else if (m = lines[i].match(/--- (?:Local|Output): (.+)/)) {
 	 parseEmissions(signals, m[1]);
+      } else if (m = lines[i].match(/^[*][*][*] Error: (.+)/)) {
+	 throw m[1];
       }
       i++;
    }
@@ -62,12 +64,16 @@ function parse(fd) {
    const events = [];
    let i = 0;
 
-   while (i < lines.length) {
-      const { signals, i: ni } = parseReaction(lines, i);
-      if (signals) {
-	 events.push({status: "success", signals});
+   try {
+      while (i < lines.length) {
+	 const { signals, i: ni } = parseReaction(lines, i);
+	 if (signals) {
+	    events.push({status: "success", signals});
+	 }
+	 i = ni;
       }
-      i = ni;
+   } catch(e) {
+      events.push({status: "error", signals: {}, msg: e});
    }
    
    console.log(JSON.stringify(events));
