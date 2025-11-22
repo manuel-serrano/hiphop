@@ -1,10 +1,10 @@
 #!/bin/env node
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/hiphop/testrandom/strl-parse.mjs     */
+/*    .../project/hiphop/hiphop/testrandom/esterel-simparse.mjs        */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Nov 21 17:27:45 2025                          */
-/*    Last change :  Fri Nov 21 17:27:50 2025 (serrano)                */
+/*    Last change :  Sat Nov 22 06:19:50 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Parses the output of an esterel simulation.                      */
@@ -18,7 +18,9 @@ function parseEmissions(signals, emit) {
       signals[m[1]] = m[2];
       parseEmissions(signals, emit.substring(m[0].length))
    } else if (m = emit.match(/([a-zA-Z][a-zA-Z0-9]*)[ ]*/)) {
-      signals[m[1]] = null;
+      if (m[1] !== "TRUE") {
+	 signals[m[1]] = null;
+      }
       parseEmissions(signals, emit.substring(m[0].length));
    } else {
       return;
@@ -63,7 +65,7 @@ function parse(fd) {
    while (i < lines.length) {
       const { signals, i: ni } = parseReaction(lines, i);
       if (signals) {
-	 events.push(signals);
+	 events.push({status: "success", signals});
       }
       i = ni;
    }

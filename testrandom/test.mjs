@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Fri Nov 21 17:38:51 2025 (serrano)                */
+/*    Last change :  Sat Nov 22 06:57:09 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -47,14 +47,14 @@ export const prop = makeProp([
 /*---------------------------------------------------------------------*/
 /*    shrinkBugInConf ...                                              */
 /*---------------------------------------------------------------------*/
-function shrinkBugInConf(conf, machines, reason) {
-   const prop = makeProp(machines.map(m => prg => new m.constructor(prg, m.opts)));
+function shrinkBugInConf(conf, res) {
+   const prop = makeProp(res.machines.map(m => prg => new m.constructor(prg, m.opts)));
 
-   function shrinker(conf, margin) {
+   function shrinker(conf, res, margin) {
       const confs = shrink(conf);
 
       if (confs.length === 0) {
-	 return conf;
+	 return { conf, res };
       } else {
 	 if (VERBOSE) {
 	    console.error("  |" + margin + "confs.length:", confs.length);
@@ -62,17 +62,17 @@ function shrinkBugInConf(conf, machines, reason) {
       
 	 for (let i = 0; i < confs.length; i++) {
 	    try {
-	       const res = prop(confs[i]);
+	       const r = prop(confs[i]);
 	       
 	       if (VERBOSE >= 1) {
-		  console.error("  |" + margin + " +- ", res.status, res.reason);
+		  console.error("  |" + margin + " +- ", r.status, r.reason);
 		  if (VERBOSE >= 4) {
 		     console.error(jsonToHiphop(confs[i].prog.tojson()));
 		  }
 	       }
-	       if (res.status === "failure" && (REASON === false || res.reason === reason)) {
+	       if (r.status === "failure" && (REASON === false || r.reason === resreason)) {
 		  // we still have an error, shrink more
-		  return shrinker(confs[i], margin + " ");
+		  return shrinker(confs[i], r, margin + " ");
 	       }
 	    } catch(e) {
 	       // an error occured, ignore that program
@@ -80,11 +80,11 @@ function shrinkBugInConf(conf, machines, reason) {
 	    }
 	 }
 
-	 return conf;
+	 return { conf, res };
       }
    }
 
-   console.error(` \\ shrinking...${machines.map(m => m.name()).join(", ")}`);
+   console.error(` \\ shrinking...`);
 
    try {
       return shrinker(conf, "  ");
@@ -102,10 +102,12 @@ function findBugInConf(conf) {
 
    if (res.status === "failure") {
       console.log();
-      console.log(`+- ${res.msg}: ${res.machines.map(m => m.name()).join(" / ")}`);
+      console.log(`+- ${res.machines.map(m => m.name()).join(" / ")}`);
+      const shrink = shrinkBugInConf(conf, res);
       return {
 	 orig: conf,
-	 shrink: shrinkBugInConf(conf, res.machines, res.reason),
+	 shrink: shrink.conf,
+	 res: shrink.res,
 	 machines: res.machines,
       }
    } else {
@@ -205,6 +207,8 @@ async function main(argv) {
       if (bug) {
 	 const jsonfile = "bug.hh.json";
 	 const jsonfileorig = "bug.orig.hh.json";
+	 console.log('  |');
+	 console.log("  +-", bug.res.status, bug.res.msg);
 	 console.log('  |');
 	 console.log(`  +- see ${jsonfile}`);
 	 console.log(`  +- see ${jsonfileorig}`);

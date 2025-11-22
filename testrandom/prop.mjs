@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Thu Nov 20 13:50:30 2025 (serrano)                */
+/*    Last change :  Sat Nov 22 06:28:19 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -83,7 +83,7 @@ function runMach(mach, events) {
 	 res.push({ status: "success", signals });
       } catch (e) {
 	 if (e.message !== "Causality error.") {
-	    console.error("runMach", e.toString());
+	    console.error("runMach[" + mach.name() + "]", e.toString());
 	    throw e;
 	 }
 	 res.push({ status: "error", msg: e.toString(), signals: [] });

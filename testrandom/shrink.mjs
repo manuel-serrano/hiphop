@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Fri Nov 21 10:37:09 2025 (serrano)                */
+/*    Last change :  Sat Nov 22 06:34:09 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -70,7 +70,7 @@ function shrink({prog, events, filters}) {
       const progs = shrinkProg(prog);
 
       if (progs.length === 0) {
-	 if (events.length === 0) {
+	 if (events.length === 1) {
 	    return [];
 	 } else {
 	    let sevents = [];

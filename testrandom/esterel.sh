@@ -4,13 +4,16 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  manuel serrano                                    */
 #*    Creation    :  Fri Nov 21 13:42:15 2025                          */
-#*    Last change :  Fri Nov 21 18:02:08 2025 (serrano)                */
+#*    Last change :  Sat Nov 22 06:43:04 2025 (serrano)                */
 #*    Copyright   :  2025 manuel serrano                               */
 #*    -------------------------------------------------------------    */
 #*    Compile Esterel programs                                         */
 #*=====================================================================*/
 
-src=`basename $1 .strl`
+srcfile=$1
+infile=$2
+
+src=`basename $srcfile .strl`
 srcdir=`dirname $1`
 ccdir=`dirname $0` || "."
 
@@ -30,4 +33,4 @@ fi
 
 gcc ${src}.c $ESTEREL_LIB -o ${srcdir}/${src} || exit 2
 
-${srcdir}/${src} < ${srcdir}/${src}.in | $ccdir/esterel-simparse.mjs
+${srcdir}/${src} < ${infile} 2> /dev/null | $ccdir/esterel-simparse.mjs

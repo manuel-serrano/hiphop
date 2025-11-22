@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Fri Nov 21 20:10:02 2025 (serrano)                */
+/*    Last change :  Sat Nov 22 05:26:36 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with racket/esterel                      */
@@ -22,6 +22,14 @@ import { spawnSync } from "child_process";
 /*---------------------------------------------------------------------*/
 import { createRequire } from "module";
 const require = createRequire(import.meta.url);
+
+/*---------------------------------------------------------------------*/
+/*    gensym ...                                                       */
+/*---------------------------------------------------------------------*/
+let G = 0;
+function gensym() {
+   return `gg${G++}`;
+}
 
 /*---------------------------------------------------------------------*/
 /*    unary ...                                                        */
@@ -52,12 +60,12 @@ function json2esterel(o, m) {
       function toEsterel(obj) {
 	 switch (obj.kind) {
 	    case "constant":
-	       return obj.value;
+	       return obj.value ? "TRUE" : "FALSE";
 	    case "sig":
 	       if (obj.prop === "now") {
-		  return `? ${obj.value}`;
+		  return `${obj.value}`;
 	       } else {
-		  return `pre(? ${obj.value})`;
+		  return `pre(${obj.value})`;
 	       }
 	    case "unary":
 	       return `${unary[obj.op]} ${toEsterel(obj.expr)}`;
@@ -74,40 +82,37 @@ function json2esterel(o, m) {
       if (o.children.length === 1) {
 	 return json2esterel(o.children[0], m);
       } else {
-	 return o.children.map(c => json2esterel(c, m)).join("");
+	 return o.children.map(c => json2esterel(c, m)).join(`${margin(m)};\n`);
       }
-   }
-
-   if (typeof m !== "number") {
-      console.error("PAS BON", o.node, m, typeof m);
    }
 
    switch (o.node) {
       case "module":
-	 return "module M :\n\n"
-	    + o.signals.map(s => `inputoutput ${s} := 0 : combine integer with +;\n`).join("")
+	 return "module M :\n"
+	    + "input TRUE, FALSE;\n"
+	    + (o.signals.length ? (o.signals.map(s => `inputoutput ${s} := 0 : combine integer with +;\n`).join("") + "\n") : "\n")
 	    + childrenOf(o, m)
-	    + "nothing;\n"
+	    + (o.children.length === 0 ? "nothing\n" : "")
 	    + "\nend module\n";
       case "loop":
 	 return `${margin(m)}loop\n`
 	    + childrenOf(o, m + 3)
 	    + `${margin(m)}end loop\n`
       case "if":
-	 return `${margin(m)}if ${expr2esterel(o.func)} then\n`
+	 return `${margin(m)}present ${expr2esterel(o.func)} then\n`
 	    + json2esterel(o.children[0], m + 3)
 	    + `${margin(m)}else\n`
 	    + json2esterel(o.children[1], m + 3)
-	    + `${margin(m)}end if\n`;
+	    + `${margin(m)}end present\n`;
       case "local":
 	 return `${margin(m)}signal `
-	    + o.signals.map(s => `${s} := 0 : combine integer with +`).join(", ") + " in\n"
+	    + (o.signals.length ? (o.signals.map(s => `${s} := 0 : combine integer with +`).join(", ") + " in\n") : `${gensym()} in\n`)
 	    + childrenOf(o, m + 3)
 	    + `${margin(m)}end signal\n`
       case "nothing":
-	 return `${margin(m)}nothing;\n`;
+	 return `${margin(m)}nothing\n`;
       case "pause":
-	 return `${margin(m)}pause;\n`;
+	 return `${margin(m)}pause\n`;
       case "seq":
 	 return childrenOf(o, m);
       case "trap":
@@ -115,25 +120,25 @@ function json2esterel(o, m) {
 	    + childrenOf(o, m + 3) + "\n"
 	    + `${margin(m)}end trap\n`;
       case "exit":
-	 return `${margin(m)}exit ${o.trapName};\n`
+	 return `${margin(m)}exit ${o.trapName}\n`
       case "halt":
 	 return `${margin(m)}halt\n`;
       case "par":
 	 return `${o.children.map(c => json2esterel(c, m)).join(`${margin(m + 3)}||\n`)}`;
       case "atom":
-	 return `${margin(m)}nothing; %% call printf("%d", ${expr2esterel(o.func)});\n`;
+	 return `${margin(m)}present (${expr2esterel(o.func)}) then nothing; end present %% atom\n`;
       case "emit":
-	 return `${margin(m)}emit ${o.signame}(${o.value});\n`;
+	 return `${margin(m)}emit ${o.signame}(${o.value})\n`;
       case "abort":
 	 return `${margin(m)}abort\n`
 	    + o.children.map(c => json2esterel(c, m + 3)).join("\n")
-	    + `${margin(m)}when ${expr2esterel(o.func)}\n`
+	    + `${margin(m)}when [ ${expr2esterel(o.func)} ]\n`
       case "every":
 	 return `${margin(m)}every [ ${expr2esterel(o.func)} ] do\n`
 	    + childrenOf(o, m + 3)
 	    + `${margin(m)}end every\n`;
       case "loopeach":
-	 return `${margin(m)}loopeach\n`
+	 return `${margin(m)}loop\n`
 	    + o.children.map(c => json2esterel(c, m + 3)).join("\n")
 	    + `${margin(m)}each [ ${expr2esterel(o.func)} ]\n`;
       default:
@@ -144,11 +149,12 @@ function json2esterel(o, m) {
 /*---------------------------------------------------------------------*/
 /*    makeProg ...                                                     */
 /*---------------------------------------------------------------------*/
-function makeProg(prog, filename) {
-   const evts = `(call-with-input-file "${filename}" read)`;
+function makeProg(prog, srcfile, infile) {
    const o = prog.tojson();
    
-   return "%% generated by testrandom\n\n" + json2esterel(o, 0);
+   return "%% generated by testrandom\n\n"
+      + json2esterel(o, 0)
+      + `%% ${require.resolve('./esterel.sh')} ${srcfile} ${infile}\n`;
 }
 
 /*---------------------------------------------------------------------*/
@@ -167,7 +173,7 @@ class ReactiveMachine {
       this.file = opts?.file || this.#strlfile;
       this.eventsfile = opts?.eventsfile || this.#eventsfile;
       this.opts = opts;
-      this.strlProg = makeProg(prog, this.eventsfile);
+      this.strlProg = makeProg(prog, this.file, this.eventsFile);
       writeFileSync(this.file, this.strlProg);
    }
 
@@ -184,7 +190,7 @@ class ReactiveMachine {
    }
 
    end() {
-      const evt = this.events.map(e => e ? `${Object.keys(e).join(" ")}` + ";" : ";").join("\n");
+      const evt = this.events.map(e => e ? `TRUE ${Object.keys(e).join(" ")}` + ";" : "TRUE;").join("\n");
       writeFileSync(this.eventsfile, "!trace signals;\n" + evt + "\n.\n");
       this.events = [];
       return this.run(this.file);
@@ -192,15 +198,19 @@ class ReactiveMachine {
 
    run(file) {
       // compile and run
-      console.error(`sh -c "${require.resolve('./esterel.sh')} ${this.file}"`);
-      const child = spawnSync("sh", ["-c", `${require.resolve('./esterel.sh')} ${this.file}`]);
+      const child = spawnSync("sh", ["-c", `${require.resolve('./esterel.sh')} ${this.file} ${this.eventsfile}`]);
       const out = child.stdout.toString();
       return JSON.parse(out);
    }
 
    outConf(suffix, {prog, events}) {
       const target = `esterel${suffix}.hh.strl`;
-      writeFileSync(target, makeProg(prog, this.eventsFile) + `\n`);
+      const infile = `esterel${suffix}.hh.in`;
+      const evt = events.map(e => e ? `TRUE ${Object.keys(e).join(" ")}` + ";" : "TRUE;").join("\n");
+      
+      writeFileSync(infile, "!trace signals;\n" + evt + "\n.\n");
+      writeFileSync(target, makeProg(prog, target, infile) + `\n`);
+      
       return target;
    }
 }
