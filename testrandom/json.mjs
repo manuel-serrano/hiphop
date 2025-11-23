@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:45:26 2025                          */
-/*    Last change :  Mon Nov 17 18:20:31 2025 (serrano)                */
+/*    Last change :  Sun Nov 23 06:06:36 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Json dump and pretty-printing HipHop programs                    */
@@ -160,7 +160,7 @@ function jsonToAst(obj) {
    switch (node) {
       case "module": { 
 	 const attrs = {};
-	 obj.signals.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT, combine: (x, y) => x });
+	 obj.signals.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT, combine: (x, y) => (x + y) });
 	 return hh.MODULE(attrs, ...children.map(jsonToAst));
       }
 
@@ -194,7 +194,7 @@ function jsonToAst(obj) {
 	 
       case "local": {
 	 const attrs = {};
-	 obj.signals.forEach(name => attrs[name] = { signal: name, name, combine: (x, y) => x });
+	 obj.signals.forEach(name => attrs[name] = { signal: name, name, combine: (x, y) => (x + y) });
 	 return hh.LOCAL(attrs, ...children.map(jsonToAst));
       }
 	 
@@ -262,7 +262,7 @@ function jsonToHiphop(obj, m = 0) {
    switch (node) {
       case "module":
 	 return margin(m) + 'module() {\n'
-	    + (obj.signals.length > 0 ? (margin(m + 2) + "inout " + obj.signals.map(s => `${s} combine (x, y) => x`).join(", ") + ";\n") : "")
+	    + (obj.signals.length > 0 ? (margin(m + 2) + "inout " + obj.signals.map(s => `${s} combine (x, y) => (x + y)`).join(", ") + ";\n") : "")
 	    + children.map(c => jsonToHiphop(c, m + 2)).join(';\n')
 	    + '\n' + margin(m) + '}';
 
@@ -314,7 +314,7 @@ function jsonToHiphop(obj, m = 0) {
 	 
       case "local":
 	 return margin(m) + '{\n'
-	    + (margin(m + 2) + "signal " + obj.signals.map(s => `${s} combine (x, y) => x`).join(", ") + ";\n")
+	    + (margin(m + 2) + "signal " + obj.signals.map(s => `${s} combine (x, y) => (x + y)`).join(", ") + ";\n")
 	    + children.map(c => jsonToHiphop(c, m + 2)).join('\n') + '\n'
 	    + margin(m) + '}';
 

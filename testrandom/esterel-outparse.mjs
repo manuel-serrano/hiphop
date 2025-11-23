@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Nov 22 08:43:56 2025                          */
-/*    Last change :  Sat Nov 22 08:49:19 2025 (serrano)                */
+/*    Last change :  Sun Nov 23 06:02:50 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Parsing the JSON output of an esterel execution.                 */
@@ -17,7 +17,12 @@ const n = readSync(0, buffer);
 const j = JSON.parse(buffer.toString("utf8", 0, n));
 
 for (let i = 0; i < j.length; i++) {
-   console.log("esterel[" + i + "]:", j[i].signals);
+   if (j[i].status === "error") {
+      console.log("esterel[" + i + "]:", j[i].msg);
+      break;
+   } else {
+      console.log("esterel[" + i + "]:", j[i].signals);
+   }
 }
 
 

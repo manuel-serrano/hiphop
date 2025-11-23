@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Fri Nov 21 11:02:17 2025 (serrano)                */
+/*    Last change :  Sun Nov 23 06:06:22 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -162,7 +162,7 @@ function genStmt(env, size) {
 	    const signals = env.signals.concat(names);
 	    const nenv = Object.assign({}, env);
 	    nenv.signals = nenv.signals.concat(signals);
-	    names.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT, combine: (x, y) => x });
+	    names.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT, combine: (x, y) => (x + y) });
 
 	    return hh.LOCAL(attrs, genStmt(nenv, size - 1));
 	 }],
@@ -307,7 +307,7 @@ function gen({filters, minsize = config.MINSIZE, maxsize = config.MAXSIZE}) {
       const size = randomInRange(minsize, maxsize);
       const body = genStmt({signals: signals, traps: []}, size);
       const attrs = {};
-      signals.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT, combine: (x, y) => x });
+      signals.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT, combine: (x, y) => (x + y) });
 
       try {
 	 let prog = hh.MODULE(attrs, body), prog0 = prog;

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Sat Nov 22 06:34:09 2025 (serrano)                */
+/*    Last change :  Sun Nov 23 06:07:33 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -221,7 +221,7 @@ function shrinkSignals(decl, children, ctor, accessibility) {
 		  signal: s.name,
 		  name: s.name,
 		  accessibility: hh.INOUT,
-		  combine: (x, y) => x
+		  combine: (x, y) => (x + y)
 	       }
 	    }
 	 });
@@ -292,7 +292,7 @@ hhapi.Emit.prototype.shrinkSignal = function(sig) {
 /*---------------------------------------------------------------------*/
 hhapi.Local.prototype.shrinkSignal = function(sig) {
    const attrs = {};
-   this.sigDeclList.forEach(p => attrs[p.name] = { signal: p.name, name: p.name, combine: (x, y) => x }, true);
+   this.sigDeclList.forEach(p => attrs[p.name] = { signal: p.name, name: p.name, combine: (x, y) => (x + y) }, true);
    return shrinkSignalASTNode(this, hh.LOCAL, attrs, sig);
 }
 
@@ -403,7 +403,7 @@ hhapi.Exit.prototype.shrinkTrap = function(trap) {
 /*---------------------------------------------------------------------*/
 hhapi.Local.prototype.shrinkTrap = function(trap) {
    const attrs = {};
-   this.sigDeclList.forEach(p => attrs[p.name] = { signal: p.name, name: p.name, combine: (x, y) => x }, true);
+   this.sigDeclList.forEach(p => attrs[p.name] = { signal: p.name, name: p.name, combine: (x, y) => (x + y) }, true);
    return shrinkTrapASTNode(this, hh.LOCAL, attrs, trap);
 }
 
@@ -518,7 +518,7 @@ hhapi.Module.prototype.shrink = function() {
 	 return [];
       } else {
 	 const attrs = {};
-	 this.sigDeclList.forEach(sig => attrs[sig.name] = { signal: sig.name, name: sig.name, accessibility: hh.INOUT, combine: (x, y) => x });
+	 this.sigDeclList.forEach(sig => attrs[sig.name] = { signal: sig.name, name: sig.name, accessibility: hh.INOUT, combine: (x, y) => (x + y) });
 	 return [hh.MODULE(attrs, a)];
       }
    });
