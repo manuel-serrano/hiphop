@@ -21,7 +21,7 @@ hiphop module prg() {
    }
 }
 
-export const mach = new hh.ReactiveMachine( prg, "sync-err" );
+export const mach = new hh.ReactiveMachine(prg, { name: "sync-err", verbose: -1});
 mach.outbuf = "";
 
 try {

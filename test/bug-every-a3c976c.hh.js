@@ -25,7 +25,7 @@ const prg = hiphop module() {
    } every (this.g43194.now);
 }
 
-export const mach = new hh.ReactiveMachine(prg);
+export const mach = new hh.ReactiveMachine(prg, {verbose: -1});
 mach.outbuf = "";
 try {
    events.forEach((e, i) => {
