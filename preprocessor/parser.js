@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Nov 26 10:01:42 2025 (serrano)                */
+/*    Last change :  Wed Nov 26 19:11:30 2025 (serrano)                */
 /*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -209,14 +209,14 @@ function parseDollarIdentName() {
 function parseHHThisExpr(parser, iscnt = false) {
    let accessors = [];
    const { expr: e, accessors: axs } = parser.call(this, accessors);
-   const { expr, accessors: hhaxs, signames, present } = hhaccess(e, iscnt, hhname, accessors);
+   const { expr, accessors: hhaxs, signames, delay } = hhaccess(e, iscnt, hhname, accessors);
 
    // The vector signames is a list of { id, exprs }. It corresponds
    // to all the accesses of the form "this[expr].(nowval|preval|...)".
    // This signames are ultimately handled by function wrapSignalNames
    // defined below
 
-   return { expr, accessors: hhaxs, signames };
+   return { expr, accessors: hhaxs, signames, delay };
 }
 
 /*---------------------------------------------------------------------*/
@@ -292,7 +292,7 @@ function parseHHCondExpression(iscnt, isrun) {
 /*    parseValueApply ...                                              */
 /*---------------------------------------------------------------------*/
 function parseValueApply(loc) {
-   const { expr, accessors, signames } = parseHHExpression.call(this, false);
+   const { expr, accessors, signames, delay } = parseHHExpression.call(this, false);
    
    if (typeof expr === "J2SDollar" || expr?.$class === "J2SDollar") {
       const init = astutils.J2SDataPropertyInit(
@@ -300,7 +300,13 @@ function parseValueApply(loc) {
 	 astutils.J2SString(loc, "%value"),
 	 expr.node);
       return { init, accessors, signames }
-   } else if (typeof expr === "J2SBindExit" || expr?.$class === "J2SBindExit") {
+   } else if (delay) {
+      const init = astutils.J2SDataPropertyInit(
+	 loc,
+	 astutils.J2SString(loc, "%delay"),
+	 expr);
+      return {init, accessors: [], signames: []};
+   } else {
       const fun = astutils.J2SMethod(
 	 loc, "iffun", [],
 	 astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, expr)]),
@@ -310,13 +316,6 @@ function parseValueApply(loc) {
 	 astutils.J2SString(loc, "apply"),
 	 fun);
       return { init, accessors, signames }
-   } else {
-      console.error("DELAY.1=", expr?.$class);
-      const init = astutils.J2SDataPropertyInit(
-	 loc,
-	 astutils.J2SString(loc, "%delay"),
-	 expr);
-      return {init, accessors: [], signames: []};
    }
 }
    
@@ -370,7 +369,7 @@ function parseDelay(loc, tag, action = "apply", id = false, immediate = false) {
 
       // hhexpr
       this.consumeToken(this.LPAREN);
-      const { expr, accessors, signames } = parseHHExpression.call(this, true);
+      const { expr, accessors, signames, delay } = parseHHExpression.call(this, true);
       this.consumeToken(this.RPAREN);
       
       let inits;
@@ -385,7 +384,19 @@ function parseDelay(loc, tag, action = "apply", id = false, immediate = false) {
 	       astutils.J2SString(loc, expr.id))];
 	 
 	 return { inits, accessors, signames };
-      } else if (typeof expr === "J2SBindExit" || expr?.$class === "J2SBindExit") {
+      } else if (delay) {
+	 const init = astutils.J2SDataPropertyInit(
+	    loc,
+	    astutils.J2SString(loc, "%delay"),
+	    expr);
+	 inits = [
+	    astutils.J2SDataPropertyInit(
+	       loc, astutils.J2SString(loc, "immediate"),
+	       astutils.J2SBool(loc, immediate)),
+	    init ];
+	 
+	 return {inits, accessors: [], signames: []};
+      } else {
 	 const fun = astutils.J2SMethod(
 	    loc, "hhexprfun", [], 
 	    astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, expr)]),
@@ -400,19 +411,6 @@ function parseDelay(loc, tag, action = "apply", id = false, immediate = false) {
 	       fun)];
 	 
 	 return { inits, accessors, signames };
-      } else {
-      console.error("DELAY.2=", expr?.$class);
-	 const init = astutils.J2SDataPropertyInit(
-	    loc,
-	    astutils.J2SString(loc, "%delay"),
-	    expr);
-	 inits = [
-	    astutils.J2SDataPropertyInit(
-	       loc, astutils.J2SString(loc, "immediate"),
-	       astutils.J2SBool(loc, immediate)),
-	    init ];
-	 
-	 return {inits, accessors: [], signames: []};
       }
    }
 }
