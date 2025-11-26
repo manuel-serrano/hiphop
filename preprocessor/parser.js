@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Mon Nov 17 15:36:46 2025 (serrano)                */
+/*    Last change :  Wed Nov 26 10:01:42 2025 (serrano)                */
 /*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -16,7 +16,7 @@
 /*---------------------------------------------------------------------*/
 import { hhaccess } from "./hhaccess.js";
 import * as astutils from "./astutils.js";
-import { Parser, ast, list } from "@hop/hopc";
+import { Parser, ast, list, generate } from "@hop/hopc";
 import * as error from "../lib/error.js";
 
 /*---------------------------------------------------------------------*/
@@ -209,13 +209,14 @@ function parseDollarIdentName() {
 function parseHHThisExpr(parser, iscnt = false) {
    let accessors = [];
    const { expr: e, accessors: axs } = parser.call(this, accessors);
-   const { expr, signames } = hhaccess(e, iscnt, hhname, accessors);
+   const { expr, accessors: hhaxs, signames, present } = hhaccess(e, iscnt, hhname, accessors);
 
    // The vector signames is a list of { id, exprs }. It corresponds
    // to all the accesses of the form "this[expr].(nowval|preval|...)".
    // This signames are ultimately handled by function wrapSignalNames
    // defined below
-   return { expr, accessors, signames };
+
+   return { expr, accessors: hhaxs, signames };
 }
 
 /*---------------------------------------------------------------------*/
@@ -292,23 +293,31 @@ function parseHHCondExpression(iscnt, isrun) {
 /*---------------------------------------------------------------------*/
 function parseValueApply(loc) {
    const { expr, accessors, signames } = parseHHExpression.call(this, false);
-   let init;
+   
    if (typeof expr === "J2SDollar" || expr?.$class === "J2SDollar") {
-      init = astutils.J2SDataPropertyInit(
+      const init = astutils.J2SDataPropertyInit(
 	 loc,
 	 astutils.J2SString(loc, "%value"),
 	 expr.node);
-   } else {
+      return { init, accessors, signames }
+   } else if (typeof expr === "J2SBindExit" || expr?.$class === "J2SBindExit") {
       const fun = astutils.J2SMethod(
 	 loc, "iffun", [],
 	 astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, expr)]),
 	 self(loc));
-      init = astutils.J2SDataPropertyInit(
+      const init = astutils.J2SDataPropertyInit(
 	 loc,
 	 astutils.J2SString(loc, "apply"),
 	 fun);
+      return { init, accessors, signames }
+   } else {
+      console.error("DELAY.1=", expr?.$class);
+      const init = astutils.J2SDataPropertyInit(
+	 loc,
+	 astutils.J2SString(loc, "%delay"),
+	 expr);
+      return {init, accessors: [], signames: []};
    }
-   return { init, accessors, signames }
 }
    
 /*---------------------------------------------------------------------*/
@@ -374,7 +383,9 @@ function parseDelay(loc, tag, action = "apply", id = false, immediate = false) {
 	    astutils.J2SDataPropertyInit(
 	       loc, astutils.J2SString(loc, expr.id),
 	       astutils.J2SString(loc, expr.id))];
-      } else {
+	 
+	 return { inits, accessors, signames };
+      } else if (typeof expr === "J2SBindExit" || expr?.$class === "J2SBindExit") {
 	 const fun = astutils.J2SMethod(
 	    loc, "hhexprfun", [], 
 	    astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, expr)]),
@@ -387,8 +398,22 @@ function parseDelay(loc, tag, action = "apply", id = false, immediate = false) {
 	    astutils.J2SDataPropertyInit(
 	       loc, astutils.J2SString(loc, action),
 	       fun)];
+	 
+	 return { inits, accessors, signames };
+      } else {
+      console.error("DELAY.2=", expr?.$class);
+	 const init = astutils.J2SDataPropertyInit(
+	    loc,
+	    astutils.J2SString(loc, "%delay"),
+	    expr);
+	 inits = [
+	    astutils.J2SDataPropertyInit(
+	       loc, astutils.J2SString(loc, "immediate"),
+	       astutils.J2SBool(loc, immediate)),
+	    init ];
+	 
+	 return {inits, accessors: [], signames: []};
       }
-      return { inits: inits, accessors: accessors, signames };
    }
 }
 
@@ -522,7 +547,6 @@ function parseModule(token, declaration, ctor) {
          loc, [locInit(loc), tagInit("frame", loc)]);
       const atom = astutils.J2SCall(loc, 
          hhref(loc, "ATOM"), null, [aattrs]);
-      
       const val = astutils.J2SCall(loc, hhref(loc, "SEQUENCE"), 
          null,
          [sattrs, atom].concat(stmts));
@@ -1140,9 +1164,9 @@ function parseIf (token) {
    this.consumeToken(this.LPAREN);
    const { init, accessors, signames } = parseValueApply.call(this, loc);
    const attrs = astutils.J2SObjInit(
-      loc, [locInit(loc), tagInit("if", loc),init]);
+      loc, [locInit(loc), tagInit("if", loc), init]);
    this.consumeToken(this.RPAREN);
-   
+
    const then = parseStmt.call(this, this.peekToken(), false);
 
    const args = [attrs].concat(accessors);
@@ -1337,7 +1361,7 @@ function parseLoopeach(token) {
 
    const attrs = astutils.J2SObjInit(
       loc, [locInit(loc),tag].concat(inits));
-   
+
    const node = astutils.J2SCall(loc, hhref(loc, "LOOPEACH"), 
 				 null,
 				 [attrs].concat(accessors, stmts));

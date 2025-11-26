@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:58:05 2018                          */
-/*    Last change :  Fri Oct 24 13:42:51 2025 (serrano)                */
+/*    Last change :  Wed Nov 26 11:30:55 2025 (serrano)                */
 /*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Utility functions for building the js2scheme AST.                */
@@ -135,6 +135,20 @@ export function J2SAccess(loc, obj, field) {
       false /* range */, 
       obj /* obj */,  
       field /* field */);
+}
+
+/*---------------------------------------------------------------------*/
+/*    J2SNew ...                                                       */
+/*---------------------------------------------------------------------*/
+export function J2SNew(loc, clazz, args) {
+   return new ast.J2SNew(loc, 
+      Symbol("any") /* type */, 
+      null /* hint */,
+      undefined /* range */, 
+      null /* caches */,
+      clazz /* clazz */, 
+      "direct" /* protocol */,
+      args);
 }
 
 /*---------------------------------------------------------------------*/

@@ -3,12 +3,12 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Mon Mar  3 14:08:20 2025 (serrano)                */
+/*    Last change :  Wed Nov 26 10:15:28 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
 /*    -------------------------------------------------------------    */
-/*    Patching the AST built by the Hop parser.                        */
+/*    Patch signal accesses of the AST built by the Hop parser.        */
 /*=====================================================================*/
 "use strict"
 "use hopscript"
@@ -17,6 +17,9 @@
 /*    imports                                                          */
 /*---------------------------------------------------------------------*/
 import { ast, list } from "@hop/hopc";
+import * as astutils from "./astutils.js";
+
+export { hhaccess };
 
 /*---------------------------------------------------------------------*/
 /*    reservedFields ...                                               */
@@ -36,7 +39,21 @@ let gensym = 0;
 /*---------------------------------------------------------------------*/
 /*    hhaccess ...                                                     */
 /*---------------------------------------------------------------------*/
-export function hhaccess(n, iscnt, hhname, accessors) {
+function hhaccess(n, iscnt, hhname, accessors) {
+   if (false && isDelay(n)) {
+      const axs = collectAxs(n, []);
+      const signames = accessorsSigname(axs);
+
+      return { expr: n.toDelay(), accessors: axs, signames, present: true };
+   } else {
+      return hhaccessExpression(n, iscnt, hhname, accessors);
+   }
+}
+
+/*---------------------------------------------------------------------*/
+/*    hhaccessExpression ...                                           */
+/*---------------------------------------------------------------------*/
+function hhaccessExpression(n, iscnt, hhname, accessors) {
    const node = (ast.isNative && ast.isNative(n)) ? ast.wrap(n) : n;
    const venv = collectVars(node);
    const lenv = collectLets(list.list(node));
@@ -44,7 +61,7 @@ export function hhaccess(n, iscnt, hhname, accessors) {
    const signames = accessorsSigname(axs);
 
    if (axs.length === 0) {
-      return { expr: node, signames };
+      return { expr: node, accessors, signames, present: false };
    } else if (node instanceof ast.J2SExpr) {
       const loc = node.loc;
       const ret = new ast.J2SReturn({loc: loc, expr: node});
@@ -52,10 +69,10 @@ export function hhaccess(n, iscnt, hhname, accessors) {
       const expr = new ast.J2SBindExit({loc: loc, lbl: false, stmt: stmt});
       ret.from = expr;
 
-      return { expr, signames };
+      return { expr, accessors, signames, present: false };
    } else {
       const expr = nodeAccessors(node, axs, iscnt, hhname, accessors);
-      return { expr, signames };
+      return { expr, accessors, signames, present: false };
    }
 }
 
@@ -63,7 +80,7 @@ export function hhaccess(n, iscnt, hhname, accessors) {
 /*    accessorsSigname ...                                             */
 /*    -------------------------------------------------------------    */
 /*    Returns the list of dynamic signal names (i.e., those            */
-/*    using the this[expr] form) and modify the the accessors          */
+/*    using the this[expr] form) and modify the accessors              */
 /*    to prepare the variable bindings.                                */
 /*---------------------------------------------------------------------*/
 function accessorsSigname(axs) {
@@ -448,4 +465,77 @@ ast.J2SReturn.prototype.collectVars = function() {
    } else {
       return [];
    }
+}
+
+/*---------------------------------------------------------------------*/
+/*    isDelay ...                                                      */
+/*    -------------------------------------------------------------    */
+/*    Returns true iff the expression is an Esterel PRESENT test,      */
+/*    i.e., if it only implies signal presence, and, or, and not       */
+/*    operators.                                                       */
+/*---------------------------------------------------------------------*/
+function isDelay(n) {
+   return n.isDelay();
+}
+
+ast.J2SNode.prototype.isDelay = function() {
+   return false;
+}
+
+ast.J2SAccess.prototype.isDelay = function() {
+   const obj = this.obj;
+   const field = this.field;
+   const fieldname = field instanceof ast.J2SString ? field.val : "";
+
+   return ((obj instanceof ast.J2SUnresolvedRef)
+      && (fieldname === "now" || fieldname === "pre"));
+}
+
+ast.J2SBinary.prototype.isDelay = function() {
+   if (this.op === "&&" || this.op === "OR") {
+      return this.lhs.isDelay()
+	 && this.rhs.isDelay();
+   } else {
+      return false;
+   }
+}
+
+ast.J2SUnary.prototype.isDelay = function() {
+   if (this.op === "!") {
+      return this.expr.isDelay();
+   } else {
+      return false;
+   }
+}
+
+/*---------------------------------------------------------------------*/
+/*    toDelay ...                                                      */
+/*---------------------------------------------------------------------*/
+ast.J2SAccess.prototype.toDelay = function() {
+   const loc = this.loc;
+   const hh = new ast.J2SUnresolvedRef({loc, id: "$$hiphop"});
+   const clazz = new ast.J2SAccess({loc, obj: hh, field: new ast.J2SString({loc, val: "DelaySig"})});
+   const obj = this.obj;
+   const field = this.field;
+   const sym = new ast.J2SString({loc: obj.loc, val: obj.id});
+
+   return new ast.J2SNew({loc, clazz, args: list.list(sym, field)});
+}
+
+ast.J2SBinary.prototype.toDelay = function() {
+   const loc = this.loc;
+   const hh = new ast.J2SUnresolvedRef({loc, id: "$$hiphop"});
+   const clazz = new ast.J2SAccess({loc, obj: hh, field: new ast.J2SString({loc, val: "DelayBinary"})});
+   const op = new ast.J2SString({loc, val: this.op});
+
+   return new ast.J2SNew({loc, clazz, args: list.list(op, this.lhs.toDelay(), this.rhs.toDelay())});
+}
+
+ast.J2SUnary.prototype.toDelay = function() {
+   const loc = this.loc;
+   const hh = new ast.J2SUnresolvedRef({loc, id: "$$hiphop"});
+   const clazz = new ast.J2SAccess({loc, obj: hh, field: new ast.J2SString({loc, val: "DelayUnary"})});
+   const op = new ast.J2SString({loc, val: this.op});
+
+   return new ast.J2SNew({loc, clazz, args: list.list(op, this.expr.toDelay())});
 }
