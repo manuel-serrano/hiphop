@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Nov 14 14:49:15 2025                          */
-/*    Last change :  Mon Nov 17 10:41:34 2025 (serrano)                */
+/*    Last change :  Thu Nov 27 05:19:02 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Simple JS expression parser                                      */
@@ -31,10 +31,10 @@ function makeTokenizer(buf) {
 	 if (m) {
 	    index += m[0].length;
 	    return { kind: "constant", value: m[0] };
-	 } else if (m = s.match(/^this[.]([a-zA-Z0-9_]*)[.]now/)) {
+	 } else if (m = s.match(/^(?:this[.])?([a-zA-Z0-9_]*)[.]now/)) {
 	    index += m[0].length;
 	    return { kind: "now", value: m[1] };
-	 } else if (m = s.match(/^this[.]([a-zA-Z0-9_]*)[.]pre/)) {
+	 } else if (m = s.match(/^(?:this[.])?([a-zA-Z0-9_]*)[.]pre/)) {
 	    index += m[0].length;
 	    return { kind: "pre", value: m[1] };
 	 } else if (m = s.match(/^&&|^\|\|/)) {
@@ -80,8 +80,10 @@ function parse(next) {
       }
       case "eoi":
 	 throw SyntaxError("Unexpected eof");
+      case "error":
+	 throw SyntaxError("Unexpected token: " + tok.value);
       default:
-	 throw SyntaxError("Illegal token: " + token.kind);
+	 throw SyntaxError("Illegal token: " + tok.kind);
    }
 }
 

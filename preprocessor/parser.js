@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Nov 26 19:11:30 2025 (serrano)                */
+/*    Last change :  Thu Nov 27 05:14:12 2025 (serrano)                */
 /*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1985,7 +1985,6 @@ function parseStmt(token, declaration) {
       case this.ID:
 	 
       default:
-	 console.log("NEXT=", next.type);
 	 throw tokenTypeError(this.consumeAny());
    }
 }

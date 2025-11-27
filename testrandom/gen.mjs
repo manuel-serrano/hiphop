@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Wed Nov 26 11:17:33 2025 (serrano)                */
+/*    Last change :  Thu Nov 27 05:29:32 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -91,27 +91,64 @@ function testRandomInRange() {
 // testRandomInRange();
 
 /*---------------------------------------------------------------------*/
-/*    genTestExpr ...                                                  */
+/*    genExpr ...                                                      */
 /*---------------------------------------------------------------------*/
-function genTestExpr(env, size) {
+function genExpr(env, size) {
    if (size === 0 || env.signals.length === 0) {
       return (Math.random() >= 0.5) ? "true" : "false";
    } else if (size === 1) {
       const i = Math.floor(Math.random() * env.signals.length);
       const sig = env.signals[i];
       const axs = (Math.random() >= 0.8) ? "pre" : "now";
-      return `${sig}.${axs}`;
+      return `this.${sig}.${axs}`;
    } else {
       switch (Math.floor(Math.random() * 6)) {
-	 case 0: return `!${genTestExpr(env, size - 1)}`;
+	 case 0: return `!${genExpr(env, size - 1)}`;
 	 case 1:
 	 case 2:
-	 case 3: return `(${genTestExpr(env, size - 1)} && ${genTestExpr(env, size - 1)})`;
+	 case 3: return `(${genExpr(env, size - 1)} && ${genExpr(env, size - 1)})`;
 	 case 4:
 	 case 5:
-	 case 6: return `(${genTestExpr(env, size - 1)} || ${genTestExpr(env, size - 1)})`;
+	 case 6: return `(${genExpr(env, size - 1)} || ${genExpr(env, size - 1)})`;
       }
    }
+}
+
+/*---------------------------------------------------------------------*/
+/*    genDelay ...                                                     */
+/*---------------------------------------------------------------------*/
+function genDelay(env, size) {
+   if (size === 1) {
+      const i = Math.floor(Math.random() * env.signals.length);
+      const sig = env.signals[i];
+      const field = (Math.random() >= 0.8) ? "pre" : "now";
+      const delay = new hh.DelaySig(sig, field);
+
+      if (Math.random() >= 0.5) {
+	 return new hh.DelayUnary("!", delay);
+      } else {
+	 return delay;
+      }
+   } else {
+      const lhs = genDelay(env, size - 1);
+      const rhs = genDelay(env, size - 1);
+      const op = Math.random() >= 0.5 ? "&&" : "OR";
+      const delay = new hh.DelayBinary(op, lhs, rhs);
+
+      if (Math.random() >= 0.5) {
+	 return new hh.DelayUnary("!", delay);
+      } else {
+	 return delay;
+      }
+   }
+}
+
+/*---------------------------------------------------------------------*/
+/*    genTestExpr ...                                                  */
+/*---------------------------------------------------------------------*/
+function genTestExpr(env, size) {
+   //return genDelay();
+   return eval(`(function() { return ${genExpr(env, size)}; })`);
 }
 
 /*---------------------------------------------------------------------*/
@@ -169,8 +206,7 @@ function genStmt(env, size) {
 	 // if
 	 [60, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
-	    const func = eval(`(function() { return ${expr}; })`);
-	    return hh.IF({apply: func}, genStmt(env, size - 1), genStmt(env, size - 1));
+	    return hh.IF({apply: expr}, genStmt(env, size - 1), genStmt(env, size - 1));
 	 }],
 	 // trap
 	 [10, () => {
@@ -182,20 +218,17 @@ function genStmt(env, size) {
 	 // abort
 	 [20, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
-	    const func = eval(`(function() { return ${expr}; })`);
-	    return hh.ABORT({apply: func}, genStmt(env, size - 1));
+	    return hh.ABORT({apply: expr}, genStmt(env, size - 1));
 	 }],
 	 // every
 	 [30, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
-	    const func = eval(`(function() { return ${expr}; })`);
-	    return hh.EVERY({apply: func}, genStmt(env, size - 1));
+	    return hh.EVERY({apply: expr}, genStmt(env, size - 1));
 	 }],
 	 // loopeach
 	 [30, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
-	    const func = eval(`(function() { return ${expr}; })`);
-	    return hh.LOOPEACH({apply: func}, genStmt(env, size - 1));
+	    return hh.LOOPEACH({apply: expr}, genStmt(env, size - 1));
 	 }],
       );
    } else if (env.signals.length === 0 && env.traps.length === 0) {
@@ -207,8 +240,7 @@ function genStmt(env, size) {
 	 // atom
 	 [10, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
-	    const func = eval(`(function() { return ${expr}; })`);
-	    return hh.ATOM({apply: func});
+	    return hh.ATOM({apply: expr});
 	 }],
 	 // halt
 	 [1, () => {
@@ -224,8 +256,7 @@ function genStmt(env, size) {
 	 // atom
 	 [6, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
-	    const func = eval(`(function() { return ${expr}; })`);
-	    return hh.ATOM({apply: func});
+	    return hh.ATOM({apply: expr});
 	 }],
 	 // exit
 	 [1, () => {
@@ -246,8 +277,7 @@ function genStmt(env, size) {
 	 // atom
 	 [5, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
-	    const func = eval(`(function() { return ${expr}; })`);
-	    return hh.ATOM({apply: func});
+	    return hh.ATOM({apply: expr});
 	 }],
 	 // emit
 	 [5, () => {
@@ -270,8 +300,7 @@ function genStmt(env, size) {
 	 // atom
 	 [4, () => {
 	    const expr = genTestExpr(env, Math.round(Math.random() * 3));
-	    const func = eval(`(function() { return ${expr}; })`);
-	    return hh.ATOM({apply: func});
+	    return hh.ATOM({apply: expr});
 	 }],
 	 // emit
 	 [6, () => {

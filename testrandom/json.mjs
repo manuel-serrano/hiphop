@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:45:26 2025                          */
-/*    Last change :  Sun Nov 23 06:06:36 2025 (serrano)                */
+/*    Last change :  Thu Nov 27 05:15:53 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Json dump and pretty-printing HipHop programs                    */
@@ -99,34 +99,53 @@ hhapi.Emit.prototype.tojson = function() {
 }
 
 hhapi.If.prototype.tojson = function() {
-   return {
-      node: "if",
-      func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
-      children: this.children.map(c => c.tojson())
+   if (this.func instanceof hh.$Delay) {
+      console.error("NOT YET");
+      process.exit(1);
+   } else {
+      return {
+	 node: "if",
+	 func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
+	 children: this.children.map(c => c.tojson())
+      }
    }
 }
 
 hhapi.Abort.prototype.tojson = function() {
-   return {
-      node: "abort",
-      func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
-      children: this.children.map(c => c.tojson())
-   }
+   if (this.func instanceof hh.$Delay) {
+      console.error("NOT YET");
+      process.exit(1);
+   } else 
+      return {
+	 node: "abort",
+	 func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
+	 children: this.children.map(c => c.tojson())
+      }
 }
 
 hhapi.Every.prototype.tojson = function() {
-   return {
-      node: "every",
-      func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
-      children: this.children.map(c => c.tojson())
+   if (this.func instanceof hh.$Delay) {
+      console.error("NOT YET");
+      process.exit(1);
+   } else {
+      return {
+	 node: "every",
+	 func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
+	 children: this.children.map(c => c.tojson())
+      }
    }
 }
 
 hhapi.LoopEach.prototype.tojson = function() {
-   return {
-      node: "loopeach",
-      func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
-      children: this.children.map(c => c.tojson())
+   if (this.func instanceof hh.$Delay) {
+      console.error("NOT YET");
+      process.exit(1);
+   } else {
+      return {
+	 node: "loopeach",
+	 func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
+	 children: this.children.map(c => c.tojson())
+      }
    }
 }
 
@@ -139,10 +158,15 @@ hhapi.Atom.prototype.tojson = function() {
 }
 
 hhapi.Await.prototype.tojson = function() {
-   return {
-      node: "await",
-      func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
-      children: []
+   if (this.func instanceof hh.$Delay) {
+      console.error("NOT YET");
+      process.exit(1);
+   } else {
+      return {
+	 node: "await",
+	 func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
+	 children: []
+      }
    }
 }
 
