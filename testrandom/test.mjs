@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Thu Nov 27 13:55:45 2025 (serrano)                */
+/*    Last change :  Thu Nov 27 17:34:49 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -31,7 +31,7 @@ function M(name) {
 /*    prop ...                                                         */
 /*---------------------------------------------------------------------*/
 export const prop = makeProp([
-   M("default") && (prg => new hh.ReactiveMachine(prg, { name: "default" })),
+   M("default") && (prg => new hh.ReactiveMachine(prg, { name: "default", native: "no" })),
    M("forkorkill") && (prg => new hh.ReactiveMachine(prg, { name: "forkorkill", forkOrKill: true })),
    M("no-loopunroll") && (prg => new hh.ReactiveMachine(prg, { name: "no-loopunroll", loopUnroll: false })),
    M("native") && (prg => new hh.ReactiveMachine(prg, { name: "native", native: "try" })),
@@ -50,7 +50,8 @@ let k = 0;
 /*    shrinkBugInConf ...                                              */
 /*---------------------------------------------------------------------*/
 function shrinkBugInConf(conf, res) {
-   const prop = makeProp(res.machines.map(m => prg => new m.constructor(prg, m.opts)));
+   const machines = res.machines;
+   const prop = makeProp(machines.map(m => prg => new m.constructor(prg, m.opts)));
 
    function shrinker(conf, res, margin) {
       const confs = shrink(conf);
@@ -75,7 +76,6 @@ function shrinkBugInConf(conf, res) {
 	       if (r.status === "failure" && (REASON === false || r.reason === resreason)) {
 		  writeFileSync(`/tmp/failure${k}.hh.mjs`, jsonToHiphop(confs[i].prog.tojson()));
 		  console.error("K=", k++, r.status, r.msg, r.reason);
-		  console.error("M=", r.machines[1].opts);
 		  // we still have an error, shrink more
 		  return shrinker(confs[i], r, margin + " ");
 	       }
@@ -91,6 +91,8 @@ function shrinkBugInConf(conf, res) {
 	    console.error("  |" + margin + " #- ending shrink with", res.status, res.msg);
 	 }
 	 
+	 writeFileSync(`/tmp/last${k}.hh.mjs`, jsonToHiphop(conf.prog.tojson()));
+	 console.error("K=", k++, res.status, res.msg, res.reason);
 	 return { conf, res };
       }
    }
@@ -229,11 +231,16 @@ async function main(argv) {
 	 dumpBug(bug);
       }
    } else if (existsSync(argv[2])) {
+      const jsonfile = "bug.hh.json";
       const { events, prog } = JSON.parse(readFileSync(argv[2]));
       const bug = findBugInConf({ prog: jsonToAst(prog), events });
 
       if (bug) {
 	 dumpBug(bug);
+      }
+
+      if (argv[2] !== jsonfile) {
+	 outJson(jsonfile, bug.shrink);
       }
    } else {
       throw new Error(`Illegal command line: "${argv.join(" ")}"`);

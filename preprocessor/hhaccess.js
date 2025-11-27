@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Wed Nov 26 10:15:28 2025 (serrano)                */
+/*    Last change :  Thu Nov 27 19:18:53 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -40,7 +40,7 @@ let gensym = 0;
 /*    hhaccess ...                                                     */
 /*---------------------------------------------------------------------*/
 function hhaccess(n, iscnt, hhname, accessors) {
-   if (false && isDelay(n)) {
+   if (isDelay(n)) {
       const axs = collectAxs(n, []);
       const signames = accessorsSigname(axs);
 

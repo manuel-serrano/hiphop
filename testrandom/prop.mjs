@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Thu Nov 27 15:56:24 2025 (serrano)                */
+/*    Last change :  Thu Nov 27 17:46:17 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -12,6 +12,8 @@ import * as hh from "../lib/hiphop.js";
 import * as hhapi from "../lib/ast.js";
 import { jsonToHiphop } from "./json.mjs";
 import * as config from "./config.mjs";
+
+import { writeFileSync } from "node:fs";
 
 export { makeProp };
 
@@ -97,6 +99,7 @@ function runMach(mach, events) {
    return res;
 }
 
+let k = 0;
 /*---------------------------------------------------------------------*/
 /*    makeProp ...                                                     */
 /*---------------------------------------------------------------------*/
@@ -133,8 +136,15 @@ function makeProp(machCtor) {
 	 try {
 	    const r0 = runMach(machs[0], events);
 
-	    if (verbose >= 1) {
+	    if (config.VERBOSE >= 1) {
 	       console.error(`   ${machs[0].name()}: ${r0[r0.length-1].status} (${r0.length})`);
+	    }
+	    
+	    if (config.VERBOSE >= 3) {
+	       console.error("r0=", r0);
+	       if (machs[0].dumpNets) {
+		  machs[0].dumpNets(machs[0],false, ".foo.json");
+	       }
 	    }
 	    
 	    for (let i = 1; i < machs.length; i++) {
@@ -154,7 +164,9 @@ function makeProp(machCtor) {
 			return failure(prog, machs[0], machs[i], `status @ #${j}: ${resStatus(r0[j])} vs ${resStatus(ri[j])}`, "status");
 		     }
 		     if (!signalsEqual(r0[j].signals, ri[j].signals)) {
-			console.error("PAS EQ", j, r0[j].signals, ri[j].signals);
+			console.error("PAS EQ", k, j, r0[j], ri[j].signals, machs[0].opts);
+			writeFileSync(`/tmp/neqm${k}.hh.mjs`, jsonToHiphop(machs[0].ast.tojson()));
+			writeFileSync(`/tmp/neq${k++}.hh.mjs`, jsonToHiphop(prog.tojson()));
 			return failure(prog, machs[0], machs[i], `results @ #${j}: ${JSON.stringify(r0[j].signals)} vs ${JSON.stringify(ri[j].signals)}`,
 				       JSON.stringify(r0[j].signals) + "/" + JSON.stringify(ri[j].signals));
 		     }
