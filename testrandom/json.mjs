@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:45:26 2025                          */
-/*    Last change :  Thu Nov 27 05:15:53 2025 (serrano)                */
+/*    Last change :  Thu Nov 27 08:36:10 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Json dump and pretty-printing HipHop programs                    */
@@ -95,58 +95,77 @@ hhapi.Emit.prototype.tojson = function() {
       signame: this.signame_list[0],
       value: ("func" in this ? this.func() : null),
       children: []
-   }
+   };
 }
 
 hhapi.If.prototype.tojson = function() {
-   if (this.func instanceof hh.$Delay) {
-      console.error("NOT YET");
-      process.exit(1);
-   } else {
-      return {
-	 node: "if",
-	 func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
-	 children: this.children.map(c => c.tojson())
-      }
-   }
+   const func = (this.func instanceof hh.$Delay)
+      ? this.func.tojson()
+      : this.func.toString()
+	 .replace(/^function[(][)][ ]* { return /, "")
+	 .replace(/;[ ]*}$/, "");
+
+   return {
+      node: "if",
+      func,
+      children: this.children.map(c => c.tojson())
+   };
 }
 
 hhapi.Abort.prototype.tojson = function() {
-   if (this.func instanceof hh.$Delay) {
-      console.error("NOT YET");
-      process.exit(1);
-   } else 
-      return {
-	 node: "abort",
-	 func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
-	 children: this.children.map(c => c.tojson())
-      }
+   const func = (this.func instanceof hh.$Delay)
+      ? this.func.tojson()
+      : this.func.toString()
+	 .replace(/^function[(][)][ ]* { return /, "")
+	 .replace(/;[ ]*}$/, "");
+
+   return {
+      node: "abort",
+      func,
+      children: this.children.map(c => c.tojson())
+   };
 }
 
 hhapi.Every.prototype.tojson = function() {
-   if (this.func instanceof hh.$Delay) {
-      console.error("NOT YET");
-      process.exit(1);
-   } else {
-      return {
-	 node: "every",
-	 func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
-	 children: this.children.map(c => c.tojson())
-      }
-   }
+   const func = (this.func instanceof hh.$Delay)
+      ? this.func.tojson()
+      : this.func.toString()
+	 .replace(/^function[(][)][ ]* { return /, "")
+	 .replace(/;[ ]*}$/, "");
+
+   return {
+      node: "every",
+      func,
+      children: this.children.map(c => c.tojson())
+   };
 }
 
 hhapi.LoopEach.prototype.tojson = function() {
-   if (this.func instanceof hh.$Delay) {
-      console.error("NOT YET");
-      process.exit(1);
-   } else {
-      return {
-	 node: "loopeach",
-	 func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
-	 children: this.children.map(c => c.tojson())
-      }
-   }
+   const func = (this.func instanceof hh.$Delay)
+      ? this.func.tojson()
+      : this.func.toString()
+	 .replace(/^function[(][)][ ]* { return /, "")
+	 .replace(/;[ ]*}$/, "");
+
+   return {
+      node: "loopeach",
+      func,
+      children: this.children.map(c => c.tojson())
+   };
+}
+
+hhapi.Await.prototype.tojson = function() {
+   const func = (this.func instanceof hh.$Delay)
+      ? this.func.tojson()
+      : this.func.toString()
+	 .replace(/^function[(][)][ ]* { return /, "")
+	 .replace(/;[ ]*}$/, "");
+
+   return {
+      node: "await",
+      func,
+      children: []
+   };
 }
 
 hhapi.Atom.prototype.tojson = function() {
@@ -154,20 +173,7 @@ hhapi.Atom.prototype.tojson = function() {
       node: "atom",
       func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
       children: []
-   }
-}
-
-hhapi.Await.prototype.tojson = function() {
-   if (this.func instanceof hh.$Delay) {
-      console.error("NOT YET");
-      process.exit(1);
-   } else {
-      return {
-	 node: "await",
-	 func: this.func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, ""),
-	 children: []
-      }
-   }
+   };
 }
 
 hhapi.$ASTNode.prototype.tojson = function() {
@@ -175,12 +181,55 @@ hhapi.$ASTNode.prototype.tojson = function() {
    throw "tojson not implemented.";
 }
 
+hh.DelaySig.prototype.tojson = function() {
+   return {
+      node: "sig",
+      value: this.id,
+      prop: this.prop
+   };
+}
+
+hh.DelayUnary.prototype.tojson = function() {
+   return {
+      node: "unary",
+      op: this.op,
+      expr: this.delay.tojson()
+   };
+}
+
+hh.DelayBinary.prototype.tojson = function() {
+   return {
+      node: "binary",
+      op: this.op === "OR" ? "||" : this.op,
+      lhs: this.lhs.tojson(),
+      rhs: this.rhs.tojson()
+   };
+}
+
 /*---------------------------------------------------------------------*/
 /*    jsonToAst ...                                                    */
 /*---------------------------------------------------------------------*/
 function jsonToAst(obj) {
    const { node, children } = obj;
-   
+
+   function delayToAst(node) {
+      switch (node.node) {
+	 case "sig": {
+	    return new hh.DelaySig(node.value, node.prop);
+	 }
+	 case "unary": {
+	    return new hh.DelayUnary(node.op, delayToAst(node.expr));
+	 }
+	 case "binary": {
+	    const op = node.op === "||" ? "OR" : node.op;
+	    return new hh.DelayBinary(op, delayToAst(node.lhs), delayToAst(node.rhs));
+	 }
+	 default:
+	    console.error("*** ERROR: illegal json", node);
+	    throw new TypeError("Illegal json");
+      }
+   }
+	    
    switch (node) {
       case "module": { 
 	 const attrs = {};
@@ -223,34 +272,47 @@ function jsonToAst(obj) {
       }
 	 
       case "if": {
-	 const attrs = {apply: eval(`(function() { return ${obj.func}; })`)};
+	 const attrs = typeof obj.func === "string"
+	    ? {apply: eval(`(function() { return ${obj.func}; })`)}
+	    : {apply: delayToAst(obj.func)};
 	 return hh.IF(attrs, ...children.map(jsonToAst));
       }
 	 
       case "abort": {
-	 const attrs = {apply: eval(`(function() { return ${obj.func}; })`)};
+	 const attrs = typeof obj.func === "string"
+	    ? {apply: eval(`(function() { return ${obj.func}; })`)}
+	    : {apply: delayToAst(obj.func)};
 	 return hh.ABORT(attrs, ...children.map(jsonToAst));
       }
 	 
       case "every": {
-	 const attrs = {apply: eval(`(function() { return ${obj.func}; })`)};
+	 const attrs = typeof obj.func === "string"
+	    ? {apply: eval(`(function() { return ${obj.func}; })`)}
+	    : {apply: delayToAst(obj.func)};
 	 return hh.EVERY(attrs, ...children.map(jsonToAst));
       }
 	 
       case "loopeach": {
-	 const attrs = {apply: eval(`(function() { return ${obj.func}; })`)};
+	 const attrs = typeof obj.func === "string"
+	    ? {apply: eval(`(function() { return ${obj.func}; })`)}
+	    : {apply: delayToAst(obj.func)};
 	 return hh.LOOPEACH(attrs, ...children.map(jsonToAst));
+      }
+	 
+      case "await": {
+	 const attrs = typeof obj.func === "string"
+	    ? {apply: eval(`(function() { return ${obj.func}; })`)}
+	    : {apply: delayToAst(obj.func)};
+	 return hh.AWAIT(attrs);
       }
 	 
       case "atom": {
 	 const attrs = {apply: eval(`(function() { return ${obj.func}; })`)};
 	 return hh.ATOM(attrs);
       }
-	 
-      case "await": {
-	 const attrs = {apply: eval(`(function() { return ${obj.func}; })`)};
-	 return hh.AWAIT(attrs);
-      }
+
+      default:
+	 return delayToAst(obj);
    }
 }
 
@@ -280,6 +342,24 @@ function jsonToHiphop(obj, m = 0) {
 	 return obj.children.map(o => jsonToHiphop(o, margin)).join('\n');
       } else {
 	 return jsonToHiphop(obj, margin);
+      }
+   }
+
+   function test(obj) {
+      if (typeof obj === "string") {
+	 return obj;
+      } else {
+	 switch (obj?.node) {
+	    case "unary":
+	       return `${obj.op}${test(obj.expr)}`;
+	    case "binary":
+	       return `(${test(obj.lhs)} ${obj.op} ${test(obj.rhs)})`;
+	    case "sig":
+	       return `${obj.value}.${obj.prop}`;
+	    default: 
+	       console.error("*** ERROR:test: illegal object", obj);
+	       throw TypeError("Illegal test: " + obj);
+	 }
       }
    }
    
@@ -343,26 +423,29 @@ function jsonToHiphop(obj, m = 0) {
 	    + margin(m) + '}';
 
       case "if":
-	 return margin(m) + `if (${obj.func}) {\n`
+	 return margin(m) + `if (${test(obj.func)}) {\n`
 	    + block(children[0], m + 2) + '\n'
 	    + margin(m) + "} else {\n"
 	    + block(children[1], m + 2) + '\n'
 	    + margin(m) + '}';
 	 
       case "abort":
-	 return margin(m) + `abort (${obj.func}) {\n`
+	 return margin(m) + `abort (${test(obj.func)}) {\n`
 	    + block(children[0], m + 2) + '\n' 
 	    + margin(m) + '}';
 	 
       case "every":
-	 return margin(m) + `every (${obj.func}) {\n`
+	 return margin(m) + `every (${test(obj.func)}) {\n`
 	    + block(children[0], m + 2) + '\n' 
 	    + margin(m) + '}';
 	 
       case "loopeach":
 	 return margin(m) + `do {\n`
 	    + block(children[0], m + 2) + '\n' 
-	    + margin(m) + `} every (${obj.func});`;
+	    + margin(m) + `} every (${test(obj.func)});`;
+	 
+      case "await":
+	 return margin(m) + `await (${test(obj.func)})`;
 	 
       case "atom":
 	 return margin(m) + `pragma { ${obj.func}; }`;

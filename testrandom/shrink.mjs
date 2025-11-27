@@ -3,14 +3,14 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Sun Nov 23 06:07:33 2025 (serrano)                */
+/*    Last change :  Thu Nov 27 09:53:49 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
 /*=====================================================================*/
 import * as hh from "../lib/hiphop.js";
 import * as hhapi from "../lib/ast.js";
-import { jsonToHiphop } from "./json.mjs";
+import { jsonToHiphop, jsonToAst } from "./json.mjs";
 import { parseExpr, exprToHiphop, exprEqual, newBinary } from "./expr.mjs"
 
 export { shrink };
@@ -61,7 +61,7 @@ function leave(value, limit = SHRINK_LIMIT) {
       return value;
    }
 }
-   
+
 /*---------------------------------------------------------------------*/
 /*    shrink ...                                                       */
 /*---------------------------------------------------------------------*/
@@ -163,22 +163,22 @@ function shrinkArray(a) {
 /*---------------------------------------------------------------------*/
 function shrinkSignalFunc(func, sig) {
 
-   function shrink(obj) {
-      switch (obj.kind) {
+   function shrink(obj, cnst) {
+      switch (obj.node) {
 	 case "constant":
 	    return obj;
 	 case "sig":
 	    if (obj.value === sig) {
-	       return {kind: "constant", value: "false"};
+	       return {node: "constant", value: "false"};
 	    } else {
 	       return obj;
 	    }
 	 case "unary": {
-	    const xs = shrink(obj.expr);
+	    const xs = shrink(obj.expr, cnst);
 
-	    if (xs.kind === "constant") {
+	    if (xs.node === "constant") {
 	       return {
-		  kind: "constant",
+		  node: "constant",
 		  value: (xs.value === "true") ? "false" : "true"
 	       }
 	    } else {
@@ -186,18 +186,53 @@ function shrinkSignalFunc(func, sig) {
 	    }
 	 }
 	 case "binary": {
-	    return newBinary(obj.op, shrink(obj.lhs), shrink(obj.rhs));
+	    const xlhs = shrink(obj.lhs, cnst);
+	    const xrhs = shrink(obj.rhs, cnst);
+
+	    if (cnst) {
+	       return newBinary(obj.op, xlhs, xrhs);
+	    } else if (xlhs.node === "constant") {
+	       if (xrhs.node === "constant") {
+		  return {
+		     node: "constant",
+		     value: true
+		  };
+	       } else {
+		  return xrhs;
+	       }
+	    } else if (xrhs.node === "constant") {
+	       return xlhs;
+	    } else {
+	       return xrhs;
+	    }
 	 }
 
 	 default:
-	    throw SyntaxError("Unsupported obj: " + obj.kind);
+	    throw SyntaxError("Unsupported obj: " + obj.node);
       }
    }
 
-   const x = func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, "");
-   const f = shrink(parseExpr(x));
+   function shrinkExpr(func) {
+      const x = func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, "");
+      const f = shrink(parseExpr(x), true);
+      return eval(`(function() { return ${exprToHiphop(f)}; })`);
+   }
 
-   return eval(`(function() { return ${exprToHiphop(f)}; })`);
+   function shrinkDelay(func) {
+      const x = shrink(func.tojson(), false);
+
+      if (x.node === "constant") {
+	 return false;
+      } else {
+	 return jsonToAst(x);
+      }
+   }
+   
+   if (func instanceof hh.$Delay) {
+      return shrinkDelay(func);
+   } else {
+      return shrinkExpr(func);
+   }
 }
 
 //console.error(shrinkSignalFunc(function() { return (this.xxx.now || (this.yyy.pre || this.xxx.now)) }, "xxx").toString());
@@ -300,40 +335,65 @@ hhapi.Local.prototype.shrinkSignal = function(sig) {
 /*    shrinkSignal ::If ...                                            */
 /*---------------------------------------------------------------------*/
 hhapi.If.prototype.shrinkSignal = function(sig) {
-   const attrs = {apply: shrinkSignalFunc(this.func, sig)};
-   return shrinkSignalASTNode(this, hh.IF, attrs, sig);
+   const func = shrinkSignalFunc(this.func, sig);
+
+   if (func) {
+      return shrinkSignalASTNode(this, hh.IF, {apply: func}, sig);
+   } else {
+      return this.children[0].shrinkSignal(sig);
+   }
 }
 
 /*---------------------------------------------------------------------*/
 /*    shrinkSignal ::Abort ...                                         */
 /*---------------------------------------------------------------------*/
 hhapi.Abort.prototype.shrinkSignal = function(sig) {
-   const attrs = {apply: shrinkSignalFunc(this.func, sig)};
-   return shrinkSignalASTNode(this, hh.ABORT, attrs, sig);
+   const func = shrinkSignalFunc(this.func, sig);
+
+   if (func) {
+      return shrinkSignalASTNode(this, hh.ABORT, {apply: func}, sig);
+   } else {
+      return this.children[0].shrinkSignal(sig);
+   }
 }
 
 /*---------------------------------------------------------------------*/
 /*    shrinkSignal ::Every ...                                         */
 /*---------------------------------------------------------------------*/
 hhapi.Every.prototype.shrinkSignal = function(sig) {
-   const attrs = {apply: shrinkSignalFunc(this.func, sig)};
-   return shrinkSignalASTNode(this, hh.EVERY, attrs, sig);
+   const func = shrinkSignalFunc(this.func, sig);
+
+   if (func) {
+      return shrinkSignalASTNode(this, hh.EVERY, {apply: func}, sig);
+   } else {
+      return this.children[0].shrinkSignal(sig);
+   }
 }
 
 /*---------------------------------------------------------------------*/
 /*    shrinkSignal ::LoopEach ...                                      */
 /*---------------------------------------------------------------------*/
 hhapi.LoopEach.prototype.shrinkSignal = function(sig) {
-   const attrs = {apply: shrinkSignalFunc(this.func, sig)};
-   return shrinkSignalASTNode(this, hh.LOOPEACH, attrs, sig);
+   const func = shrinkSignalFunc(this.func, sig);
+
+   if (func) {
+      return shrinkSignalASTNode(this, hh.LOOPEACH, {apply: func}, sig);
+   } else {
+      return this.children[0].shrinkSignal(sig);
+   }
 }
 
 /*---------------------------------------------------------------------*/
 /*    shrinkSignal ::Await ...                                         */
 /*---------------------------------------------------------------------*/
 hhapi.Await.prototype.shrinkSignal = function(sig) {
-   const attrs = {apply: shrinkSignalFunc(this.func, sig)};
-   return hh.AWAIT(attrs);
+   const func = shrinkSignalFunc(this.func, sig);
+
+   if (func) {
+      return hh.AWAIT({apply: func});
+   } else {
+      return hh.NOTHING({});
+   }
 }
 
 /*---------------------------------------------------------------------*/
@@ -444,46 +504,67 @@ hhapi.LoopEach.prototype.shrinkTrap = function(trap) {
 /*---------------------------------------------------------------------*/
 function shrinkFunc(func) {
 
-   function shrink(obj) {
-      switch (obj.kind) {
+   function shrink(obj, cnst) {
+      switch (obj.node) {
 	 case "constant":
 	    return [];
 	 case "sig":
-	    return [{kind: "constant", value: "true"}];
+	    if (cnst) {
+	       return [{node: "constant", value: "true"}];
+	    } else {
+	       return [];
+	    }
 	 case "unary": {
-	    const xs = shrink(obj.expr);
+	    const xs = shrink(obj.expr, cnst);
 	    
 	    return [obj.expr]
 	       .concat(xs.map(x => {
 		  return {
-		     kind: "unary",
+		     node: "unary",
 		     op: obj.op,
 		     expr: x }
 	       }));
 	 }
 	 case "binary": {
-	    const slhs = shrink(obj.lhs);
-	    const srhs = shrink(obj.rhs);
+	    const slhs = shrink(obj.lhs, cnst);
+	    const srhs = shrink(obj.rhs, cnst);
 	    return [obj.lhs, obj.rhs]
 	       .concat(slhs.map(l => newBinary(obj.op, l, obj.rhs)))
 	       .concat(srhs.map(r => newBinary(obj.op, obj.lhs, r)));
 	 }
 	 default:
-	    throw SyntaxError("Unsupported obj: " + obj.kind);
+	    throw SyntaxError("Unsupported obj: " + obj.node);
       }
    }
 
    function unique(arr) {
       return [...new Set(arr)];
    }
-   
-   enter(func.toString());
-   const x = func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, "");
-   const xs = shrink(parseExpr(x));
-   const fs = unique(xs.map(x => `(function() { return ${exprToHiphop(x)}; })`));
 
-   return leave(fs.map(f => eval(f)), 32);
+   function shrinkExpr(func) {
+      enter(func.toString());
+      const x = func.toString().replace(/^function[(][)][ ]* { return /, "").replace(/;[ ]*}$/, "");
+      const xs = shrink(parseExpr(x), true);
+      const fs = unique(xs.map(x => `(function() { return ${exprToHiphop(x)}; })`));
+      return leave(fs.map(f => eval(f)), 32);
+   }
+
+   function shrinkDelay(func) {
+      enter(func);
+
+      const x = func.tojson();
+      const xs = shrink(x, false);
+
+      return leave(xs.map(jsonToAst), 32);
+   }
+   
+   if (func instanceof hh.$Delay) {
+      return shrinkDelay(func);
+   } else {
+      return shrinkExpr(func);
+   }
 }
+
 
 /*---------------------------------------------------------------------*/
 /*    shrinkASTNode ...                                                */

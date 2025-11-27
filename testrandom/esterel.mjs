@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Tue Nov 25 12:34:36 2025 (serrano)                */
+/*    Last change :  Thu Nov 27 09:33:29 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with racket/esterel                      */
@@ -58,20 +58,22 @@ function json2esterel(o, m) {
    function expr2esterel(expr) {
 
       function toEsterel(obj) {
-	 switch (obj.kind) {
+	 switch (obj.node) {
 	    case "constant":
-	       return obj.value === "true" ? "TRUE" : "FALSE";
+	       return obj.value === "true" ? "true" : "false";
 	    case "sig":
-	       if (obj.prop === "now") {
-		  return `${obj.value}`;
-	       } else {
-		  return `pre(${obj.value})`;
+	       switch (obj.prop) {
+		  case "now": return `${obj.value}`;
+		  case "pre": return `pre(${obj.value})`;
+		  case "nowval": return `?${obj.value} <> 0`;
+		  case "preval": return `pre(?${obj.value}) <> 0`;
+		  default: throw TypeError("Illegal signal operator " + obj.prop);
 	       }
 	    case "unary":
 	       return `${unary[obj.op]} ${toEsterel(obj.expr)}`;
 	    case "binary": 
 	       return `(${toEsterel(obj.lhs)} ${binary[obj.op]} ${toEsterel(obj.rhs)})`;
-	    default: throw SyntaxError("Unsupported obj: " + obj.kind);
+	    default: throw SyntaxError("Unsupported obj: " + obj.constructor.name);
 	 }
       }
 
@@ -89,7 +91,6 @@ function json2esterel(o, m) {
    switch (o.node) {
       case "module":
 	 return "module M :\n"
-	    + "input TRUE, FALSE;\n"
 	    + (o.signals.length ? (o.signals.map(s => `inputoutput ${s} := 0 : combine integer with +;\n`).join("") + "\n") : "\n")
 	    + childrenOf(o, m)
 	    + (o.children.length === 0 ? "nothing\n" : "")
@@ -99,11 +100,12 @@ function json2esterel(o, m) {
 	    + childrenOf(o, m + 3)
 	    + `${margin(m)}end loop\n`
       case "if":
-	 return `${margin(m)}present ${expr2esterel(o.func)} then\n`
+	 const k = (typeof o.func === "string") ? "if" : "present";
+	 return `${margin(m)}${k} ${expr2esterel(o.func)} then\n`
 	    + json2esterel(o.children[0], m + 3)
 	    + `${margin(m)}else\n`
 	    + json2esterel(o.children[1], m + 3)
-	    + `${margin(m)}end present\n`;
+	    + `${margin(m)}end ${k}\n`;
       case "local":
 	 return `${margin(m)}signal `
 	    + (o.signals.length ? (o.signals.map(s => `${s} := 0 : combine integer with +`).join(", ") + " in\n") : `${gensym()} in\n`)
@@ -126,7 +128,7 @@ function json2esterel(o, m) {
       case "par":
 	 return `${margin(m)}[\n${o.children.map(c => json2esterel(c, m + 3)).join(`${margin(m)}||\n`)}${margin(m)}]\n`;
       case "atom":
-	 return `${margin(m)}present (${expr2esterel(o.func)}) then nothing; end present %% atom\n`;
+	 return `${margin(m)}if (${expr2esterel(o.func)}) then nothing; end if %% atom\n`;
       case "emit":
 	 return `${margin(m)}emit ${o.signame}(${o.value})\n`;
       case "abort":
@@ -141,6 +143,8 @@ function json2esterel(o, m) {
 	 return `${margin(m)}loop\n`
 	    + o.children.map(c => json2esterel(c, m + 3)).join("\n")
 	    + `${margin(m)}each [ ${expr2esterel(o.func)} ]\n`;
+      case "await":
+	 return `${margin(m)}await [ ${expr2esterel(o.func)} ]\n`;
       default:
 	 return `"Unsupported node ${o.node}"`;
    }
@@ -226,6 +230,6 @@ class ReactiveMachine {
    }
 
    static events2in(events) {
-      return events.map(e => e ? `TRUE ${Object.keys(e).map(s => `${s}(${e[s]})`).join(" ")}` + ";" : "TRUE;").join("\n");
+      return events.map(e => e ? `${Object.keys(e).map(s => `${s}(${e[s]})`).join(" ")}` + ";" : ";").join("\n");
    }
 }

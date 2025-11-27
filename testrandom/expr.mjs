@@ -3,11 +3,12 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Nov 14 14:49:15 2025                          */
-/*    Last change :  Thu Nov 27 05:19:02 2025 (serrano)                */
+/*    Last change :  Thu Nov 27 07:14:11 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Simple JS expression parser                                      */
 /*=====================================================================*/
+import * as hh from "../lib/hiphop.js";
 export { parseExpr, exprToHiphop, exprEqual, newBinary };
 
 /*---------------------------------------------------------------------*/
@@ -18,31 +19,31 @@ function makeTokenizer(buf) {
    
    return function next() {
       if (index === buf.length) {
-	 return { kind: "eoi", value: null };
+	 return { node: "eoi", value: null };
       } else if (buf[index] === " ") {
 	 index++;
 	 return next();
       } else if (buf[index] === "(" || buf[index] === ")" || buf[index] === "!") {
 	 const m = buf[index++];
-	 return { kind: m, value: m };
+	 return { node: m, value: m };
       } else {
 	 const s = buf.substr(index);
 	 let m = s.match(/^false|^true/);
 	 if (m) {
 	    index += m[0].length;
-	    return { kind: "constant", value: m[0] };
-	 } else if (m = s.match(/^(?:this[.])?([a-zA-Z0-9_]*)[.]now/)) {
+	    return { node: "constant", value: m[0] };
+	 } else if (m = s.match(/^(?:this[.])?([a-zA-Z0-9_]*)[.](now(?:val)?)/)) {
 	    index += m[0].length;
-	    return { kind: "now", value: m[1] };
-	 } else if (m = s.match(/^(?:this[.])?([a-zA-Z0-9_]*)[.]pre/)) {
+	    return { node: m[2], value: m[1] };
+	 } else if (m = s.match(/^(?:this[.])?([a-zA-Z0-9_]*)[.](pre(?:val)?)/)) {
 	    index += m[0].length;
-	    return { kind: "pre", value: m[1] };
+	    return { node: m[2], value: m[1] };
 	 } else if (m = s.match(/^&&|^\|\|/)) {
 	    index += m[0].length;
-	    return { kind: "binary", value: m[0] };
+	    return { node: "binary", value: m[0] };
 	 } else {
 	    index++;
-	    return { kind: "error", value: s };
+	    return { node: "error", value: s };
 	 }
       }
    }
@@ -54,23 +55,24 @@ function makeTokenizer(buf) {
 function parse(next) {
    let tok = next();
 
-   switch (tok.kind) {
+   switch (tok.node) {
       case "constant":
-	 return { kind: "constant", value: tok.value };
+	 return { node: "constant", value: tok.value };
       case "now":
-	 return { kind: "sig", prop: "now", value: tok.value };
       case "pre":
-	 return { kind: "sig", prop: "pre", value: tok.value };
+      case "nowval":
+      case "preval":
+	 return { node: "sig", prop: tok.node, value: tok.value };
       case "!":
-	 return { kind: "unary", op: "!", expr: parse(next)};
+	 return { node: "unary", op: "!", expr: parse(next)};
       case "(": {
 	 const lhs = parse(next);
 	 const op = next();
 	 const rhs = parse(next);
 
-	 if (next().kind === ")") {
-	    if (op.kind === "binary") {
-	       return { kind: "binary", op: op.value, lhs: lhs, rhs: rhs };
+	 if (next().node === ")") {
+	    if (op.node === "binary") {
+	       return { node: "binary", op: op.value, lhs: lhs, rhs: rhs };
 	    } else {
 	       throw SyntaxError("Illegal operator:" + op.value);
 	    }
@@ -83,7 +85,7 @@ function parse(next) {
       case "error":
 	 throw SyntaxError("Unexpected token: " + tok.value);
       default:
-	 throw SyntaxError("Illegal token: " + tok.kind);
+	 throw SyntaxError("Illegal token: " + tok.node);
    }
 }
 
@@ -93,15 +95,21 @@ function parse(next) {
 function parseExpr(expr) {
    if (expr === undefined) {
       throw new Error("UNDEF");
+   } else if (typeof expr === "string") {
+      return parse(makeTokenizer(expr));
+   } else if (expr instanceof Object) {
+      return expr;
+   } else {
+      console.error("*** ERROR: parseExpr: illegal expression", expr.toString());
+      throw TypeError("Illegal expr");
    }
-   return parse(makeTokenizer(expr));
 }
    
 /*---------------------------------------------------------------------*/
 /*    exprToHiphop ...                                                 */
 /*---------------------------------------------------------------------*/
 function exprToHiphop(obj) {
-   switch (obj.kind) {
+   switch (obj.node) {
       case "constant":
 	 return obj.value;
       case "sig":
@@ -111,7 +119,7 @@ function exprToHiphop(obj) {
       case "binary": 
 	 return `(${exprToHiphop(obj.lhs)} ${obj.op} ${exprToHiphop(obj.rhs)})`;
       default:
-	 throw SyntaxError("Unsupported obj: " + obj);
+	 throw SyntaxError("Unsupported obj: " + obj.constructor.name);
    }
 }
 
@@ -119,8 +127,8 @@ function exprToHiphop(obj) {
 /*    exprEqual ...                                                    */
 /*---------------------------------------------------------------------*/
 function exprEqual(x, y) {
-   if (x.kind === y.kind && x.prop === y.prop && x.value === y.value) {
-      if (x.kind === "constant" || x.kind === "sig") {
+   if (x.node === y.node && x.prop === y.prop && x.value === y.value) {
+      if (x.node === "constant" || x.node === "sig") {
 	 return true;
       } else {
 	 return exprToHiphop(x) === exprToHiphop(y);
@@ -136,17 +144,17 @@ function exprEqual(x, y) {
 function newBinary(op, lhs, rhs) {
    if (exprEqual(lhs, rhs)) {
       return lhs;
-   } else if (lhs.kind === "constant") {
+   } else if (lhs.node === "constant") {
       if (lhs.value === "true") {
 	 return (op === "||") ? lhs : rhs;
       } else if (lhs.value === "false") {
 	 return (op === "||") ? rhs : lhs;
       }
-   } else if (rhs.kind === "constant") {
+   } else if (rhs.node === "constant") {
       return newBinary(op, rhs, lhs);
    } else {
       return {
-	 kind: "binary", op, lhs, rhs
+	 node: "binary", op, lhs, rhs
       }
    }
 }

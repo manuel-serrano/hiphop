@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Nov 27 05:14:12 2025 (serrano)                */
+/*    Last change :  Thu Nov 27 10:04:10 2025 (serrano)                */
 /*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -303,7 +303,7 @@ function parseValueApply(loc) {
    } else if (delay) {
       const init = astutils.J2SDataPropertyInit(
 	 loc,
-	 astutils.J2SString(loc, "%delay"),
+	 astutils.J2SString(loc, "apply"),
 	 expr);
       return {init, accessors: [], signames: []};
    } else {
@@ -387,7 +387,7 @@ function parseDelay(loc, tag, action = "apply", id = false, immediate = false) {
       } else if (delay) {
 	 const init = astutils.J2SDataPropertyInit(
 	    loc,
-	    astutils.J2SString(loc, "%delay"),
+	    astutils.J2SString(loc, "apply"),
 	    expr);
 	 inits = [
 	    astutils.J2SDataPropertyInit(

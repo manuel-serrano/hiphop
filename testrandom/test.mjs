@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Sat Nov 22 08:53:00 2025 (serrano)                */
+/*    Last change :  Thu Nov 27 13:55:45 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -44,6 +44,8 @@ export const prop = makeProp([
    M("esterel") && (prg => new esterel.ReactiveMachine(prg, { name: "esterel" }))
 ].filter(x => x));
 
+let k = 0;
+
 /*---------------------------------------------------------------------*/
 /*    shrinkBugInConf ...                                              */
 /*---------------------------------------------------------------------*/
@@ -65,21 +67,30 @@ function shrinkBugInConf(conf, res) {
 	       const r = prop(confs[i]);
 	       
 	       if (VERBOSE >= 1) {
-		  console.error("  |" + margin + " +- ", r.status, r.reason);
+		  console.error("  |" + margin + " +-", r.status, r.msg);
 		  if (VERBOSE >= 4) {
 		     console.error(jsonToHiphop(confs[i].prog.tojson()));
 		  }
 	       }
 	       if (r.status === "failure" && (REASON === false || r.reason === resreason)) {
+		  writeFileSync(`/tmp/failure${k}.hh.mjs`, jsonToHiphop(confs[i].prog.tojson()));
+		  console.error("K=", k++, r.status, r.msg, r.reason);
+		  console.error("M=", r.machines[1].opts);
 		  // we still have an error, shrink more
 		  return shrinker(confs[i], r, margin + " ");
 	       }
 	    } catch(e) {
 	       // an error occured, ignore that program
+	       console.error("shrinker E=", e);
+	       process.exit(1);
 	       ;
 	    }
 	 }
 
+	 if (VERBOSE >= 1) {
+	    console.error("  |" + margin + " #- ending shrink with", res.status, res.msg);
+	 }
+	 
 	 return { conf, res };
       }
    }

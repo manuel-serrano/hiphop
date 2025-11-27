@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Sat Nov 22 06:28:19 2025 (serrano)                */
+/*    Last change :  Thu Nov 27 15:56:24 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -154,13 +154,14 @@ function makeProp(machCtor) {
 			return failure(prog, machs[0], machs[i], `status @ #${j}: ${resStatus(r0[j])} vs ${resStatus(ri[j])}`, "status");
 		     }
 		     if (!signalsEqual(r0[j].signals, ri[j].signals)) {
+			console.error("PAS EQ", j, r0[j].signals, ri[j].signals);
 			return failure(prog, machs[0], machs[i], `results @ #${j}: ${JSON.stringify(r0[j].signals)} vs ${JSON.stringify(ri[j].signals)}`,
-				       JSON.stringify(r0[j].signals) + JSON.stringify(ri[j].signals));
+				       JSON.stringify(r0[j].signals) + "/" + JSON.stringify(ri[j].signals));
 		     }
 		  }
 	       }
 	    }
-	    return { status: "success", reason: `(${events.length})` };
+	    return { status: "success", msg: `(${events.length})` };
 	 } catch(e) {
 	    if (config.VERBOSE >= 3) {
 	       console.error("*** Execution error...", e.toString());
