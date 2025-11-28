@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Fri Nov 21 10:55:45 2025 (serrano)                */
+/*    Last change :  Fri Nov 28 11:03:14 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with racket/esterel                      */
@@ -31,20 +31,22 @@ function json2racket(o) {
    function expr2racket(expr) {
 
       function toRacket(obj) {
-	 switch (obj.kind) {
+	 switch (obj.node) {
 	    case "constant":
 	       return obj.value === "true" ? "#t" : "#f";
 	    case "sig":
-	       if (obj.prop === "now") {
-		  return `(present? ${obj.value})`;
-	       } else {
-		  return `(present? ${obj.value} #:pre 1)`;
+	       switch (obj.prop) {
+		  case "now": return `(present? ${obj.value})`;
+		  case "pre": return `(present? ${obj.value} #:pre 1)`;
+		  case "nowval":
+		  case "preval": throw TypeError("Racket unimplemented test operator " + obj.prop);
+		  default: throw TypeError("Illegal signal operator " + obj.prop);
 	       }
 	    case "unary":
 	       return `(${unary[obj.op]} ${toRacket(obj.expr)})`;
 	    case "binary": 
 	       return `(${binary[obj.op]} ${toRacket(obj.lhs)} ${toRacket(obj.rhs)})`;
-	    default: throw SyntaxError("Unsupported obj: " + obj.kind);
+	    default: throw SyntaxError("Unsupported obj: " + obj.node);
 	 }
       }
 
@@ -96,6 +98,8 @@ function json2racket(o) {
 	 return `(every ${expr2racket(o.func)} #:do ${o.children.map(json2racket).join("\n")})`;
       case "loopeach":
 	 return `(loop ${o.children.map(json2racket).join("\n")} #:each ${expr2racket(o.func)})`;
+      case "await":
+	 return `(await ${expr2racket(o.func)})`;
       default:
 	 return `"Unsupported node ${o.node}"`;
    }

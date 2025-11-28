@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Nov 27 10:04:10 2025 (serrano)                */
+/*    Last change :  Fri Nov 28 06:40:44 2025 (serrano)                */
 /*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -328,45 +328,64 @@ function parseValueApply(loc) {
 /*       | immediate(hhexpr)                                           */
 /*---------------------------------------------------------------------*/
 function parseDelay(loc, tag, action = "apply", id = false, immediate = false) {
-   if (isIdToken(this, this.peekToken(), "count")) {
+   if (isIdToken(this, this.peekToken(), "immediate")) {
+      // immediate(hhexpr)
+      const imm = this.consumeAny();
+      return parseDelay.call(this, loc, tag, action, id, true);
+   } else if (isIdToken(this, this.peekToken(), "count")) {
       // COUNT(hhexpr, hhexpr)
       const loccnt = this.consumeAny();
       this.consumeToken(this.LPAREN);
       const { expr: count, accessors: cntaccessors, signames: signames1 } =
 	 parseHHCondExpression.call(this, true, false);
       this.consumeToken(this.COMMA);
-      const { expr, accessors, signames: signames2 } =
+      const { expr, accessors, signames: signames2, delay } =
 	 parseHHCondExpression.call(this, false, false);
 
       this.consumeToken(this.RPAREN);
 
-      const fun = astutils.J2SMethod(
-	 loc, "delayfun", [], 
-	 astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, expr)]),
-         self(loc));
-      const cntfun = astutils.J2SMethod(
-	 loc, "cntfun", [], 
-	 astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, count)]),
-         self(loc));
+      if (delay) {
+	 const cntfun = astutils.J2SMethod(
+	    loc, "cntfun", [], 
+	    astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, count)]),
+            self(loc));
       
-      const inits = [
-	 astutils.J2SDataPropertyInit(
-	    loc, astutils.J2SString(loc, "immediate"),
-	    astutils.J2SBool(loc, immediate)), 
-	 astutils.J2SDataPropertyInit(
-	    loc, astutils.J2SString(loc, action),
-	    fun),
-	 astutils.J2SDataPropertyInit(
-	    loc, astutils.J2SString(loc, "count" + action),
-	    cntfun)];
+	 const inits = [
+	    astutils.J2SDataPropertyInit(
+	       loc, astutils.J2SString(loc, "immediate"),
+	       astutils.J2SBool(loc, immediate)), 
+	    astutils.J2SDataPropertyInit(
+	       loc, astutils.J2SString(loc, action),
+	       expr),
+	    astutils.J2SDataPropertyInit(
+	       loc, astutils.J2SString(loc, "count" + action),
+	       cntfun)];
 
-      return { inits: inits, accessors: cntaccessors.concat(accessors), signames: signames1.concat(signames2) };
-   } else if (isIdToken(this, this.peekToken(), "immediate")) {
-      // immediate(hhexpr)
-      const imm = this.consumeAny();
-      return parseDelay.call(this, loc, tag, action, id, true);
+	 return { inits: inits, accessors: cntaccessors, signames: [] };
+      } else {
+	 const fun = astutils.J2SMethod(
+	    loc, "delayfun", [], 
+	    astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, expr)]),
+            self(loc));
+	 const cntfun = astutils.J2SMethod(
+	    loc, "cntfun", [], 
+	    astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, count)]),
+            self(loc));
+	 
+	 const inits = [
+	    astutils.J2SDataPropertyInit(
+	       loc, astutils.J2SString(loc, "immediate"),
+	       astutils.J2SBool(loc, immediate)), 
+	    astutils.J2SDataPropertyInit(
+	       loc, astutils.J2SString(loc, action),
+	       fun),
+	    astutils.J2SDataPropertyInit(
+	       loc, astutils.J2SString(loc, "count" + action),
+	       cntfun)];
+
+	 return { inits: inits, accessors: cntaccessors.concat(accessors), signames: signames1.concat(signames2) };
+      }
    } else {
-
       // hhexpr
       this.consumeToken(this.LPAREN);
       const { expr, accessors, signames, delay } = parseHHExpression.call(this, true);
@@ -387,7 +406,7 @@ function parseDelay(loc, tag, action = "apply", id = false, immediate = false) {
       } else if (delay) {
 	 const init = astutils.J2SDataPropertyInit(
 	    loc,
-	    astutils.J2SString(loc, "apply"),
+	    astutils.J2SString(loc, action),
 	    expr);
 	 inits = [
 	    astutils.J2SDataPropertyInit(

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Thu Nov 27 17:34:49 2025 (serrano)                */
+/*    Last change :  Fri Nov 28 10:09:21 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -74,16 +74,12 @@ function shrinkBugInConf(conf, res) {
 		  }
 	       }
 	       if (r.status === "failure" && (REASON === false || r.reason === resreason)) {
-		  writeFileSync(`/tmp/failure${k}.hh.mjs`, jsonToHiphop(confs[i].prog.tojson()));
-		  console.error("K=", k++, r.status, r.msg, r.reason);
 		  // we still have an error, shrink more
 		  return shrinker(confs[i], r, margin + " ");
 	       }
 	    } catch(e) {
 	       // an error occured, ignore that program
 	       console.error("shrinker E=", e);
-	       process.exit(1);
-	       ;
 	    }
 	 }
 
@@ -91,8 +87,6 @@ function shrinkBugInConf(conf, res) {
 	    console.error("  |" + margin + " #- ending shrink with", res.status, res.msg);
 	 }
 	 
-	 writeFileSync(`/tmp/last${k}.hh.mjs`, jsonToHiphop(conf.prog.tojson()));
-	 console.error("K=", k++, res.status, res.msg, res.reason);
 	 return { conf, res };
       }
    }
@@ -122,9 +116,10 @@ function findBugInConf(conf) {
 	 shrink: shrink.conf,
 	 res: shrink.res,
 	 machines: res.machines,
+	 status: res.status
       }
    } else {
-      return false;
+      return res;
    }
 }
    
@@ -148,7 +143,7 @@ function findBugInGen(iterCount = COUNT) {
       const conf = gen({filters: [filterinstantaneous]});
       const bug = findBugInConf(conf);
 
-      if (bug) return bug;
+      if (bug.status !== "success") return bug;
    }
    return false;
 }
@@ -232,16 +227,29 @@ async function main(argv) {
       }
    } else if (existsSync(argv[2])) {
       const jsonfile = "bug.hh.json";
+      const srcfile = argv[2].replace(/hh.json/, "hh.mjs");
       const { events, prog } = JSON.parse(readFileSync(argv[2]));
       const bug = findBugInConf({ prog: jsonToAst(prog), events });
 
-      if (bug) {
+      if (bug.status !== "success") {
 	 dumpBug(bug);
+      } else {
+	 bug.res.forEach((r, i) => {
+	    console.log(`[${i}]: ${r.status} ${JSON.stringify(r.signals)}`);
+	 });
+	 console.log("");
       }
 
-      if (argv[2] !== jsonfile) {
+      if (argv[2] !== jsonfile && bug.shrink) {
+	 console.log("see ${jsonfile}");
 	 outJson(jsonfile, bug.shrink);
       }
+
+      if (!existsSync(srcfile)) {
+	 console.log(`see ${srcfile}`);
+	 writeFileSync(srcfile, jsonToHiphop(prog));
+      }
+      
    } else {
       throw new Error(`Illegal command line: "${argv.join(" ")}"`);
    }

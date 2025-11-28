@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Thu Nov 27 19:18:53 2025 (serrano)                */
+/*    Last change :  Thu Nov 27 21:22:55 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -44,7 +44,7 @@ function hhaccess(n, iscnt, hhname, accessors) {
       const axs = collectAxs(n, []);
       const signames = accessorsSigname(axs);
 
-      return { expr: n.toDelay(), accessors: axs, signames, present: true };
+      return { expr: n.toDelay(), accessors: axs, signames, delay: true };
    } else {
       return hhaccessExpression(n, iscnt, hhname, accessors);
    }
@@ -61,7 +61,7 @@ function hhaccessExpression(n, iscnt, hhname, accessors) {
    const signames = accessorsSigname(axs);
 
    if (axs.length === 0) {
-      return { expr: node, accessors, signames, present: false };
+      return { expr: node, accessors, signames, delay: false };
    } else if (node instanceof ast.J2SExpr) {
       const loc = node.loc;
       const ret = new ast.J2SReturn({loc: loc, expr: node});
@@ -69,10 +69,10 @@ function hhaccessExpression(n, iscnt, hhname, accessors) {
       const expr = new ast.J2SBindExit({loc: loc, lbl: false, stmt: stmt});
       ret.from = expr;
 
-      return { expr, accessors, signames, present: false };
+      return { expr, accessors, signames, delay: false };
    } else {
       const expr = nodeAccessors(node, axs, iscnt, hhname, accessors);
-      return { expr, accessors, signames, present: false };
+      return { expr, accessors, signames, delay: false };
    }
 }
 
@@ -508,6 +508,10 @@ ast.J2SUnary.prototype.isDelay = function() {
    }
 }
 
+ast.J2SParen.prototype.isDelay = function() {
+   return this.expr.isDelay();
+}
+
 /*---------------------------------------------------------------------*/
 /*    toDelay ...                                                      */
 /*---------------------------------------------------------------------*/
@@ -539,3 +543,8 @@ ast.J2SUnary.prototype.toDelay = function() {
 
    return new ast.J2SNew({loc, clazz, args: list.list(op, this.expr.toDelay())});
 }
+
+ast.J2SParen.prototype.toDelay = function() {
+   return this.expr.toDelay();
+}
+

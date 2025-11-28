@@ -6,7 +6,7 @@ import * as hh from "@hop/hiphop";
 hiphop module prg() {
    in I; out O;
    loop {
-      await count( 3, I.pre );
+      await count(3, I.pre);
       emit O();
    }
 }

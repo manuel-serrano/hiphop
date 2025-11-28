@@ -1,1 +1,1 @@
-EVERY: immediate can't be used with an expression.
+EVERY: cannot use immediate with count expression.
