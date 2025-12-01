@@ -275,14 +275,9 @@ is equivalent to:
 
 ```javascript
 await (expr);
-loop {
-  continue: fork {
-    ... body ...
-  } par {
-    await (expr);
-    break continue;
-  }
-}
+do {
+ ... body ...
+} every (expr)
 ```
 
 ### do { ... } every delay ###
