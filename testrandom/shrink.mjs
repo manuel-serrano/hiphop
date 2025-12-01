@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Mon Dec  1 06:38:57 2025 (serrano)                */
+/*    Last change :  Mon Dec  1 10:29:47 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -697,7 +697,7 @@ hhapi.Local.prototype.shrink = function() {
    } else {
       const attrs = {};
       this.sigDeclList.forEach(p => attrs[p.name] = { signal: p.name, name: p.name, accessibility: hh.INOUT }, true);
-      
+
       if (children.length === 0) {
 	 return leave([hh.NOTHING({})]);
       } else if (children.length === 1) {
@@ -732,8 +732,8 @@ hhapi.If.prototype.shrink = function() {
       res.push(hh.IF({apply: this.func}, child0, c1[i]));
    }
 
-   return leave(res
-      .concat(funcs.map(f => hh.IF({apply: f}, child0, child1))));
+   return leave(res)
+      .concat(funcs.map(f => hh.IF({apply: f}, child0, child1)));
 }
 
 /*---------------------------------------------------------------------*/
@@ -744,14 +744,13 @@ hhapi.Abort.prototype.shrink = function() {
    
    const child0 = this.children[0];
    const c0 = shrinkProg(child0);
-   const res = [child0];
+   const present = hh.IF({apply: this.func}, hh.NOTHING({}), child0);
+   const res = [child0, present];
    const funcs = shrinkFunc(this.func);
 
-   enter(`-- ${this.constructor.name} (${child0.constructor.name}:${c0.length}) ${funcs.length}`);
    c0.forEach(c => {
       res.push(hh.ABORT({apply: this.func}, c));
    });
-   leave(undefined);
 
    return leave(res.concat(funcs.map(f => hh.ABORT({apply: f}, child0))));
 }
@@ -768,17 +767,9 @@ hhapi.Every.prototype.shrink = function() {
       return hh.SEQUENCE(
 	 {},
 	 hh.AWAIT(applyattr),
-	 hh.LOOP(
-	    {},
-	    hh.TRAP(
-	       trapattr,
-	       hh.FORK(
-		  {},
-		  node.children[0],
-		  hh.SEQUENCE(
-		     {},
-		     hh.AWAIT(applyattr),
-		     hh.EXIT(trapattr))))));
+	 hh.LOOPEACH(
+	    applyattr,
+	    node.children[0]));
    }
    
    enter(this.constructor.name);
@@ -803,24 +794,24 @@ hhapi.LoopEach.prototype.shrink = function() {
    function expand(node) {
       return hh.LOOP(
 	 {},
-	 HH.SEQUENCE(
-	    {},
-	    node.childre[0],
-	    hh.AWAIT({apply: node.func})));
+	 hh.ABORT(
+	    {apply: node.func},
+	    hh.SEQUENCE(
+	       {},
+	       node.children[0],
+	       hh.HALT({}))));
    }
    
    enter(this.constructor.name);
-   
+
    const child0 = this.children[0];
    const c0 = shrinkProg(child0);
    const res = [child0, expand(this)];
    const funcs = shrinkFunc(this.func);
 
-   enter(`-- ${this.constructor.name} (${child0.constructor.name}:${c0.length}) ${funcs.length}`);
    c0.forEach(c => {
       res.push(hh.LOOPEACH({apply: this.func}, c));
    });
-   leave(undefined);
 
    return leave(res.concat(funcs.map(f => hh.LOOPEACH({apply: f}, child0))));
 }
@@ -838,7 +829,27 @@ hhapi.Atom.prototype.shrink = function() {
 /*    shrink ::Await ...                                               */
 /*---------------------------------------------------------------------*/
 hhapi.Await.prototype.shrink = function() {
-   return [hh.PAUSE({})];
+   
+   function expand(node) {
+      const trap = gentrap("await");
+      const trapattr = {[trap]: trap};
+      const applyattr = {apply: node.func};
+      return hh.SEQUENCE(
+	 {},
+	 hh.PAUSE({}),
+	 hh.TRAP(
+	    trapattr,
+	    hh.LOOP(
+	       {},
+	       hh.IF(
+		  applyattr,
+		  hh.EXIT(trapattr),
+		  hh.PAUSE({})))));
+   }
+   
+   const funcs = shrinkFunc(this.func);
+   return [hh.PAUSE({}), expand(this)]
+      .concat(funcs.map(f => hh.AWAIT({apply: f})));
 }
 
 /*---------------------------------------------------------------------*/
@@ -854,5 +865,5 @@ hhapi.Sync.prototype.shrink = function() {
 let trapCnt = 0;
    
 function gentrap(lbl){
-   return "_" + lbl + trapCnt++;
+   return lbl + trapCnt++;
 }   

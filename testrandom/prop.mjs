@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Fri Nov 28 10:09:30 2025 (serrano)                */
+/*    Last change :  Mon Dec  1 12:37:42 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -135,21 +135,14 @@ function makeProp(machCtor) {
 	    const r0 = runMach(machs[0], events);
 
 	    if (config.VERBOSE >= 1) {
-	       console.error(`   ${machs[0].name()}: ${r0[r0.length-1].status} (${r0.length})`);
-	    }
-	    
-	    if (config.VERBOSE >= 3) {
-	       console.error("r0=", r0);
-	       if (machs[0].dumpNets) {
-		  machs[0].dumpNets(machs[0],false, ".foo.json");
-	       }
+	       console.error(`  |   | ${machs[0].name()}: ${r0[r0.length-1].status} (${r0.length})`);
 	    }
 	    
 	    for (let i = 1; i < machs.length; i++) {
 	       const ri = runMach(machs[i], events);
 
-	       if (verbose >= 1) {
-		  console.error(`   ${machs[i].name()}: ${ri[ri.length-1].status} (${ri.length})`);
+	       if (config.VERBOSE >= 1) {
+		  console.error(`  |   | ${machs[i].name()}: ${ri[ri.length-1].status} (${ri.length})`);
 	       }
 	       
 	       if (r0.length !== ri.length) {

@@ -93,6 +93,35 @@ the `react` method of the machine will be called again.
 <!-- ${doc.includeCode("../../test/trap-par-3.hh.js", "hiphop")} -->
 
 
+### await (delay) ###
+<!-- [:@glyphicon glyphicon-tag syntax] -->
+
+&#x2606; [Formal syntax](../syntax/hiphop.bnf#HHAwait)
+
+Block the execution until delay is true.
+
+<span class="hiphop">&#x2605;</span> Example: [abro.hh.js](../../test/abro.hh.js)
+<!-- ${doc.includeCode("../../test/abro.hh.js", "hiphop")} -->
+
+The form `await` is a derived form. The form:
+
+```javascript
+await (expr);
+}
+```
+is equivalent to:
+
+```javascript
+yield;
+brk: loop {
+  if (expr) {
+     break brk;
+  } else {
+    yield;
+  }
+}
+```
+
 ### fork { ... } par { ... } ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
@@ -278,8 +307,10 @@ is equivalent to:
 
 ```javascript
 loop {
-  ... body ...
-  await (expr);
+  abort (expr) {
+    ... body ...
+	halt;
+  }
 }
 ```
 
