@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Thu Nov 27 09:53:49 2025 (serrano)                */
+/*    Last change :  Mon Dec  1 06:38:57 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -760,11 +760,32 @@ hhapi.Abort.prototype.shrink = function() {
 /*    shrink ::Every ...                                               */
 /*---------------------------------------------------------------------*/
 hhapi.Every.prototype.shrink = function() {
+   
+   function expand(node) {
+      const trap = gentrap("every");
+      const trapattr = {[trap]: trap};
+      const applyattr = {apply: node.func};
+      return hh.SEQUENCE(
+	 {},
+	 hh.AWAIT(applyattr),
+	 hh.LOOP(
+	    {},
+	    hh.TRAP(
+	       trapattr,
+	       hh.FORK(
+		  {},
+		  node.children[0],
+		  hh.SEQUENCE(
+		     {},
+		     hh.AWAIT(applyattr),
+		     hh.EXIT(trapattr))))));
+   }
+   
    enter(this.constructor.name);
 
    const child0 = this.children[0];
    const c0 = shrinkProg(child0);
-   const res = [child0, hh.IF({apply: this.func}, child0)];
+   const res = [child0, hh.IF({apply: this.func}, child0), expand(this)];
    const funcs = shrinkFunc(this.func);
 
    c0.forEach(c => {
@@ -778,11 +799,21 @@ hhapi.Every.prototype.shrink = function() {
 /*    shrink ::LoopEach ...                                            */
 /*---------------------------------------------------------------------*/
 hhapi.LoopEach.prototype.shrink = function() {
+
+   function expand(node) {
+      return hh.LOOP(
+	 {},
+	 HH.SEQUENCE(
+	    {},
+	    node.childre[0],
+	    hh.AWAIT({apply: node.func})));
+   }
+   
    enter(this.constructor.name);
    
    const child0 = this.children[0];
    const c0 = shrinkProg(child0);
-   const res = [child0];
+   const res = [child0, expand(this)];
    const funcs = shrinkFunc(this.func);
 
    enter(`-- ${this.constructor.name} (${child0.constructor.name}:${c0.length}) ${funcs.length}`);
@@ -817,3 +848,11 @@ hhapi.Sync.prototype.shrink = function() {
    return [];
 }
 
+/*---------------------------------------------------------------------*/
+/*    gentrap ...                                                      */
+/*---------------------------------------------------------------------*/
+let trapCnt = 0;
+   
+function gentrap(lbl){
+   return "_" + lbl + trapCnt++;
+}   

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Fri Nov 28 10:09:21 2025 (serrano)                */
+/*    Last change :  Mon Dec  1 06:58:22 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -109,7 +109,7 @@ function findBugInConf(conf) {
 
    if (res.status === "failure") {
       console.log();
-      console.log(`+- ${res.machines.map(m => m.name()).join(" / ")}`);
+      console.log(`+- ${res.machines.map(m => m.name()).join("/")}`);
       const shrink = shrinkBugInConf(conf, res);
       return {
 	 orig: conf,

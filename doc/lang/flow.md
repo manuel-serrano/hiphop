@@ -251,7 +251,7 @@ loop {
     ... body ...
   } par {
     await (expr);
-	break continue;
+    break continue;
   }
 }
 ```
