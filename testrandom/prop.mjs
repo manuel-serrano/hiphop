@@ -3,14 +3,14 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Mon Dec  1 12:37:42 2025 (serrano)                */
+/*    Last change :  Tue Dec  2 10:41:32 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
 /*=====================================================================*/
 import * as hh from "../lib/hiphop.js";
 import * as hhapi from "../lib/ast.js";
-import { jsonToHiphop } from "./json.mjs";
+import { jsonToHiphop } from "./hiphop.mjs";
 import * as config from "./config.mjs";
 
 import { writeFileSync } from "node:fs";

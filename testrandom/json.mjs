@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:45:26 2025                          */
-/*    Last change :  Thu Nov 27 08:36:10 2025 (serrano)                */
+/*    Last change :  Tue Dec  2 09:07:14 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Json dump and pretty-printing HipHop programs                    */
@@ -14,7 +14,7 @@ import * as hhapi from "../lib/ast.js";
 /*---------------------------------------------------------------------*/
 /*    export                                                           */
 /*---------------------------------------------------------------------*/
-export { jsonToHiphop, jsonToAst };
+export { jsonToAst };
 
 /*---------------------------------------------------------------------*/
 /*    tojson ...                                                       */
@@ -104,7 +104,6 @@ hhapi.If.prototype.tojson = function() {
       : this.func.toString()
 	 .replace(/^function[(][)][ ]* { return /, "")
 	 .replace(/;[ ]*}$/, "");
-
    return {
       node: "if",
       func,
@@ -121,6 +120,20 @@ hhapi.Abort.prototype.tojson = function() {
 
    return {
       node: "abort",
+      func,
+      children: this.children.map(c => c.tojson())
+   };
+}
+
+hhapi.Suspend.prototype.tojson = function() {
+   const func = (this.func instanceof hh.$Delay)
+      ? this.func.tojson()
+      : this.func.toString()
+	 .replace(/^function[(][)][ ]* { return /, "")
+	 .replace(/;[ ]*}$/, "");
+
+   return {
+      node: "suspend",
       func,
       children: this.children.map(c => c.tojson())
    };
@@ -285,6 +298,13 @@ function jsonToAst(obj) {
 	 return hh.ABORT(attrs, ...children.map(jsonToAst));
       }
 	 
+      case "suspend": {
+	 const attrs = typeof obj.func === "string"
+	    ? {apply: eval(`(function() { return ${obj.func}; })`)}
+	    : {apply: delayToAst(obj.func)};
+	 return hh.SUSPEND(attrs, ...children.map(jsonToAst));
+      }
+	 
       case "every": {
 	 const attrs = typeof obj.func === "string"
 	    ? {apply: eval(`(function() { return ${obj.func}; })`)}
@@ -316,138 +336,3 @@ function jsonToAst(obj) {
    }
 }
 
-/*---------------------------------------------------------------------*/
-/*    margins ...                                                      */
-/*---------------------------------------------------------------------*/
-const margins = [ "", " ", "  ", "   ", "    ", "     ", "      "];
-
-/*---------------------------------------------------------------------*/
-/*    margin ...                                                       */
-/*---------------------------------------------------------------------*/
-function margin(m) {
-   if (m >= margins.length) {
-      margins[m] = Array.from({length: m}).map(i => " ").join("");
-   }
-   return margins[m];
-}
-
-/*---------------------------------------------------------------------*/
-/*    jsonToHiphop ...                                                 */
-/*---------------------------------------------------------------------*/
-function jsonToHiphop(obj, m = 0) {
-   const { node, children } = obj;
-
-   function block(obj, margin) {
-      if (obj.node === "seq") {
-	 return obj.children.map(o => jsonToHiphop(o, margin)).join('\n');
-      } else {
-	 return jsonToHiphop(obj, margin);
-      }
-   }
-
-   function test(obj) {
-      if (typeof obj === "string") {
-	 return obj;
-      } else {
-	 switch (obj?.node) {
-	    case "unary":
-	       return `${obj.op}${test(obj.expr)}`;
-	    case "binary":
-	       return `(${test(obj.lhs)} ${obj.op} ${test(obj.rhs)})`;
-	    case "sig":
-	       return `${obj.value}.${obj.prop}`;
-	    default: 
-	       console.error("*** ERROR:test: illegal object", obj);
-	       throw TypeError("Illegal test: " + obj);
-	 }
-      }
-   }
-   
-   switch (node) {
-      case "module":
-	 return margin(m) + 'module() {\n'
-	    + (obj.signals.length > 0 ? (margin(m + 2) + "inout " + obj.signals.map(s => `${s} combine (x, y) => (x + y)`).join(", ") + ";\n") : "")
-	    + children.map(c => jsonToHiphop(c, m + 2)).join(';\n')
-	    + '\n' + margin(m) + '}';
-
-      case "nothing":
-	 return margin(m) + ';';
-
-      case "pause":
-	 return margin(m) + 'yield;';
-
-      case "seq":
-	 if (children.length === 0) {
-	    return "";
-	 } else {
-	    return margin(m) + '{\n'
-	       + children.map(c => jsonToHiphop(c, m + 2)).join('\n')  
-	       + '\n' + margin(m) + '}';
-	 }
-
-      case "par":
-	 if (children.length === 0) {
-	    return margin(m) + 'fork {}';
-	 } else {
-	    return margin(m) + 'fork {\n'
-	       + jsonToHiphop(children[0], m + 2)
-	       + '\n' + margin(m) + '}'
-	       + children
-		  .slice(1, children.length)
-		  .flatMap(c => ` par {\n${jsonToHiphop(c, m + 2)}\n${margin(m)}}`).join('');
-	 }
-
-      case "loop":
-	 return margin(m) + 'loop {\n'
-	    + children.map(c => jsonToHiphop(c, m + 2)).join(';\n')
-	    + '\n' + margin(m) + '}';
-
-      case "trap":
-	 return margin(m) + `${obj.trapName}: {\n`
-	    + children.map(c => jsonToHiphop(c, m + 2)).join(';\n')
-	    + '\n' + margin(m) + '}';
-
-      case "exit":
-	 return margin(m) + `break ${obj.trapName};`;
-
-      case "halt":
-	 return margin(m) + `halt;`;
-
-      case "emit":
-	 return margin(m) + `emit ${obj.signame}(${obj.value});`;
-	 
-      case "local":
-	 return margin(m) + '{\n'
-	    + (margin(m + 2) + "signal " + obj.signals.map(s => `${s} combine (x, y) => (x + y)`).join(", ") + ";\n")
-	    + children.map(c => jsonToHiphop(c, m + 2)).join('\n') + '\n'
-	    + margin(m) + '}';
-
-      case "if":
-	 return margin(m) + `if (${test(obj.func)}) {\n`
-	    + block(children[0], m + 2) + '\n'
-	    + margin(m) + "} else {\n"
-	    + block(children[1], m + 2) + '\n'
-	    + margin(m) + '}';
-	 
-      case "abort":
-	 return margin(m) + `abort (${test(obj.func)}) {\n`
-	    + block(children[0], m + 2) + '\n' 
-	    + margin(m) + '}';
-	 
-      case "every":
-	 return margin(m) + `every (${test(obj.func)}) {\n`
-	    + block(children[0], m + 2) + '\n' 
-	    + margin(m) + '}';
-	 
-      case "loopeach":
-	 return margin(m) + `do {\n`
-	    + block(children[0], m + 2) + '\n' 
-	    + margin(m) + `} every (${test(obj.func)});`;
-	 
-      case "await":
-	 return margin(m) + `await (${test(obj.func)})`;
-	 
-      case "atom":
-	 return margin(m) + `pragma { ${obj.func}; }`;
-   }
-}

@@ -3,14 +3,14 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Fri Nov 28 11:33:31 2025 (serrano)                */
+/*    Last change :  Tue Dec  2 09:32:49 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
 /*=====================================================================*/
 import * as hh from "../lib/hiphop.js";
 import * as config from "./config.mjs";
-import { jsonToHiphop } from "./json.mjs";
+import { jsonToHiphop } from "./hiphop.mjs";
 
 export { gen, genreactsigs, gensym };
 
@@ -269,6 +269,20 @@ function genTrap(weight) {
       const nenv = Object.assign({}, env);
       nenv.traps = [trap, ...nenv.traps];
       return hh.TRAP({[trap]: trap}, genStmt(nenv, size - 1));
+   };
+   return choice(weight, gen);
+}
+
+/*---------------------------------------------------------------------*/
+/*    genSuspend ...                                                   */
+/*---------------------------------------------------------------------*/
+function genSuspend(weight) {
+   const gen = (env, size) => {
+      if (env.signals.length > 0) {
+	 return hh.SUSPEND({apply: genDelay(env)}, genStmt(env, size - 1));
+      } else {
+	 return genStmt(env, size);
+      }
    };
    return choice(weight, gen);
 }

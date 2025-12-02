@@ -3,14 +3,15 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Mon Dec  1 10:29:47 2025 (serrano)                */
+/*    Last change :  Tue Dec  2 08:32:09 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
 /*=====================================================================*/
 import * as hh from "../lib/hiphop.js";
 import * as hhapi from "../lib/ast.js";
-import { jsonToHiphop, jsonToAst } from "./json.mjs";
+import { jsonToHiphop } from "./hiphop.mjs";
+import { jsonToAst } from "./json.mjs";
 import { parseExpr, exprToHiphop, exprEqual, newBinary } from "./expr.mjs"
 
 export { shrink };
@@ -740,12 +741,37 @@ hhapi.If.prototype.shrink = function() {
 /*    shrink ::Abort ...                                               */
 /*---------------------------------------------------------------------*/
 hhapi.Abort.prototype.shrink = function() {
+
+   function expand(node) {
+      const trap = gentrap("abort");
+      const trapattr = {[trap]: trap};
+      const applyattr = {apply: node.func};
+      return hh.TRAP(
+	 trapattr,
+	 hh.FORK(
+	    {},
+	    hh.SEQUENCE(
+	       {},
+	       hh.SUSPEND(
+		  applyattr,
+		  node.children[0]),
+	       hh.EXIT(trapattr)),
+	    hh.LOOP(
+	       {},
+	       hh.SEQUENCE(
+		  {},
+		  hh.PAUSE({}),
+		  hh.IF(
+		     applyattr,
+		     hh.EXIT(trapattr))))));
+   }
+	    
    enter(this.constructor.name);
    
    const child0 = this.children[0];
    const c0 = shrinkProg(child0);
    const present = hh.IF({apply: this.func}, hh.NOTHING({}), child0);
-   const res = [child0, present];
+   const res = [child0, present, expand(this)];
    const funcs = shrinkFunc(this.func);
 
    c0.forEach(c => {
@@ -761,8 +787,6 @@ hhapi.Abort.prototype.shrink = function() {
 hhapi.Every.prototype.shrink = function() {
    
    function expand(node) {
-      const trap = gentrap("every");
-      const trapattr = {[trap]: trap};
       const applyattr = {apply: node.func};
       return hh.SEQUENCE(
 	 {},

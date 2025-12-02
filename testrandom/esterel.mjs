@@ -3,10 +3,10 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Thu Nov 27 09:33:29 2025 (serrano)                */
+/*    Last change :  Tue Dec  2 07:48:16 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
-/*    Testing HipHop programs with racket/esterel                      */
+/*    Testing HipHop programs with esterel                             */
 /*=====================================================================*/
 
 /*---------------------------------------------------------------------*/
@@ -132,6 +132,10 @@ function json2esterel(o, m) {
       case "emit":
 	 return `${margin(m)}emit ${o.signame}(${o.value})\n`;
       case "abort":
+	 return `${margin(m)}abort\n`
+	    + o.children.map(c => json2esterel(c, m + 3)).join("\n")
+	    + `${margin(m)}when [ ${expr2esterel(o.func)} ]\n`
+      case "suspend":
 	 return `${margin(m)}abort\n`
 	    + o.children.map(c => json2esterel(c, m + 3)).join("\n")
 	    + `${margin(m)}when [ ${expr2esterel(o.func)} ]\n`

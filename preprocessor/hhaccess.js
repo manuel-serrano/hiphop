@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Thu Nov 27 21:22:55 2025 (serrano)                */
+/*    Last change :  Tue Dec  2 16:03:08 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
@@ -40,6 +40,8 @@ let gensym = 0;
 /*    hhaccess ...                                                     */
 /*---------------------------------------------------------------------*/
 function hhaccess(n, iscnt, hhname, accessors) {
+   if (!(n instanceof ast.J2SNode)) n = ast.wrap(n);
+
    if (isDelay(n)) {
       const axs = collectAxs(n, []);
       const signames = accessorsSigname(axs);

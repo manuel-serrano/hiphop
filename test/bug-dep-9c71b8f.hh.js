@@ -14,7 +14,7 @@ hiphop module prg(resolve) {
 
 }
 
-export const mach = new hh.ReactiveMachine(prg);
+export const mach = new hh.ReactiveMachine(prg, {verbose: -1});
 mach.outbuf = "";
 
 consoleLog("--------------- ", mach.age());

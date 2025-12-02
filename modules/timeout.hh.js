@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Wed Apr 10 09:19:07 2024 (serrano)                */
-/*    Copyright   :  2022-24 Manuel Serrano                            */
+/*    Last change :  Tue Dec  2 16:00:41 2025 (serrano)                */
+/*    Copyright   :  2022-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop timeout module.                                           */
 /*=====================================================================*/

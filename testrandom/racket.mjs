@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Fri Nov 28 11:03:14 2025 (serrano)                */
+/*    Last change :  Tue Dec  2 09:37:24 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with racket/esterel                      */
@@ -94,6 +94,8 @@ function json2racket(o) {
 	 return `(emit ${o.signame})`;
       case "abort":
 	 return `(abort ${o.children.map(json2racket).join("\n")} #:when ${expr2racket(o.func)})`;
+      case "suspend":
+	 return `(suspend ${o.children.map(json2racket).join("\n")} #:when ${expr2racket(o.func)})`;
       case "every":
 	 return `(every ${expr2racket(o.func)} #:do ${o.children.map(json2racket).join("\n")})`;
       case "loopeach":
