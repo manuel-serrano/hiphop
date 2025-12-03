@@ -17,7 +17,7 @@ const prg = hiphop module prg() {
 }
 
 
-export const mach = new hh.ReactiveMachine(prg, { sweep: true, dumpNets: true, verbose: 1 });
+export const mach = new hh.ReactiveMachine(prg, { sweep: true, verbose: 1 });
 mach.outbuf = "";
 mach.react({});
 mach.react({});
