@@ -9,9 +9,9 @@ hiphop module prg() {
    out C;
 
    T: fork {
-      suspend (A.now) {
+      suspend {
 	 ;
-      }
+      } when (A.now)
       break T;
    } par {
       loop {

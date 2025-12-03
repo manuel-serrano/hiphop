@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Nov 21 17:27:45 2025                          */
-/*    Last change :  Sat Nov 22 08:36:39 2025 (serrano)                */
+/*    Last change :  Wed Dec  3 13:43:05 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Parses the output of an esterel simulation.                      */
@@ -73,7 +73,7 @@ function parse(fd) {
 	 i = ni;
       }
    } catch(e) {
-      events.push({status: "error", signals: {}, msg: e});
+      events.push({status: "trouble", signals: {}, msg: e});
    }
    
    console.log(JSON.stringify(events));

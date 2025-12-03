@@ -5,9 +5,9 @@ export const mach = new hh.ReactiveMachine(
    hiphop module() {
       inout S, R, E;
       loop {
-	 suspend from immediate( S.now ) to immediate( R.now ) emit E() {
+	 suspend {
 	    pragma { mach.outbuf += "not suspended!\n" }
-	 }
+	 } from immediate( S.now ) to immediate( R.now ) emit E()
 	 yield;
       }
    } );

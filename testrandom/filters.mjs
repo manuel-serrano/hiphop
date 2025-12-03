@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 18 07:40:33 2025                          */
-/*    Last change :  Tue Dec  2 07:36:15 2025 (serrano)                */
+/*    Last change :  Wed Dec  3 10:05:43 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop filters                                                   */
@@ -19,34 +19,37 @@ export { filterinstantaneous };
 /*    filterinstantaneous ...                                          */
 /*---------------------------------------------------------------------*/
 const filterinstantaneous = {
-   check(prog) {
+   name() {
+      return "instantaneous loop filter"
+   },
+   check(prop, prog) {
       // return false if no error found, otherwise, returns an error object
       if (config.LOOPSAFE) {
 	 try {
 	    new hh.ReactiveMachine(prog.clone(), { loopSafe: true, cloneAst: false });
 	    return false;
-	 } catch (e) {
-	    if (e instanceof hh.LoopError) {
+	 } catch (err) {
+	    if (err instanceof hh.LoopError) {
 	       if (config.VERBOSE >= 3) {
-		  console.error("*** ERROR: ", e.toString());
+		  console.error("*** ERROR: ", err.toString());
 	       }
+	       return err;
 	    } else {
-	       console.error("*** ERROR: ", e.toString());
+	       console.error("*** ERROR: ", err.toString());
 	       console.error(jsonToHiphop(prog.tojson()));
-	       throw e;
+	       throw err;
 	    }
-	    return e;
 	 }
       } else {
 	 return false;
       }
    },
-   patch(prog, err) {
+   patch(err) {
       if (err.node) {
 	 if (config.VERBOSE >= 3) {
 	    console.error("patching instantaneous loop...", err.node.key);
 	 }
-	 return prog.fixIL(err.node);
+	 return err.prog.fixIL(err.node);
       }
    }
 }

@@ -113,11 +113,11 @@
 
 <HHWeakabort> --> weakabort <HHBlock> when <HHDelay>
 
-<HHSuspend> --> suspend <HHDelay> <HHBlock>
-  | suspend from <HHDelay> to <HHDelay> <HHBlock>
-  | suspend from <HHDelay> to <HHDelay> emit <Identifier>() <HHBlock>
-  | suspend toggle <HHDelay> <HHBlock>
-  | suspend toggle <HHDelay> emit <Identifier>() <HHBlock>
+<HHSuspend> --> suspend <HHBlock> when <HHDelay>
+  | suspend <HHBlock> from <HHDelay> to <HHDelay>
+  | suspend <HHBlock> from <HHDelay> to <HHDelay> emit <Identifier>()
+  | suspend <HHBlock> toggle <HHDelay>
+  | suspend <HHBlock> toggle <HHDelay> emit <Identifier>()
 
 <HHLoop> --> loop <HHBlock>
 

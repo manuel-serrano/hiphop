@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Dec  3 06:47:10 2025 (serrano)                */
+/*    Last change :  Wed Dec  3 15:20:22 2025 (serrano)                */
 /*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1241,9 +1241,9 @@ function parseWeakabort(token) {
 /*    parseSuspend ...                                                 */
 /*    -------------------------------------------------------------    */
 /*    stmt ::= ...                                                     */
-/*       | SUSPEND delay { stmt }                                      */
-/*       | SUSPEND from delay to delay [emit <Identifier>()] { stmt }  */
-/*       | SUSPEND toggle delay [emit <Identifier>()] { stmt }         */
+/*       | SUSPEND { stmt } when delay                                 */
+/*       | SUSPEND { stmt } from delay to delay [emit <Identifier>()]  */
+/*       | SUSPEND { stmt } toggle delay [emit <Identifier>()]         */
 /*                                                                     */
 /*    (MS: I am not sure about the delay arguments. It looks like      */
 /*    to me that immediate would be meaning less here.)                */
@@ -1265,63 +1265,75 @@ function parseSuspend(token) {
       }
    }
 
-   const loc = token.location;
-   const tag = tagInit("suspend", loc);
+   if (this.peekToken().type !== this.LBRACE) {
+      const tok = this.peekToken();
+      const msg = token.value + ": unexpected token `"
+	 + tok.value
+	 + "'. See " + config.homepage + "/doc/lang/flow.html#suspend"
+      throw error.SyntaxError(msg, tokenLocation(tok));
+   } else {
+      const loc = token.location;
+      const tag = tagInit("suspend", loc);
 
-   let delay;
-   let inits = [locInit(loc)];
-   let accessors = [];
-   let signames = [];
-   
-   if (isIdToken(this, this.peekToken(), "from")) {
-      // SUSPEND FROM delay TO delay [whenemitsuspended] BLOCK
-      const { inits: from, accessors: afrom, signames: signamesfrom } =
+      const stmts = parseHHBlock.call(this);
+      
+      let delay;
+      let inits = [locInit(loc)];
+      let accessors = [];
+      let signames = [];
+      
+      if (isIdToken(this, this.peekToken(), "from")) {
+	 // SUSPEND FROM delay TO delay [whenemitsuspended] BLOCK
+	 const { inits: from, accessors: afrom, signames: signamesfrom } =
 	    parseDelay.call(
 	       this, this.consumeAny().location, "SUSPEND", "fromApply");
-      const tot = this.consumeAny();
-      if (!isIdToken(this, tot, "to")) {
-	 throw error.SyntaxError("SUSPEND: unexpected token `" + tot.value + "'.",
-				  tokenLocation(tot));
-      }
+	 const tot = this.consumeAny();
+	 if (!isIdToken(this, tot, "to")) {
+	    throw error.SyntaxError("SUSPEND: unexpected token `" + tot.value + "'.",
+				    tokenLocation(tot));
+	 }
 
-      const { inits: to, accessors: ato, signames: signamesto } =
+	 const { inits: to, accessors: ato, signames: signamesto } =
 	    parseDelay.call(this, tot.location, "SUSPEND", "toApply");
 
-      parseEmitwhensuspended.call(this, inits);
-      
-      inits = inits.concat(from);
-      inits = inits.concat(to);
-      accessors = afrom.concat(ato);
-      accessors = [astutils.J2SArray(loc, afrom),
-		   astutils.J2SArray(loc, ato)];
-      signames = signamesfrom.concat(signamesto);
-   } else if (isIdToken(this, this.peekToken(), "toggle")) {
-      // SUSPEND TOGGLE delay [whenemitsuspended] BLOCK
-      const tot = this.consumeAny();
-      const { inits: toggle, accessors: atoggle, signames: signamestoggle } =
+	 parseEmitwhensuspended.call(this, inits);
+	 
+	 inits = inits.concat(from);
+	 inits = inits.concat(to);
+	 accessors = afrom.concat(ato);
+	 accessors = [astutils.J2SArray(loc, afrom),
+		      astutils.J2SArray(loc, ato)];
+	 signames = signamesfrom.concat(signamesto);
+      } else if (isIdToken(this, this.peekToken(), "toggle")) {
+	 // SUSPEND TOGGLE delay [whenemitsuspended] BLOCK
+	 const tot = this.consumeAny();
+	 const { inits: toggle, accessors: atoggle, signames: signamestoggle } =
 	    parseDelay.call(this, tot.location, "SUSPEND", "toggleApply", "toggleSignal");
-      
-      parseEmitwhensuspended.call(this, inits);
+	 
+	 parseEmitwhensuspended.call(this, inits);
 
-      inits = inits.concat(toggle);
-      accessors = atoggle;
-      signames = signamestoggle;
-   } else {
-      // SUSPEND delay BLOCK
-      const { inits: is, accessors: aexpr, signames: signamessuspend } =
+	 inits = inits.concat(toggle);
+	 accessors = atoggle;
+	 signames = signamestoggle;
+      } else if (isIdToken(this, this.peekToken(), "when")) {
+	 // SUSPEND BLOCK when delay
+	 this.consumeAny();
+	 const { inits: is, accessors: aexpr, signames: signamessuspend } =
 	    parseDelay.call(this, loc, "SUSPEND", "apply");
 
-      inits = inits.concat(is);
-      accessors = aexpr;
-      signames = signamessuspend;
+	 inits = inits.concat(is);
+	 accessors = aexpr;
+	 signames = signamessuspend;
+      } else {
+	 throw tokenValueError(this.peekToken());
+      }
+	 
+      const attrs = astutils.J2SObjInit(loc, inits, tag);
+      const node = astutils.J2SCall(
+	 loc, hhref(loc, "SUSPEND"), null,
+	 [attrs].concat(accessors, stmts));
+      return wrapSignalNames(node, signames);
    }
-   const stmts = parseHHBlock.call(this);
-
-   const attrs = astutils.J2SObjInit(loc, inits, tag);
-   const node = astutils.J2SCall(
-      loc, hhref(loc, "SUSPEND"), null,
-      [attrs].concat(accessors, stmts));
-   return wrapSignalNames(node, signames);
 }
 
 /*---------------------------------------------------------------------*/

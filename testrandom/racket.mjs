@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Tue Dec  2 09:37:24 2025 (serrano)                */
+/*    Last change :  Wed Dec  3 13:43:52 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with racket/esterel                      */
@@ -95,7 +95,7 @@ function json2racket(o) {
       case "abort":
 	 return `(abort ${o.children.map(json2racket).join("\n")} #:when ${expr2racket(o.func)})`;
       case "suspend":
-	 return `(suspend ${o.children.map(json2racket).join("\n")} #:when ${expr2racket(o.func)})`;
+	 return `(suspend ${o.children.map(json2racket).join("\n")} ${expr2racket(o.func)})`;
       case "every":
 	 return `(every ${expr2racket(o.func)} #:do ${o.children.map(json2racket).join("\n")})`;
       case "loopeach":
@@ -137,9 +137,9 @@ function makeProg(prog, filename) {
       + ('(define (handler x)\n')
       + ('    (display (exn-message x) (current-error-port))\n')
       + ('    (newline (current-error-port))\n')
-      + ('    (list "{\\\"status\\\": \\\"error\\\", \\\"msg\\\": \\\""\n')
+      + ('    (list "{\\\"status\\\": \\\"trouble\\\", \\\"msg\\\": \\\""\n')
       + ('       (regexp-replace* #rx"\n" (exn-message x) " ")\n')
-      + ('       "\\\", \\\"reason\\\": \\\"exception\\\"}"))\n')
+      + ('       "\\\", \\\"reason\\\": \\\"exception\\\", \\\"signals\\\": {}}"))\n')
       + ('\n')
       + (`(define (run-mach machine events)\n`)
       + (`   (cons "["\n`)
@@ -198,7 +198,7 @@ function makeStandaloneProg(prog, events) {
       + ('(define (handler x)\n')
       + ('    (display (exn-message x) (current-error-port))\n')
       + ('    (newline (current-error-port))\n')
-      + ('    (list "{\\\"status\\\": \\\"error\\\", \\\"msg\\\": \\\""\n')
+      + ('    (list "{\\\"status\\\": \\\"trouble\\\", \\\"msg\\\": \\\""\n')
       + ('       (regexp-replace* #rx"\n" (exn-message x) " ")\n')
       + ('       "\\\", \\\"reason\\\": \\\"exception\\\"}"))\n')
       + ('\n')

@@ -2,12 +2,12 @@ import * as hh from "@hop/hiphop";
 
 const prg = hiphop module() {
    in I; out J, O;
-   suspend (I.now) {
+   suspend {
       loop {
 	 emit O();
 	 yield;
       }
-   }
+   } when (I.now)
    emit J();
 }   
 

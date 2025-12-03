@@ -7,12 +7,12 @@ import { format } from "util";
 export const mach = new hh.ReactiveMachine(
    hiphop module() {
       inout S, R, E;
-      suspend from (S.now) to (R.now) emit E() {
+      suspend {
 	 loop {
 	    pragma { mach.outbuf += "not suspended!\n"; }
 	    yield;
 	 }
-      }
+      } from (S.now) to (R.now) emit E()
    } );
 
 mach.outbuf = "";

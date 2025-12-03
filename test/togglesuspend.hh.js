@@ -3,12 +3,12 @@ import * as hh from "@hop/hiphop";
 hiphop module prog() {
    inout toggle;
    
-   suspend toggle (toggle.now) {
+   suspend {
       loop {
 	 pragma { mach.outbuf += "plop\n"; }
 	 yield;
       }
-   }
+   } toggle (toggle.now)
 }
 
 export const mach = new hh.ReactiveMachine(prog);

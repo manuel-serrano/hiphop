@@ -188,8 +188,9 @@ A loop can be interrupted by exiting with a `break` statement.
 Suspension
 ----------
 
-### suspend delay { block } ###
+### suspend { block } delay ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
+<a id="suspend"/>
 
 Suspend the execution of `block` while `delay` is true.
 

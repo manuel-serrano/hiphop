@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Tue Dec  2 08:32:09 2025 (serrano)                */
+/*    Last change :  Wed Dec  3 13:13:01 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -346,6 +346,19 @@ hhapi.If.prototype.shrinkSignal = function(sig) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    shrinkSignal ::Suspend ...                                       */
+/*---------------------------------------------------------------------*/
+hhapi.Suspend.prototype.shrinkSignal = function(sig) {
+   const func = shrinkSignalFunc(this.func, sig);
+
+   if (func) {
+      return shrinkSignalASTNode(this, hh.SUSPEND, {apply: func}, sig);
+   } else {
+      return this.children[0].shrinkSignal(sig);
+   }
+}
+
+/*---------------------------------------------------------------------*/
 /*    shrinkSignal ::Abort ...                                         */
 /*---------------------------------------------------------------------*/
 hhapi.Abort.prototype.shrinkSignal = function(sig) {
@@ -474,6 +487,14 @@ hhapi.Local.prototype.shrinkTrap = function(trap) {
 hhapi.If.prototype.shrinkTrap = function(trap) {
    const attrs = {apply: this.func};
    return shrinkTrapASTNode(this, hh.IF, attrs, trap);
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrinkTrap ::Suspend ...                                         */
+/*---------------------------------------------------------------------*/
+hhapi.Abort.prototype.shrinkTrap = function(trap) {
+   const attrs = {apply: this.func};
+   return shrinkTrapASTNode(this, hh.SUSPEND, attrs, trap);
 }
 
 /*---------------------------------------------------------------------*/
@@ -736,6 +757,26 @@ hhapi.If.prototype.shrink = function() {
    return leave(res)
       .concat(funcs.map(f => hh.IF({apply: f}, child0, child1)));
 }
+
+/*---------------------------------------------------------------------*/
+/*    shrink ::Suspend ...                                             */
+/*---------------------------------------------------------------------*/
+hhapi.Suspend.prototype.shrink = function() {
+   enter(this.constructor.name);
+   
+   const funcs = shrinkFunc(this.func);
+   const child0 = this.children[0];
+   const c0 = shrinkProg(child0);
+   const res = [child0];
+
+   for (let i = 0; i < c0.length; i++) {
+      res.push(hh.SUSPEND({apply: this.func}, c0[i]));
+   }
+
+   return leave(res)
+      .concat(funcs.map(f => hh.SUSPEND({apply: f}, child0)));
+}
+
 
 /*---------------------------------------------------------------------*/
 /*    shrink ::Abort ...                                               */

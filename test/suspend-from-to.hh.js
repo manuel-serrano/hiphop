@@ -4,12 +4,12 @@ import { format } from "util";
 hiphop module prg() {
    inout I; inout O;
    yield;
-   suspend from (I.now) to(O.now) {
+   suspend {
       loop {
 	 pragma { mach.outbuf += "ploup!\n"; }
 	 yield;
       }
-   }
+   } from (I.now) to(O.now)
 }
 
 export const mach = new hh.ReactiveMachine( prg );

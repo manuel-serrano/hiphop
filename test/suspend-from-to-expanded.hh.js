@@ -9,12 +9,12 @@ hiphop module prg() {
    yield;
    signal SUSPEND_CONTINUOUS;
    END_BODY: fork {
-      suspend immediate (SUSPEND_CONTINUOUS.now) {
+      suspend {
 	 loop {
 	    pragma { mach.outbuf += "ploup!\n"; }
 	    yield;
 	 }
-      }
+      } when immediate (SUSPEND_CONTINUOUS.now)
       break END_BODY;
    } par {
       every (I.now) {

@@ -6,7 +6,7 @@ let glob = 5;
 hiphop module prg(resolve) {
    in RESS; in S; out O; out OT; in T;
    fork {
-      suspend (S.now) {
+      suspend {
 	 async (T) {
 	    mach.outbuf += "Oi.\n";
 	    setTimeout(function(self) {
@@ -18,7 +18,7 @@ hiphop module prg(resolve) {
 	 } resume {
 	    mach.outbuf += "resumed.\n";
 	 }
-      }
+      } when (S.now)
    } par {
       emit O();
    }

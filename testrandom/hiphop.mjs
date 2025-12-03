@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Wed Dec  3 07:57:08 2025 (serrano)                */
+/*    Last change :  Wed Dec  3 13:46:24 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with Hiphop                              */
@@ -110,7 +110,7 @@ function jsonToHiphop(obj, m = 0) {
    switch (node) {
       case "module":
 	 return margin(m) + 'module() {\n'
-	    + (obj.signals.length > 0 ? (margin(m + 2) + "inout " + obj.signals.map(s => `${s} combine (x, y) => (x + y)`).join(", ") + ";\n") : "")
+	    + (obj.signals.length > 0 ? (margin(m + 2) + "inout " + obj.signals.map(s => `${s} = 0 combine (x, y) => (x + y)`).join(", ") + ";\n") : "")
 	    + children.map(c => jsonToHiphop(c, m + 2)).join(';\n')
 	    + '\n' + margin(m) + '}';
 
@@ -162,7 +162,7 @@ function jsonToHiphop(obj, m = 0) {
 	 
       case "local":
 	 return margin(m) + '{\n'
-	    + (margin(m + 2) + "signal " + obj.signals.map(s => `${s} combine (x, y) => (x + y)`).join(", ") + ";\n")
+	    + (margin(m + 2) + "signal " + obj.signals.map(s => `${s} = 0 combine (x, y) => (x + y)`).join(", ") + ";\n")
 	    + children.map(c => jsonToHiphop(c, m + 2)).join('\n') + '\n'
 	    + margin(m) + '}';
 
@@ -179,9 +179,9 @@ function jsonToHiphop(obj, m = 0) {
 	    + margin(m) + `} when (${test(obj.func)})`;
 	 
       case "suspend":
-	 return margin(m) + `suspend (${test(obj.func)}) {\n`
+	 return margin(m) + `suspend {\n`
 	    + block(children[0], m + 2) + '\n' 
-	    + margin(m) + '}';
+	    + margin(m) + '} when (${test(obj.func)})';
 	 
       case "every":
 	 return margin(m) + `every (${test(obj.func)}) {\n`

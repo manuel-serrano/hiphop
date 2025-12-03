@@ -3,56 +3,45 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Tue Dec  2 07:46:12 2025 (serrano)                */
+/*    Last change :  Wed Dec  3 09:09:27 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
 /*=====================================================================*/
-import { makeProp } from "./prop.mjs";
+import { Prop } from "./prop.mjs";
 import { gen, gensym, genreactsigs } from "./gen.mjs";
-import { filterinstantaneous } from "./filters.mjs";
 import { shrink } from "./shrink.mjs";
 import { jsonToAst } from "./json.mjs";
 import { jsonToHiphop } from "./hiphop.mjs";
 import { parse } from "../preprocessor/parser.js";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { COUNT, MACHINES, VERBOSE, REASON } from "./config.mjs";
+import { ITERATION, SYSTEMS, VERBOSE } from "./config.mjs";
 import * as hh from "./hiphop.mjs";
 import * as racket from "./racket.mjs";
 import * as esterel from "./esterel.mjs";
 
 /*---------------------------------------------------------------------*/
-/*    M ...                                                            */
-/*---------------------------------------------------------------------*/
-function M(name) {
-   return MACHINES.indexOf(name) >= 0;
-}
-
-/*---------------------------------------------------------------------*/
 /*    prop ...                                                         */
 /*---------------------------------------------------------------------*/
-export const prop = makeProp([
-   M("default") && (prg => new hh.ReactiveMachine(prg, { name: "default", native: "no" })),
-   M("forkorkill") && (prg => new hh.ReactiveMachine(prg, { name: "forkorkill", forkOrKill: true })),
-   M("no-loopunroll") && (prg => new hh.ReactiveMachine(prg, { name: "no-loopunroll", loopUnroll: false })),
-   M("native") && (prg => new hh.ReactiveMachine(prg, { name: "native", native: "try" })),
-   M("forcenative") && (prg => new hh.ReactiveMachine(prg, { name: "native", native: "force" })),
-   M("no-unreachable") && (prg => new hh.ReactiveMachine(prg, { name: "no-unreachable", unreachable: false })),
-   M("colin") && (prg => new hh.ReactiveMachine(prg, { name: "colin", compiler: "int" })),
-   M("colin-no-sweep") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: 0 })),
-   M("colin-sweep-wire") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: -1 })),
-   M("racket") && (prg => new racket.ReactiveMachine(prg, { name: "racket" })),
-   M("esterel") && (prg => new esterel.ReactiveMachine(prg, { name: "esterel" }))
-].filter(x => x));
-
-let k = 0;
+export const prop = new Prop(
+   { name: "default", ctor: (prg => new hh.ReactiveMachine(prg, { name: "default", native: "no" })), config: { maxLoop: 3 } },
+   { name: "racket", ctor: (prg => new racket.ReactiveMachine(prg, { name: "racket" })), config: { expr: 0 } },
+   { name: "esterel", ctor: (prg => new esterel.ReactiveMachine(prg, { name: "esterel" })), config: { pre: 0 } }
+/*    M("default") && (prg => new hh.ReactiveMachine(prg, { name: "default", native: "no", randomTesting: { maxLoop: 3 }))), */
+/*    M("forkorkill") && (prg => new hh.ReactiveMachine(prg, { name: "forkorkill", forkOrKill: true })), */
+/*    M("no-loopunroll") && (prg => new hh.ReactiveMachine(prg, { name: "no-loopunroll", loopUnroll: false })), */
+/*    M("native") && (prg => new hh.ReactiveMachine(prg, { name: "native", native: "try" })), */
+/*    M("forcenative") && (prg => new hh.ReactiveMachine(prg, { name: "native", native: "force" })), */
+/*    M("no-unreachable") && (prg => new hh.ReactiveMachine(prg, { name: "no-unreachable", unreachable: false })), */
+/*    M("colin") && (prg => new hh.ReactiveMachine(prg, { name: "colin", compiler: "int" })), */
+/*    M("colin-no-sweep") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: 0 })), */
+   /*    M("colin-sweep-wire") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: -1 })), */
+);
 
 /*---------------------------------------------------------------------*/
 /*    shrinkBugInConf ...                                              */
 /*---------------------------------------------------------------------*/
-function shrinkBugInConf(conf, res) {
-   const machines = res.machines;
-   const prop = makeProp(machines.map(m => prg => new m.constructor(prg, m.opts)));
+function shrinkBugInConf(prop, conf, res) {
 
    function shrinker(conf, res, margin) {
       const confs = shrink(conf);
@@ -67,16 +56,16 @@ function shrinkBugInConf(conf, res) {
       
 	 for (let i = 0; i < confs.length; i++) {
 	    try {
-	       const r = prop(confs[i]);
+	       const r = prop.run(confs[i]);
 	       writeFileSync(2, ".");
 	       
 	       if (VERBOSE >= 1) {
-		  console.error("  |" + margin + " +-", r.status, r.msg);
+		  console.error("  |" + margin + " +-", r.status, r.reason);
 		  if (VERBOSE >= 4) {
 		     console.error(jsonToHiphop(confs[i].prog.tojson()));
 		  }
 	       }
-	       if (r.status === "failure" && (REASON === false || r.reason === resreason)) {
+	       if (r.status === "failure") {
 		  // we still have an error, shrink more
 		  return shrinker(confs[i], r, margin + " ");
 	       }
@@ -85,11 +74,12 @@ function shrinkBugInConf(conf, res) {
 	       if (VERBOSE >= 1) {
 		  console.error("shrinker E=", e);
 	       }
+	       throw e;
 	    }
 	 }
 
 	 if (VERBOSE >= 1) {
-	    console.error("  |" + margin + " #- ending shrink with", res.status, res.msg);
+	    console.error("  |" + margin + " #- ending shrink with", res.status, res.reason);
 	 }
 	 
 	 return { conf, res };
@@ -111,54 +101,78 @@ function shrinkBugInConf(conf, res) {
 /*---------------------------------------------------------------------*/
 /*    findBugInConf ...                                                */
 /*---------------------------------------------------------------------*/
-function findBugInConf(conf) {
-   const res = prop(conf, VERBOSE);
+function findBugInConf(prop, conf) {
+   const res = prop.run(conf);
 
-   if (res.status === "failure") {
-      console.log();
-      console.log(`+- ${res.machines.map(m => m.name()).join("/")}`);
-      const shrink = shrinkBugInConf(conf, res);
-      return {
-	 orig: conf,
-	 shrink: shrink.conf,
-	 res: shrink.res,
-	 machines: res.machines,
-	 status: res.status
-      }
-   } else {
-      return res;
+   switch (res.status) {
+      case "failure":
+	 console.log();
+	 console.log(`+- ${res.systems.map(m => m.name).join("/")}`);
+	 const shrink = shrinkBugInConf(prop, conf, res);
+	 return {
+	    status: res.status,
+	    origConf: conf,
+	    shrinkConf: shrink.conf,
+	    res: shrink.res,
+	    systems: res.systems,
+	    machines: res.machines
+	 }
+      case "error":
+	 console.log();
+	 console.log(`+- ${res.machines.map(m => m.name()).join("/")}`);
+	 return res;
+      default:
+	 return false;
    }
 }
-   
+
 /*---------------------------------------------------------------------*/
 /*    findBugInGen ...                                                 */
 /*---------------------------------------------------------------------*/
-function findBugInGen(iterCount = COUNT) {
-   const pad = ["", " ", "  ", "   ", "    "];
-   
-   function padding(n, l) {
-      const s = n + "";
-      return pad[l - s.length] + s;
-   }
-
+function findBugInGen(prop, iterCount) {
    for (let i = 0; i < iterCount; i++) {
-      if (i % 72 === 0) {
-	 writeFileSync(1, "\n" + padding(i, 5) + " ");
-      }
-      writeFileSync(1, ".");
-      
-      const conf = gen({filters: [filterinstantaneous]});
-      const bug = findBugInConf(conf);
+      writePadding(i);
 
-      if (bug.status !== "success") return bug;
+      const conf = gen(prop);
+      const bug = findBugInConf(prop, conf);
+
+      switch (bug?.status) {
+	 case "reject": iterCount++; break;
+	 case "failure": return bug;
+	 case "error": return bug;
+      }
    }
+   
    return false;
+}
+
+/*---------------------------------------------------------------------*/
+/*    pad ...                                                          */
+/*---------------------------------------------------------------------*/
+const pad = ["", " ", "  ", "   ", "    "];
+
+/*---------------------------------------------------------------------*/
+/*    padding ...                                                      */
+/*---------------------------------------------------------------------*/
+function padding(n, l) {
+   const s = n + "";
+   return pad[l - s.length] + s;
+}
+
+/*---------------------------------------------------------------------*/
+/*    writePadding ...                                                 */
+/*---------------------------------------------------------------------*/
+function writePadding(i) {
+   if (i % 72 === 0) {
+      writeFileSync(1, "\n" + padding(i, 5) + " ");
+   }
+   writeFileSync(1, ".");
 }
 
 /*---------------------------------------------------------------------*/
 /*    outJson ...                                                      */
 /*---------------------------------------------------------------------*/
-function outJson(target, {prog, events}) {
+function outJson(target, { prog, events }) {
    writeFileSync(target, JSON.stringify({ events: events, prog: prog.tojson() }));
 }
 
@@ -167,8 +181,8 @@ function outJson(target, {prog, events}) {
 /*---------------------------------------------------------------------*/
 function dumpBug(bug) {
    bug.machines.forEach(m => {
-      console.log("  +- see", m.outConf("", bug.shrink), `(${m.name()})`);
-      console.log("  +- see", m.outConf(".orig", bug.orig), `(${m.name()})`);
+      console.log("  +- see", m.outConf("", bug.shrinkConf), `(${m.name()})`);
+      console.log("  +- see", m.outConf(".orig", bug.origConf), `(${m.name()})`);
    });
 }
 
@@ -181,7 +195,7 @@ function parseSrcFile(filename) {
       const srcfile = filename.replace(/hh.json/, "hh.mjs");
       const { events, prog } = JSON.parse(readFileSync(filename));
       const ast = jsonToAst(prog);
-      return { srcfile, events, prog, ast };
+      return { srcfile, events, prog: ast };
    }
    
    function parseHiphopFile(filename) {
@@ -199,36 +213,41 @@ function parseSrcFile(filename) {
 /*    main                                                             */
 /*---------------------------------------------------------------------*/
 async function main(argv) {
-   console.log("Testing:", MACHINES);
-   
    if (argv.length < 3) {
-      const bug = findBugInGen();
+      const bug = findBugInGen(prop, ITERATION);
 
       if (bug) {
 	 const jsonfile = "bug.hh.json";
 	 const jsonfileorig = "bug.orig.hh.json";
 	 console.log('  |');
-	 console.log("  +-", bug.res.status, bug.res.msg);
+	 console.log("  +-", bug.status, `[${bug.res.reason}]`);
 	 console.log('  |');
 	 console.log(`  +- see ${jsonfile}`);
 	 console.log(`  +- see ${jsonfileorig}`);
 	 console.log('  |');
-	 outJson(jsonfile, bug.shrink);
-	 outJson(jsonfileorig, bug.orig);
+	 outJson(jsonfile, bug.shrinkConf);
+	 outJson(jsonfileorig, bug.origConf);
 	 dumpBug(bug);
       }
    } else if (existsSync(argv[2])) {
       const jsonfile = "bug.hh.json";
-      const { srcfile, events, prog, ast } = parseSrcFile(argv[2]);
-      const bug = findBugInConf({ prog: ast, events });
+      const conf = parseSrcFile(argv[2]);
+      const bug = findBugInConf(prop, conf);
 
-      if (bug.status !== "success") {
-	 dumpBug(bug);
-      } else {
-	 bug.res.forEach((r, i) => {
-	    console.log(`[${i}]: ${r.status} ${JSON.stringify(r.signals)}`);
+      console.log(bug.status, `[${bug.res.reason}]`);
+      console.log("");
+
+      bug.res.runs.forEach((r, i) => {
+	 console.log(bug.systems[i].name + ":");
+	 r.forEach((u, i) =>  {
+	    console.log(`   [${i}]: ${u.status} ${JSON.stringify(u.signals)}`);
 	 });
 	 console.log("");
+      });
+      
+      
+      if (bug.status !== "success") {
+	 dumpBug(bug);
       }
 
       if (!existsSync(jsonfile)) {
@@ -236,9 +255,9 @@ async function main(argv) {
 	 outJson(jsonfile, bug.shrink);
       }
 
-      if (!existsSync(srcfile)) {
-	 console.log(`see ${srcfile}`);
-	 writeFileSync(srcfile, jsonToHiphop(prog));
+      if (!existsSync(conf.srcfile)) {
+	 console.log(`see ${conf.srcfile}`);
+	 writeFileSync(conf.srcfile, jsonToHiphop(prog));
       }
    } else {
       throw new Error(`Illegal command line: "${argv.join(" ")}"`);

@@ -6,9 +6,9 @@ import { format } from "util";
 
 hiphop module prg() {
    in V_S_p;
-   T1: suspend(V_S_p.now) {
+   T1: suspend {
       break T1;
-   }
+   } when (V_S_p.now)
 }
 
 export const mach = new hh.ReactiveMachine( prg, "TEST" );

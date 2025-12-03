@@ -6,9 +6,9 @@ export const mach = new hh.ReactiveMachine(
       T1: fork {
 	 break T1;
       } par {
-	 suspend (L.now) {
+	 suspend {
 	    yield;
-	 }
+	 } when (L.now)
       }
       pragma { mach.outbuf += "exit trap\n"; }
    } );

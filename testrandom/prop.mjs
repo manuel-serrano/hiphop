@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Tue Dec  2 10:41:32 2025 (serrano)                */
+/*    Last change :  Wed Dec  3 09:25:16 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -12,51 +12,133 @@ import * as hh from "../lib/hiphop.js";
 import * as hhapi from "../lib/ast.js";
 import { jsonToHiphop } from "./hiphop.mjs";
 import * as config from "./config.mjs";
+import { filterinstantaneous } from "./filters.mjs";
 
-import { writeFileSync } from "node:fs";
-
-export { makeProp };
+export { Prop };
 
 /*---------------------------------------------------------------------*/
-/*    failure ...                                                      */
+/*    Prop ...                                                         */
 /*---------------------------------------------------------------------*/
-function failure(prog, mach0, machN, msg, reason, res) {
-   const jsonprog = prog.tojson();
-   const jsonstr = JSON.stringify(jsonprog);
-   const machines = [mach0, machN];
+class Prop {
+   #systems = [];
+   config = {
+      minSize: config.MINSIZE,
+      maxSize: config.MAXSIZE,
+      maxLoop: config.MAXLOOP,
+      maxTry: config.MAXTRY,
+      expr: 1,
+      filters: [ filterinstantaneous ]
+   };
+   
+   constructor(...systems) {
+      this.#systems = systems.filter(s => config.SYSTEMS.indexOf(s.name) >= 0);
+
+      if (this.#systems.length === 0) {
+	 throw new TypeError("Prop: no system defined");
+      } else {
+	 console.log("Testing:", this.#systems.map(({name}) => name));
+      }
       
-   return { status: "failure", msg, prog, machines, reason, res };
-}
-
-/*---------------------------------------------------------------------*/
-/*    equal ...                                                        */
-/*---------------------------------------------------------------------*/
-function equal(x, y) {
-   if ((x instanceof Array) && (y instanceof Array)) {
-      if (x.length === y.length) {
-	 for (let j = 0; j < x.length; j++) {
-	    if (!equal(x[j], y[j])) {
-	       return false;
+      this.#systems.forEach(s => {
+	 for (const k in this.config) {
+	    if (typeof this.config[k] === "number") {
+	       this.config[k] =
+		  Math.min(this.config[k], s?.config?.[k] ?? this.config[k]);
+	    } else if (Array.isArray(this.config[k])) {
+	       this.config[k] =
+		  this.config[k].concat(s?.config?.[k] ?? []);
 	    }
 	 }
-	 return true;
-      } else {
-	 return false;
+      });
+   }
+
+   run(conf) {
+      let f;
+
+      // check the program
+      if (f = this.config.filters.find(f => f.check(this, conf.prog))) {
+	 return { status: "reject", reason: f.name() };
       }
-   } else if ((x instanceof Object) && (y instanceof Object)) {
-      for (let k in x) {
-	 if (!equal(x[k], y[k])) {
-	    return false;
+
+      // construct all the reactive machines
+      const machs = this.#systems.map(sys => {
+	 try {
+	    return sys.ctor(conf.prog);
+	 } catch (e) {
+	    return {
+	       reactDebug(_) {
+		  throw {
+		     status: "error",
+		     reason: "compilation",
+		     message: e.toString(),
+		  }
+	       },
+	       outConf(suf, conf) {
+		  const mach = sys.ctor(hh.MODULE({}, hh.NOTHING()));
+		  return mach.outConf(suf, conf);
+	       }
+	    }
 	 }
-      }
-      for (let k in y) {
-	 if (!equal(x[k], y[k])) {
-	    return false;
+      });
+
+      // run all the machiness
+      const runs = machs.map(mach => {
+	 const res = runMach(mach, conf.events);
+
+	 if (config.VERBOSE >= 1) {
+	    console.log(
+	       `  |   | ${mach.name}:`
+		  + res[res.length-1].status + ` (${res.length})`);
 	 }
+	 return res;
+      });
+
+      try {
+	 // compare the execution results
+	 if (runs.find(r => r.length !== runs[0].length)) {
+	    return {
+	       status: "failure",
+	       reason: "numbers of reactions",
+	       systems: this.#systems,
+	       machines: machs,
+	       conf,
+	       runs
+	    };
+	 } else if (runs.find(r => r[r.length - 1].status !== runs[0][runs[0].length - 1].status)) {
+	    console.log("RUNS=", runs);
+	    const [ r0, r1 ] = runs;
+	    console.log("R0=", r0[r0.length - 1].status, "R1=", r1[r1.length - 1]);
+	    return {
+	       status: "failure",
+	       reason: "statuses",
+	       systems: this.#systems,
+	       machines: machs,
+	       conf,
+	       runs
+	    };
+	 } else if (runs.find(r => r.find((e, i) => !signalsEqual(e.signals, runs[0][i].signals)))) {
+	    return {
+	       status: "failure",
+	       reason: "signals",
+	       systems: this.#systems,
+	       machines: machs,
+	       conf,
+	       runs
+	    };
+	 } else {
+	    return {
+	       status: "success",
+	       systems: this.#systems,
+	       machines: machs,
+	       conf,
+	       runs
+	    }
+	 }
+      } catch (e) {
+	 console.error("*** ERROR while comparing results");
+	 runs.forEach(r => console.error(r));
+	 throw e;
       }
-      return x.constructor === y.constructor;
-   } else {
-      return x === y;
    }
 }
 
@@ -64,6 +146,36 @@ function equal(x, y) {
 /*    signalsEqual ...                                                 */
 /*---------------------------------------------------------------------*/
 function signalsEqual(x, y) {
+   
+   function equal(x, y) {
+      if ((x instanceof Array) && (y instanceof Array)) {
+	 if (x.length === y.length) {
+	    for (let j = 0; j < x.length; j++) {
+	       if (!equal(x[j], y[j])) {
+		  return false;
+	       }
+	    }
+	    return true;
+	 } else {
+	    return false;
+	 }
+      } else if ((x instanceof Object) && (y instanceof Object)) {
+	 for (let k in x) {
+	    if (!equal(x[k], y[k])) {
+	       return false;
+	    }
+	 }
+	 for (let k in y) {
+	    if (!equal(x[k], y[k])) {
+	       return false;
+	    }
+	 }
+	 return x.constructor === y.constructor;
+      } else {
+	 return x === y;
+      }
+   }
+
    const kx = Object.keys(x);
    const ky = Object.keys(y);
 
@@ -85,10 +197,11 @@ function runMach(mach, events) {
 	 res.push({ status: "success", signals });
       } catch (e) {
 	 if (e.message !== "Causality error.") {
-	    console.error("runMach[" + mach.name() + "]", e.toString());
-	    throw e;
+	    e.signals = {};
+	    res.push(e);
+	 } else {
+	    res.push({ status: "trouble", msg: e.toString(), signals: {} });
 	 }
-	 res.push({ status: "error", msg: e.toString(), signals: [] });
 	 return res;
       }
    }
@@ -99,77 +212,3 @@ function runMach(mach, events) {
    return res;
 }
 
-/*---------------------------------------------------------------------*/
-/*    makeProp ...                                                     */
-/*---------------------------------------------------------------------*/
-function makeProp(machCtor) {
-   
-   function resStatus(res) {
-      if (res.status === "failure") {
-	 return `failure (${res.msg})`;
-      } else {
-	 return res.status;
-      }
-   }
-
-   if (machCtor.length === 0) {
-      throw new TypeError("makeProp: no machines defined");
-   }
-
-   return ({prog, events, filters}, verbose = 0) => {
-      if (!filters || filters.every(f => !f.check(prog))) {
-	 const machs = machCtor.map(ctor => {
-	    try {
-	       return ctor(prog);
-	    } catch (e) {
-	       if (config.VERBOSE >= 2) {
-		  console.error("*** Compilation error...", e.toString());
-		  console.error("ctor=", ctor.toString());
-		  console.error("prog=", jsonToHiphop(prog.tojson()));
-	       }
-	       throw e;
-	    }
-	 });
-
-	 try {
-	    const r0 = runMach(machs[0], events);
-
-	    if (config.VERBOSE >= 1) {
-	       console.error(`  |   | ${machs[0].name()}: ${r0[r0.length-1].status} (${r0.length})`);
-	    }
-	    
-	    for (let i = 1; i < machs.length; i++) {
-	       const ri = runMach(machs[i], events);
-
-	       if (config.VERBOSE >= 1) {
-		  console.error(`  |   | ${machs[i].name()}: ${ri[ri.length-1].status} (${ri.length})`);
-	       }
-	       
-	       if (r0.length !== ri.length) {
-		  return failure(prog, machs[0], machs[i], `reaction numbers ${r0.length}/${ri.length}`, `reactions (${r0.length}/${ri.length})`, r0);
-	       }
-	       
-	       if (r0[r0.length - 1].status !== "error" || ri[ri.length - 1].status !== "error") {
-		  for (let j = 0; j < r0.length; j++) {
-		     if (r0[j].status !== ri[j].status) {
-			return failure(prog, machs[0], machs[i], `status @ #${j}: ${resStatus(r0[j])} vs ${resStatus(ri[j])}`, "status", r0);
-		     }
-		     if (!signalsEqual(r0[j].signals, ri[j].signals)) {
-			return failure(prog, machs[0], machs[i], `results @ #${j}: ${JSON.stringify(r0[j].signals)} vs ${JSON.stringify(ri[j].signals)}`,
-				       JSON.stringify(r0[j].signals) + "/" + JSON.stringify(ri[j].signals), r0);
-		     }
-		  }
-	       }
-	    }
-	    return { status: "success", msg: `(${events.length})`, machines: machs, res: r0 };
-	 } catch(e) {
-	    if (config.VERBOSE >= 3) {
-	       console.error("*** Execution error...", e.toString());
-	    }
-	    throw e;
-	 }
-      } else {
-	 return { status: "reject", reason: "filter" };
-      }
-   }
-}
