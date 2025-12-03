@@ -32,5 +32,5 @@ try {
       mach.outbuf += (i + ': ' + JSON.stringify(mach.reactDebug(e)) + '\n')
    });
 } catch (e) {
-   mach.outbuf = "causality error " + mach.age() + '\n';
+   mach.outbuf += (mach.age() + ": causality error\n");
 }

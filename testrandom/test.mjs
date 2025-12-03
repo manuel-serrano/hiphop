@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Wed Dec  3 09:09:27 2025 (serrano)                */
+/*    Last change :  Wed Dec  3 18:12:58 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -25,6 +25,7 @@ import * as esterel from "./esterel.mjs";
 /*---------------------------------------------------------------------*/
 export const prop = new Prop(
    { name: "default", ctor: (prg => new hh.ReactiveMachine(prg, { name: "default", native: "no" })), config: { maxLoop: 3 } },
+   { name: "native", ctor: (prg => new hh.ReactiveMachine(prg, { name: "native", native: "try" })), config: { maxLoop: 3 } },
    { name: "racket", ctor: (prg => new racket.ReactiveMachine(prg, { name: "racket" })), config: { expr: 0 } },
    { name: "esterel", ctor: (prg => new esterel.ReactiveMachine(prg, { name: "esterel" })), config: { pre: 0 } }
 /*    M("default") && (prg => new hh.ReactiveMachine(prg, { name: "default", native: "no", randomTesting: { maxLoop: 3 }))), */
@@ -58,7 +59,7 @@ function shrinkBugInConf(prop, conf, res) {
 	    try {
 	       const r = prop.run(confs[i]);
 	       writeFileSync(2, ".");
-	       
+
 	       if (VERBOSE >= 1) {
 		  console.error("  |" + margin + " +-", r.status, r.reason);
 		  if (VERBOSE >= 4) {
@@ -89,6 +90,7 @@ function shrinkBugInConf(prop, conf, res) {
    writeFileSync(2, " \\ shrinking ");
 
    try {
+      return { conf, res };
       return shrinker(conf, res, "  ");
    } catch(e) {
       console.error("*** SHRINK ERROR:", e.toString());
@@ -122,7 +124,13 @@ function findBugInConf(prop, conf) {
 	 console.log(`+- ${res.machines.map(m => m.name()).join("/")}`);
 	 return res;
       default:
-	 return false;
+	 return {
+	    status: res.status,
+	    origConf: conf,
+	    res,
+	    systems: res.systems,
+	    machines: res.machines,
+	 };
    }
 }
 
@@ -181,7 +189,9 @@ function outJson(target, { prog, events }) {
 /*---------------------------------------------------------------------*/
 function dumpBug(bug) {
    bug.machines.forEach(m => {
-      console.log("  +- see", m.outConf("", bug.shrinkConf), `(${m.name()})`);
+      if (bug.shrinkConf) {
+	 console.log("  +- see", m.outConf("", bug.shrinkConf), `(${m.name()})`);
+      }
       console.log("  +- see", m.outConf(".orig", bug.origConf), `(${m.name()})`);
    });
 }
@@ -245,20 +255,12 @@ async function main(argv) {
 	 console.log("");
       });
       
-      
-      if (bug.status !== "success") {
-	 dumpBug(bug);
-      }
-
       if (!existsSync(jsonfile)) {
 	 console.log("see ${jsonfile}");
 	 outJson(jsonfile, bug.shrink);
       }
 
-      if (!existsSync(conf.srcfile)) {
-	 console.log(`see ${conf.srcfile}`);
-	 writeFileSync(conf.srcfile, jsonToHiphop(prog));
-      }
+      dumpBug(bug);
    } else {
       throw new Error(`Illegal command line: "${argv.join(" ")}"`);
    }

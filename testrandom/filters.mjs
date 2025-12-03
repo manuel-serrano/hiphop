@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 18 07:40:33 2025                          */
-/*    Last change :  Wed Dec  3 10:05:43 2025 (serrano)                */
+/*    Last change :  Wed Dec  3 19:05:25 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop filters                                                   */
@@ -12,6 +12,7 @@ import * as hh from "../lib/hiphop.js";
 import * as config from "./config.mjs";
 import * as hhapi from "../lib/ast.js";
 import { jsonToHiphop } from "./hiphop.mjs";
+import { loopSafe } from "../lib/loopsafe.js";
 
 export { filterinstantaneous };
 
@@ -26,7 +27,7 @@ const filterinstantaneous = {
       // return false if no error found, otherwise, returns an error object
       if (config.LOOPSAFE) {
 	 try {
-	    new hh.ReactiveMachine(prog.clone(), { loopSafe: true, cloneAst: false });
+	    loopSafe(prog);
 	    return false;
 	 } catch (err) {
 	    if (err instanceof hh.LoopError) {

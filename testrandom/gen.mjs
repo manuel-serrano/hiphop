@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Wed Dec  3 09:11:24 2025 (serrano)                */
+/*    Last change :  Wed Dec  3 17:56:42 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -123,13 +123,13 @@ function genExpr(conf, env) {
 /*---------------------------------------------------------------------*/
 /*    genDelay ...                                                     */
 /*---------------------------------------------------------------------*/
-function genDelay(env) {
+function genDelay(conf, env) {
    
-   function gen(env, size, loop) {
+   function gen(conf, env, size, loop) {
       if (size === 1) {
 	 const i = Math.floor(Math.random() * env.signals.length);
 	 const sig = env.signals[i];
-	 const prop = (Math.random() >= 0.8) ? "pre" : "now";
+	 const prop = (conf.pre) ? ((Math.random() >= 0.8) ? "pre" : "now") : "now";
 	 const delay = new hh.DelaySig(sig, prop);
 
 	 if (Math.random() >= 0.7) {
@@ -138,8 +138,8 @@ function genDelay(env) {
 	    return delay;
 	 }
       } else {
-	 const lhs = gen(env, size - 1);
-	 const rhs = gen(env, size - 1);
+	 const lhs = gen(conf, env, size - 1);
+	 const rhs = gen(conf, env, size - 1);
 	 const op = Math.random() >= 0.5 ? "&&" : "OR";
 	 const delay = new hh.DelayBinary(op, lhs, rhs);
 
@@ -151,7 +151,7 @@ function genDelay(env) {
       }
    }
    
-   return gen(env, 1 + Math.round(Math.random() * 2));
+   return gen(conf, env, 1 + Math.round(Math.random() * 2));
 }
 
 /*---------------------------------------------------------------------*/
@@ -255,7 +255,7 @@ function genIf(weight) {
 /*---------------------------------------------------------------------*/
 function genPresent(weight) {
    const gen = (conf, env, size, loop) => {
-      const expr = genDelay(env);
+      const expr = genDelay(conf, env);
       return hh.IF(
 	 {apply: expr},
 	 genStmt(conf, env, size - 1, loop),
@@ -283,7 +283,7 @@ function genTrap(weight) {
 function genSuspend(weight) {
    const gen = (conf, env, size, loop) => {
       if (env.signals.length > 0) {
-	 return hh.SUSPEND({apply: genDelay(env)}, genStmt(conf, env, size - 1, loop));
+	 return hh.SUSPEND({apply: genDelay(conf, env)}, genStmt(conf, env, size - 1, loop));
       } else {
 	 return genStmt(conf, env, size, loop);
       }
@@ -297,7 +297,7 @@ function genSuspend(weight) {
 function genAbort(weight) {
    const gen = (conf, env, size, loop) => {
       if (env.signals.length > 0) {
-	 return hh.ABORT({apply: genDelay(env)}, genStmt(conf, env, size - 1, loop));
+	 return hh.ABORT({apply: genDelay(conf, env)}, genStmt(conf, env, size - 1, loop));
       } else {
 	 return genStmt(conf, env, size, loop);
       }
@@ -313,7 +313,7 @@ function genEvery(weight) {
       if (loop >= conf.maxLoop) {
 	 return genStmt(conf, env, size, loop);
       } else if (env.signals.length > 0) {
-	 return hh.EVERY({apply: genDelay(env)}, genStmt(conf, env, size - 1, loop + 1));
+	 return hh.EVERY({apply: genDelay(conf, env)}, genStmt(conf, env, size - 1, loop + 1));
       } else {
 	 return genStmt(conf, env, size, loop);
       }
@@ -329,7 +329,7 @@ function genLoopeach(weight) {
       if (loop >= conf.maxLoop) {
 	 return genStmt(conf, env, size, loop);
       } else if (env.signals.length > 0) {
-	 return hh.LOOPEACH({apply: genDelay(env)}, genStmt(conf, env, size - 1, loop + 1));
+	 return hh.LOOPEACH({apply: genDelay(conf, env)}, genStmt(conf, env, size - 1, loop + 1));
       } else {
 	 return genStmt(conf, env, size, loop);
       }
@@ -343,7 +343,7 @@ function genLoopeach(weight) {
 function genAwait(weight) {
    const gen = (conf, env, size, loop) => {
       if (env.signals.length > 0) {
-	 return hh.AWAIT({apply: genDelay(env)});
+	 return hh.AWAIT({apply: genDelay(conf, env)});
       } else {
 	 return genStmt(conf, env, size, loop);
       }
