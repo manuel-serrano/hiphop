@@ -8,7 +8,7 @@ hiphop module prg(resolve) {
    fork {
    do {
       fork {
-	 abort(R.now) {
+	 abort {
 	    async (T) {
 	       mach.outbuf += ("Oi.") + "\n";
 	       setTimeout(function(self) {
@@ -16,7 +16,7 @@ hiphop module prg(resolve) {
 		  self.notify(glob++ , false);
 		 }, 100, this);
 	    }
-	 }
+	 } when (R.now)
 	 emit OT(T.nowval);
       } par {
 	 emit O();

@@ -7,13 +7,13 @@ hiphop module prg() {
    in I; out J; out K; out V;
       
    loop {
-      abort( I.now ) {
+      abort {
 	 emit J();
 	 yield;
 	 emit V();
 	 yield;
-      }
-      if( I.now ) {
+      } when (I.now)
+      if (I.now) {
 	 emit K();
       }
    }

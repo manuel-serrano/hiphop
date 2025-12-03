@@ -18,11 +18,11 @@ hiphop module prg() {
       break END_BODY;
    } par {
       every (I.now) {
-	 abort (O.now) {
+	 abort {
 	    fork {
 	       sustain SUSPEND_CONTINUOUS();
 	    }
-	 }
+	 } when (O.now)
       }
    }
 }

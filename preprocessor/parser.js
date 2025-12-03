@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Fri Nov 28 06:40:44 2025 (serrano)                */
+/*    Last change :  Wed Dec  3 06:47:10 2025 (serrano)                */
 /*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -18,6 +18,7 @@ import { hhaccess } from "./hhaccess.js";
 import * as astutils from "./astutils.js";
 import { Parser, ast, list, generate } from "@hop/hopc";
 import * as error from "../lib/error.js";
+import * as config from "../lib/config.js";
 
 /*---------------------------------------------------------------------*/
 /*    parser                                                           */
@@ -31,18 +32,6 @@ const hhname = "__hh_module";
 let hhmodulePath;
 
 let hhkey = 0;
-
-/*---------------------------------------------------------------------*/
-/*    consumeID ...                                                    */
-/*---------------------------------------------------------------------*/
-function consumeID(val) {
-   const tok = this.consumeToken(this.ID);
-   if (tok.value !== val) {
-      throw tokenTypeError(tok);
-   } else {
-      return tok;
-   }
-}
 
 /*---------------------------------------------------------------------*/
 /*    setHHModulePath ...                                              */
@@ -1202,21 +1191,36 @@ function parseIf (token) {
 /*---------------------------------------------------------------------*/
 /*    parseAbortWeakabort ...                                          */
 /*    stmt ::= ...                                                     */
-/*       | ABORT delay block                                           */
-/*       | WEAKABORT delay block                                       */
+/*       | ABORT block when delay                                      */
+/*       | WEAKABORT block when delay                                  */
 /*---------------------------------------------------------------------*/
 function parseAbortWeakabort(token, command) {
    const loc = token.location;
    const tag = tagInit(command.toUpperCase(), loc);
-   const { inits, accessors, signames } = parseDelay.call(this, loc, tag, "apply");
-   const stmts = parseHHBlock.call(this);
-   const node = astutils.J2SCall(
-      loc, hhref(loc, command), null,
-      [astutils.J2SObjInit(loc, [locInit(loc), tag].concat(inits))]
-	 .concat(accessors)
-	 .concat(stmts));
 
-   return wrapSignalNames(node, signames);
+   if (this.peekToken().type !== this.LBRACE) {
+      const tok = this.peekToken();
+      const msg = token.value + ": unexpected token `"
+	 + tok.value
+	 + "'. See " + config.homepage + "/doc/lang/flow.html#abort"
+      throw error.SyntaxError(msg, tokenLocation(tok));
+   } else {
+      const stmts = parseHHBlock.call(this);
+      const tok = this.consumeToken(this.ID);
+
+      if (tok.value === "when") {
+	 const { inits, accessors, signames } = parseDelay.call(this, loc, tag, "apply");
+	 const node = astutils.J2SCall(
+	    loc, hhref(loc, command), null,
+	    [astutils.J2SObjInit(loc, [locInit(loc), tag].concat(inits))]
+	       .concat(accessors)
+	       .concat(stmts));
+
+	 return wrapSignalNames(node, signames);
+      } else {
+	 throw tokenValueError(tok);
+      }
+   }
 }
    
 /*---------------------------------------------------------------------*/

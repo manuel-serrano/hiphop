@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Tue Dec  2 12:03:41 2025 (serrano)                */
+/*    Last change :  Wed Dec  3 07:57:08 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with Hiphop                              */
@@ -174,9 +174,9 @@ function jsonToHiphop(obj, m = 0) {
 	    + margin(m) + '}';
 	 
       case "abort":
-	 return margin(m) + `abort (${test(obj.func)}) {\n`
+	 return margin(m) + `abort {\n`
 	    + block(children[0], m + 2) + '\n' 
-	    + margin(m) + '}';
+	    + margin(m) + `} when (${test(obj.func)})`;
 	 
       case "suspend":
 	 return margin(m) + `suspend (${test(obj.func)}) {\n`

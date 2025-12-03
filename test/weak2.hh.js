@@ -5,7 +5,7 @@ import * as hh from "@hop/hiphop";
 
 hiphop module m() {
    in S; out O, F, W, Z;
-   weakabort( S.now ) {
+   weakabort {
       loop {
 	 emit O();
 	 yield;
@@ -13,7 +13,7 @@ hiphop module m() {
 	 yield;
 	 emit Z();
       }
-   }
+   } when (S.now)
    emit F();
 }
    

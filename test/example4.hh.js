@@ -8,13 +8,13 @@ hiphop module prg() {
    signal S;
 
    loop {
-      abort( A.now ) {
+      abort {
 	 emit S();
-	 if( S.now ) emit T();
+	 if (S.now) emit T();
 	 yield;
 	 emit V();
-      }
+      } when (A.now)
    }
 }
 
-export const mach = new hh.ReactiveMachine( prg, "example4" );
+export const mach = new hh.ReactiveMachine(prg, "example4");

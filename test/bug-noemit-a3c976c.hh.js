@@ -9,7 +9,7 @@ const prg = hiphop module() {
   {
     signal g6074 combine (x, y) => x, g6075 combine (x, y) => x, g6076 combine (x, y) => x;
     every (!this.g6075.now) {
-      abort (this.g6074.now && this.g6075.now) {
+      abort {
         {
           fork {
             ;
@@ -20,7 +20,7 @@ const prg = hiphop module() {
           }
           emit g6075(32);
         }
-      }
+      } when (this.g6074.now && this.g6075.now)
     }
   }
 }

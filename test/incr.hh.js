@@ -8,12 +8,12 @@ import * as hh from "@hop/hiphop";
 hiphop module prg() {
    in I; in R; out O = 0;
    loop {
-      abort( R.now ) {
-	 await( I.now );
-	 emit O( plus( O.preval, 1 ) );
+      abort {
+	 await (I.now);
+	 emit O(plus(O.preval, 1));
 	 yield;
-      }
+      } when (R.now)
    }
 }
 
-export const mach = new hh.ReactiveMachine( prg, "Incr" );
+export const mach = new hh.ReactiveMachine(prg, "Incr");

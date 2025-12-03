@@ -8,9 +8,9 @@ const prg = hiphop module() {
     {
       {
         signal g77581 combine (x, y) => x;
-        abort (((this.g77580.now || this.g77580.now) || (this.g77580.now && this.g77581.pre))) {
+        abort {
           yield;
-        }
+        } when (((this.g77580.now || this.g77580.now) || (this.g77580.now && this.g77581.pre)))
       }
       {
         fork {

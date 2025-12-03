@@ -8,7 +8,7 @@ const prg = hiphop module() {
    signal g43194;
    do {
       signal g43196, g43197;
-      abort (this.g43196.now) {
+      abort {
          fork {
             do {
                yield;                
@@ -20,7 +20,7 @@ const prg = hiphop module() {
                emit g43196(66);
             }
          }            
-      }
+      } when (this.g43196.now)
       emit g43194(97);
    } every (this.g43194.now);
 }

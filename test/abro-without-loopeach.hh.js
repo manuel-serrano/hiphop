@@ -7,15 +7,15 @@ hiphop module prg() {
    in A; in B; in R; out O;
 		  
    loop {
-      abort( R.now ) {
+      abort {
 	 fork {
-	    await( A.now );
+	    await (A.now);
 	 } par {
-	    await( B.now );
+	    await (B.now);
 	 }
 	 emit O();
 	 halt;
-      }
+      } when (R.now)
    }
 };
 

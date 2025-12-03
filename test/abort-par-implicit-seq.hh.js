@@ -8,14 +8,14 @@ hiphop module prg() {
    signal L;
 
    fork {
-      abort( L.now ) {
+      abort {
 	 loop {
 	    emit O();
 	    yield;
 	 }
-      }
+      } when (L.now)
    } par {
-      await( I.now );
+      await (I.now);
       emit L();
    }
 }

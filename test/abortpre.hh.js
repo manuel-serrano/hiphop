@@ -6,11 +6,11 @@ import * as hh from "@hop/hiphop";
 hiphop module prg() {
    inout O; inout S;
    loop {
-      abort (S.pre) {
+      abort {
 	 emit S();
 	 yield;
 	 emit O();
-      }
+      } when (S.pre)
       yield;
    }
 }

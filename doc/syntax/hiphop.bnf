@@ -109,9 +109,9 @@
 <HHSustain> --> sustain <HHSignalName>()
   | sustain <HHSignalName> ( <HHExpression> )
 
-<HHAbort> --> abort <HHDelay> <HHBlock>
+<HHAbort> --> abort <HHBlock> when <HHDelay>
 
-<HHWeakabort> --> weakabort <HHDelay> <HHBlock>
+<HHWeakabort> --> weakabort <HHBlock> when <HHDelay>
 
 <HHSuspend> --> suspend <HHDelay> <HHBlock>
   | suspend from <HHDelay> to <HHDelay> <HHBlock>

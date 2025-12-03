@@ -309,8 +309,9 @@ loop {
 }
 ```
 
-### abort delay { ... } ###
+### abort { ... } when (delay) ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
+<a id="abort"/>
 
 &#x2606; [Formal syntax](../syntax/hiphop.bnf#HHAbort)
 
@@ -326,7 +327,7 @@ Execute the `abort`'s body and abort the execution when delay is true.
 The form:
 
 ```javascript
-abort (expr) { ... body ... }
+abort { ... body ... } when (expr)
 
 ```
 
@@ -341,7 +342,7 @@ exit: fork {
 }
 ```
 
-### weakabort delay { ... } ###
+### weakabort { ... } when (delay) ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->
 
 &#x2606; [Formal syntax](../syntax/hiphop.bnf#HHAbort)

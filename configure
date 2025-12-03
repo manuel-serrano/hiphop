@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Sat Apr  5 06:09:11 2025 (serrano)                */
+#*    Last change :  Wed Dec  3 07:24:23 2025 (serrano)                */
 #*    Copyright   :  2018-25 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
@@ -16,6 +16,7 @@
 hz=hiphop
 version=`grep version package.json | awk '{ print $2 }' | sed 's/[",]//g'`
 license=`grep license package.json | awk '{ print $2 }' | sed 's/[",]//g'`
+homepage=`grep homepage package.json | awk '{ print $2 }' | sed 's/[",]//g'`
 date=`date +'%d %B %Y'`
 minor=
 bglversion=latest
@@ -220,6 +221,7 @@ for path in docker/Dockerfile etc/hiphop.el doc/doc.json arch/debian/makedeb.sh 
     | sed -e "s|@HIPHOPVERSION@|$version|g" \
 	  -e "s|@VERSION@|$version|g" \
 	  -e "s|@MINOR@|$minor|g" \
+	  -e "s|@HOMEPAGE@|$homepage|g" \
 	  -e "s|@HOPVERSION@|$hopversion|g" \
 	  -e "s|@HOPMINORVERSION@|$hopminorversion|g" \
 	  -e "s|@BGLVERSION@|$bglversion|g" \

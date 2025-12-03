@@ -15,14 +15,14 @@ const prg = hiphop module() {
 	    yield;
 	    break T2;
 	 } par {
-	    if( S1.now ) {
-	       if( S2.now ) {
+	    if (S1.now) {
+	       if (S2.now) {
 		  emit S1_and_S2();
 	       } else {
 		  emit S1_and_not_S2();
 	       }
 	    } else {
-	       if( S2.now ) {
+	       if (S2.now) {
 		  emit not_S1_and_S2();
 	       } else {
 		  emit not_S1_and_not_S2();

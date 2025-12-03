@@ -6,9 +6,9 @@ import * as hh from "@hop/hiphop";
 hiphop module prg() {
    in I; inout J, K;
    loop {
-      abort (I.now) {
+      abort {
 	 sustain J();
-      }
+      } when  (I.now)
       emit K();
    }
 }

@@ -6,18 +6,18 @@ import * as hh from "@hop/hiphop";
 hiphop module prg() {
    in A; out T, V;
       
-   abort( A.now ) {
+   abort {
       signal S;
 
       loop {
 	 emit S();
 
-	 if( S.now ) emit T();
+	 if (S.now) emit T();
 	 
 	 yield;
 	 emit V();
       }
-   }
+   } when (A.now)
 }
 
-export const mach = new hh.ReactiveMachine( prg, "example3" );
+export const mach = new hh.ReactiveMachine(prg, "example3");

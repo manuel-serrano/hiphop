@@ -27,7 +27,7 @@ const PRG2 = prg2();
 
 hiphop module prg(resolve) {
    inout artist, playlist, exit;
-   abort (exit.now) {
+   abort {
       fork {
 	 run PRG2() { * };
       } par {
@@ -39,7 +39,7 @@ hiphop module prg(resolve) {
 	    pragma { mach.outbuf += ("***PLAYLIST*** " + playlist.nowval) + "\n" };
 	 }
       }
-   }
+   } when (exit.now)
    pragma { resolve(false); }
 }
 

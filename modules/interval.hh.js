@@ -1,10 +1,10 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/1.3.x/modules/interval.hh.js         */
+/*    serrano/prgm/project/hiphop/hiphop/modules/interval.hh.js        */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Mon Nov 27 18:33:29 2023 (serrano)                */
-/*    Copyright   :  2018-23 Manuel Serrano                            */
+/*    Last change :  Wed Dec  3 08:08:38 2025 (serrano)                */
+/*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop interval module.                                          */
 /*=====================================================================*/
@@ -59,11 +59,11 @@ hiphop module basicInterval(duration, step) {
    emit state("running");
    emit elapsed(0);
    
-   abort (elapsed.nowval >= duration) {
+   abort {
       loop {
 	 run timeout(duration, step || 100, elapsed.nowval) { * };
       }
-   }
+   } when (elapsed.nowval >= duration)
    emit state("finished");
 }
 
@@ -82,7 +82,7 @@ hiphop interface Interval {
 /*    interval ...                                                     */
 /*---------------------------------------------------------------------*/
 hiphop module interval(duration, step) implements Interval {
-   weakabort (state.nowval === "finished") {
+   weakabort {
       do {
       	 fork {
 	    suspend toggle (suspend.now) {
@@ -99,5 +99,5 @@ hiphop module interval(duration, step) implements Interval {
 	    }
 	 }
       } every (reset.now);
-   }
+   } when (state.nowval === "finished")
 }

@@ -1,10 +1,10 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/1.3.x/etc/configure.js               */
+/*    serrano/prgm/project/hiphop/hiphop/etc/configure.js              */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Thu Dec  7 10:09:27 2023                          */
-/*    Last change :  Thu Dec 14 07:01:12 2023 (serrano)                */
-/*    Copyright   :  2023 Manuel Serrano                               */
+/*    Last change :  Wed Dec  3 07:15:54 2025 (serrano)                */
+/*    Copyright   :  2023-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Simple configuration in JavaScript                               */
 /*=====================================================================*/
@@ -12,8 +12,8 @@
 /*---------------------------------------------------------------------*/
 /*    import                                                           */
 /*---------------------------------------------------------------------*/
-import { readFileSync, writeFileSync, existsSync } from "fs";
-import { exec } from "child_process";
+import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { exec } from "node:child_process";
 
 /*---------------------------------------------------------------------*/
 /*    command line:                                                    */
@@ -33,6 +33,7 @@ if (!existsSync(target)) {
 			 config.toString()
 			    .replace(/@VERSION@/g, json.version)
 			    .replace(/@MINOR@/g, json.minor ?? "")
+			    .replace(/@HOMEPAGE@/g, json.homepage)
 			    .replace(/@HIPHOPBUILDID@/g, stdout.trim()));
 	});
 }

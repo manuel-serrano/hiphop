@@ -7,11 +7,11 @@ function zoom_in_cb() {
 hiphop module prg() {
    inout ZOOM_LOCK_TOOGLE, ZOOM_IN;
    loop {
-      abort (ZOOM_LOCK_TOOGLE.now) {
+      abort {
 	 every (ZOOM_IN.now) {
 	    hop { zoom_in_cb() };
 	 }
-      }
+      } when (ZOOM_LOCK_TOOGLE.now)
       await (ZOOM_LOCK_TOOGLE.now);
    }
 }

@@ -3,7 +3,7 @@ import { format } from "util";
 
 hiphop module prg() {
    inout OK, O, A, B, C, BBBB, NEVER; in STOP; in AIN;
-   abort (STOP.now) {
+   abort {
       loop {
 	 JMP: {
 	    emit O();
@@ -31,7 +31,7 @@ hiphop module prg() {
 	    emit BBBB();
 	 }
       }
-   }
+   } when (STOP.now)
    emit NEVER();
    yield;
    await (STOP.now);

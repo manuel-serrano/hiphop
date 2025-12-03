@@ -8,9 +8,9 @@ hiphop module prg() {
    out C;
    out D;
 
-   abort (A.now) {
+   abort {
       ;
-   }
+   } when (A.now)
    emit C(123);
    yield;
    emit D(456);

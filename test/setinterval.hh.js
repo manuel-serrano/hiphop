@@ -4,13 +4,13 @@ import { format } from "util";
 hiphop module setinterval(resolve) {
    inout A, Tick;
    fork {
-      abort count(3, Tick.now) {
+      abort {
 	 async (A) {
 	    this.tmt = setInterval(() => this.react(Tick.signame), 100);
 	 } kill {
 	    clearInterval(this.tmt);
 	 }
-      }
+      } when count(3, Tick.now)
    }
    pragma { resolve(false); }
 };
