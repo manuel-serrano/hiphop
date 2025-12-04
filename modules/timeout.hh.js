@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Tue Dec  2 16:00:41 2025 (serrano)                */
+/*    Last change :  Thu Dec  4 08:49:19 2025 (serrano)                */
 /*    Copyright   :  2022-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop timeout module.                                           */
@@ -61,10 +61,10 @@ hiphop interface Timeout {
 hiphop module timeout(duration) implements Timeout {
    done: {
       do {
-	 suspend toggle (pause.now) {
+	 suspend {
 	    run $timeout(duration) { * };
             break done;
-	 }
+	 } toggle (pause.now)
       } every (reset.now);
    }
 }

@@ -24,6 +24,6 @@ const prg = hiphop module() {
   }
 }
 
-export const mach = new hh.ReactiveMachine(prg);
+export const mach = new hh.ReactiveMachine(prg, { verbose: -1 });
 mach.outbuf = "";
 events.forEach((e, i) => { mach.outbuf += (i + ': ' + JSON.stringify(mach.react(e)) + '\n') });

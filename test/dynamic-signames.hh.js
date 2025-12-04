@@ -20,7 +20,7 @@ hiphop module prg() {
    }
 }
 
-export const mach = new ReactiveMachine(prg);
+export const mach = new ReactiveMachine(prg, { verbose: -1 });
 mach.outbuf = "";
 
 mach.react({AAA: 1, BBB: 2});

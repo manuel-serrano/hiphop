@@ -12,7 +12,7 @@ const prg = hiphop module() {
    pragma { mach.outbuf += "T\n"; }
 }
 
-export const mach = new hh.ReactiveMachine(prg, "DELAY");
+export const mach = new hh.ReactiveMachine(prg, { name: "DELAY", verbose: -1 });
 mach.outbuf = "";
 
 mach.react();

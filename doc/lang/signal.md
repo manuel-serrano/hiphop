@@ -137,14 +137,34 @@ for producing an emission value, or for running asynchronous  computation.
 
 Using Signals in Expressions
 ----------------------------
+<a id="delay"/>
 
-Signals presence (has a signal been emitted or not during the
+Signals statuses (has a signal been emitted or not during the
 reaction) and signal values can be used in HipHop JavaScript
 expressions. For that, HipHop analyses Hop expressions and detect
 signal accesses. It recognizes
 [four syntactic constructs](./syntax/hiphop.bnf#HHExpression) that
 correspond to signal access. Notice that these detections are only
 executed within the syntactic context of an HipHop expression:
+
+> [!CAUTION]
+> Evaluating an expression that uses a signal value of an arbitrary
+> JavaScript expression cannot be evaluated until all the statuses and
+> values of all the signals involved are know. Evaluating an
+> expression that only involves signal statuses and logical "and", "or",
+> and "not" operation can be partially evaluated as soon as the status
+> of one of the signals is know. For example, the following two expression
+> although equivalent will use two different evaluation rules:
+>    `if (sig.now || false) ...`
+> and
+>    `if (sig.now) ...`
+> The first expression cannot be evaluated until all the emitters of `sig`
+> in the reaction have executed. The second expression can evaluate as
+> soon as the first emitter has executed. This different evaluation rules 
+> might be confusing and as a consequence, it is recommended to keep separated 
+> expressions that use signal statuses and expression that uses signal 
+> values or arbitrary JavaScript expressions.
+
 
 ### signal.now ###
 <!-- [:@glyphicon glyphicon-tag syntax] -->

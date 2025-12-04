@@ -1,11 +1,11 @@
 ;; -*- mode: lisp -*-
 ;*=====================================================================*/
-;*    serrano/prgm/project/hiphop/hiphop/etc/hiphop.el                 */
+;*    serrano/prgm/project/hiphop/1.3.x/etc/hiphop.el.in               */
 ;*    -------------------------------------------------------------    */
 ;*    Author      :  Manuel Serrano                                    */
 ;*    Creation    :  Tue Sep 18 14:43:03 2018                          */
-;*    Last change :  Wed Dec  3 08:14:25 2025 (serrano)                */
-;*    Copyright   :  2018-25 Manuel Serrano                            */
+;*    Last change :  Fri Dec 22 09:02:39 2023 (serrano)                */
+;*    Copyright   :  2018-23 Manuel Serrano                            */
 ;*    -------------------------------------------------------------    */
 ;*    HipHop emacs addon                                               */
 ;*=====================================================================*/
@@ -72,7 +72,7 @@ Set this to nil if you don't want a modeline indicator."
   (list
    (cons "\\hiphop\\>" 'font-lock-face-hiphop-hiphop)
    (cons "\\<\\(?:fork\\|par\\|in\\|out\\|inout\\)\\>" 'font-lock-keyword-face)
-   (cons "\\(?:loop\\|every\\|when\\|while\\|do\\|abort\\|weakabort\\|run\\|signal\\|module\\|interface\\|emit\\|sustain\\|halt\\|yield\\)\\_>" 'font-lock-keyword-face)
+   (cons "\\(?:loop\\|every\\|while\\|do\\|abort\\|weakabort\\|run\\|signal\\|module\\|interface\\|emit\\|sustain\\|halt\\|yield\\)\\_>" 'font-lock-keyword-face)
    (cons "\\<\\(?:async\\|pragma\\|kill\\|suspend\\|resume\\)\\>" 'font-lock-face-hiphop-async)
    (list "^[ \t]*\\([A-Za-z0-9_$]+\\):" 1 'font-lock-face-hiphop-label)
    (list "break \\([A-Za-z0-9_$]+\\)" 1 'font-lock-face-hiphop-label)

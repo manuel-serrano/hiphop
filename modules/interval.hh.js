@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Sat Aug  4 13:43:31 2018                          */
-/*    Last change :  Wed Dec  3 08:08:38 2025 (serrano)                */
+/*    Last change :  Thu Dec  4 08:46:09 2025 (serrano)                */
 /*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop interval module.                                          */
@@ -85,11 +85,11 @@ hiphop module interval(duration, step) implements Interval {
    weakabort {
       do {
       	 fork {
-	    suspend toggle (suspend.now) {
+	    suspend {
    	       do {
 		  run basicInterval(duration, step) { * };
    	       } every (reset.now);
-	    }
+	    } toggle (suspend.now)
       	 } par {
 	    loop {
 	       await (suspend.now);

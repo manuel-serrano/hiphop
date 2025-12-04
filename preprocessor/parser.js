@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Dec  3 15:20:22 2025 (serrano)                */
+/*    Last change :  Thu Dec  4 10:09:03 2025 (serrano)                */
 /*    Copyright   :  2018-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1210,6 +1210,7 @@ function parseAbortWeakabort(token, command) {
 
       if (tok.value === "when") {
 	 const { inits, accessors, signames } = parseDelay.call(this, loc, tag, "apply");
+
 	 const node = astutils.J2SCall(
 	    loc, hhref(loc, command), null,
 	    [astutils.J2SObjInit(loc, [locInit(loc), tag].concat(inits))]
@@ -1309,7 +1310,7 @@ function parseSuspend(token) {
 	 const tot = this.consumeAny();
 	 const { inits: toggle, accessors: atoggle, signames: signamestoggle } =
 	    parseDelay.call(this, tot.location, "SUSPEND", "toggleApply", "toggleSignal");
-	 
+
 	 parseEmitwhensuspended.call(this, inits);
 
 	 inits = inits.concat(toggle);
