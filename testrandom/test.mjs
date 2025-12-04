@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Wed Dec  3 18:12:58 2025 (serrano)                */
+/*    Last change :  Thu Dec  4 07:37:34 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -25,6 +25,7 @@ import * as esterel from "./esterel.mjs";
 /*---------------------------------------------------------------------*/
 export const prop = new Prop(
    { name: "default", ctor: (prg => new hh.ReactiveMachine(prg, { name: "default", native: "no" })), config: { maxLoop: 3 } },
+   { name: "nosweep", ctor: (prg => new hh.ReactiveMachine(prg, { name: "default", native: "no", sweep: 0 })), config: { maxLoop: 3 } },
    { name: "native", ctor: (prg => new hh.ReactiveMachine(prg, { name: "native", native: "try" })), config: { maxLoop: 3 } },
    { name: "racket", ctor: (prg => new racket.ReactiveMachine(prg, { name: "racket" })), config: { expr: 0 } },
    { name: "esterel", ctor: (prg => new esterel.ReactiveMachine(prg, { name: "esterel" })), config: { pre: 0 } }
@@ -90,7 +91,6 @@ function shrinkBugInConf(prop, conf, res) {
    writeFileSync(2, " \\ shrinking ");
 
    try {
-      return { conf, res };
       return shrinker(conf, res, "  ");
    } catch(e) {
       console.error("*** SHRINK ERROR:", e.toString());

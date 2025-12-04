@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 18 07:21:33 2025                          */
-/*    Last change :  Wed Dec  3 09:14:32 2025 (serrano)                */
+/*    Last change :  Thu Dec  4 07:38:40 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    testrandom configuration                                         */
@@ -13,7 +13,7 @@ export const ITERATION = parseInt(process.env.HIPHOP_RT_ITERATION) || 5000;
 export const LOOPSAFE = process.env?.HIPHOP_RT_LOOPSAFE !== "false";
 export const DELAYONLY = process.env?.HIPHOP_RT_DELAYONLY !== "false";
 export const VERBOSE = parseInt(process.env.HIPHOP_RT_VERBOSE) || 0;
-export const SYSTEMS = process.env.HIPHOP_RT_SYSTEMS?.split(" ") ?? ["default", "native" ];
+export const SYSTEMS = process.env.HIPHOP_RT_SYSTEMS?.split(" ") ?? [ "default", "nosweep", "native" ];
 export const MINSIZE = parseInt(process.env?.HIPHOP_RT_MINSIZE ?? "5");
 export const MAXSIZE = parseInt(process.env?.HIPHOP_RT_MAXSIZE ?? "10");
 export const MAXLOOP = parseInt(process.env?.HIPHOP_RT_MAXLOOP ?? "10");

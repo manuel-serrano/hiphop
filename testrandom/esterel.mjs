@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Tue Dec  2 07:48:16 2025 (serrano)                */
+/*    Last change :  Thu Dec  4 07:41:16 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with esterel                             */
@@ -136,7 +136,7 @@ function json2esterel(o, m) {
 	    + o.children.map(c => json2esterel(c, m + 3)).join("\n")
 	    + `${margin(m)}when [ ${expr2esterel(o.func)} ]\n`
       case "suspend":
-	 return `${margin(m)}abort\n`
+	 return `${margin(m)}suspend\n`
 	    + o.children.map(c => json2esterel(c, m + 3)).join("\n")
 	    + `${margin(m)}when [ ${expr2esterel(o.func)} ]\n`
       case "every":
