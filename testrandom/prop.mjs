@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Wed Dec  3 17:47:42 2025 (serrano)                */
+/*    Last change :  Fri Dec  5 11:48:05 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -105,7 +105,6 @@ class Prop {
 	       runs
 	    };
 	 } else if (runs.find(r => r[r.length - 1].status !== runs[0][runs[0].length - 1].status)) {
-	    console.log("RUNS=", runs);
 	    const [ r0, r1 ] = runs;
 
 	    return {
