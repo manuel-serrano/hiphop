@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Fri Dec  5 11:48:05 2025 (serrano)                */
+/*    Last change :  Mon Dec  8 16:09:53 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -27,6 +27,7 @@ class Prop {
       maxLoop: config.MAXLOOP,
       maxTry: config.MAXTRY,
       expr: 1,
+      present: 3,
       filters: [ filterinstantaneous ]
    };
    
@@ -76,6 +77,9 @@ class Prop {
 	       outConf(suf, conf) {
 		  const mach = sys.ctor(hh.MODULE({}, hh.NOTHING()));
 		  return mach.outConf(suf, conf);
+	       },
+	       name() {
+		  return sys.name;
 	       }
 	    }
 	 }

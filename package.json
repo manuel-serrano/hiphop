@@ -35,6 +35,8 @@
    },
    "scripts": {
      "test": "HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js",
+     "testreincarnation": "HIPHOP_LOOPUNROLL=false HIPHOP_REINCARNATION=true HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js",
+     "testold": "HIPHOP_COMPILER=old HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js",
      "testint": "HIPHOP_COMPILER=int HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js",
      "testrandom": "node testrandom/test.mjs",
      "prepare": "node etc/configure.js package.json lib/config.js.in lib/config.js && node etc/buildmodules.js"
