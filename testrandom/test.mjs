@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Mon Dec  8 16:04:33 2025 (serrano)                */
+/*    Last change :  Wed Dec 10 11:07:36 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -29,7 +29,7 @@ export const prop = new Prop(
    { name: "native", ctor: (prg => new hh.ReactiveMachine(prg, { name: "native", native: "try" })), config: { maxLoop: 3, maxSize: 10 } },
    { name: "racket", ctor: (prg => new racket.ReactiveMachine(prg, { name: "racket" })), config: { expr: 0, present: 1 } },
    { name: "esterel", ctor: (prg => new esterel.ReactiveMachine(prg, { name: "esterel" })), config: { pre: 0 } },
-   { name: "reincarnation", ctor: (prg => new hh.ReactiveMachine(prg, { name: "reincarnation", unrollLoop: false, reincarnation: true })) }
+   { name: "reincarnation", ctor: (prg => new hh.ReactiveMachine(prg, { name: "reincarnation", loopUnroll: false, reincarnation: true })) }
 /*    M("default") && (prg => new hh.ReactiveMachine(prg, { name: "default", native: "no", randomTesting: { maxLoop: 3 }))), */
 /*    M("forkorkill") && (prg => new hh.ReactiveMachine(prg, { name: "forkorkill", forkOrKill: true })), */
 /*    M("no-loopunroll") && (prg => new hh.ReactiveMachine(prg, { name: "no-loopunroll", loopUnroll: false })), */
