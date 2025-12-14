@@ -1,0 +1,4 @@
+1: L.now=trueL.pre=false
+2: L.now=falseL.pre=true
+3: L.now=falseL.pre=false
+1: L.now=trueL.pre=false

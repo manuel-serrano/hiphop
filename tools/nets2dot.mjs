@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Fri Nov 14 07:58:48 2025 (serrano)                */
+/*    Last change :  Sun Dec 14 08:16:40 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -356,7 +356,7 @@ function main(argv) {
 	 const bgcolor = astLocColor(c.ast);
 	 const fgcolor = isBright(bgcolor) ? "black" : "white";
 	 const sourceLoc = `[${c.ast.loc.filename}:${c.ast.loc.pos}]`;
-	 const ctor = table({bgcolor: "#cccccc", rows: [tr([td({content: font({color: "black", content: `<b>${c.ast.ctor}</b> ${font({color: "blue", content: sourceLoc})}`})})])]});
+	 const ctor = table({bgcolor: "#cccccc", rows: [tr([td({content: font({color: "black", content: `<b>${c.ast.ctor}</b>/${c.ast.depth} ${font({color: "blue", content: sourceLoc})}`})})])]});
 	 const ctort = table({bgcolor, cellpadding: 6, rows: [tr([td({content: ctor})])]});
 	 
 	 console.log(`${margin}subgraph cluster${clusterNum++} {`);
@@ -369,7 +369,7 @@ function main(argv) {
 	    const gatecolor = net.$propagated ? "#cccccc" : unpropagateColor;
 	    const typ = netType(net);
 	    const id = net.lvl > 0 
-               ? td({content: `${net.id} ${typ}:${net.lvl}${(net.$sweepable ? "" : "*")}`})
+               ? td({content: `${net.id} ${typ}${(net.$sweepable ? "" : "*")}`})
                : td({content: `${net.id} ${typ}${(net.$sweepable ? "" : "*")}`});
 	    const name = net.$name ? tr([td({content: escape(net.$name)})]) : "";
 	    const sigs = net.signals ? tr([td({content: "[" + net.signals + "]"})]) : (net.signame ? tr([td({content: net.signame})]) : "");

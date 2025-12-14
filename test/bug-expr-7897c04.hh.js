@@ -15,7 +15,7 @@ const prg = hiphop module() {
   }
 }
 
-const opts = {"name":"default","native":"no", verbose: -1};
+const opts = {"name":"default","native":false,verbose:-1};
 export const mach = new hh.ReactiveMachine(prg, opts);
 mach.outbuf = "";
 

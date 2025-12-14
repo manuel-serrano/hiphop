@@ -15,7 +15,7 @@ const prg = hiphop module() {
    } every (g49906.now);
 }
 
-const opts = {"name":"default","native":"no"};
+const opts = {"name":"default","native":false};
 export const mach = new hh.ReactiveMachine(prg, opts);
 mach.outbuf = "";
 

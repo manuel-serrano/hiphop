@@ -1,16 +1,15 @@
 import * as hh from "@hop/hiphop";
 
-const events = [{"I":56},{},{},{},{}];
+const events = [{},{},{},{},{}];
 
 const prg = hiphop module() {
    inout I, O;
    loop {
-      fork {
-	 pragma { mach.outbuf += ("O " + mach.age() + "\n"); }
-      } par {
-	 yield;
-      }
-      pragma { mach.outbuf += ("L "+ mach.age() + "\n"); }
+      signal L;
+      emit L();
+      yield;
+      pragma { mach.outbuf += `L.now=${L.now}\n`; }
+      
    }
 }
 

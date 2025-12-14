@@ -12,7 +12,7 @@ const prg = hiphop module() {
    pragma { mach.outbuf += ("L "+ mach.age() + "\n"); }
 }
 
-const opts = {"name":"rnc", native: "no"};
+const opts = {"name":"rnc", native: false};
 export const mach = new hh.ReactiveMachine(prg, opts);
 mach.outbuf = "";
 
