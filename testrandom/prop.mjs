@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Mon Dec  8 16:09:53 2025 (serrano)                */
+/*    Last change :  Sun Dec 14 10:20:22 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -27,6 +27,7 @@ class Prop {
       maxLoop: config.MAXLOOP,
       maxTry: config.MAXTRY,
       expr: 1,
+      pre: 1,
       present: 3,
       filters: [ filterinstantaneous ]
    };

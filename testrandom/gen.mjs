@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Thu Dec 11 18:32:35 2025 (serrano)                */
+/*    Last change :  Sun Dec 14 10:19:49 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -101,7 +101,7 @@ function genExpr(conf, env) {
       } else if (size === 1 || conf.present === 1) {
 	 const i = Math.floor(Math.random() * env.signals.length);
 	 const sig = env.signals[i];
-	 const axs = (conf.pre) ? ((Math.random() >= 0.8) ? "preval" : "nowval") : "nowval";
+	 const axs = (conf.pre) ? ((Math.random() >= 0.6) ? "preval" : "nowval") : "nowval";
 	 return `this.${sig}.${axs}`;
       } else {
 	 switch (Math.floor(Math.random() * 6)) {
@@ -129,7 +129,7 @@ function genDelay(conf, env) {
       if (size === 1 || conf.present === 1) {
 	 const i = Math.floor(Math.random() * env.signals.length);
 	 const sig = env.signals[i];
-	 const prop = (conf.pre) ? ((Math.random() >= 0.8) ? "pre" : "now") : "now";
+	 const prop = (conf.pre) ? ((Math.random() >= 0.6) ? "pre" : "now") : "now";
 	 const delay = new hh.DelaySig(sig, prop);
 
 	 if (Math.random() >= 0.7) {

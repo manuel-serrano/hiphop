@@ -5,18 +5,17 @@ function consoleLog(...args) {
    mach.outbuf += args.join("").toString() + "\n";
 }
 
-const events = [{},{},{},{}];
+const events = [{},{}];
 
 const prg = hiphop module() {
    loop {
-      signal L;
-      emit L();
-      pragma { consoleLog("1: L.now=", L.now, " L.pre=", L.pre); }
-      yield;
-      pragma { consoleLog("2: L.now=", L.now, " L.pre=", L.pre); }
-      yield;
-      pragma { consoleLog("3: L.now=", L.now, " L.pre=", L.pre); }
-      yield;
+      signal g8130;
+
+      fork {
+         emit g8130(10);
+         yield;
+	 pragma { mach.outbuf += `N1=${g8130.now}\n`; };
+      }
    }
 }
 
