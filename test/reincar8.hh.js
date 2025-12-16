@@ -9,14 +9,19 @@ const events = [{},{},{}];
 
 const prg = hiphop module() {
    loop {
-      signal g8130;
-
-      fork {
-         emit g8130(10);
+      signal L = 0 combine (x, y) => (x + y);
+      if (L.pre) {
+	 pragma { consoleLog("pre/0-", mach.age()); }
          yield;
-	 pragma { mach.outbuf += `N1=${g8130.now}\n`; };
+      } else {
+	 pragma { consoleLog("no pre/0-", mach.age()); }
          yield;
-	 pragma { mach.outbuf += `N2=${g8130.now}\n`; };
+	 pragma { consoleLog("emit/1-", mach.age()); }
+         emit L(7);
+	 yield;
+	 if (L.pre) {
+	    pragma { consoleLog("pre/1-", mach.age()); }
+	 }
       }
    }
 }

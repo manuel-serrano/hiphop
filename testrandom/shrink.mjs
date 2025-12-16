@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Fri Dec 12 16:12:22 2025 (serrano)                */
+/*    Last change :  Tue Dec 16 17:00:40 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -74,7 +74,7 @@ function shrink({prog, events, filters}) {
 	 if (events.length === 1) {
 	    return [];
 	 } else {
-	    let sevents = shrinkArray(events);
+	    let sevents = shrinkArray(events, x => []);
 	    return sevents.map(events => { return { prog, events, filters } });
 	 }
       } else {
@@ -115,11 +115,11 @@ function shrinkProg(prog) {
    if (typeof prog === "number" && Number.isInteger(prog)) {
       return shrinkInt(prog);
    } else if (prog instanceof Array) {
-      return shrinkArray(prog);
+      return shrinkArray(prog, shrinkProg);
    } else if (prog instanceof hhapi.$ASTNode) {
       return prog.shrink();
    } else {
-      throw new Error("cannot shrink " + prog.constructor.name);
+      throw new Error("cannot shrink " + prog.constructor.name + " " + prog);
    }
 }
 
@@ -135,14 +135,14 @@ function shrinkInt(i) {
 /*---------------------------------------------------------------------*/
 /*    shrinkArray ...                                                  */
 /*---------------------------------------------------------------------*/
-function shrinkArray(a) {
+function shrinkArray(a, elementShrinker) {
    let ans = [];
    
    for (let i = 0; i < a.length; i++) {
       ans.push(a.slice(0, i).concat(a.slice(i + 1, a.length)));
    }
    for (let i = 0; i < a.length; i++) {
-      let si = shrinkProg(a[i])
+      let si = elementShrinker(a[i])
       for (let j = 0; j < si.length; j++) {
 	 ans.push(a.map((v, k) => (i === k) ? si[j] : v));
       }
@@ -151,8 +151,8 @@ function shrinkArray(a) {
    return ans;
 }
 
-//console.error(shrinkArray([1]), "vs", [[],[0]]);
-//console.error(shrinkArray([1,2,3]), "vs", [[2,3],[1,3],[1,2],[0,2,3],[1,1,3],[1,2,2]]);
+//console.error(shrinkArray([1], x => []), "vs", [[],[0]]);
+//console.error(shrinkArray([1,2,3], x => []), "vs", [[2,3],[1,3],[1,2],[0,2,3],[1,1,3],[1,2,2]]);
 
 /*---------------------------------------------------------------------*/
 /*    shrinkSignalFunc ...                                             */
@@ -164,11 +164,11 @@ function shrinkSignalFunc(func, sig) {
 	 case "constant":
 	    return obj;
 	 case "sig":
-	    if (obj.value === sig) {
-	       return {node: "constant", value: "false"};
-	    } else {
+/* 	    if (obj.value === sig) {                                   */
+/* 	       return {node: "constant", value: "false"};              */
+/* 	    } else {                                                   */
 	       return obj;
-	    }
+/* 	    }                                                          */
 	 case "unary": {
 	    const xs = shrink(obj.expr, cnst);
 
@@ -594,7 +594,7 @@ function shrinkASTNode(node, ctor, attr, children) {
    } else if (children.length === 1) {
       return leave(shrinkProg(children[0]).map(c => ctor(attr, c)).concat(children));
    } else {
-      const el = shrinkArray(children);
+      const el = shrinkArray(children, shrinkProg);
       return leave(el.map(a => ctor(attr, a)));
    }
 }
@@ -610,7 +610,7 @@ hhapi.$ASTNode.prototype.shrink = function() {
 /*    shrink ::Module ...                                              */
 /*---------------------------------------------------------------------*/
 hhapi.Module.prototype.shrink = function() {
-   const el = shrinkArray(this.children);
+   const el = shrinkArray(this.children, shrinkProg);
    return el.flatMap(a => {
       if (a.length === 0) {
 	 return [];
@@ -675,7 +675,7 @@ hhapi.Trap.prototype.shrink = function() {
       return leave(res
 	 .concat(shrinkProg(children[0]).map(c => hh.TRAP(attr, c))));
    } else {
-      const el = shrinkArray(children);
+      const el = shrinkArray(children, shrinkProg);
       return leave(res.concat(el.map(a => hh.TRAP(attr, a))));
    }
 }
@@ -723,7 +723,7 @@ hhapi.Local.prototype.shrink = function() {
 
 	 return leave(slocal.concat(clocal));
       } else {
-	 const el = shrinkArray(children);
+	 const el = shrinkArray(children, shrinkProg);
 	 return leave(el.map(a => hh.LOCAL(attrs, a)));
       }
    }

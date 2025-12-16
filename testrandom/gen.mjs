@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Sun Dec 14 10:19:49 2025 (serrano)                */
+/*    Last change :  Tue Dec 16 16:14:22 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -95,7 +95,7 @@ function testRandomInRange() {
 /*---------------------------------------------------------------------*/
 function genExpr(conf, env) {
    
-   function gen(conf, env, size, loop) {
+   function gen(conf, env, size) {
       if (size === 0 || env.signals.length === 0 || conf.expr === 0) {
 	 return (Math.random() >= 0.5) ? "true" : "false";
       } else if (size === 1 || conf.present === 1) {
@@ -125,14 +125,14 @@ function genExpr(conf, env) {
 /*---------------------------------------------------------------------*/
 function genDelay(conf, env) {
    
-   function gen(conf, env, size, loop) {
+   function gen(conf, env, size) {
       if (size === 1 || conf.present === 1) {
 	 const i = Math.floor(Math.random() * env.signals.length);
 	 const sig = env.signals[i];
 	 const prop = (conf.pre) ? ((Math.random() >= 0.6) ? "pre" : "now") : "now";
 	 const delay = new hh.DelaySig(sig, prop);
 
-	 if (Math.random() >= 0.7) {
+	 if (conf.present > 1 && Math.random() >= 0.7) {
 	    return new hh.DelayUnary("!", delay);
 	 } else {
 	    return delay;
@@ -296,7 +296,7 @@ function genSuspend(weight) {
 /*---------------------------------------------------------------------*/
 function genAbort(weight) {
    const gen = (conf, env, size, loop) => {
-      if (env.signals.length > 0) {
+      if (env.signals.length > 0 && conf.stdlib) {
 	 return hh.ABORT({apply: genDelay(conf, env)}, genStmt(conf, env, size - 1, loop));
       } else {
 	 return genStmt(conf, env, size, loop);
@@ -310,7 +310,7 @@ function genAbort(weight) {
 /*---------------------------------------------------------------------*/
 function genEvery(weight) {
    const gen = (conf, env, size, loop) => {
-      if (loop >= conf.maxLoop) {
+      if (loop >= conf.maxLoop || !conf.stdlib) {
 	 return genStmt(conf, env, size, loop);
       } else if (env.signals.length > 0) {
 	 return hh.EVERY({apply: genDelay(conf, env)}, genStmt(conf, env, size - 1, loop + 1));
@@ -326,7 +326,7 @@ function genEvery(weight) {
 /*---------------------------------------------------------------------*/
 function genLoopeach(weight) {
    const gen = (conf, env, size, loop) => {
-      if (loop >= conf.maxLoop) {
+      if (loop >= conf.maxLoop || !conf.stdlib) {
 	 return genStmt(conf, env, size, loop);
       } else if (env.signals.length > 0) {
 	 return hh.LOOPEACH({apply: genDelay(conf, env)}, genStmt(conf, env, size - 1, loop + 1));
@@ -342,7 +342,7 @@ function genLoopeach(weight) {
 /*---------------------------------------------------------------------*/
 function genAwait(weight) {
    const gen = (conf, env, size, loop) => {
-      if (env.signals.length > 0) {
+      if (env.signals.length > 0 && conf.stdlib) {
 	 return hh.AWAIT({apply: genDelay(conf, env)});
       } else {
 	 return genStmt(conf, env, size, loop);
@@ -371,18 +371,25 @@ function genPause(weight) {
 /*    genAtom ...                                                      */
 /*---------------------------------------------------------------------*/
 function genAtom(weight) {
-      const gen = (conf, env, size, loop) => {
-	 const expr = genExpr(conf, env);
-	 return hh.ATOM({apply: expr});
-      };
-      return choice(weight, gen);
-   }
+   const gen = (conf, env, size, loop) => {
+      const expr = genExpr(conf, env);
+      return hh.ATOM({apply: expr});
+   };
+   return choice(weight, gen);
+}
 
 /*---------------------------------------------------------------------*/
 /*    genHalt ...                                                      */
 /*---------------------------------------------------------------------*/
 function genHalt(weight) {
-   const gen = (conf, env, size, loop) => hh.HALT({});
+   const gen = (conf, env, size, loop) => {
+      if (conf.stdlib) {
+	 return hh.HALT({});
+      } else {
+	 return genStmt(conf, env, size, loop);
+      }
+   }
+	 
    return choice(weight, gen);
 }
 

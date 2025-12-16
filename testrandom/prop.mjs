@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Sun Dec 14 10:20:22 2025 (serrano)                */
+/*    Last change :  Tue Dec 16 16:43:42 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -29,6 +29,7 @@ class Prop {
       expr: 1,
       pre: 1,
       present: 3,
+      stdlib: 0,
       filters: [ filterinstantaneous ]
    };
    
