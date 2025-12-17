@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Wed Dec 17 07:22:30 2025 (serrano)                */
+/*    Last change :  Wed Dec 17 09:51:31 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -14,7 +14,7 @@ import { jsonToHiphop } from "./hiphop.mjs";
 import { jsonToAst } from "./json.mjs";
 import { parseExpr, exprToHiphop, exprEqual, newBinary } from "./expr.mjs"
 
-export { shrink };
+export { shrinkA, shrinkB };
 
 const DEBUG = process.env.HIPHOP_RT_DEBUG === "true";
 const SHRINK_LIMIT = 256;
@@ -64,19 +64,14 @@ function leave(value, limit = SHRINK_LIMIT) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    shrink ...                                                       */
+/*    shrinkA ...                                                      */
 /*---------------------------------------------------------------------*/
-function shrink(conf, prop) {
+function shrinkA(conf, prop) {
    const { prog, events } = conf;
    const progs = shrinkProg(prog, prop);
 
    if (progs.length === 0) {
-      if (events.length === 1) {
-	 return [];
-      } else {
-	 let sevents = shrinkArray(events, shrinkReactSigs);
-	 return sevents.map(events => { return { prog, events } });
-      }
+      return [];
    } else {
       const sprogs = shrinkSignals(prog.sigDeclList, prog.children, hh.MODULE, hh.INOUT, prop)
 	 .map(mod => {
@@ -99,6 +94,20 @@ function shrink(conf, prop) {
 
       return progs.map(prog => { return { prog, events } })
 	 .concat(sprogs);
+   }
+}
+
+/*---------------------------------------------------------------------*/
+/*    shrinkB ...                                                      */
+/*---------------------------------------------------------------------*/
+function shrinkB(conf, prop) {
+   const { prog, events } = conf;
+
+   if (events.length === 1) {
+      return [];
+   } else {
+      let sevents = shrinkArray(events, shrinkReactSigs);
+      return sevents.map(events => { return { prog, events } });
    }
 }
 

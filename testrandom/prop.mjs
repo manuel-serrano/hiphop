@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Tue Dec 16 16:43:42 2025 (serrano)                */
+/*    Last change :  Wed Dec 17 09:13:01 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -104,7 +104,7 @@ class Prop {
 	 if (runs.find(r => r.length !== runs[0].length)) {
 	    return {
 	       status: "failure",
-	       reason: "numbers of reactions",
+	       reason: reactionReason(runs),
 	       systems: this.#systems,
 	       machines: machs,
 	       conf,
@@ -124,7 +124,7 @@ class Prop {
 	 } else if (runs.find(r => r.find((e, i) => !signalsEqual(e.signals, runs[0][i].signals)))) {
 	    return {
 	       status: "failure",
-	       reason: "signals",
+	       reason: signalsReason(runs),
 	       systems: this.#systems,
 	       machines: machs,
 	       conf,
@@ -145,6 +145,22 @@ class Prop {
 	 throw e;
       }
    }
+}
+
+/*---------------------------------------------------------------------*/
+/*    reactionReason ...                                               */
+/*---------------------------------------------------------------------*/
+function reactionReason(runs) {
+   return `numbers of reactions: ${runs.map(r => r.length).join("/")}`;
+}
+
+/*---------------------------------------------------------------------*/
+/*    signalsReason ...                                                 */
+/*---------------------------------------------------------------------*/
+function signalsReason(runs) {
+   const run = runs.find(r => r.find((e, i) => !signalsEqual(e.signals, runs[0][i].signals)));
+   const i = run.findIndex((e, i) => !signalsEqual(e.signals, runs[0][i].signals));
+   return `signals[${i}]: ${JSON.stringify(runs[0][i].signals)}/${JSON.stringify(run[i].signals)}`;
 }
 
 /*---------------------------------------------------------------------*/

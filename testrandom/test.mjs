@@ -3,14 +3,14 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Wed Dec 17 07:10:39 2025 (serrano)                */
+/*    Last change :  Wed Dec 17 09:11:22 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
 /*=====================================================================*/
 import { Prop } from "./prop.mjs";
 import { gen, gensym, genreactsigs } from "./gen.mjs";
-import { shrink } from "./shrink.mjs";
+import { shrinkA, shrinkB } from "./shrink.mjs";
 import { jsonToAst } from "./json.mjs";
 import { jsonToHiphop } from "./hiphop.mjs";
 import { parse } from "../preprocessor/parser.js";
@@ -47,12 +47,12 @@ export const prop = new Prop(
 /*---------------------------------------------------------------------*/
 function shrinkBugInConf(conf, res, prop) {
 
-   function shrinker(conf, res, margin) {
+   function shrinker(shrink, conf, res, margin) {
       const confs = shrink(conf, prop);
       writeFileSync(2, "!");
 
       if (confs.length === 0) {
-	 return { conf, res };
+	 return { conf, res,  margin };
       } else {
 	 if (VERBOSE) {
 	    console.error("  |" + margin + "confs.length:", confs.length);
@@ -71,7 +71,7 @@ function shrinkBugInConf(conf, res, prop) {
 	       }
 	       if (r.status === "failure") {
 		  // we still have an error, shrink more
-		  return shrinker(confs[i], r, margin + " ");
+		  return shrinker(shrink, confs[i], r, margin + " ");
 	       }
 	    } catch(e) {
 	       // an error occured, ignore that program
@@ -86,14 +86,15 @@ function shrinkBugInConf(conf, res, prop) {
 	    console.error("  |" + margin + " #- ending shrink with", res.status, res.reason);
 	 }
 	 
-	 return { conf, res };
+	 return { conf, res, margin };
       }
    }
 
    writeFileSync(2, " \\ shrinking ");
 
    try {
-      return shrinker(conf, res, "  ");
+      const a = shrinker(shrinkA, conf, res, "  ");
+      return shrinker(shrinkB, a.conf, a.res, a.margin);
    } catch(e) {
       console.error("*** SHRINK ERROR:", e.toString());
       throw e;
@@ -111,7 +112,7 @@ function findBugInConf(conf, prop) {
    switch (res.status) {
       case "failure":
 	 console.log();
-	 console.log(`+- ${res.systems.map(m => m.name).join("/")}`);
+	 console.log(`+- ${res.systems.map(m => m.name).join("/")} (${res.reason})`);
 	 const shrink = shrinkBugInConf(conf, res, prop);
 	 return {
 	    status: res.status,
@@ -123,7 +124,7 @@ function findBugInConf(conf, prop) {
 	 }
       case "error":
 	 console.log();
-	 console.log(`+- ${res.machines.map(m => m.name()).join("/")}`);
+	 console.log(`+- ${res.machines.map(m => m.name()).join("/")} (${res.reason})`);
 	 return res;
       default:
 	 return {

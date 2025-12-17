@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Tue Dec 16 16:14:22 2025 (serrano)                */
+/*    Last change :  Wed Dec 17 09:36:51 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -533,14 +533,15 @@ function genreactsigs(signals) {
    if (l === 0) {
       return null;
    } else {
+      const sigs = Object.assign({}, signals);
       const obj = {};
       for (let i = 0; i < l; i++) {
 	 const j = Math.floor(Math.random() * (l - i));
-	 const s = signals[j];
+	 const s = sigs[j];
+	 sigs[j] = sigs[l - i - 1];
 	 obj[s] = genEmitValue();
-	 signals[j] = signals[i];
-	 signals[i] = s;
       }
+
       return obj;
    }
 }
