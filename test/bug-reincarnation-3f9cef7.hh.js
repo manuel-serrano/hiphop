@@ -15,11 +15,17 @@ const prg = hiphop module() {
    }
 }
 
-export const mach = new hh.ReactiveMachine(prg);
+const opts = process.env.HIPHOP_TEST_LOOP === "rnca"
+   ? { name: "rnca", loopUnroll: false, reincarnation: true }
+   : (process.env.HIPHOP_TEST_LOOP === "unroll"
+      ? { name: "unroll", loopUnroll: true, reincarnation: false }
+      : { name: "default" });
+
+export const mach = new hh.ReactiveMachine(prg, opts);
 mach.outbuf = "";
 events.forEach((e, i) => mach.react(e));
 
-if (process.env.HIPHOP_TEST) {
+if (process.env.HIPHOP_TEST_LOOP) {
    console.log(mach.outbuf);
 }
 
