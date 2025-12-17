@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Tue Dec 16 15:58:16 2025 (serrano)                */
+/*    Last change :  Wed Dec 17 07:10:39 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -45,10 +45,10 @@ export const prop = new Prop(
 /*---------------------------------------------------------------------*/
 /*    shrinkBugInConf ...                                              */
 /*---------------------------------------------------------------------*/
-function shrinkBugInConf(prop, conf, res) {
+function shrinkBugInConf(conf, res, prop) {
 
    function shrinker(conf, res, margin) {
-      const confs = shrink(conf);
+      const confs = shrink(conf, prop);
       writeFileSync(2, "!");
 
       if (confs.length === 0) {
@@ -105,14 +105,14 @@ function shrinkBugInConf(prop, conf, res) {
 /*---------------------------------------------------------------------*/
 /*    findBugInConf ...                                                */
 /*---------------------------------------------------------------------*/
-function findBugInConf(prop, conf) {
+function findBugInConf(conf, prop) {
    const res = prop.run(conf);
 
    switch (res.status) {
       case "failure":
 	 console.log();
 	 console.log(`+- ${res.systems.map(m => m.name).join("/")}`);
-	 const shrink = shrinkBugInConf(prop, conf, res);
+	 const shrink = shrinkBugInConf(conf, res, prop);
 	 return {
 	    status: res.status,
 	    origConf: conf,
@@ -144,7 +144,7 @@ function findBugInGen(prop, iterCount) {
       writePadding(i);
 
       const conf = gen(prop);
-      const bug = findBugInConf(prop, conf);
+      const bug = findBugInConf(conf, prop);
 
       switch (bug?.status) {
 	 case "reject": iterCount++; break;
@@ -244,7 +244,7 @@ async function main(argv) {
    } else if (existsSync(argv[2])) {
       const jsonfile = "bug.hh.json";
       const conf = parseSrcFile(argv[2]);
-      const bug = findBugInConf(prop, conf);
+      const bug = findBugInConf(conf, prop);
 
       console.log(bug.status, `[${bug.res.reason}]`);
       console.log("");
