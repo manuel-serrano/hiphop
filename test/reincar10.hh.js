@@ -4,17 +4,17 @@ import * as hh from "@hop/hiphop";
 
 let buf = "";
 
-const events = [{},{},{}, null];
+const events = [{"S":60},null,null];
 
 const prg = hiphop module() {
-   loop {
-      signal g1442;
-      yield;
-      fork {
-         yield;
-	 pragma { buf = "emit"; }
-      } par {
-	 pragma { "nothing" };
+   inout S = 0 combine (x, y) => (x + y);
+   inout T = 0 combine (x, y) => (x + y);
+   fork {
+      loop {
+	 yield;
+	 if (S.pre) {
+	    emit T(mach.age());
+	 }
       }
    }
 }
