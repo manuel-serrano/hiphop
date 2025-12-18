@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Wed Dec  3 15:40:50 2025 (serrano)                */
+/*    Last change :  Thu Dec 18 15:36:20 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with Hiphop                              */
@@ -91,7 +91,7 @@ function jsonToHiphop(obj, m = 0) {
 
    function test(obj) {
       if (typeof obj === "string") {
-	 return obj;
+	 return obj.replace(/^this[.]/, "");
       } else {
 	 switch (obj?.node) {
 	    case "unary":
@@ -99,7 +99,7 @@ function jsonToHiphop(obj, m = 0) {
 	    case "binary":
 	       return `(${test(obj.lhs)} ${obj.op} ${test(obj.rhs)})`;
 	    case "sig":
-	       return `${obj.value}.${obj.prop}`;
+	       return `${obj.value.replace(/this[.]/, "")}.${obj.prop}`;
 	    default: 
 	       console.error("*** ERROR:test: illegal object", obj);
 	       throw TypeError("Illegal test: " + obj);

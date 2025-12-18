@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Thu Dec 18 08:19:04 2025 (serrano)                */
+/*    Last change :  Thu Dec 18 15:21:08 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -120,7 +120,7 @@ class Prop {
 
 	    return {
 	       status: "failure",
-	       reason: "statuses",
+	       reason: statusesReason(runs),
 	       systems: this.#systems,
 	       machines: machs,
 	       conf,
@@ -166,6 +166,14 @@ function signalsReason(runs) {
    const run = runs.find(r => r.find((e, i) => !signalsEqual(e.signals, runs[0][i].signals)));
    const i = run.findIndex((e, i) => !signalsEqual(e.signals, runs[0][i].signals));
    return `signals[${i}]: ${JSON.stringify(runs[0][i].signals)}/${JSON.stringify(run[i].signals)}`;
+}
+
+/*---------------------------------------------------------------------*/
+/*    statusesReason ...                                               */
+/*---------------------------------------------------------------------*/
+function statusesReason(runs) {
+   console.error("RUNS=", runs);
+   return `statuses: ${runs.map(r => r.map(e => e.status)).join("/")}`;
 }
 
 /*---------------------------------------------------------------------*/
