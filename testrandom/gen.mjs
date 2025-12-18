@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Wed Dec 17 09:36:51 2025 (serrano)                */
+/*    Last change :  Thu Dec 18 08:21:26 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -477,8 +477,8 @@ function genStmt(conf, env, size, loop) {
 /*---------------------------------------------------------------------*/
 function gen(prop) {
    const config = prop.config;
-   
-   while (true) {
+
+   for (let i = 0; i < 10000; i++) {
       const l = Math.round(Math.random() * 4);
       const signals = Array.from({length: l}).map(c => gensym());
       const events = Array.from({length: 8}).map(i => genreactsigs(signals))
@@ -513,8 +513,6 @@ function gen(prop) {
 
 	 if (isok) {
 	    return { prog, events };
-	 } else {
-	    return { status: "reject" };
 	 }
       } catch(e) {
 	 console.error("Cannot construct module");
@@ -522,6 +520,8 @@ function gen(prop) {
 	 throw e;
       }
    }
+
+   throw new TypeError("*** ERROR: cannot generate program");
 }
 
 /*---------------------------------------------------------------------*/

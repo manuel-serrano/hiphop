@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 18 07:40:33 2025                          */
-/*    Last change :  Wed Dec  3 19:05:25 2025 (serrano)                */
+/*    Last change :  Thu Dec 18 08:13:51 2025 (serrano)                */
 /*    Copyright   :  2025 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    HipHop filters                                                   */
@@ -37,7 +37,9 @@ const filterinstantaneous = {
 	       return err;
 	    } else {
 	       console.error("*** ERROR: ", err.toString());
-	       console.error(jsonToHiphop(prog.tojson()));
+	       if (prog) {
+		  console.error(jsonToHiphop(prog.tojson()));
+	       }
 	       throw err;
 	    }
 	 }

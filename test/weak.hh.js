@@ -8,7 +8,7 @@ const prg = hiphop module() {
 	 yield;
 	 emit W();
       }
-   } when  (S.now)
+   } when (S.now)
    emit F();
 }
 

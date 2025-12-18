@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Wed Dec 17 14:26:46 2025 (serrano)                */
+/*    Last change :  Thu Dec 18 12:03:09 2025 (serrano)                */
 /*    Copyright   :  2023-25 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -373,7 +373,7 @@ function main(argv) {
                : td({content: `${net.id} ${typ}${(net.$sweepable ? "" : "*")}`});
 	    const name = net.$name ? tr([td({content: escape(net.$name)})]) : "";
 	    const age = info.age >= 0 ? ` (${info.age})` : "";
-	    const value = net.$propagated ? `${net.value}${age}` : "---";
+	    const value = net.$propagated ? `${net.$value}${age}` : "---";
 	    const sigs = net.signals ? tr([td({content: "[" + net.signals + "]"})]) : (net.signame ? tr([td({content: net.signame})]) : "");
 	    const action = net.$action ? tr([td({content: font({content: escape(net.$action)})})]) : tr([td({content: font({content: value})})]);
 	    const fanouts = net.fanout.map((n, i, arr) => tr([port(n, i, `${small(n.id)} &bull;`)]))

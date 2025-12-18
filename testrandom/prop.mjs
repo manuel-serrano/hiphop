@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Wed Dec 17 09:13:01 2025 (serrano)                */
+/*    Last change :  Thu Dec 18 08:19:04 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -58,6 +58,11 @@ class Prop {
    run(conf) {
       let f;
 
+      if (!conf.prog) {
+	 console.error("*** ERROR: configuration has no prog!");
+	 throw new TypeError("not a prog");
+      }
+      
       // check the program
       if (f = this.config.filters.find(f => f.check(this, conf.prog))) {
 	 return { status: "reject", reason: f.name() };
