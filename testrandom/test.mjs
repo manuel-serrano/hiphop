@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Wed Dec 17 09:11:22 2025 (serrano)                */
+/*    Last change :  Thu Dec 18 13:51:54 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -24,13 +24,13 @@ import * as esterel from "./esterel.mjs";
 /*    prop ...                                                         */
 /*---------------------------------------------------------------------*/
 export const prop = new Prop(
-   { name: "default", ctor: (prg => new hh.ReactiveMachine(prg, { name: "default", native: "no" })), config: { maxLoop: 3, maxSize: 10 } },
-   { name: "nosweep", ctor: (prg => new hh.ReactiveMachine(prg, { name: "default", native: "no", sweep: 0 })), config: { maxLoop: 3, maxSize: 10 } },
-   { name: "native", ctor: (prg => new hh.ReactiveMachine(prg, { name: "native", native: "try" })), config: { maxLoop: 3, maxSize: 10 } },
+   { name: "default", ctor: (prg => new hh.ReactiveMachine(prg, { name: "default", native: undefined })), config: { maxLoop: 3, maxSize: 10 } },
+   { name: "nosweep", ctor: (prg => new hh.ReactiveMachine(prg, { name: "default", native: false, sweep: 0 })), config: { maxLoop: 3, maxSize: 10 } },
+   { name: "nonative", ctor: (prg => new hh.ReactiveMachine(prg, { name: "native", native: false })), config: { maxLoop: 3, maxSize: 10 } },
    { name: "racket", ctor: (prg => new racket.ReactiveMachine(prg, { name: "racket" })), config: { expr: 0, pre: 0 } },
    { name: "esterel", ctor: (prg => new esterel.ReactiveMachine(prg, { name: "esterel" })), config: { pre: 0 } },
    { name: "redex", ctor: (prg => new racket.ReactiveMachine(prg, { name: "redex", "backend": "redex" })), config: { expr: 0, present: 1, pre: 0, stdlib: 0, maxSize: 5  } },
-   { name: "reincarnation", ctor: (prg => new hh.ReactiveMachine(prg, { name: "reincarnation", loopUnroll: false, reincarnation: true })) }
+   { name: "reincarnation", ctor: (prg => new hh.ReactiveMachine(prg, { name: "reincarnation", loopUnroll: false, reincarnation: true, native: false })) }
 /*    M("default") && (prg => new hh.ReactiveMachine(prg, { name: "default", native: "no", randomTesting: { maxLoop: 3 }))), */
 /*    M("forkorkill") && (prg => new hh.ReactiveMachine(prg, { name: "forkorkill", forkOrKill: true })), */
 /*    M("no-loopunroll") && (prg => new hh.ReactiveMachine(prg, { name: "no-loopunroll", loopUnroll: false })), */
