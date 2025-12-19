@@ -50,6 +50,11 @@ npm install @hop/hiphop
 > To update HipHop with a new `npm` package, it might be needed to
 > flush its cache first. For that, run `npm cache clean --force`.
 
+To test 
+
+```
+npm test
+```
 
 Getting started
 ---------------

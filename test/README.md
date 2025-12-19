@@ -15,8 +15,9 @@ npm install hiphop --save-dev
 and run the tests:
 
 ```
-npm test
+npm test [reincarnation | old | int]
 ```
+
 
 2. Using the builtin driver
 ---------------------------
@@ -24,7 +25,7 @@ npm test
 Go into the `test` directory and execute
 
 ```
-node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all-test.js
+node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./ALL.test.js
 ```
 
 3. Running an individual test
@@ -33,13 +34,13 @@ node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all-
 Go into the `test` directory and execute
 
 ```
-HIPHOP_RESOLVE=".." node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all.test.js -- ./<A-TEST.hh.js>
+HIPHOP_RESOLVE=".." node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./ALL.test.js -- ./<A-TEST.hh.js>
 ```
 
 Where you should replace `<A-TEST.hh.js>` with your test. For example:
 
 ```
-HIPHOP_RESOLVE=".." node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./all.test.js -- ./incr-type.hh.js
+HIPHOP_RESOLVE=".." node --enable-source-maps --no-warnings --loader ../lib/hiphop-loader.mjs ./ALL.test.js -- ./incr-type.hh.js
 ```
 
 4. Manual compilation

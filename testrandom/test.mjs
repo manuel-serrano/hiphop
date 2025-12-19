@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Thu Dec 18 13:51:54 2025 (serrano)                */
+/*    Last change :  Thu Dec 18 15:45:12 2025 (serrano)                */
 /*    Copyright   :  2025 robby findler & manuel serrano               */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -141,7 +141,7 @@ function findBugInConf(conf, prop) {
 /*    findBugInGen ...                                                 */
 /*---------------------------------------------------------------------*/
 function findBugInGen(prop, iterCount) {
-   for (let i = 0; i < iterCount; i++) {
+   for (let i = iterCount; i != 0; i--) {
       writePadding(i);
 
       const conf = gen(prop);

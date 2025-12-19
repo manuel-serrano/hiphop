@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/hiphop/test/all.test.js              */
+/*    serrano/prgm/project/hiphop/hiphop/test/ALL.test.js              */
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 21 07:42:24 2023                          */
-/*    Last change :  Sun Mar  9 10:20:13 2025 (serrano)                */
+/*    Last change :  Fri Dec 19 08:52:19 2025 (serrano)                */
 /*    Copyright   :  2023-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing driver.                                                  */
@@ -37,10 +37,10 @@ function test(f) {
       copyFileSync(f, nf);
       
       try {
-	 hiphop.setSweep(true);
+	 hiphop.ReactiveMachine.setConfiguration({ Sweep: true });
 	 const m = await import(f);
 	 res = await batch(m.mach, f);
-	 hiphop.setSweep(false);
+	 hiphop.ReactiveMachine.setConfiguration({ Sweep: false });
 	 const nm = await import(nf);
 	 nres = await batch(nm.mach, f);
       } finally {
@@ -97,7 +97,28 @@ async function main(argv) {
       inMocha = true;
    }
 
-   const idx = argv.indexOf("--");
+   let args = "";
+   let idx = argv.indexOf("reincarnation");
+   
+   if (idx > 0) {
+      hiphop.ReactiveMachine.setConfiguration({ LoopUnroll: false, Reincarnation: true });
+      argv.splice(idx, 1);
+      args += " reincarnation";
+   }
+   idx = argv.indexOf("old");
+   if (idx > 0) {
+      hiphop.ReactiveMachine.setConfiguration({ Compiler: "old", Reincarnation: true });
+      argv.splice(idx, 1);
+      args += " old";
+   }
+   idx = argv.indexOf("int");
+   if (idx > 0) {
+      hiphop.ReactiveMachine.setConfiguration({ Compiler: "int" });
+      argv.splice(idx, 1);
+      args += " int";
+   }
+
+   idx = argv.indexOf("--");
    if (idx > 0) {
       tests = argv.slice(idx + 1);
    }
@@ -111,7 +132,7 @@ async function main(argv) {
    }
 
    // execute all the tests
-   globalThis.describe("all.test.js", () => {
+   globalThis.describe("ALL.test.js" + args, () => {
       tests.forEach(async f => test(f));
    });
 }
