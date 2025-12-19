@@ -8,7 +8,7 @@ const prg = hiphop module() {
    }
 }
 
-mach = new hh.ReactiveMachine(prg, { loopSafe: false });
+mach = new hh.ReactiveMachine(prg, { loopSafe: false, verbose: 0 });
 mach.outbuf = "";
 
 try {
@@ -19,6 +19,8 @@ try {
    if (e.message === "Instantaneous loop detected") {
       mach.outbuf += "error dynamic.\n";
    } else if (e.message === "Causality error.") {
+      mach.outbuf += "error dynamic.\n";
+   } else if (e.message === "hiphop: causality error") {
       mach.outbuf += "error dynamic.\n";
    } else {
       mach.outbuf += e.message + "\n";

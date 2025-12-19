@@ -6,7 +6,7 @@ const prg = hiphop module() {
 
    loop {
       pragma { mach.outbuf += ("loop " + mach.age() + "\n"); }
-      T1: {
+      T1: fork {
 	 pragma { mach.outbuf += ("S1\n"); }
 	 yield;
 	 break T1;

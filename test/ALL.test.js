@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 21 07:42:24 2023                          */
-/*    Last change :  Fri Dec 19 08:52:19 2025 (serrano)                */
+/*    Last change :  Fri Dec 19 09:50:09 2025 (serrano)                */
 /*    Copyright   :  2023-25 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing driver.                                                  */
@@ -37,10 +37,10 @@ function test(f) {
       copyFileSync(f, nf);
       
       try {
-	 hiphop.ReactiveMachine.setConfiguration({ Sweep: true });
+	 hiphop.ReactiveMachine.setConfiguration({ Sweep: Number.MAX_SAFE_INTEGER });
 	 const m = await import(f);
 	 res = await batch(m.mach, f);
-	 hiphop.ReactiveMachine.setConfiguration({ Sweep: false });
+	 hiphop.ReactiveMachine.setConfiguration({ Sweep: 0 });
 	 const nm = await import(nf);
 	 nres = await batch(nm.mach, f);
       } finally {
