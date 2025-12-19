@@ -14,9 +14,9 @@ const prg = hiphop module() {
    }
 }
  
-const opts = process.env.HIPHOP_TEST_LOOP === "rnca"
+const opts = process.env.HIPHOP_TEST === "rnca"
    ? { name: "rnca", loopUnroll: false, reincarnation: true, native: false }
-   : (process.env.HIPHOP_TEST_LOOP === "unroll"
+   : (process.env.HIPHOP_TEST === "unroll"
       ? { name: "unroll", loopUnroll: true, reincarnation: false, native: false }
       : { name: "default" });
 export const mach = new hh.ReactiveMachine(prg, opts);
@@ -27,6 +27,6 @@ mach.react();
 mach.react();
 mach.react();
 
-if (process.env.HIPHOP_TEST_LOOP) {
+if (process.env.HIPHOP_TEST) {
    console.log(mach.outbuf);
 }
