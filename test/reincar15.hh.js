@@ -4,12 +4,19 @@ import * as hh from "@hop/hiphop";
 
 let buf = "";
 
-const events = [null,null, null];
+const events = [null,null,null,null,null];
 
 const prg = hiphop module() {
    loop {
       signal S;
 
+      yield;
+      if (S.pre) {
+	 pragma { buf += "true "; }
+      } else {
+	 pragma { buf += "false "; }
+	 emit S(21);
+      }
       yield;
       if (S.pre) {
 	 pragma { buf += "true "; }

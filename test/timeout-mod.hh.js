@@ -24,7 +24,7 @@ hiphop module prg(resolve) {
       await immediate (elapsed.now);
    }
 
-   emit DUR((Date.now() - now0) > delay);
+   emit DUR((Date.now() - now0) >= delay);
    pragma { resolve(false); }
 }
 
