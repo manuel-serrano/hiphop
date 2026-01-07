@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Fri Dec 19 12:52:07 2025 (serrano)                */
-/*    Copyright   :  2025 robby findler & manuel serrano               */
+/*    Last change :  Wed Jan  7 17:43:54 2026 (serrano)                */
+/*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
 /*=====================================================================*/
@@ -25,8 +25,8 @@ import * as esterel from "./esterel.mjs";
 /*---------------------------------------------------------------------*/
 export const prop = new Prop(
    { name: "default", ctor: (prg => new hh.ReactiveMachine(prg, { name: "default", native: undefined })), config: { maxLoop: 3, maxSize: 10 } },
-   { name: "nosweep", ctor: (prg => new hh.ReactiveMachine(prg, { name: "default", native: false, sweep: 0 })), config: { maxLoop: 3, maxSize: 10 } },
-   { name: "nonative", ctor: (prg => new hh.ReactiveMachine(prg, { name: "native", native: false })), config: { maxLoop: 3, maxSize: 10 } },
+   { name: "nosweep", ctor: (prg => new hh.ReactiveMachine(prg, { name: "nosweep", native: false, sweep: 0 })), config: { maxLoop: 3, maxSize: 10 } },
+   { name: "nonative", ctor: (prg => new hh.ReactiveMachine(prg, { name: "nonative", native: false })), config: { maxLoop: 3, maxSize: 10 } },
    { name: "racket", ctor: (prg => new racket.ReactiveMachine(prg, { name: "racket" })), config: { expr: 0, pre: 0 } },
    { name: "esterel", ctor: (prg => new esterel.ReactiveMachine(prg, { name: "esterel" })), config: { pre: 0 } },
    { name: "redex", ctor: (prg => new racket.ReactiveMachine(prg, { name: "redex", "backend": "redex" })), config: { expr: 0, present: 1, pre: 0, stdlib: 0, maxSize: 5  } },
@@ -208,6 +208,7 @@ function parseSrcFile(filename) {
       const srcfile = filename.replace(/hh.json/, "hh.mjs");
       const { events, prog } = JSON.parse(readFileSync(filename));
       const ast = jsonToAst(prog);
+
       return { srcfile, events, prog: ast };
    }
    

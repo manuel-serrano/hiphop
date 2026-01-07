@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Thu Dec 18 15:21:08 2025 (serrano)                */
-/*    Copyright   :  2025 robby findler & manuel serrano               */
+/*    Last change :  Wed Jan  7 17:53:40 2026 (serrano)                */
+/*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
 /*=====================================================================*/
@@ -96,9 +96,13 @@ class Prop {
       const runs = machs.map(mach => {
 	 const res = runMach(mach, conf.events);
 
-	 if (config.VERBOSE >= 1) {
+	 if (config.VERBOSE >= 2) {
 	    console.log(
-	       `  |   | ${mach.name}:`
+	       `  |   | ${mach.name()}: `
+		  + res[res.length-1].status + ` (${res.map(v => JSON.stringify(v))})`);
+	 } else if (config.VERBOSE >= 1) {
+	    console.log(
+	       `  |   | ${mach.name()}: `
 		  + res[res.length-1].status + ` (${res.length})`);
 	 }
 	 return res;
