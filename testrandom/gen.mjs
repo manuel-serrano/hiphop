@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Thu Dec 18 15:35:43 2025 (serrano)                */
-/*    Copyright   :  2025 robby findler & manuel serrano               */
+/*    Last change :  Wed Jan  7 19:08:26 2026 (serrano)                */
+/*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
 /*=====================================================================*/
@@ -225,7 +225,7 @@ function genLocal(weight) {
       const signals = env.signals.concat(names);
       const nenv = Object.assign({}, env);
       nenv.signals = nenv.signals.concat(signals);
-      names.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT, combine: (x, y) => (x + y) });
+      names.forEach(name => attrs[name] = { signal: name, name, initValue: 10, accessibility: hh.INOUT, combine: (x, y) => (x + y) });
 
       return hh.LOCAL(attrs, genStmt(conf, nenv, size - 1, loop));
    };
@@ -485,7 +485,7 @@ function gen(prop) {
       const size = randomInRange(config.minSize, config.maxSize);
       const body = genStmt(config, {signals: signals, traps: []}, size, 0);
       const attrs = {};
-      signals.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT, combine: (x, y) => (x + y) });
+      signals.forEach(name => attrs[name] = { signal: name, name, initValue: 10, accessibility: hh.INOUT, combine: (x, y) => (x + y) });
 
       try {
 	 let prog = hh.MODULE(attrs, body), prog0 = prog;

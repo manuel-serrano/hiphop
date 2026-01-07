@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:45:26 2025                          */
-/*    Last change :  Tue Dec  2 09:07:14 2025 (serrano)                */
-/*    Copyright   :  2025 robby findler & manuel serrano               */
+/*    Last change :  Wed Jan  7 18:43:11 2026 (serrano)                */
+/*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    Json dump and pretty-printing HipHop programs                    */
 /*=====================================================================*/
@@ -280,7 +280,7 @@ function jsonToAst(obj) {
 	 
       case "local": {
 	 const attrs = {};
-	 obj.signals.forEach(name => attrs[name] = { signal: name, name, combine: (x, y) => (x + y) });
+	 obj.signals.forEach(name => attrs[name] = { signal: name, name, initValue: 11, combine: (x, y) => (x + y) });
 	 return hh.LOCAL(attrs, ...children.map(jsonToAst));
       }
 	 
