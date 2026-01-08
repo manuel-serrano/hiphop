@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:45:26 2025                          */
-/*    Last change :  Wed Jan  7 18:43:11 2026 (serrano)                */
+/*    Last change :  Thu Jan  8 08:24:28 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    Json dump and pretty-printing HipHop programs                    */
@@ -99,7 +99,7 @@ hhapi.Emit.prototype.tojson = function() {
 }
 
 hhapi.If.prototype.tojson = function() {
-   const func = (this.func instanceof hh.$Delay)
+   const func = (this.func instanceof hhapi.$Delay)
       ? this.func.tojson()
       : this.func.toString()
 	 .replace(/^function[(][)][ ]* { return /, "")
@@ -112,7 +112,7 @@ hhapi.If.prototype.tojson = function() {
 }
 
 hhapi.Abort.prototype.tojson = function() {
-   const func = (this.func instanceof hh.$Delay)
+   const func = (this.func instanceof hhapi.$Delay)
       ? this.func.tojson()
       : this.func.toString()
 	 .replace(/^function[(][)][ ]* { return /, "")
@@ -126,7 +126,7 @@ hhapi.Abort.prototype.tojson = function() {
 }
 
 hhapi.Suspend.prototype.tojson = function() {
-   const func = (this.func instanceof hh.$Delay)
+   const func = (this.func instanceof hhapi.$Delay)
       ? this.func.tojson()
       : this.func.toString()
 	 .replace(/^function[(][)][ ]* { return /, "")
@@ -140,7 +140,7 @@ hhapi.Suspend.prototype.tojson = function() {
 }
 
 hhapi.Every.prototype.tojson = function() {
-   const func = (this.func instanceof hh.$Delay)
+   const func = (this.func instanceof hhapi.$Delay)
       ? this.func.tojson()
       : this.func.toString()
 	 .replace(/^function[(][)][ ]* { return /, "")
@@ -154,7 +154,7 @@ hhapi.Every.prototype.tojson = function() {
 }
 
 hhapi.LoopEach.prototype.tojson = function() {
-   const func = (this.func instanceof hh.$Delay)
+   const func = (this.func instanceof hhapi.$Delay)
       ? this.func.tojson()
       : this.func.toString()
 	 .replace(/^function[(][)][ ]* { return /, "")
@@ -168,7 +168,7 @@ hhapi.LoopEach.prototype.tojson = function() {
 }
 
 hhapi.Await.prototype.tojson = function() {
-   const func = (this.func instanceof hh.$Delay)
+   const func = (this.func instanceof hhapi.$Delay)
       ? this.func.tojson()
       : this.func.toString()
 	 .replace(/^function[(][)][ ]* { return /, "")
@@ -189,12 +189,21 @@ hhapi.Atom.prototype.tojson = function() {
    };
 }
 
+hhapi.Sustain.prototype.tojson = function() {
+   return {
+      node: "sustain",
+      signame: this.signame_list[0],
+      value: (this.func ? this.func() : null),
+      children: []
+   };
+}
+
 hhapi.$ASTNode.prototype.tojson = function() {
    console.error(`*** ERROR: ${this.constructor.name} -- tojson not implemented`);
    throw "tojson not implemented.";
 }
 
-hh.DelaySig.prototype.tojson = function() {
+hhapi.DelaySig.prototype.tojson = function() {
    return {
       node: "sig",
       value: this.id,
@@ -202,7 +211,7 @@ hh.DelaySig.prototype.tojson = function() {
    };
 }
 
-hh.DelayUnary.prototype.tojson = function() {
+hhapi.DelayUnary.prototype.tojson = function() {
    return {
       node: "unary",
       op: this.op,
@@ -210,7 +219,7 @@ hh.DelayUnary.prototype.tojson = function() {
    };
 }
 
-hh.DelayBinary.prototype.tojson = function() {
+hhapi.DelayBinary.prototype.tojson = function() {
    return {
       node: "binary",
       op: this.op === "OR" ? "||" : this.op,
@@ -228,14 +237,14 @@ function jsonToAst(obj) {
    function delayToAst(node) {
       switch (node.node) {
 	 case "sig": {
-	    return new hh.DelaySig(node.value, node.prop);
+	    return new hhapi.DelaySig(node.value, node.prop);
 	 }
 	 case "unary": {
-	    return new hh.DelayUnary(node.op, delayToAst(node.expr));
+	    return new hhapi.DelayUnary(node.op, delayToAst(node.expr));
 	 }
 	 case "binary": {
 	    const op = node.op === "||" ? "OR" : node.op;
-	    return new hh.DelayBinary(op, delayToAst(node.lhs), delayToAst(node.rhs));
+	    return new hhapi.DelayBinary(op, delayToAst(node.lhs), delayToAst(node.rhs));
 	 }
 	 default:
 	    console.error("*** ERROR: illegal json", node);
@@ -246,7 +255,7 @@ function jsonToAst(obj) {
    switch (node) {
       case "module": { 
 	 const attrs = {};
-	 obj.signals.forEach(name => attrs[name] = { signal: name, name, accessibility: hh.INOUT, combine: (x, y) => (x + y) });
+	 obj.signals.forEach(name => attrs[name] = { signal: name, name, accessibility: hhapi.INOUT, combine: (x, y) => (x + y) });
 	 return hh.MODULE(attrs, ...children.map(jsonToAst));
       }
 

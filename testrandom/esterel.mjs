@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Thu Dec  4 07:41:16 2025 (serrano)                */
-/*    Copyright   :  2025 Manuel Serrano                               */
+/*    Last change :  Thu Jan  8 07:30:53 2026 (serrano)                */
+/*    Copyright   :  2025-26 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with esterel                             */
 /*=====================================================================*/
@@ -91,7 +91,7 @@ function json2esterel(o, m) {
    switch (o.node) {
       case "module":
 	 return "module M :\n"
-	    + (o.signals.length ? (o.signals.map(s => `inputoutput ${s} := 0 : combine integer with +;\n`).join("") + "\n") : "\n")
+	    + (o.signals.length ? (o.signals.map(s => `inputoutput ${s} := 10 : combine integer with +;\n`).join("") + "\n") : "\n")
 	    + childrenOf(o, m)
 	    + (o.children.length === 0 ? "nothing\n" : "")
 	    + "\nend module\n";
@@ -108,7 +108,7 @@ function json2esterel(o, m) {
 	    + `${margin(m)}end ${k}\n`;
       case "local":
 	 return `${margin(m)}signal `
-	    + (o.signals.length ? (o.signals.map(s => `${s} := 0 : combine integer with +`).join(", ") + " in\n") : `${gensym()} in\n`)
+	    + (o.signals.length ? (o.signals.map(s => `${s} := 11 : combine integer with +`).join(", ") + " in\n") : `${gensym()} in\n`)
 	    + childrenOf(o, m + 3)
 	    + `${margin(m)}end signal\n`
       case "nothing":

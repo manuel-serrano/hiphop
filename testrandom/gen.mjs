@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Wed Jan  7 19:08:26 2026 (serrano)                */
+/*    Last change :  Thu Jan  8 07:31:28 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -102,7 +102,7 @@ function genExpr(conf, env) {
 	 const i = Math.floor(Math.random() * env.signals.length);
 	 const sig = env.signals[i];
 	 const axs = (conf.pre) ? ((Math.random() >= 0.6) ? "preval" : "nowval") : "nowval";
-	 return `this.${sig}.${axs}`;
+	 return `this.${sig}.${axs} !== 0`;
       } else {
 	 switch (Math.floor(Math.random() * 6)) {
 	    case 0: return `!${gen(conf, env, size - 1)}`;
