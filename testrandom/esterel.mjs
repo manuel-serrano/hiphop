@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Thu Jan  8 07:30:53 2026 (serrano)                */
+/*    Last change :  Thu Jan  8 09:36:16 2026 (serrano)                */
 /*    Copyright   :  2025-26 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with esterel                             */
@@ -222,9 +222,9 @@ class ReactiveMachine {
       return JSON.parse(out);
    }
 
-   outConf(suffix, {prog, events}) {
-      const target = `esterel${suffix}.hh.strl`;
-      const infile = `esterel${suffix}.hh.in`;
+   outConf(dir, suffix, {prog, events}) {
+      const target = `${dir}/esterel${suffix}.hh.strl`;
+      const infile = `${dir}/esterel${suffix}.hh.in`;
       const evt = ReactiveMachine.events2in(events);
       
       writeFileSync(infile, "!trace signals;\n" + evt + "\n.\n");

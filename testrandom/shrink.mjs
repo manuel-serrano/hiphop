@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Wed Dec 17 10:26:38 2025 (serrano)                */
-/*    Copyright   :  2025 robby findler & manuel serrano               */
+/*    Last change :  Thu Jan  8 10:05:19 2026 (serrano)                */
+/*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
 /*=====================================================================*/
@@ -115,8 +115,6 @@ function shrinkB(conf, prop) {
 /*    shrinkProg ...                                                   */
 /*---------------------------------------------------------------------*/
 function shrinkProg(prog, prop) {
-   if (!prop) throw new TypeError("prop is empty"); // ASSERT ==============
-   
    if (typeof prog === "number" && Number.isInteger(prog)) {
       return shrinkInt(prog);
    } else if (prog instanceof Array) {
@@ -165,6 +163,7 @@ function shrinkArray(a, elementShrinker) {
 function shrinkSignalFunc(func, sig, prop) {
 
    function shrink(obj, cnst) {
+      console.error("SHRINK DELAY obj=", obj, "sig=", sig);
       switch (obj.node) {
 	 case "constant":
 	    return obj;
@@ -250,8 +249,6 @@ function shrinkSignalFunc(func, sig, prop) {
 /*    Remove one signal at a time.                                     */
 /*---------------------------------------------------------------------*/
 function shrinkSignals(decl, children, ctor, accessibility, prop) {
-   if (!prop) throw new TypeError("prop is empty"); // ASSERT ==============
-   
    if (decl.length === 0) {
       return [];
    } else {
@@ -270,7 +267,12 @@ function shrinkSignals(decl, children, ctor, accessibility, prop) {
 	    }
 	 });
 
-	 res.push(ctor(attrs, ...children.map(c => c.shrinkSignal(d.name, prop))));
+	 console.error("SRINKING SIGS: ", Object.keys(attrs));
+	 const prog = ctor(attrs, ...children.map(c => c.shrinkSignal(d.name, prop)));
+
+	 res.push(prog);
+	 console.error("PROG=", JSON.stringify(prog.tojson()));
+	 console.error("-----------------");
       });
       
       return res;
@@ -281,8 +283,6 @@ function shrinkSignals(decl, children, ctor, accessibility, prop) {
 /*    shrinkSignalASTNode ...                                          */
 /*---------------------------------------------------------------------*/
 function shrinkSignalASTNode(node, ctor, attr, sig, prop) {
-   if (!prop) throw new TypeError("prop is empty"); // ASSERT ==============
-
    return ctor(attr, ...node.children.map(c => c.shrinkSignal(sig, prop)));
 }
 
@@ -424,8 +424,16 @@ hhapi.Await.prototype.shrinkSignal = function(sig, prop) {
 /*    shrinkSignal ::Atom ...                                          */
 /*---------------------------------------------------------------------*/
 hhapi.Atom.prototype.shrinkSignal = function(sig, prop) {
-   const attrs = {apply: shrinkSignalFunc(this.func, sig, prop)};
-   return hh.ATOM(attrs);
+   const func = shrinkSignalFunc(this.func, sig, prop);
+
+   console.error("*** SHRINK ATOM", JSON.stringify(this.tojson()));
+
+   if (func) {
+      const attrs = { apply: func };
+      return hh.ATOM(attrs);
+   } else {
+      return hh.NOTHING({});
+   }
 }
 
 /*---------------------------------------------------------------------*/

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Wed Jan  7 17:43:54 2026 (serrano)                */
+/*    Last change :  Thu Jan  8 09:31:00 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -14,7 +14,7 @@ import { shrinkA, shrinkB } from "./shrink.mjs";
 import { jsonToAst } from "./json.mjs";
 import { jsonToHiphop } from "./hiphop.mjs";
 import { parse } from "../preprocessor/parser.js";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { ITERATION, SYSTEMS, VERBOSE } from "./config.mjs";
 import * as hh from "./hiphop.mjs";
 import * as racket from "./racket.mjs";
@@ -190,12 +190,12 @@ function outJson(target, { prog, events }) {
 /*---------------------------------------------------------------------*/
 /*    dumpBug ...                                                      */
 /*---------------------------------------------------------------------*/
-function dumpBug(bug) {
+function dumpBug(dir, bug) {
    bug.machines.forEach(m => {
       if (bug.shrinkConf) {
-	 console.log("  +- see", m.outConf("", bug.shrinkConf), `(${m.name()})`);
+	 console.log("  +- see", m.outConf(dir, "", bug.shrinkConf), `(${m.name()})`);
       }
-      console.log("  +- see", m.outConf(".orig", bug.origConf), `(${m.name()})`);
+      console.log("  +- see", m.outConf(dir, ".orig", bug.origConf), `(${m.name()})`);
    });
 }
 
@@ -224,6 +224,17 @@ function parseSrcFile(filename) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    mkDirname ...                                                    */
+/*---------------------------------------------------------------------*/
+function mkDirname(prefix) {
+   const d = new Date();
+   const ds = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}-${d.getHours()}:${d.getMinutes()}`;
+   const dir = `${prefix}-${ds}`;
+
+   return dir;
+}
+
+/*---------------------------------------------------------------------*/
 /*    main                                                             */
 /*---------------------------------------------------------------------*/
 async function main(argv) {
@@ -231,8 +242,12 @@ async function main(argv) {
       const bug = findBugInGen(prop, ITERATION);
 
       if (bug) {
-	 const jsonfile = "bug.hh.json";
-	 const jsonfileorig = "bug.orig.hh.json";
+	 const dir = mkDirname(`hiphop-${bug.machines.map(m => m.name).join("-")}`);
+	 const jsonfile = dir + "/bug.hh.json";
+	 const jsonfileorig = dir + "/bug.orig.hh.json";
+	 
+	 mkdirSync(dir);
+	 
 	 console.log('  |');
 	 console.log("  +-", bug.status, `[${bug.res.reason}]`);
 	 console.log('  |');
@@ -241,13 +256,16 @@ async function main(argv) {
 	 console.log('  |');
 	 outJson(jsonfile, bug.shrinkConf);
 	 outJson(jsonfileorig, bug.origConf);
-	 dumpBug(bug);
+	 dumpBug(dir, bug);
       }
    } else if (existsSync(argv[2])) {
-      const jsonfile = "bug.hh.json";
+      const dir = mkDirname(`hiphop-${bug.machines.map(m => m.name).join("-")}`);
+      const jsonfile = dir + "/bug.hh.json";
       const conf = parseSrcFile(argv[2]);
       const bug = findBugInConf(conf, prop);
 
+      mkdirSync(dir);
+      
       console.log(bug.status, `[${bug.res.reason}]`);
       console.log("");
 
@@ -264,7 +282,7 @@ async function main(argv) {
 	 outJson(jsonfile, bug.shrink);
       }
 
-      dumpBug(bug);
+      dumpBug(dir, bug);
    } else {
       throw new Error(`Illegal command line: "${argv.join(" ")}"`);
    }

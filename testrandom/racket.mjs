@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Tue Dec 16 15:59:57 2025 (serrano)                */
-/*    Copyright   :  2025 Manuel Serrano                               */
+/*    Last change :  Thu Jan  8 09:36:44 2026 (serrano)                */
+/*    Copyright   :  2025-26 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with racket/esterel                      */
 /*=====================================================================*/
@@ -24,9 +24,26 @@ const unary = { "!": "signal-not" };
 const binary = { "||": "signal-or", "&&" : "signal-and" };
 
 /*---------------------------------------------------------------------*/
+/*    margins                                                          */
+/*---------------------------------------------------------------------*/
+let margins = [""];
+
+function margin(n) {
+   if (typeof n !== "number") {
+      throw new TypeError("n is not a number: " + n);
+   }
+
+   if (typeof margins[n] !== "string") {
+      margins[n] = " ".repeat(n);
+   }
+      
+   return margins[n];
+}
+   
+/*---------------------------------------------------------------------*/
 /*    json2racket ...                                                  */
 /*---------------------------------------------------------------------*/
-function json2racket(o) {
+function json2racket(o, m) {
 
    function expr2racket(expr, present) {
 
@@ -58,55 +75,55 @@ function json2racket(o) {
       }
    }
       
-   function childrenOf(o) {
+   function childrenOf(o, m) {
       if (o.children.length === 1) {
-	 return json2racket(o.children[0]);
+	 return json2racket(o.children[0], m);
       } else {
-	 return `(begin ${o.children.map(json2racket).join("\n")})`;
+	 return `${margin(m)}(begin ${o.children.map(c => json2racket(c, m)).join(`${margin(m)}\n`)})`;
       }
    }
 
-   function if2racket({func, children}) {
-      return `(if ${expr2racket(func, true)} ${json2racket(children[0])} ${json2racket(children[1])})`
+   function if2racket({func, children, m}) {
+      return `${margin(m)}(if ${expr2racket(func, true)}\n${margin(m + 3)}${json2racket(children[0], m + 3)}\n${margin(m + 3)}${json2racket(children[1], m + 3)})\n`
    }
-   
+
    switch (o.node) {
       case "module":
-	 return `(esterel #:pre 1 ${childrenOf(o)})`;
+	 return `(esterel #:pre 1\n${childrenOf(o, m + 3)})`;
       case "loop":
-	 return `(loop ${childrenOf(o)})`;
+	 return `${margin(m)}(loop\n${childrenOf(o, m + 3)})`;
       case "if":
-	 return if2racket(o);
+	 return if2racket(o, m);
       case "local":
-	 return `(with-signal (${o.signals.join(" ")}) ${childrenOf(o)})`;
+	 return `${margin(m)}(with-signal (${o.signals.join(" ")})\n${childrenOf(o, m + 3)})`;
       case "nothing":
-	 return "(void)";
+	 return `${margin(m)}(void)`;
       case "pause":
-	 return "(pause)";
+	 return `${margin(m)}(pause)`;
       case "seq":
-	 return childrenOf(o);
+	 return childrenOf(o, m + 3);
       case "trap":
-	 return `(with-trap ${o.trapName} ${childrenOf(o)})`;
+	 return `${margin(m)}(with-trap ${o.trapName} ${childrenOf(o, m + 3)})`;
       case "exit":
-	 return `(exit-trap ${o.trapName})`;
+	 return `${margin(m)}(exit-trap ${o.trapName})\n`;
       case "halt":
-	 return `(halt)`;
+	 return `${margin(m)}(halt)`;
       case "par":
-	 return `(par ${o.children.map(json2racket).join("\n")})`;
+	 return `${margin(m)}(par ${o.children.map(c => json2racket(c, m + 3)).join("\n")})`;
       case "atom":
-	 return `${expr2racket(o.func, false)}`;
+	 return `${margin(m)}${expr2racket(o.func, false)}\n`;
       case "emit":
-	 return `(emit ${o.signame})`;
+	 return `${margin(m)}(emit ${o.signame})\n`;
       case "abort":
-	 return `(abort ${o.children.map(json2racket).join("\n")} #:when ${expr2racket(o.func, true)})`;
+	 return `${margin(m)}(abort ${o.children.map(c => json2racket(c, m)).join("\n")} #:when ${expr2racket(o.func, true)})\n`;
       case "suspend":
-	 return `(suspend ${o.children.map(json2racket).join("\n")} ${expr2racket(o.func, true)})`;
+	 return `${margin(m)}(suspend ${o.children.map(c => json2racket(c, m)).join("\n")} ${expr2racket(o.func, true)})\n`;
       case "every":
-	 return `(every ${expr2racket(o.func, true)} #:do ${o.children.map(json2racket).join("\n")})`;
+	 return `${margin(m)}(every ${expr2racket(o.func, true)} #:do ${o.children.map(c => json2racket(c, m)).join("\n")})`;
       case "loopeach":
-	 return `(loop ${o.children.map(json2racket).join("\n")} #:each ${expr2racket(o.func, true)})`;
+	 return `${margin(m)}(loop ${o.children.map(c => json2racket(c, m)).join("\n")} #:each ${expr2racket(o.func, true)})\n`;
       case "await":
-	 return `(await ${expr2racket(o.func, true)})`;
+	 return `${margin(m)}(await ${expr2racket(o.func, true)})\n`;
       default:
 	 return `"Unsupported node ${o.node}"`;
    }
@@ -166,7 +183,7 @@ function makeProg(backend, prog, filename) {
       + (`   (case s\n`)
       + (`      ${o.signals.map(s => `((${s}) ${s})`).join("\n      ")}\n`)
       + (`      (else (error "unknown signal ~s" s))))\n`)
-      + (`(define machine ${json2racket(o)})\n`)
+      + (`(define machine ${json2racket(o, 3)})\n`)
       + ('\n')
       + (`(let ((events ${evts}))\n`)
       + ('   (displayln (apply string-append (run-mach machine events))))\n');
@@ -224,7 +241,7 @@ function makeStandaloneProg(backend, prog, events) {
       + (`      ${o.signals.map(s => `((${s}) ${s})`).join("\n      ")}\n`)
       + (`      (else (error "unknown signal ~s" s))))\n`)
       + ('\n')
-      + (`(define machine ${json2racket(o)})\n`)
+      + (`(define machine ${json2racket(o, 3)})\n`)
       + ('\n')
       + (`(let ((events ${evts}))\n`)
       + ('   (run-mach machine events))\n');
@@ -282,11 +299,20 @@ class ReactiveMachine {
    run(file) {
       const child = spawnSync("racket", ["-y", this.file]);
       const out = child.stdout.toString();
-      return JSON.parse(out);
+      try {
+	 return JSON.parse(out);
+      } catch (e) {
+	 console.error("*** Racket: cannot parse generated json text when running");
+	 console.error(`racket -y ${this.file}`);
+	 console.error(">>>");
+	 console.error(out);
+	 console.error("<<<");
+	 throw e;
+      }
    }
 
-   outConf(suffix, {prog, events}) {
-      const target = `${this.name()}${suffix}.hh.rkt`;
+   outConf(dir, suffix, {prog, events}) {
+      const target = `${dir}/${this.name()}${suffix}.hh.rkt`;
       writeFileSync(target, makeStandaloneProg(this.backend, prog, events) + `\n;; racket -y ${target}`);
       return target;
    }
