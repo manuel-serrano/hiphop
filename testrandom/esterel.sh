@@ -4,8 +4,8 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  manuel serrano                                    */
 #*    Creation    :  Fri Nov 21 13:42:15 2025                          */
-#*    Last change :  Sat Nov 22 08:20:23 2025 (serrano)                */
-#*    Copyright   :  2025 manuel serrano                               */
+#*    Last change :  Thu Jan  8 15:04:15 2026 (serrano)                */
+#*    Copyright   :  2025-26 manuel serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Compile Esterel programs                                         */
 #*=====================================================================*/
@@ -31,7 +31,8 @@ else
   rm /tmp/esterel.log
 fi
 
-gcc ${src}.c $ESTEREL_LIB -o ${srcdir}/${src} || (echo "gcc error" && exit 2)
+gcc ${src}.c $ESTEREL_LIB -o ${srcdir}/${src} || (echo "gcc error" && exit 2) 
+/bin/rm -f ${src}.c
 
 if [ " $infile" != " " ]; then
   ${srcdir}/${src} 2>&1 < ${infile} | $ccdir/esterel-simparse.mjs

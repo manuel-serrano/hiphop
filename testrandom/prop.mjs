@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Wed Jan  7 17:53:40 2026 (serrano)                */
+/*    Last change :  Thu Jan  8 13:38:43 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -81,9 +81,9 @@ class Prop {
 		     message: e.toString(),
 		  }
 	       },
-	       outConf(suf, conf) {
+	       outConf(dir, suf, conf) {
 		  const mach = sys.ctor(hh.MODULE({}, hh.NOTHING()));
-		  return mach.outConf(suf, conf);
+		  return mach.outConf(dir, suf, conf);
 	       },
 	       name() {
 		  return sys.name;
@@ -176,7 +176,6 @@ function signalsReason(runs) {
 /*    statusesReason ...                                               */
 /*---------------------------------------------------------------------*/
 function statusesReason(runs) {
-   console.error("RUNS=", runs);
    return `statuses: ${runs.map(r => r.map(e => e.status)).join("/")}`;
 }
 

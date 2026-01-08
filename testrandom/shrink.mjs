@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:31:35 2025                          */
-/*    Last change :  Thu Jan  8 10:05:19 2026 (serrano)                */
+/*    Last change :  Thu Jan  8 13:37:25 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    Program shrinker                                                 */
@@ -163,7 +163,6 @@ function shrinkArray(a, elementShrinker) {
 function shrinkSignalFunc(func, sig, prop) {
 
    function shrink(obj, cnst) {
-      console.error("SHRINK DELAY obj=", obj, "sig=", sig);
       switch (obj.node) {
 	 case "constant":
 	    return obj;
@@ -172,7 +171,7 @@ function shrinkSignalFunc(func, sig, prop) {
 	       if (prop.config.expr !== 0) {
 		  return {node: "constant", value: "false"};
 	       } else {
-		  return obj;
+		  return {node: "constant", value: "false"};
 	       }
 	    } else {
 	       return obj;
@@ -267,12 +266,7 @@ function shrinkSignals(decl, children, ctor, accessibility, prop) {
 	    }
 	 });
 
-	 console.error("SRINKING SIGS: ", Object.keys(attrs));
-	 const prog = ctor(attrs, ...children.map(c => c.shrinkSignal(d.name, prop)));
-
-	 res.push(prog);
-	 console.error("PROG=", JSON.stringify(prog.tojson()));
-	 console.error("-----------------");
+	 res.push(ctor(attrs, ...children.map(c => c.shrinkSignal(d.name, prop))));
       });
       
       return res;
@@ -425,8 +419,6 @@ hhapi.Await.prototype.shrinkSignal = function(sig, prop) {
 /*---------------------------------------------------------------------*/
 hhapi.Atom.prototype.shrinkSignal = function(sig, prop) {
    const func = shrinkSignalFunc(this.func, sig, prop);
-
-   console.error("*** SHRINK ATOM", JSON.stringify(this.tojson()));
 
    if (func) {
       const attrs = { apply: func };
