@@ -1,9 +1,9 @@
 /*=====================================================================*/
-/*    serrano/prgm/project/hiphop/hiphop/doc/draw/svg.mjs              */
+/*    serrano/prgm/project/hiphop/hiphop/doc/circuit/svg.mjs           */
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 09:45:59 2026                          */
-/*    Last change :  Fri Jan  9 10:19:59 2026 (serrano)                */
+/*    Last change :  Mon Jan 12 13:32:05 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Draw a full svg figure                                           */
@@ -23,7 +23,7 @@ function svg(attrs, ...nodes) {
    }
    return `<svg width="${attrs?.width ?? 400}" height="${attrs?.height ?? 400}"`
       + (attrs?.id ? ` id="${attrs.id}"` : "")
-      + (attrs?.class ? ` class="${attrs.class}"` : "")
+      + (attrs?.class ? ` class="${attrs.class}"` : ' class="circuit"')
       + ">\n"
       + nodes.join("\n")
       + "</svg>";
@@ -33,5 +33,9 @@ function svg(attrs, ...nodes) {
 /*    xml ...                                                          */
 /*---------------------------------------------------------------------*/
 function xml(node) {
+   if ((typeof node === "object") && "svg" in node) {
+      const attrs = { width: node.width + node.x, height: node.height + node.y, class: "circuit" };
+      node = svg(attrs, node.svg);
+   }
    return '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + node;
 }
