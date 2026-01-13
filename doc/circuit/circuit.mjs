@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Jan  9 18:26:39 2026                          */
-/*    Last change :  Tue Jan 13 09:30:35 2026 (serrano)                */
+/*    Last change :  Tue Jan 13 17:49:10 2026 (serrano)                */
 /*    Copyright   :  2026 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Svg circuits                                                     */
@@ -12,7 +12,7 @@
 /*---------------------------------------------------------------------*/
 /*    The module                                                       */
 /*---------------------------------------------------------------------*/
-export { css, and, or, named, seq, pause };
+export { css, and, or, assig, reg, named, seq, pause };
 
 import * as gate from "./gate.mjs";
 import { getId, getStyle } from "./gate.mjs";
@@ -42,7 +42,7 @@ function and(attrs, x, y, z) {
    const km = 20;
    const x = attrs?.x ?? 0;
    const y = attrs?.y ?? 0;
-   const andw = 60;
+   const andw = attrs?.width ?? 60;
    const width = andw + 2*lm + 2*km;
    const height = 40;
    const connectm = 8;
@@ -58,7 +58,7 @@ function and(attrs, x, y, z) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    and ...                                                          */
+/*    or ...                                                           */
 /*---------------------------------------------------------------------*/
 function or(attrs, x, y, z) {
    const stroke = attrs.stroke;
@@ -67,7 +67,7 @@ function or(attrs, x, y, z) {
    const km = 20;
    const x = attrs?.x ?? 0;
    const y = attrs?.y ?? 0;
-   const andw = 60;
+   const andw = attrs?.width ?? 60;
    const width = andw + 2*lm + 2*km;
    const height = 40;
    const connectm = 8;
@@ -78,6 +78,54 @@ function or(attrs, x, y, z) {
    const zw = gate.wireM({ stroke, label: "Z", anchor: "r" }, [g.lx, g.outy], [width - lm, null]);
 
    const svg = SVG(g, xw, yw, zw);
+
+   return { svg, x, y, width, height };
+}
+
+/*---------------------------------------------------------------------*/
+/*    assig ...                                                        */
+/*---------------------------------------------------------------------*/
+function assig(attrs, x, y) {
+   const stroke = attrs.stroke;
+
+   const lm = 45;
+   const km = 20;
+   const x = attrs?.x ?? 0;
+   const y = attrs?.y ?? 0;
+   const andw = attrs?.width ?? 60;
+   const width = andw + 2*lm + 2*km;
+   const height = 40;
+   const connectm = 8;
+
+   const g = gate.assig({ stroke, width: andw }, x + km + lm, y);
+   const xw = gate.wireM({ stroke, label: "X", anchor: "l", dot: attrs.X === false ? "not" : "" }, [x + lm, g.outy], [g.x, null]);
+   const zw = gate.wireM({ stroke, label: "Z", anchor: "r" }, [g.lx, g.outy], [width - lm, null]);
+
+   const svg = SVG(g, xw, zw);
+
+   return { svg, x, y, width, height };
+}
+
+/*---------------------------------------------------------------------*/
+/*    reg ...                                                          */
+/*---------------------------------------------------------------------*/
+function reg(attrs, x, y) {
+   const stroke = attrs.stroke;
+
+   const lm = 45;
+   const km = 20;
+   const x = attrs?.x ?? 0;
+   const y = attrs?.y ?? 0;
+   const andw = attrs?.width ?? 60;
+   const width = andw + 2*lm + 2*km;
+   const height = 40;
+   const connectm = 8;
+
+   const g = gate.reg({ stroke, width: andw }, x + km + lm, y);
+   const xw = gate.wireM({ stroke, label: "X", anchor: "l", dot: attrs.X === false ? "not" : "" }, [x + lm, g.outy], [g.x, null]);
+   const zw = gate.wireM({ stroke, label: "Z", anchor: "r" }, [g.lx, g.outy], [width - lm, null]);
+
+   const svg = SVG(g, xw, zw);
 
    return { svg, x, y, width, height };
 }
@@ -117,16 +165,16 @@ function named(attrs, x, y) {
       x: b.x  + (b.width * (i + 1) * (1/3)), y: b.y + 15 });
 
    if (attrs.wire) {
-      wires.push(gate.wireM({ stroke }, [circuit.e.x, 0], [null, b.x]));
-      wires.push(gate.wireM({ stroke }, [circuit.e2.x, 0], [null, b.x]));
-      wires.push(gate.wireM({ stroke }, [0, circuit.go.Y], [b.x, null]));
-      wires.push(gate.wireM({ stroke }, [0, circuit.res.Y], [b.x, null]));
-      wires.push(gate.wireM({ stroke }, [0, circuit.susp.Y], [b.x, null]));
-      wires.push(gate.wireM({ stroke }, [0, circuit.kill.Y], [b.x, null]));
-      wires.push(gate.wireM({ stroke }, [b.lx, circuit.sel.Y], [width, null]));
-      wires.push(gate.wireM({ stroke }, [b.lx, circuit.k0.Y], [width, null]));
-      wires.push(gate.wireM({ stroke }, [b.lx, circuit.k1.Y], [width, null]));
-      wires.push(gate.wireM({ stroke }, [b.lx, circuit.k2.Y], [width, null]));
+      wires.push(gate.wireM({ class: "e", stroke }, [circuit.e.x, 0], [null, b.x]));
+      wires.push(gate.wireM({ class: "e", stroke }, [circuit.e2.x, 0], [null, b.x]));
+      wires.push(gate.wireM({ class: "go", stroke }, [0, circuit.go.Y], [b.x, null]));
+      wires.push(gate.wireM({ class: "res", stroke }, [0, circuit.res.Y], [b.x, null]));
+      wires.push(gate.wireM({ class: "susp", stroke }, [0, circuit.susp.Y], [b.x, null]));
+      wires.push(gate.wireM({ class: "kill", stroke }, [0, circuit.kill.Y], [b.x, null]));
+      wires.push(gate.wireM({ class: "sel", stroke }, [b.lx, circuit.sel.Y], [width, null]));
+      wires.push(gate.wireM({ class: "k0", stroke }, [b.lx, circuit.k0.Y], [width, null]));
+      wires.push(gate.wireM({ class: "k1", stroke }, [b.lx, circuit.k1.Y], [width, null]));
+      wires.push(gate.wireM({ class: "k2", stroke }, [b.lx, circuit.k2.Y], [width, null]));
    }
 
    circuit.svg = `${margin}<g`
