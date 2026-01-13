@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 09:45:59 2026                          */
-/*    Last change :  Mon Jan 12 13:32:05 2026 (serrano)                */
+/*    Last change :  Tue Jan 13 10:28:02 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Draw a full svg figure                                           */
@@ -17,15 +17,21 @@ export { svg, xml };
 /*---------------------------------------------------------------------*/
 /*    svg ...                                                          */
 /*---------------------------------------------------------------------*/
-function svg(attrs, ...nodes) {
+function svg(attrs, node) {
    if (typeof attrs !== "object") {
       throw new TypeError("svg: bad attributes " + attrs);
    }
-   return `<svg width="${attrs?.width ?? 400}" height="${attrs?.height ?? 400}"`
+
+   const width = attrs.width ? attrs.width : node.width + node.x;
+   const height = attrs.height ? attrs.height : node.height + node.x;
+   const viewBox = attrs?.viewBox ?? `0 0 ${width} ${height}`;
+   
+   return `<svg width="${width}" height="${height}" `
       + (attrs?.id ? ` id="${attrs.id}"` : "")
       + (attrs?.class ? ` class="${attrs.class}"` : ' class="circuit"')
+      + (viewBox ? ` viewBox="${viewBox}"` : "")
       + ">\n"
-      + nodes.join("\n")
+      + node.svg
       + "</svg>";
 }
 
@@ -33,9 +39,6 @@ function svg(attrs, ...nodes) {
 /*    xml ...                                                          */
 /*---------------------------------------------------------------------*/
 function xml(node) {
-   if ((typeof node === "object") && "svg" in node) {
-      const attrs = { width: node.width + node.x, height: node.height + node.y, class: "circuit" };
-      node = svg(attrs, node.svg);
-   }
-   return '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + node;
+   const content = (typeof node === "string") ? node : svg({}, node);
+   return '<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n' + content;
 }

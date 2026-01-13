@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 08:53:28 2026                          */
-/*    Last change :  Tue Jan 13 09:02:38 2026 (serrano)                */
+/*    Last change :  Tue Jan 13 09:32:23 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Various circuit gates drawing                                    */
@@ -12,7 +12,7 @@
 /*---------------------------------------------------------------------*/
 /*    The module                                                       */
 /*---------------------------------------------------------------------*/
-export { label, wire, wireM, dot, and, or, reg, assig };
+export { label, wire, wireM, dot, and, or, reg, assig, getStyle, getId };
 
 /*---------------------------------------------------------------------*/
 /*    getStyle ...                                                     */
@@ -20,8 +20,15 @@ export { label, wire, wireM, dot, and, or, reg, assig };
 function getStyle(attrs) {
    let style = "stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1";
 
-   style += (attrs.fill ? `;fill:${attrs.fill}` : ";fill:transparent");
-   style += (attrs.stroke ? `;stroke:${attrs.stroke}` : ";stroke:var(--stroke-color)");
+   if (attrs.fill) {
+      style += `;fill:${attrs.fill}`;
+   } else if (!("fill" in attrs)) {
+      style += `;fill:transparent`;
+   }
+
+   if (attrs.stroke) {
+      style += `;stroke:${attrs.stroke}`;
+   }
 
    return style;
 }
@@ -62,11 +69,11 @@ function wire(attrs, ...coords) {
    let svg = "";
    
    if (attrs.dot === "branch") {
-      svg += dot({ stroke: attrs.stroke, class: "branch", width: dw }, coords[0][0] - dw/2, coords[0][1] - dw/2);
+      svg += dot({ fill: attrs?.stroke, stroke: attrs.stroke, class: "branch", width: dw }, coords[0][0] - dw/2, coords[0][1] - dw/2);
    }
 
    if (attrs.dot === "not") {
-      svg += dot({ stroke: attrs.stroke, class: "branch", width: dw, fill: "transparent" }, tx - dw, ty - dw/2);
+      svg += dot({ fill: "transparent", stroke: attrs.stroke, class: "not", width: dw }, tx - dw, ty - dw/2);
       coords[coords.length - 1][0] -= dw;
    }
 
@@ -121,11 +128,11 @@ function wireM(attrs, ...coords) {
    let svg = "";
    
    if (attrs.dot === "branch") {
-      svg += dot({ stroke: attrs.stroke, class: "branch", width: dw }, coords[0][0] - dw/2, coords[0][1] - dw/2);
+      svg += dot({ fill: attrs.stroke, stroke: attrs.stroke, class: "branch", width: dw }, coords[0][0] - dw/2, coords[0][1] - dw/2);
    }
 
    if (attrs.dot === "not") {
-      svg += dot({ stroke: attrs.stroke, class: "branch", width: dw, fill: "transparent" }, lx - dw, ly - dw/2);
+      svg += dot({ fill: "transparent", stroke: attrs.stroke, class: "not", width: dw }, lx - dw, ly - dw/2);
       coords[coords.length - 1][0] -= dw;
    }
 
@@ -158,9 +165,6 @@ function dot(attrs, x, y) {
    const margin = attrs?.margin ?? "   ";
    const width = attrs?.width ?? 6;
 
-   attrs.stroke = attrs.stroke ?? "var(--and-color)";
-   attrs.fill = attrs.fill ?? "inherit";
-   
    return `${margin}<circle`
       + getId(attrs, "dot")
       + ` style="${getStyle(attrs)}"`
@@ -179,8 +183,6 @@ function and(attrs, x, y) {
    const height = attrs?.height ?? width / 1.5;
    const arcwidth = attrs?.arcwidth ?? (width / 10) * 4;
    const control = width / 5;
-   
-   attrs.stroke = attrs.stroke ?? "var(--and-color)";
    
    const svg = `${margin}<g`
       + getId(attrs, "logical and")
@@ -206,8 +208,6 @@ function or(attrs, x, y) {
    const larcwidth = attrs?.larcwidth ?? (width / 10) * 2;
    const control = width / 10;
    
-   attrs.stroke = attrs.stroke ?? "var(--or-color)";
-   
    const svg = `${margin}<g`
       + getId(attrs, "logical or")
       + ` style="${getStyle(attrs)}"`
@@ -228,8 +228,6 @@ function reg(attrs, x, y) {
    const margin = attrs?.margin ?? "   ";
    const width = attrs?.width ?? 30;
    const padding = (width / 10) * 2.5;
-   
-   attrs.stroke = attrs.stroke ?? "var(--reg-color)";
    
    const svg = `${margin}<g`
       + getId(attrs, "reg")
@@ -253,8 +251,6 @@ function assig(attrs, x, y) {
    const margin = attrs?.margin ?? "   ";
    const width = attrs?.width ?? attrs?.height ?? 30;
    const height = attrs?.height ?? width;
-   
-   attrs.stroke = attrs.stroke ?? "var(--assig-color)";
    
    const svg = `${margin}<g`
       + getId(attrs, "assig")

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Jan  9 18:26:39 2026                          */
-/*    Last change :  Tue Jan 13 09:09:57 2026 (serrano)                */
+/*    Last change :  Tue Jan 13 09:30:35 2026 (serrano)                */
 /*    Copyright   :  2026 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Svg circuits                                                     */
@@ -12,9 +12,10 @@
 /*---------------------------------------------------------------------*/
 /*    The module                                                       */
 /*---------------------------------------------------------------------*/
-export { css, seq, pause };
+export { css, and, or, named, seq, pause };
 
 import * as gate from "./gate.mjs";
+import { getId, getStyle } from "./gate.mjs";
 import * as path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
@@ -25,25 +26,6 @@ import { dirname } from "path";
 const css = path.join(dirname(fileURLToPath(import.meta.url)), "circuit.css");
 
 /*---------------------------------------------------------------------*/
-/*    getStyle ...                                                     */
-/*---------------------------------------------------------------------*/
-function getStyle(attrs) {
-   let style = "stroke-width:2px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1";
-
-   style += (attrs.fill ? `;fill:${attrs.fill}` : ";fill:transparent");
-   style += (attrs.stroke ? `;stroke:${attrs.stroke}` : ";stroke:red");
-
-   return style;
-}
-
-/*---------------------------------------------------------------------*/
-/*    getId ...                                                        */
-/*---------------------------------------------------------------------*/
-function getId(attrs, defClass = "") {
-   return (attrs?.id ? ` id="${attrs.id}"` : "") + (attrs?.class ? ` class="${attrs.class} ${defClass}"` : ` class="${defClass}"`);
-}
-
-/*---------------------------------------------------------------------*/
 /*    SVG ...                                                          */
 /*---------------------------------------------------------------------*/
 function SVG(...nodes) {
@@ -51,11 +33,61 @@ function SVG(...nodes) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    namedCircuit ...                                                 */
+/*    and ...                                                          */
 /*---------------------------------------------------------------------*/
-function namedCircuit(attrs, x, y) {
+function and(attrs, x, y, z) {
+   const stroke = attrs.stroke;
+
+   const lm = 45;
+   const km = 20;
+   const x = attrs?.x ?? 0;
+   const y = attrs?.y ?? 0;
+   const andw = 60;
+   const width = andw + 2*lm + 2*km;
+   const height = 40;
+   const connectm = 8;
+
+   const g = gate.and({ stroke, width: andw }, x + km + lm, y);
+   const xw = gate.wireM({ stroke, label: "X", anchor: "l", dot: attrs.X === false ? "not" : "" }, [x + lm, g.y + connectm], [g.x, null]);
+   const yw = gate.wireM({ stroke, label: "Y", anchor: "l", dot: attrs.Y === false ? "not" : "" }, [x + lm, g.ly - connectm], [g.x, null]);
+   const zw = gate.wireM({ stroke, label: "Z", anchor: "r" }, [g.lx, g.outy], [width - lm, null]);
+
+   const svg = SVG(g, xw, yw, zw);
+
+   return { svg, x, y, width, height };
+}
+
+/*---------------------------------------------------------------------*/
+/*    and ...                                                          */
+/*---------------------------------------------------------------------*/
+function or(attrs, x, y, z) {
+   const stroke = attrs.stroke;
+
+   const lm = 45;
+   const km = 20;
+   const x = attrs?.x ?? 0;
+   const y = attrs?.y ?? 0;
+   const andw = 60;
+   const width = andw + 2*lm + 2*km;
+   const height = 40;
+   const connectm = 8;
+
+   const g = gate.or({ stroke, width: andw }, x + km + lm, y);
+   const xw = gate.wireM({ stroke, label: "X", anchor: "l", dot: attrs.X === false ? "not" : "" }, [x + lm, g.y + connectm], [g.x + 8, null]);
+   const yw = gate.wireM({ stroke, label: "Y", anchor: "l", dot: attrs.Y === false ? "not" : "" }, [x + lm, g.ly - connectm], [g.x + 8, null]);
+   const zw = gate.wireM({ stroke, label: "Z", anchor: "r" }, [g.lx, g.outy], [width - lm, null]);
+
+   const svg = SVG(g, xw, yw, zw);
+
+   return { svg, x, y, width, height };
+}
+
+/*---------------------------------------------------------------------*/
+/*    named ...                                                        */
+/*---------------------------------------------------------------------*/
+function named(attrs, x, y) {
    if (typeof attrs !== "object") {
-      throw new TypeError("namedCircuit: bad attributes " + attrs);
+      throw new TypeError("named: bad attributes " + attrs);
    }
 
    const margin = attrs?.margin ?? "   ";
@@ -63,31 +95,52 @@ function namedCircuit(attrs, x, y) {
    const width = attrs?.width ?? 150;
    const height = attrs?.height ?? 200;
    const padding = width / 15;
+   const stroke = attrs.stroke;
 
-   const ins = ["GO", "RES", "SUSP", "KILL", ""];
-   const outs = ["SEL", "K0", "K1", "K2", "..."];
-   const svg = `${margin}<g`
+   const ins = ["go", "res", "susp", "kill", ""];
+   const outs = ["sel", "k0", "k1", "k2", "..."];
+   const wires = [];
+
+   const circuit = { width, height, x, y, lx: x + width, ly: y + height };
+
+   let b = attrs.wire
+      ? { x: x + 10, y: x + 10, lx: x + width - 10, ly: y + width - 10, width: width - 20, height: height - 20 }
+      : { x: x, y: y, lx: x + width, ly: y + width, width, height };
+
+   ins.forEach((t, i) => circuit[t] =
+      { X: b.x, Y: b.y + (b.height/(ins.length + 1))*(i+1) });
+   
+   outs.forEach((t, i) => circuit[t] =
+      { X: b.x + b.width, Y: b.y + (b.height/(outs.length + 1))*(i+1) });
+
+   ["e", "e2"].forEach((t, i) => circuit[t] = {
+      x: b.x  + (b.width * (i + 1) * (1/3)), y: b.y + 15 });
+
+   if (attrs.wire) {
+      wires.push(gate.wireM({ stroke }, [circuit.e.x, 0], [null, b.x]));
+      wires.push(gate.wireM({ stroke }, [circuit.e2.x, 0], [null, b.x]));
+      wires.push(gate.wireM({ stroke }, [0, circuit.go.Y], [b.x, null]));
+      wires.push(gate.wireM({ stroke }, [0, circuit.res.Y], [b.x, null]));
+      wires.push(gate.wireM({ stroke }, [0, circuit.susp.Y], [b.x, null]));
+      wires.push(gate.wireM({ stroke }, [0, circuit.kill.Y], [b.x, null]));
+      wires.push(gate.wireM({ stroke }, [b.lx, circuit.sel.Y], [width, null]));
+      wires.push(gate.wireM({ stroke }, [b.lx, circuit.k0.Y], [width, null]));
+      wires.push(gate.wireM({ stroke }, [b.lx, circuit.k1.Y], [width, null]));
+      wires.push(gate.wireM({ stroke }, [b.lx, circuit.k2.Y], [width, null]));
+   }
+
+   circuit.svg = `${margin}<g`
       + getId(attrs)
       + ` style="${getStyle(attrs)}"`
       + ">\n"
-      + `${margin}   <path d="m ${x},${y} ${width},0 0,${height} -${width},0 Z"/>\n`
+      + `${margin}   <path class="${attrs.class ?? "circuit"}" d="m ${b.x},${b.y} ${b.width},0 0,${b.height} -${b.width},0 Z"/>\n`
       + `${margin}</g>\n`
       + `${margin}<text class="circuit-name" x="${x + width/2}" y="${y + height/2}" text-anchor="middle" dominant-baseline="middle">${name}</text>\n`
-      + ins.map((t, i) => `${margin}<text class="${t}" x="${x + padding}" y="${y + (height/(ins.length + 1))*(i+1)}" text-anchor="start" dominant-baseline="middle">${t}</text>\n`).join("")
-      + outs.map((t, i) => `${margin}<text class="${t}" x="${x + width - padding}" y="${y + (height/(outs.length + 1))*(i+1)}" text-anchor="end" dominant-baseline="middle">${t}</text>\n`).join("")
-      + ["E", "E'"].map((t, i) => `${margin}<text class="E" x="${x + (width * (i + 1) * (1/3))}" y="${y + 15}" text-anchor="middle" dominant-baseline="middle">${t}</text>\n`).join("");
-
-   const circuit = { svg, width, height, x, y, lx: x + width, ly: y + height };
-
-   ins.forEach((t, i) => circuit[t.toLowerCase()] =
-      { x: 0, y: (height/(ins.length + 1))*(i+1),
-	X: x, Y: y + (height/(ins.length + 1))*(i+1) });
-   outs.forEach((t, i) => circuit[t.toLowerCase()] =
-      { x: width, y: (height/(outs.length + 1))*(i+1),
-	X: x + width, Y: y + (height/(outs.length + 1))*(i+1) });
-
-   ["E", "E2"].forEach((t, i) => circuit[t.toLowerCase()] = {
-      x: x + (width * (i + 1) * (1/3)), y: y + 15 });
+      + ins.map((t, i) => `${margin}<text class="${t}" x="${b.x + padding}" y="${circuit[t].Y}" text-anchor="start" dominant-baseline="middle">${t.toUpperCase()}</text>\n`).join("")
+      + outs.map((t, i) => `${margin}<text class="${t}" x="${b.lx - padding}" y="${circuit[t].Y}" text-anchor="end" dominant-baseline="middle">${t.toUpperCase()}</text>\n`).join("")
+      + `${margin}<text class="E" x="${circuit.e.x}" y="${b.y + 15}" text-anchor="middle" dominant-baseline="middle">E</text>\n`
+      + `${margin}<text class="E" x="${circuit.e2.x}" y="${b.y + 15}" text-anchor="middle" dominant-baseline="middle">E'</text>\n`
+      + wires.map(w => w.svg).join("");
 
    return circuit;
 }
@@ -97,15 +150,15 @@ function namedCircuit(attrs, x, y) {
 /*---------------------------------------------------------------------*/
 function seq(attrs, P, Q) {
    const margin = attrs?.margin ?? "   ";
-   const stroke = attrs?.stroke ?? "black";
+   const stroke = attrs.stroke;
 
-   const lm = 40;
+   const lm = 45;
    const km = 20;
    const x = attrs?.x ?? 0;
    const y = attrs?.y ?? 0;
    const cm = 180 + x;
-   const p = (typeof P === "string") ? namedCircuit({ name: P, margin }, cm, y + km*3) : P;
-   const q = (typeof Q === "string") ? namedCircuit({ name: Q, margin }, cm, y + p.ly + km*3) : Q;
+   const p = (typeof P === "string") ? named({ stroke, name: P, margin }, cm, y + km*3) : P;
+   const q = (typeof Q === "string") ? named({ stroke, name: Q, margin }, cm, y + p.ly + km*3) : Q;
    const selww = 50;
    const outgx = p.width * 1.3;
    const width = (p.width * 3) + outgx + selww - 20;
@@ -144,18 +197,18 @@ function seq(attrs, P, Q) {
    const k0e = [0, q.go.Y - (k0a[1] + k0c[1])];
    const k0f = [km, 0];
 
-   const pk0_w = gate.wire({ stroke, class: "k0-to-go" }, k0a, k0b, k0c, k0d, k0e, k0f);
+   const pk0_w = gate.wireM({ stroke, class: "k0-to-go" }, [p.k0.X, p.k0.Y], [p.k0.X + km, null], [null, p.ly + km], [q.x - km, null], [null, q.go.Y], [q.go.X, null]);
    
    // E
    const ex = lm*2;
-   const ey = 20;
+   const ey = 15;
    const e = gate.label({ stroke, class: "E", baseline: "text-bottom" }, "E", ex, ey);
-   const ep_w = gate.wireM({ stroke, class: "E"}, [ex, ey], [null, p.y - km], [p.e.x, null], [null, p.y]);
+   const ep_w = gate.wireM({ stroke, class: "E"}, [e.x, e.y + 2], [null, p.y - km], [p.e.x, null], [null, p.y]);
    
-   const e2 = gate.label({ stroke, class: "E", baseline: "text-bottom" }, "E'", width - ex, ey);
+   const e2 = gate.label({ stroke, class: "E", baseline: "text-bottom" }, "E'", width - e.x, e.y);
    const e_g = gate.or({ stroke, class: "seq-e" }, p.lx + km*4, p.y - km - connectm);
    const e_w = gate.wireM({ stroke, class: "E" }, [p.e2.x, p.y], [null, p.y - km], [e_g.x + 8, e_g.y + connectm]);
-   const ep2_w = gate.wireM({ stroke, class: "E" }, [e_g.lx, e_g.outy], [e2.x, null], [null, e2.y]);
+   const ep2_w = gate.wireM({ stroke, class: "E" }, [e_g.lx, e_g.outy], [e2.x, null], [null, e2.y + 2]);
 
    const eq_w = gate.wireM({ stroke, class: "E", dot: "branch" }, [p.x - 2*km, p.y - km], [null, q.y - km], [q.e.x, null], [null, q.y]);
    const eq2_w = gate.wireM({ stroke, class: "E", id: "q-to-E'" }, [q.e2.x, q.y], [null, q.y - km], [q.lx + 2*km, null], [null, e_g.ly - connectm], [e_g.x + 8, null]);
@@ -178,10 +231,10 @@ function seq(attrs, P, Q) {
    // surrounding box
    const surrounding = attrs.box
       ? { svg: `${margin}<g`
-	 + getId(attrs, "box seq")
+	 + getId(attrs, "circuit seq")
 	 + ` style="${getStyle(attrs)}"`
 	 + ">\n"
-	 + `${margin}   <path d="m ${x},${y} ${width},0 0,${height} -${width},0 Z"/>\n`
+	 + `${margin}   <path class="circuit" d="m ${x},${y} ${width},0 0,${height} -${width},0 Z"/>\n`
 	 + `${margin}</g>\n` }
       : false;
 
@@ -206,9 +259,9 @@ function seq(attrs, P, Q) {
 /*---------------------------------------------------------------------*/
 function pause(attrs) {
    const margin = attrs?.margin ?? "   ";
-   const stroke = attrs?.stroke ?? "black";
+   const stroke = attrs.stroke;
    
-   const lm = 40;
+   const lm = 45;
    const km = 20;
    const marginLeft = 100;
    const x = attrs?.x ?? 0;
@@ -221,7 +274,7 @@ function pause(attrs) {
 
    // E
    const ex = lm*3;
-   const ey = 20;
+   const ey = 15;
 
    const esl = 1*width/3 - assigSize/2 - lm;
    const esr = 2*width/3 - assigSize/2 - lm;
@@ -231,7 +284,7 @@ function pause(attrs) {
    const e_g = gate.assig({ stroke, class: "E", width: e_gw }, ex + esl, ey + e_gw/2);
    
    const e_w = gate.wireM({ stroke, class: "E" }, [e.x, e.y + 2], [null, e_g.outy], [e_g.x, null]);
-   const e2_w = gate.wireM({ stroke, class: "E" }, [e_g.lx, e_g.outy], [e2.x, null], [null, e2.y]);
+   const e2_w = gate.wireM({ stroke, class: "E" }, [e_g.lx, e_g.outy], [e2.x, null], [null, e2.y + 2]);
    
    // go
    const gox = lm;
@@ -325,7 +378,7 @@ function pause(attrs) {
 	 + getId(attrs, "box seq")
 	 + ` style="${getStyle(attrs)}"`
 	 + ">\n"
-	 + `${margin}   <path d="m ${x},${y} ${width},0 0,${height} -${width},0 Z"/>\n`
+	 + `${margin}   <path class="circuit" d="m ${x},${y} ${width},0 0,${height} -${width},0 Z"/>\n`
 	 + `${margin}</g>\n` }
       : false;
 
