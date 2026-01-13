@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 08:53:28 2026                          */
-/*    Last change :  Tue Jan 13 07:25:52 2026 (serrano)                */
+/*    Last change :  Tue Jan 13 09:02:38 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Various circuit gates drawing                                    */
@@ -40,8 +40,7 @@ function label(attrs, label, x, y) {
    const margin = attrs?.margin ?? "   ";
    const anchor = attrs?.anchor ?? "middle";
    const baseline = attrs?.baseline ?? "middle";
-   const clazz = attrs?.class ?? "label";
-   const svg = `${margin}<text ${getId(attrs, clazz)} x="${x}" y="${y}" text-anchor="${anchor}" dominant-baseline="${baseline}">${label}</text>\n`;
+   const svg = `${margin}<text ${getId(attrs, "label")} x="${x}" y="${y}" text-anchor="${anchor}" dominant-baseline="${baseline}">${label}</text>\n`;
 
    return { svg, x, y };
 }

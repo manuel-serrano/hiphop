@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Jan  9 18:26:39 2026                          */
-/*    Last change :  Tue Jan 13 07:19:30 2026 (serrano)                */
+/*    Last change :  Tue Jan 13 09:09:57 2026 (serrano)                */
 /*    Copyright   :  2026 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Svg circuits                                                     */
@@ -22,7 +22,7 @@ import { dirname } from "path";
 /*---------------------------------------------------------------------*/
 /*    css ...                                                          */
 /*---------------------------------------------------------------------*/
-const css = path.join(dirname(fileURLToPath(import.meta.url), "circuit.css"));
+const css = path.join(dirname(fileURLToPath(import.meta.url)), "circuit.css");
 
 /*---------------------------------------------------------------------*/
 /*    getStyle ...                                                     */
