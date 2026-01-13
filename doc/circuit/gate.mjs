@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 08:53:28 2026                          */
-/*    Last change :  Mon Jan 12 13:56:13 2026 (serrano)                */
+/*    Last change :  Tue Jan 13 07:25:52 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Various circuit gates drawing                                    */
@@ -12,7 +12,7 @@
 /*---------------------------------------------------------------------*/
 /*    The module                                                       */
 /*---------------------------------------------------------------------*/
-export { wire, wireM, dot, and, or, reg, assig };
+export { label, wire, wireM, dot, and, or, reg, assig };
 
 /*---------------------------------------------------------------------*/
 /*    getStyle ...                                                     */
@@ -31,6 +31,19 @@ function getStyle(attrs) {
 /*---------------------------------------------------------------------*/
 function getId(attrs, defClass) {
    return (attrs?.id ? ` id="${attrs.id}"` : "") + (attrs?.class ? ` class="${defClass} ${attrs.class}"` : ` class="${defClass}"`);
+}
+
+/*---------------------------------------------------------------------*/
+/*    label ...                                                        */
+/*---------------------------------------------------------------------*/
+function label(attrs, label, x, y) {
+   const margin = attrs?.margin ?? "   ";
+   const anchor = attrs?.anchor ?? "middle";
+   const baseline = attrs?.baseline ?? "middle";
+   const clazz = attrs?.class ?? "label";
+   const svg = `${margin}<text ${getId(attrs, clazz)} x="${x}" y="${y}" text-anchor="${anchor}" dominant-baseline="${baseline}">${label}</text>\n`;
+
+   return { svg, x, y };
 }
 
 /*---------------------------------------------------------------------*/
@@ -86,13 +99,18 @@ function wireM(attrs, ...coords) {
    }
 
    // coords cleanup
-   for (let i = 0; i < coords.length; i++) {
-      if (!coords[i][0]) {
-	 coords[i][0] = coords[i-1][0];
+   try {
+      for (let i = 0; i < coords.length; i++) {
+	 if (coords[i][0] === null) {
+	    coords[i][0] = coords[i-1][0];
+	 }
+	 if (coords[i][1] === null) {
+	    coords[i][1] = coords[i-1][1];
+	 }
       }
-      if (!coords[i][1]) {
-	 coords[i][1] = coords[i-1][1];
-      }
+   } catch(e) {
+      console.error("wireM: wrong coords", coords);
+      throw e;
    }
    
    const margin = attrs?.margin ?? "   ";
@@ -246,6 +264,6 @@ function assig(attrs, x, y) {
       + `${margin}   <path d="m ${x},${y} ${width},${height/2} -${width},${height/2} Z"/>\n`
       + `${margin}</g>\n`;
 
-   return { svg, x, y, width, height: height, lx: x + width, ly: y + height };
+   return { svg, x, y, width, height, lx: x + width, ly: y + height, outy: y + height/2 };
 }
 
