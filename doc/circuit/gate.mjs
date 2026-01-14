@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 08:53:28 2026                          */
-/*    Last change :  Wed Jan 14 07:57:26 2026 (serrano)                */
+/*    Last change :  Wed Jan 14 17:51:36 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Various circuit gates drawing                                    */
@@ -12,7 +12,7 @@
 /*---------------------------------------------------------------------*/
 /*    The module                                                       */
 /*---------------------------------------------------------------------*/
-export { label, wire, wireM, dot, and, or, reg, assig, getStyle, getId };
+export { label, wire, wireM, dot, and, or, reg, assig, getStyle, getId, getClass };
 
 /*---------------------------------------------------------------------*/
 /*    getStyle ...                                                     */
