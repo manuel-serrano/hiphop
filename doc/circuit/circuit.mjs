@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Jan  9 18:26:39 2026                          */
-/*    Last change :  Wed Jan 14 11:28:58 2026 (serrano)                */
+/*    Last change :  Wed Jan 14 12:16:33 2026 (serrano)                */
 /*    Copyright   :  2026 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Svg circuits                                                     */
@@ -12,7 +12,7 @@
 /*---------------------------------------------------------------------*/
 /*    The module                                                       */
 /*---------------------------------------------------------------------*/
-export { css, and, or, assig, reg, named, k0, seq, pause, emit };
+export { css, and, or, assig, reg, named, k0, seq, pause, emit, loop };
 
 import * as gate from "./gate.mjs";
 import { getId, getStyle } from "./gate.mjs";
@@ -677,4 +677,99 @@ function emit(attrs) {
    return { svg, x, y, width, height, lx: x + width, ly: y + height };
 }
 
+/*---------------------------------------------------------------------*/
+/*    loop ...                                                         */
+/*---------------------------------------------------------------------*/
+function loop(attrs, P) {
+   const margin = attrs?.margin ?? "   ";
+   const stroke = attrs.stroke;
 
+   const lm = 45;
+   const km = 20;
+   const x = attrs?.x ?? 0;
+   const y = attrs?.y ?? 0;
+   const cm = 180 + x;
+   const p = (typeof P === "string") ? named({ stroke, name: P, margin }, cm, y + km*3) : P;
+   const q = named({ stroke, name: "Q", margin }, cm, y + p.ly + km*3);
+   const selww = 50;
+   const outgx = p.width * 1.3;
+   const width = (p.width * 2) + outgx;
+   const height = (p.height) + km*4;
+   const connectm = 8;
+   const assigSize = 30;
+
+   // go
+   const dummy_g = gate.or({ stroke, class: "go" }, 0, 0);
+   const or_g = gate.or({ stroke, class: "go" }, x + lm + 2*km, p.go.Y - dummy_g.height + connectm);
+   const go_w = gate.wireM({ stroke, class: "GO", label: "GO" }, [x + lm, p.go.Y], [or_g.x + 8, or_g.ly - connectm]);
+   const or_w = gate.wireM({ stroke, class: "GO" }, [or_g.lx, or_g.outy], [or_g.lx + lm/2, null], [null, p.go.Y], [p.go.X, null]);
+
+   // res
+   const pRes_w = gate.wire({ stroke, class: "RES", label: "RES" }, [x + lm, p.res.Y], [p.res.X - (x + lm), 0]);
+
+   // susp
+   const pSusp_w = gate.wire({ stroke, class: "SUSP", label: "SUSP" }, [x + lm, p.susp.Y], [p.susp.X - (x + lm), 0]);
+
+   // kill
+   const pKill_w = gate.wire({ stroke, class: "KILL", label: "KILL" }, [x + lm, p.kill.Y], [p.susp.X - (x + lm), 0]);
+
+   // sel
+   const sel_w = gate.wireM({ stroke, class: "sel", label: "SEL", anchor: "r" }, [p.sel.X, p.sel.Y], [width - lm, null]);
+
+   // p.k0 -> q.go
+   
+   // E
+   const ex = lm*2;
+   const ey = 15;
+   const e = gate.label({ stroke, class: "E", baseline: "text-bottom" }, "E", ex, ey);
+   const ep_w = gate.wireM({ stroke, class: "E"}, [e.x, e.y + 2], [null, p.y - 2*km], [p.e.x, null], [null, p.y]);
+   
+   const e2 = gate.label({ stroke, class: "E", baseline: "text-bottom" }, "E'", width - e.x, e.y);
+   const ep2_w = gate.wireM({ stroke, class: "E" }, [p.e2.x, p.y], [null, p.y - 2*km], [e2.x, null], [null, e2.y + 2]);
+
+   // k0
+   const k0x = width - lm;
+   const k0y = km*7;
+   const k0_g = gate.assig({ stroke, class: "k0" }, k0x - km*2 - assigSize/2, k0y - assigSize/2);
+   const k0_w = gate.wireM({ stroke, class: "k0", label: "K0", anchor: "r" }, [k0_g.lx, k0_g.outy], [k0x, null]);
+   const k00_w = gate.wireM({ stroke, class: "k0", label: "0", anchor: "l" }, [k0_g.x - km, k0_g.outy], [k0_g.x, null]);
+
+   const k0loop_w = gate.wireM({ stroke, class: "k0" },
+			       [p.k0.X, p.k0.Y],
+			       [p.k0.X + km, null],
+			       [null, p.y - km],
+			       [or_g.x - km, null],
+			       [null, or_g.y + connectm],
+			       [or_g.x + 8, null]);
+
+   // k1
+   const k1_w = gate.wireM({ stroke, class: "k1", label: "K1", anchor: "r" }, [p.k1.X, p.k1.Y], [width - lm, null]);
+   
+   // k2
+   const k2_w = gate.wireM({ stroke, class: "k2", label: "K2", anchor: "r" }, [p.k2.X, p.k2.Y], [width - lm, null]);
+
+   // surrounding box
+   const surrounding = attrs.box
+      ? { svg: `${margin}<g`
+	 + getId(attrs, "circuit seq")
+	 + ` style="${getStyle(attrs)}"`
+	 + ">\n"
+	 + `${margin}   <path class="circuit" d="m ${x},${y} ${width},0 0,${height} -${width},0 Z"/>\n`
+	 + `${margin}</g>\n` }
+      : false;
+
+   const svg = SVG(p,
+		   e, e2, ep_w, ep2_w,
+		   go_w, or_w,
+		   pRes_w,
+		   pSusp_w,
+		   pKill_w,
+		   sel_w,
+		   k1_w,
+		   k2_w,
+		   k0_g, k0_w, k00_w,
+		   or_g, k0loop_w,
+		   surrounding);
+
+   return { svg, x, y, width, height, lx: x + width, ly: y + height };
+}
