@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Mon Jan 12 13:41:26 2026                          */
-/*    Last change :  Tue Jan 13 09:27:34 2026 (serrano)                */
+/*    Last change :  Wed Jan 14 08:03:31 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Default CSS style for HipHop circuits                            */
@@ -16,7 +16,7 @@ svg.circuit {
     --stroke-color: #555555;
     --or-color: #22aa22;
     --and-color: #2222bb;
-    --reg-color: #dd2222;
+    --reg-color: #ff8b1e;
     --circuit-color: black;
     --assig-color: #555555;
 }

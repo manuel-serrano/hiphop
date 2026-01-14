@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 08:53:28 2026                          */
-/*    Last change :  Tue Jan 13 09:32:23 2026 (serrano)                */
+/*    Last change :  Wed Jan 14 07:57:26 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Various circuit gates drawing                                    */
@@ -41,6 +41,17 @@ function getId(attrs, defClass) {
 }
 
 /*---------------------------------------------------------------------*/
+/*    getClass ...                                                     */
+/*---------------------------------------------------------------------*/
+function getClass(attrs, defClass) {
+   if (attrs.class) {
+      return `${attrs.class} ${defClass}`;
+   } else {
+      return defClass;
+   }
+}
+
+/*---------------------------------------------------------------------*/
 /*    label ...                                                        */
 /*---------------------------------------------------------------------*/
 function label(attrs, label, x, y) {
@@ -69,17 +80,17 @@ function wire(attrs, ...coords) {
    let svg = "";
    
    if (attrs.dot === "branch") {
-      svg += dot({ fill: attrs?.stroke, stroke: attrs.stroke, class: "branch", width: dw }, coords[0][0] - dw/2, coords[0][1] - dw/2);
+      svg += dot({ fill: attrs?.stroke, stroke: attrs.stroke, class: getClass(attrs, "branch"), width: dw }, coords[0][0] - dw/2, coords[0][1] - dw/2);
    }
 
    if (attrs.dot === "not") {
-      svg += dot({ fill: "transparent", stroke: attrs.stroke, class: "not", width: dw }, tx - dw, ty - dw/2);
+      svg += dot({ fill: "transparent", stroke: attrs.stroke, class: getClass(attrs, "not"), width: dw }, tx - dw, ty - dw/2);
       coords[coords.length - 1][0] -= dw;
    }
 
    const points=coords.map(c => `${c[0]},${c[1]}`).join(" ");
    if (attrs.label && attrs.anchor !== "r") {
-      svg += `${margin}<text class="wire-label" x="${coords[0][0] - 5}" y="${coords[0][1]}" text-anchor="end" dominant-baseline="middle">${attrs.label}</text>\n`;
+      svg += `${margin}<text class="${getClass(attrs, "wire-label")}" x="${coords[0][0] - 5}" y="${coords[0][1]}" text-anchor="end" dominant-baseline="middle">${attrs.label}</text>\n`;
    }
    
    svg += `${margin}<g`
@@ -90,7 +101,7 @@ function wire(attrs, ...coords) {
       + `${margin}</g>\n`
 
    if (attrs.label && attrs.anchor === "r") {
-      svg += `${margin}<text class="wire-label" x="${tx + 5}" y="${ty}" text-anchor="start" dominant-baseline="middle">${attrs.label}</text>\n`;
+      svg += `${margin}<text class="${getClass(attrs, "wire-label")}" x="${tx + 5}" y="${ty}" text-anchor="start" dominant-baseline="middle">${attrs.label}</text>\n`;
    }
    
    return { svg , coords, x: coords[0][0], y: coords[0][1], lx: tx, ly: ty };
@@ -128,17 +139,17 @@ function wireM(attrs, ...coords) {
    let svg = "";
    
    if (attrs.dot === "branch") {
-      svg += dot({ fill: attrs.stroke, stroke: attrs.stroke, class: "branch", width: dw }, coords[0][0] - dw/2, coords[0][1] - dw/2);
+      svg += dot({ fill: attrs.stroke, stroke: attrs.stroke, class: getClass(attrs, "branch"), width: dw }, coords[0][0] - dw/2, coords[0][1] - dw/2);
    }
 
    if (attrs.dot === "not") {
-      svg += dot({ fill: "transparent", stroke: attrs.stroke, class: "not", width: dw }, lx - dw, ly - dw/2);
+      svg += dot({ fill: "transparent", stroke: attrs.stroke, class: getClass(attrs, "not"), width: dw }, lx - dw, ly - dw/2);
       coords[coords.length - 1][0] -= dw;
    }
 
    const points=coords.map(c => `${c[0]},${c[1]}`).join(" ");
    if (attrs.label && attrs.anchor !== "r") {
-      svg += `${margin}<text class="wire-label" x="${coords[0][0] - 5}" y="${coords[0][1]}" text-anchor="end" dominant-baseline="middle">${attrs.label}</text>\n`;
+      svg += `${margin}<text class="${getClass(attrs, "wire-label")}" x="${coords[0][0] - 5}" y="${coords[0][1]}" text-anchor="end" dominant-baseline="middle">${attrs.label}</text>\n`;
    }
    
    svg += `${margin}<g`
@@ -149,7 +160,7 @@ function wireM(attrs, ...coords) {
       + `${margin}</g>\n`
 
    if (attrs.label && attrs.anchor === "r") {
-      svg += `${margin}<text class="wire-label" x="${lx + 5}" y="${ly}" text-anchor="start" dominant-baseline="middle">${attrs.label}</text>\n`;
+      svg += `${margin}<text class="${getClass(attrs, "wire-label")}" x="${lx + 5}" y="${ly}" text-anchor="start" dominant-baseline="middle">${attrs.label}</text>\n`;
    }
    
    return { svg , coords, x: coords[0][0], y: coords[0][1], lx, ly };
@@ -228,13 +239,20 @@ function reg(attrs, x, y) {
    const margin = attrs?.margin ?? "   ";
    const width = attrs?.width ?? 30;
    const padding = (width / 10) * 2.5;
-   
+
+   const tx = x + width/2;
+   const ty = y + width/2;
+   const optionalText = attrs.id
+      ? `${margin}   <text class="reg" id="${attrs.id + "-text"}" x=${tx} y=${ty} text-anchor="middle" dominant-baseline="middle"> </text>\n`
+      : "";
+
    const svg = `${margin}<g`
       + getId(attrs, "reg")
       + ` style="${getStyle(attrs)}"`
       + ">\n"
-      + `${margin}   <path d="m ${x},${y} ${width},0 0,${width} -${width},0 0,0 Z"/>\n`
-      + `${margin}   <path d="m ${x+padding},${y+width} ${(width/2)-padding},${-padding} ${width/2-padding},${+padding}"/>\n`
+      + optionalText
+      + `${margin}   <path class="reg" d="m ${x},${y} ${width},0 0,${width} -${width},0 0,0 Z"/>\n`
+      + `${margin}   <path class="reg" d="m ${x+padding},${y+width} ${(width/2)-padding},${-padding} ${width/2-padding},${+padding}"/>\n`
       + `${margin}</g>\n`;
 
    return { svg, x, y, width, height: width, lx: x + width, ly: y + width, outy: y + width/2 };
