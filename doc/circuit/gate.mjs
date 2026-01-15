@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 08:53:28 2026                          */
-/*    Last change :  Wed Jan 14 17:51:36 2026 (serrano)                */
+/*    Last change :  Thu Jan 15 09:15:32 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Various circuit gates drawing                                    */
@@ -12,7 +12,7 @@
 /*---------------------------------------------------------------------*/
 /*    The module                                                       */
 /*---------------------------------------------------------------------*/
-export { label, wire, wireM, dot, and, or, reg, assig, getStyle, getId, getClass };
+export { label, wire, dot, and, or, reg, assig, getStyle, getId, getClass };
 
 /*---------------------------------------------------------------------*/
 /*    getStyle ...                                                     */
@@ -64,53 +64,9 @@ function label(attrs, label, x, y) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    wire ...                                                         */
+/*    wire...                                                          */
 /*---------------------------------------------------------------------*/
 function wire(attrs, ...coords) {
-   if (typeof attrs !== "object") {
-      throw new TypeError("namedCircuit: bad attributes " + attrs);
-   }
-
-   const margin = attrs?.margin ?? "   ";
-   const name = attrs?.name ?? "P";
-   const dw = 6;
-   const tx = coords.map(c => c[0]).reduce((a, b) => a + b, 0);
-   const ty = coords.map(c => c[1]).reduce((a, b) => a + b, 0);
-
-   let svg = "";
-   
-   if (attrs.dot === "branch") {
-      svg += dot({ fill: attrs?.stroke, stroke: attrs.stroke, class: getClass(attrs, "branch"), width: dw }, coords[0][0] - dw/2, coords[0][1] - dw/2);
-   }
-
-   if (attrs.dot === "not") {
-      svg += dot({ fill: "transparent", stroke: attrs.stroke, class: getClass(attrs, "not"), width: dw }, tx - dw, ty - dw/2);
-      coords[coords.length - 1][0] -= dw;
-   }
-
-   const points=coords.map(c => `${c[0]},${c[1]}`).join(" ");
-   if (attrs.label && attrs.anchor !== "r") {
-      svg += `${margin}<text class="${getClass(attrs, "wire-label")}" x="${coords[0][0] - 5}" y="${coords[0][1]}" text-anchor="end" dominant-baseline="middle">${attrs.label}</text>\n`;
-   }
-   
-   svg += `${margin}<g`
-      + getId(attrs, "wire")
-      + ` style="${getStyle(attrs)}"`
-      + ">\n"
-      + `${margin}   <path d="m ${coords}"/>\n`
-      + `${margin}</g>\n`
-
-   if (attrs.label && attrs.anchor === "r") {
-      svg += `${margin}<text class="${getClass(attrs, "wire-label")}" x="${tx + 5}" y="${ty}" text-anchor="start" dominant-baseline="middle">${attrs.label}</text>\n`;
-   }
-   
-   return { svg , coords, x: coords[0][0], y: coords[0][1], lx: tx, ly: ty };
-}
-
-/*---------------------------------------------------------------------*/
-/*    wireM...                                                         */
-/*---------------------------------------------------------------------*/
-function wireM(attrs, ...coords) {
    if (typeof attrs !== "object") {
       throw new TypeError("namedCircuit: bad attributes " + attrs);
    }
@@ -126,7 +82,7 @@ function wireM(attrs, ...coords) {
 	 }
       }
    } catch(e) {
-      console.error("wireM: wrong coords", coords);
+      console.error("wire: wrong coords", coords);
       throw e;
    }
    
@@ -138,18 +94,28 @@ function wireM(attrs, ...coords) {
 
    let svg = "";
    
-   if (attrs.dot === "branch") {
+   if (attrs.dot === "*-" || attrs.dot === "*-*") {
       svg += dot({ fill: attrs.stroke, stroke: attrs.stroke, class: getClass(attrs, "branch"), width: dw }, coords[0][0] - dw/2, coords[0][1] - dw/2);
    }
 
-   if (attrs.dot === "not") {
+   if (attrs.dot === "o-") {
+      svg += dot({ fill: "transparent", stroke: attrs.stroke, class: getClass(attrs, "not"), width: dw }, coords[0][0], coords[0][1] - dw/2);
+      coords[0][0] += dw;
+   }
+
+   if (attrs.dot === "-*" || attrs.dot === "*-*") {
+      svg += dot({ fill: attrs.stroke, stroke: attrs.stroke, class: getClass(attrs, "branch"), width: dw }, lx - dw/2, ly - dw/2);
+      coords[coords.length - 1][0] -= dw/2;
+   }
+
+   if (attrs.dot === "-o") {
       svg += dot({ fill: "transparent", stroke: attrs.stroke, class: getClass(attrs, "not"), width: dw }, lx - dw, ly - dw/2);
       coords[coords.length - 1][0] -= dw;
    }
 
    const points=coords.map(c => `${c[0]},${c[1]}`).join(" ");
    if (attrs.label && attrs.anchor !== "r") {
-      svg += `${margin}<text class="${getClass(attrs, "wire-label")}" x="${coords[0][0] - 5}" y="${coords[0][1]}" text-anchor="end" dominant-baseline="middle">${attrs.label}</text>\n`;
+      svg += `${margin}<text class="${getClass(attrs, "wire label")}" x="${coords[0][0] - 5}" y="${coords[0][1]}" text-anchor="end" dominant-baseline="middle">${attrs.label}</text>\n`;
    }
    
    svg += `${margin}<g`
@@ -160,7 +126,7 @@ function wireM(attrs, ...coords) {
       + `${margin}</g>\n`
 
    if (attrs.label && attrs.anchor === "r") {
-      svg += `${margin}<text class="${getClass(attrs, "wire-label")}" x="${lx + 5}" y="${ly}" text-anchor="start" dominant-baseline="middle">${attrs.label}</text>\n`;
+      svg += `${margin}<text class="${getClass(attrs, "wire label")}" x="${lx + 5}" y="${ly}" text-anchor="start" dominant-baseline="middle">${attrs.label}</text>\n`;
    }
    
    return { svg , coords, x: coords[0][0], y: coords[0][1], lx, ly };
@@ -190,10 +156,11 @@ function and(attrs, x, y) {
       throw new TypeError("and: bad attributes " + attrs);
    }
    const margin = attrs?.margin ?? "   ";
-   const width = attrs?.width ?? 40;
+   const width = attrs?.width ?? 50;
    const height = attrs?.height ?? width / 1.5;
    const arcwidth = attrs?.arcwidth ?? (width / 10) * 4;
    const control = width / 5;
+   const connectm = 8;
    
    const svg = `${margin}<g`
       + getId(attrs, "logical and")
@@ -202,7 +169,12 @@ function and(attrs, x, y) {
       + `${margin}   <path d="m ${x},${y} 0,${height} ${width-arcwidth},0 c ${control},0 ${arcwidth},${-(height/2-control)} ${arcwidth},-${height/2} c 0,-${height/2-control/2} ${arcwidth/2-control*2},-${height/2} -${arcwidth},-${height/2} Z"/>\n`
       + `${margin}</g>\n`;
    
-   return { svg, x, y, width, height, control, lx: x + width, ly: y + height, outy: y + height/2 };
+   return {
+      svg, x, y, width, height, control,
+      lx: x + width, ly: y + height, outy: y + height/2,
+      xy: y + connectm, yy: y + height - connectm,
+      xx: x, yx: x
+   };
 }
 
 /*---------------------------------------------------------------------*/
@@ -215,9 +187,11 @@ function or(attrs, x, y) {
    const margin = attrs?.margin ?? "   ";
    const width = attrs?.width ?? 50;
    const height = attrs?.height ?? width / 1.5;
-   const arcwidth = attrs?.arcwidth ?? (width / 10) * 8;
+   const arcwidth = attrs?.arcwidth ?? (width / 10) * 9;
    const larcwidth = attrs?.larcwidth ?? (width / 10) * 2;
    const control = width / 10;
+   const connectm = 8;
+   const marginm = 8;
    
    const svg = `${margin}<g`
       + getId(attrs, "logical or")
@@ -226,7 +200,12 @@ function or(attrs, x, y) {
       + `${margin}   <path d="m ${x},${y} c ${control},${control} ${larcwidth},${(height/2-control)} ${larcwidth},${height/2} c 0,${height/2-control} -${larcwidth-control},${height/2-control} -${larcwidth},${height/2} l ${width-arcwidth},0 c ${control * 6},0 ${arcwidth},${-(height/2-control)} ${arcwidth},-${height/2} c 0,-${height/2-control} -${arcwidth-(control * 4)},-${height/2} -${arcwidth},-${height/2} Z"/>\n`
       + `${margin}</g>\n`;
 
-   return { svg, x, y, width, height, control, lx: x + width, ly: y + height, outy: y + height/2 };
+   return {
+      svg, x, y, width, height, control,
+      lx: x + width, ly: y + height, outy: y + height/2,
+      xy: y + connectm, yy: y + height - connectm,
+      xx: x + marginm, yx: x + marginm
+   };
 }
 
 /*---------------------------------------------------------------------*/

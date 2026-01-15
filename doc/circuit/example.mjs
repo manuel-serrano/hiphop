@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 09:49:26 2026                          */
-/*    Last change :  Wed Jan 14 13:49:41 2026 (serrano)                */
+/*    Last change :  Thu Jan 15 07:45:36 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    An example of circuit                                            */
@@ -14,7 +14,7 @@
 /*---------------------------------------------------------------------*/
 import { writeFileSync, existsSync, renameSync, unlinkSync } from "node:fs";
 import { svg, xml } from "./svg.mjs";
-import { named, k0, seq , pause, loop, emit } from "./circuit.mjs";
+import { named, k0, seq, par, pause, loop, emit } from "./circuit.mjs";
 
 const n = named({ stroke: "green", box: true, name: "", wire: true }, 0, 0);
 writeFileSync("named.svg", xml(svg({width: n.width + n.x, height: n.height + n.y}, n)));
@@ -33,6 +33,9 @@ writeFileSync("pause.svg", xml(svg({width: p.width + p.x, height: p.height + p.y
 
 const l = loop({ stroke: "magenta", box: true, x: 30, y: 50 }, "P");
 writeFileSync("loop.svg", xml(svg({width: l.width + l.x, height: l.height + l.y}, l)));
+
+const a = par({ stroke: "darkorange", box: true, x: 30, y: 50 }, "P", "Q");
+writeFileSync("par.svg", xml(svg({width: a.width + a.x, height: a.height + a.y}, a)));
 
 const es = emit({ stroke: "green", box: true, x: 500, y: 200 });
 const sp = pause({ stroke: "blue", box: true, x: es.x, y: es.ly + 70});
