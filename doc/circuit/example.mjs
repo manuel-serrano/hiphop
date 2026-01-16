@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 09:49:26 2026                          */
-/*    Last change :  Thu Jan 15 07:45:36 2026 (serrano)                */
+/*    Last change :  Fri Jan 16 08:42:27 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    An example of circuit                                            */
@@ -34,7 +34,7 @@ writeFileSync("pause.svg", xml(svg({width: p.width + p.x, height: p.height + p.y
 const l = loop({ stroke: "magenta", box: true, x: 30, y: 50 }, "P");
 writeFileSync("loop.svg", xml(svg({width: l.width + l.x, height: l.height + l.y}, l)));
 
-const a = par({ stroke: "darkorange", box: true, x: 30, y: 50 }, "P", "Q");
+const a = par({ stroke: "darkorange", synchronizer: "orig", box: true, x: 30, y: 50 }, "P", "Q");
 writeFileSync("par.svg", xml(svg({width: a.width + a.x, height: a.height + a.y}, a)));
 
 const es = emit({ stroke: "green", box: true, x: 500, y: 200 });
