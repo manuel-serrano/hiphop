@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Jan  9 18:26:39 2026                          */
-/*    Last change :  Tue Jan 20 09:20:47 2026 (serrano)                */
+/*    Last change :  Tue Jan 20 13:23:06 2026 (serrano)                */
 /*    Copyright   :  2026 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Svg circuits                                                     */
@@ -505,13 +505,13 @@ function par(attrs, P, Q) {
       const qemx = pemx;
       const qemy = q.sel.Y;
       
-      const pem_g = gate.or({ stroke, class: classXEM }, pemx, pemy - dummy_g.xy);
-      const qem_g = gate.or({ stroke, class: classXEM }, qemx, qemy - dummy_g.xy);
+      const pem_g = gate.or({ stroke, class: getClass(attrs, "par xem p") }, pemx, pemy - dummy_g.xy);
+      const qem_g = gate.or({ stroke, class: getClass(attrs, "par xem q") }, qemx, qemy - dummy_g.xy);
       
-      const selPem_w = gate.wire({ stroke, class: classXEM },
+      const selPem_w = gate.wire({ stroke, class: getClass(attrs, "par sel xem p") },
 				 [p.lx, p.sel.Y],
 				 [pem_g.xx, null]);
-      const selQem_w = gate.wire({ stroke, class: classXEM },
+      const selQem_w = gate.wire({ stroke, class: getClass(attrs, "par sel xem q") },
 				 [q.lx, q.sel.Y],
 				 [qem_g.xx, null]);
 
@@ -529,22 +529,22 @@ function par(attrs, P, Q) {
       const qemx = pemx;
       const qemy = q.sel.Y;
       
-      const pem_g = gate.and({ stroke, class: classXEM }, pemx, pemy - dummy_g.xy);
-      const qem_g = gate.and({ stroke, class: classXEM }, qemx, qemy - dummy_g.xy);
+      const pem_g = gate.and({ stroke, class: getClass(attrs, "par xem p") }, pemx, pemy - dummy_g.xy);
+      const qem_g = gate.and({ stroke, class: getClass(attrs, "par xem q") }, qemx, qemy - dummy_g.xy);
       
-      const selPem_w = gate.wire({ stroke, class: classXEM, dot: "-o" },
+      const selPem_w = gate.wire({ stroke, class: getClass(attrs, "par sel xem p"), dot: "-o" },
 				 [p.sel.X, p.sel.Y],
 				 [pem_g.xx, null]);
-      const selQem_w = gate.wire({ stroke, class: classXEM, dot: "-o" },
+      const selQem_w = gate.wire({ stroke, class: getClass(attrs, "par sel xem q"), dot: "-o" },
 				 [q.sel.X, q.sel.Y],
 				 [qem_g.xx, null]);
 
 
-      const qPem_w = gate.wire({ stroke, class: classXEM, dot: "*-" },
+      const qPem_w = gate.wire({ stroke, class: getClass(attrs, "par sel xem p"), dot: "*-" },
 			       [pem_g.x - 3*km, q.sel.Y],
 			       [null, pem_g.outy],
 			       [pem_g.xx, null]);
-      const pQem_w = gate.wire({ stroke, class: classXEM, dot: "*-" },
+      const pQem_w = gate.wire({ stroke, class: getClass(attrs, "par sel xem q"), dot: "*-" },
 			       [qem_g.x - 2*km, p.sel.Y],
 			       [null, qem_g.outy],
 			       [qem_g.xx, null]);
@@ -560,12 +560,12 @@ function par(attrs, P, Q) {
       const { pem_g, qem_g, selPem_w, selQem_w, qPem_w, pQem_w, emdot } = 
 	 (attrs.synchronizer === "new") ? xemNew() : xemOrig();
 
-      const pem_w = gate.wire({ stroke, class: classXEM, dot: "*-" },
+      const pem_w = gate.wire({ stroke, class: getClass(attrs, "par go xem p"), dot: "*-" },
 			      [pGo_w.lx, p.ly + km],
 			      [pem_g.x - km, null],
 			      [null, pem_g.yy],
 			      [pem_g.yx, null]);
-      const qem_w = gate.wire({ stroke, class: classXEM, dot: "*-" },
+      const qem_w = gate.wire({ stroke, class: getClass(attrs, "par go xem q"), dot: "*-" },
 			      [qem_g.x - km, p.ly + km],
 			      [null, qem_g.yy],
 			      [qem_g.yx, null]);
@@ -594,17 +594,29 @@ function par(attrs, P, Q) {
    const height = q.ly - y + km;
    const connectm = 8;
 
-   const classE = getClass(attrs, "e");
-   const classGO = getClass(attrs, "go");
-   const classRES = getClass(attrs, "res");
-   const classSUSP = getClass(attrs, "susp");
-   const classKILL = getClass(attrs, "kill");
-   const classSEL = getClass(attrs, "sel");
-   const classK0 = getClass(attrs, "k0");
-   const classK1 = getClass(attrs, "k1");
-   const classK2 = getClass(attrs, "k2");
-   const classXEM = getClass(attrs, "xem");
-   const classSYNC = getClass(attrs, "sync");
+   const classE = getClass(attrs, "par e");
+   const classGO = getClass(attrs, "par go");
+   const classRES = getClass(attrs, "par res");
+   const classSUSP = getClass(attrs, "par susp");
+   const classKILL = getClass(attrs, "par kill");
+   const classSEL = getClass(attrs, "par sel");
+   const classK0 = getClass(attrs, "par k0");
+   const classK0P = getClass(attrs, "par p k0");
+   const classK0Q = getClass(attrs, "par q k0");
+   const classK1 = getClass(attrs, "par k1");
+   const classK1P = getClass(attrs, "par p k1");
+   const classK1Q = getClass(attrs, "par q k1");
+   const classK2 = getClass(attrs, "par k2");
+   const classXEMP = getClass(attrs, "par xem");
+   const classXEMQ = getClass(attrs, "par xem");
+   const classGOXEMP = getClass(attrs, "par go xem p");
+   const classGOXEMQ = getClass(attrs, "par go xem q");
+   const classK0XEMP = getClass(attrs, "par k0 xem p");
+   const classK0XEMQ = getClass(attrs, "par k0 xem q");
+   const classSYNC = getClass(attrs, "par sync");
+   const classSYNCK0P = getClass(attrs, "par sync k0 p");
+   const classSYNCK0U = getClass(attrs, "par sync k0 u");
+   const classSYNCK0Q = getClass(attrs, "par sync k0 q");
    
    // dummy
    const dummy_g = gate.or({stroke}, 0, 0);
@@ -620,7 +632,7 @@ function par(attrs, P, Q) {
    const ep_w = gate.wire({ stroke, class: classE}, [e.x, e.y + 2], [null, e.y + km], [p.e.x, null], [null, p.y]);
    
    const e2 = gate.label({ stroke, class: classE, baseline: "text-bottom" }, "E'", e2x, e2y);
-   const e_g = gate.or({ stroke, class: getClass(attrs, "seq-e") }, Math.max(p.lx, q.lx) + km*14, e.y + km - connectm);
+   const e_g = gate.or({ stroke, class: getClass(attrs, "par e") }, Math.max(p.lx, q.lx) + km*14, e.y + km - connectm);
    const e_w = gate.wire({ stroke, class: classE }, [p.e2.x, p.y], [null, e.y + km], [e_g.x + 8, e_g.y + connectm]);
    const ep2_w = gate.wire({ stroke, class: classE }, [e_g.lx, e_g.outy], [e2.x, null], [null, e2.y + 2]);
 
@@ -631,7 +643,7 @@ function par(attrs, P, Q) {
    const gox = x;
    const goy = p.go.Y + km;
    const pGo_w = gate.wire({ stroke, class: classGO, label: "GO", dot: "-*" }, [x + lm, goy], [p.x - 5*km, null]);
-   const qGo_w = gate.wire({ stroke, class: classRES }, [p.x, p.go.Y], [p.x - 5*km, null], [null, q.go.Y], [q.x, null]); 
+   const qGo_w = gate.wire({ stroke, class: classGO }, [p.x, p.go.Y], [p.x - 5*km, null], [null, q.go.Y], [q.x, null]); 
 
    // res
    const resx = x;
@@ -656,61 +668,61 @@ function par(attrs, P, Q) {
    const selx = width + x;
    const sely = p.y - dummy_g.yy;
 
-   const sel_g = gate.or({ stroke, class: getClass(attrs, "seq-sel") }, e_g.x, sely);
-   const sel_w = gate.wire({ stroke, class: getClass(attrs, "sel-wire"), label: "SEL", anchor: "r" }, [sel_g.lx, sel_g.outy], [selx - lm, null]);
+   const sel_g = gate.or({ stroke, class: getClass(attrs, "par sel g") }, e_g.x, sely);
+   const sel_w = gate.wire({ stroke, class: getClass(attrs, "par sel p"), label: "SEL", anchor: "r" }, [sel_g.lx, sel_g.outy], [selx - lm, null]);
    
    // p.sel -> sel
-   const pSel_w = gate.wire({ stroke, class: getClass(attrs, "p-to-sel"), dot: "*-" },
+   const pSel_w = gate.wire({ stroke, class: getClass(attrs, "par sel p"), dot: "*-" },
 			    [p.lx + 2*km, p.sel.Y], [null, sel_g.xy], [sel_g.xx, null]);
    // q.sel -> sel
-   const qSel_w = gate.wire({ stroke, class: getClass(attrs, "q-to-sel"), dot: "*-" },
+   const qSel_w = gate.wire({ stroke, class: getClass(attrs, "par sel q"), dot: "*-" },
 			    [q.lx + 3*km, q.sel.Y], [null, sel_g.yy], [sel_g.yx, null]);
 
    // xem
    const { pem_g, qem_g, selPem_w, selQem_w, pem_w, qem_w, qPem_w, pQem_w, emdot } = xem();
 
    // synchronizer
-   const pSyncK0_g = gate.or({ stroke, class: classSYNC }, pem_g.lx + 11*km, pem_g.ly + 3*km);
-   const pXemSyncK0_w = gate.wire({ stroke, class: classK0, dot: emdot },
+   const pSyncK0_g = gate.or({ stroke, class: getClass(attrs, "par sync synck0 p") }, pem_g.lx + 11*km, pem_g.ly + 3*km);
+   const pXemSyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par sync sel xem synck0 p"), dot: emdot },
 				  [pem_g.lx, pem_g.outy],
 				  [pem_g.lx + 3*km, null],
 				  [null, pSyncK0_g.xy],
 				  [pem_g.lx + 4*km, null]);
-   const pXemLSyncK0_w = gate.wire({ stroke, class: classSYNC, "label": "p.em" },
+   const pXemLSyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par sync xem synck0 p"), "label": "p.em" },
 				  [pXemSyncK0_w.lx + lm, pXemSyncK0_w.ly],
 				  [pSyncK0_g.xx, null]);
-   const pK0SyncK0_w = gate.wire({ stroke, class: classK0 },
+   const pK0SyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par sync k0 synck0 p") },
 				 [p.lx, p.k0.Y],
 				 [pem_g.lx + 2*km, null],
 				 [null, pSyncK0_g.yy],
 				 [pXemSyncK0_w.lx, null]);
-   const pK0LSyncK0_w = gate.wire({ stroke, class: classSYNC, "label": "p.K0" },
+   const pK0LSyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par sync k0 synck0 p"), "label": "p.K0" },
 				  [pXemLSyncK0_w.x, pK0SyncK0_w.ly],
 				  [pSyncK0_g.xx, null]);
-   const uSyncK0_g = gate.or({ stroke, class: classSYNC }, pSyncK0_g.x, pSyncK0_g.ly + km);
-   const pK0uSynck0_w = gate.wire({ stroke, class: classSYNC, dot: "*-" },
+   const uSyncK0_g = gate.or({ stroke, class: getClass(attrs, "par sync synck0 u") }, pSyncK0_g.x, pSyncK0_g.ly + km);
+   const pK0uSynck0_w = gate.wire({ stroke, class: getClass(attrs, "par sync k0 synck0 p"), dot: "*-" },
 				  [pSyncK0_g.x - km, pSyncK0_g.yy],
 				  [null, uSyncK0_g.xy],
 				  [uSyncK0_g.xx, null]);
 
-   const qSyncK0_g = gate.or({ stroke, class: classSYNC }, uSyncK0_g.x, uSyncK0_g.ly + km);
-   const qXemSyncK0_w = gate.wire({ stroke, class: classK0, dot: emdot },
+   const qSyncK0_g = gate.or({ stroke, class: getClass(attrs, "par sync synck0 q") }, uSyncK0_g.x, uSyncK0_g.ly + km);
+   const qXemSyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par sync sel xem synck0 q"), dot: emdot },
 				  [qem_g.lx, qem_g.outy],
 				  [pem_g.lx + 3*km, null],
 				  [null, qSyncK0_g.ly - connectm],
 				  [pXemSyncK0_w.lx, null]);
-   const qXemLSyncK0_w = gate.wire({ stroke, class: classSYNC, "label": "q.em" },
+   const qXemLSyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par sync xem k0 q"), "label": "q.em" },
 				  [pXemSyncK0_w.lx + lm, qXemSyncK0_w.ly],
 				  [pSyncK0_g.xx, null]);
-   const qK0SyncK0_w = gate.wire({ stroke, class: classK0 },
+   const qK0SyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par sync k0 synck0 q") },
 				 [q.lx, q.k0.Y],
 				 [pem_g.lx + 2*km, null],
 				 [null, qSyncK0_g.xy],
 				 [pK0SyncK0_w.lx, null]);
-   const qK0LSyncK0_w = gate.wire({ stroke, class: classSYNC, "label": "q.K0" },
+   const qK0LSyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par sync k0 synck0 q"), "label": "q.K0" },
 				  [pK0LSyncK0_w.x, qK0SyncK0_w.ly],
 				  [pSyncK0_g.xx, null]);
-   const qK0uSynck0_w = gate.wire({ stroke, class: classSYNC, dot: "*-" },
+   const qK0uSynck0_w = gate.wire({ stroke, class: getClass(attrs, "par sync k0 synck0 q"), dot: "*-" },
 				  [qSyncK0_g.x - km, qSyncK0_g.xy],
 				  [null, uSyncK0_g.yy],
 				  [uSyncK0_g.xx, null]);
@@ -718,7 +730,7 @@ function par(attrs, P, Q) {
    // k0
    const k0x = x + width;
    const k0y = sel_g.outy + 2*km;
-   const k0_g = gate.and({ stroke, class: getClass(attrs, "sync k0") }, pSyncK0_g.x + 7*km, pSyncK0_g.ly + km);
+   const k0_g = gate.and({ stroke, class: getClass(attrs, "par sync k0") }, pSyncK0_g.x + 7*km, pSyncK0_g.ly + km);
    const k0_w = gate.wire({ stroke, class: classK0, label: "K0", anchor: "r" },
 			  [k0_g.lx, k0_g.outy],
 			  [k0_g.lx + 2*km, null],
@@ -740,16 +752,16 @@ function par(attrs, P, Q) {
 			   
    
    // k1
-   const pSyncK1_g = gate.or({ stroke, class: classSYNC }, pSyncK0_g.x, pSyncK0_g.y + 10*km);
+   const pSyncK1_g = gate.or({ stroke, class: getClass(attrs, "par sync synck1 p") }, pSyncK0_g.x, pSyncK0_g.y + 10*km);
 
-   const uSyncK1_g = gate.or({ stroke, class: classSYNC }, pSyncK0_g.x, pSyncK1_g.ly + km);
+   const uSyncK1_g = gate.or({ stroke, class: getClass(attrs, "par sync synck1 u") }, pSyncK0_g.x, pSyncK1_g.ly + km);
 
-   const qSyncK1_g = gate.or({ stroke, class: classSYNC }, pSyncK0_g.x, uSyncK1_g.ly + km);
+   const qSyncK1_g = gate.or({ stroke, class: getClass(attrs, "par sync synck1 q") }, pSyncK0_g.x, uSyncK1_g.ly + km);
    
    const k1x = k0x;
    const k1y = k0y + 2*km;
-   const k1_g = gate.and({ stroke, class: getClass(attrs, "sync k1") }, k0_g.x, pSyncK1_g.ly + km);
-   const k1_w = gate.wire({ stroke, class: classK1, label: "K1", anchor: "r" },
+   const k1_g = gate.and({ stroke, class: getClass(attrs, "par sync k1") }, k0_g.x, pSyncK1_g.ly + km);
+   const k1_w = gate.wire({ stroke, class: getClass(attrs, "par sync k1 synck1 p"), label: "K1", anchor: "r" },
 			  [k1_g.lx, k1_g.outy],
 			  [k1_g.lx + 3*km, null],
 			  [null, k1y],
@@ -768,28 +780,28 @@ function par(attrs, P, Q) {
 			   [null, k1_g.yy],
 			   [k1_g.xx, null]);
 
-   const pK1SyncK1_w = gate.wire({ stroke, class: classK1 },
+   const pK1SyncK1_w = gate.wire({ stroke, class: getClass(attrs, "par sync k1 synck1 p") },
 				 [p.lx, p.k1.Y],
 				 [pem_g.lx + km, null],
 				 [null, pSyncK1_g.yy],
 				 [pXemSyncK0_w.lx, null]);
-   const pK1LSyncK1_w = gate.wire({ stroke, class: classSYNC, label: "p.K1" },
+   const pK1LSyncK1_w = gate.wire({ stroke, class: getClass(attrs, "par sync k1 synck1 p"), label: "p.K1" },
 				  [pXemSyncK0_w.lx + lm, pSyncK1_g.yy],
 				  [pSyncK1_g.xx, null]);
    
-   const pSyncK0SyncK1_w = gate.wire({ stroke, class: classSYNC, dot: "*-" },
+   const pSyncK0SyncK1_w = gate.wire({ stroke, class: getClass(attrs, "par sync synck0 p synck1") , dot: "*-" },
 				     [pSyncK0_g.lx + 2*km, pSyncK0_g.outy],
 				     [null, pSyncK1_g.y - km],
 				     [pSyncK1_g.x - 2*km, null],
 				     [null, pSyncK1_g.xy],
 				     [pSyncK1_g.xx, null]);
-   const qSyncK0SyncK1_w = gate.wire({ stroke, class: classSYNC, dot: "*-" },
+   const qSyncK0SyncK1_w = gate.wire({ stroke, class: getClass(attrs, "par sync synck0 q synck1"), classSYNC, dot: "*-" },
 				     [qSyncK0_g.lx + km, qSyncK0_g.outy],
 				     [null, pSyncK1_g.y - 2*km],
 				     [pSyncK1_g.x - 3*km, null],
 				     [null, qSyncK1_g.xy],
 				     [pSyncK1_g.xx, null]);
-   const qK1SyncK1_w = gate.wire({ stroke, class: classK1 },
+   const qK1SyncK1_w = gate.wire({ stroke, class: getClass(attrs, "par sync k1 synck1 q") },
 				 [q.lx, q.k1.Y],
 				 [pem_g.lx + km, null],
 				 [null, qSyncK1_g.yy],
@@ -811,7 +823,7 @@ function par(attrs, P, Q) {
    const k2x = x + width;
    const k2y = sel_g.outy + 6*km;
 
-   const syncK2_l = gate.label({ stroke, class: getClass(attrs, "sync etc") }, "...", pSyncK1_g.x, pSyncK1_g.y + 10*km);
+   const syncK2_l = gate.label({ stroke, class: getClass(attrs, "par sync etc") }, "...", pSyncK1_g.x, pSyncK1_g.y + 10*km);
    
    // synchronizer box
    const syncx = pXemSyncK0_w.lx;
@@ -868,7 +880,7 @@ function par(attrs, P, Q) {
       res: { X: resx, Y: resy },
       susp: { X: suspx, Y: suspy },
       kill: { X: killx, Y: killy },
-      sel: { X: selx, Y: sely },
+      sel: { X: selx, Y: sel_w.y },
       k0: { X: k0x, Y: k0y },
       k1: { X: k1x, Y: k1y },
       k2: { X: k1x, Y: k1y + lm }
@@ -1190,7 +1202,7 @@ function emit(attrs) {
       res: { X: resx, Y: resy },
       susp: { X: suspx, Y: suspy },
       kill: { X: killx, Y: killy },
-      sel: { X: selx, Y: sely },
+      sel: { X: selx, Y: sel_w.y },
       k0: { X: k0x, Y: k0y },
       k1: { X: k1x, Y: k1y },
       k2: { X: k2x, Y: k2y }
@@ -1210,9 +1222,8 @@ function loop(attrs, P) {
    const y = attrs?.y ?? 0;
    const cm = 180 + x;
    const p = (typeof P === "string") ? named({ stroke, name: P, margin }, cm, y + km*4) : P;
-   const q = named({ stroke, name: "Q", margin }, cm, y + p.ly + km*3);
    const selww = 50;
-   const width = p.width + km*20 - x;
+   const width = p.width + km*24;
    const height = p.ly - y + km;
    const connectm = 8;
    const assigSize = 30;
@@ -1265,8 +1276,7 @@ function loop(attrs, P) {
 
    // sel
    const selx = x + width - lm;
-   const sely = p.sel.Y;
-   const sel_w = gate.wire({ stroke, class: classSEL, label: "SEL", anchor: "r" }, [p.sel.X, sely], [selx, null]);
+   const sel_w = gate.wire({ stroke, class: classSEL, label: "SEL", anchor: "r" }, [p.sel.X, p.sel.Y], [selx, null]);
 
    // k0
    const k0x = x + width - lm;
@@ -1322,7 +1332,7 @@ function loop(attrs, P) {
       res: { X: resx, Y: resy },
       susp: { X: suspx, Y: suspy },
       kill: { X: killx, Y: killy },
-      sel: { X: selx, Y: sely },
+      sel: { X: sel_w.lx, Y: sel_w.y },
       k0: { X: k0x, Y: k0y },
       k1: { X: k1x, Y: k1y }
    };
