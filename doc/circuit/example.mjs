@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 09:49:26 2026                          */
-/*    Last change :  Fri Jan 16 08:42:27 2026 (serrano)                */
+/*    Last change :  Tue Jan 20 09:16:25 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    An example of circuit                                            */
@@ -14,7 +14,7 @@
 /*---------------------------------------------------------------------*/
 import { writeFileSync, existsSync, renameSync, unlinkSync } from "node:fs";
 import { svg, xml } from "./svg.mjs";
-import { named, k0, seq, par, pause, loop, emit } from "./circuit.mjs";
+import { named, kn, seq, par, pause, loop, emit } from "./circuit.mjs";
 
 const n = named({ stroke: "green", box: true, name: "", wire: true }, 0, 0);
 writeFileSync("named.svg", xml(svg({width: n.width + n.x, height: n.height + n.y}, n)));
@@ -22,7 +22,7 @@ writeFileSync("named.svg", xml(svg({width: n.width + n.x, height: n.height + n.y
 const e = emit({ stroke: "green", box: true, name: "", wire: true, x: 100, y: 200 });
 writeFileSync("emit.svg", xml(svg({width: e.width + e.x, height: e.height + e.y}, e)));
 
-const k = k0({ stroke: "#ff00cc", box: true, x: 30, y: 10 }, 0, 0);
+const k = kn({ stroke: "#ff00cc", box: true, x: 30, y: 10 }, 0, 0);
 writeFileSync("k.svg", xml(svg({width: k.width + k.x, height: k.height + k.y}, k)));
 
 const s = seq({ stroke: "blue", box: true, x: 100, y: 10 }, "P", "Q");
@@ -45,3 +45,10 @@ const sl = loop({ stroke: "orange", class: "sustain-loop", box: true, x: ss.x - 
 writeFileSync("sustain.svg", xml(svg({width: sl.width + sl.x, height: sl.height + sl.y}, sl)));
 
    
+const ze = emit({ stroke: "orange", class: "sustain-emit", box: true, x: 500, y: 200 });
+const zn = kn({ stroke: "magenta", class: "sustain-nothing", box: true, x: ze.x + 200, y: ze.ly + 130});
+const zy = pause({ stroke: "blue", class: "sustain-pause", box: true, x: zn.x, y: zn.ly + 100});
+const zp = par({ stroke: "green", class: "sustain-par", box: true, x: ze.x, y: zn.y - 100}, zn, zy);
+const zs = seq({ stroke: "red", class: "sustain-seq", box: true, x: ze.x - 250, y: ze.y - 100}, ze, zp);
+const zl = loop({ stroke: "cyan", class: "sustain-loop", box: true, x: zs.x - 200, y: zs.y - 100}, zs);
+writeFileSync("schizo.svg", xml(svg({width: zl.width + zl.x, height: zl.height + zl.y}, zl)));

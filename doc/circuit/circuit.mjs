@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Jan  9 18:26:39 2026                          */
-/*    Last change :  Tue Jan 20 07:30:06 2026 (serrano)                */
+/*    Last change :  Tue Jan 20 09:20:47 2026 (serrano)                */
 /*    Copyright   :  2026 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Svg circuits                                                     */
@@ -12,7 +12,7 @@
 /*---------------------------------------------------------------------*/
 /*    The module                                                       */
 /*---------------------------------------------------------------------*/
-export { css, and, or, assig, reg, named, k0, seq, par, pause, emit, loop };
+export { css, and, or, assig, reg, named, kn, seq, par, pause, emit, loop };
 
 import * as gate from "./gate.mjs";
 import { getId, getStyle, getClass } from "./gate.mjs";
@@ -194,9 +194,9 @@ function named(attrs, x, y) {
 }
 
 /*---------------------------------------------------------------------*/
-/*    k0 ...                                                           */
+/*    kn ...                                                           */
 /*---------------------------------------------------------------------*/
-function k0(attrs) {
+function kn(attrs) {
    const margin = attrs?.margin ?? "   ";
    const stroke = attrs.stroke;
    
@@ -262,7 +262,7 @@ function k0(attrs) {
 
    // sel
    const selx = x + width - lm;
-   const sely = km*5;
+   const sely = y + km*5;
 
    const sel_g = gate.assig({ stroke, class: classSEL }, selx - km*2 - assigSize/2, sely - assigSize/2);
    const sel_w = gate.wire({ stroke, class: classSEL, label: "SEL", anchor: "r" }, [sel_g.lx, sel_g.outy], [selx, null]);
@@ -315,7 +315,19 @@ function k0(attrs) {
 		   k2_g, k2_w, k20_w, dot_g, dot_w, dot0_w,
 		   surrounding);
 
-   return { svg, x, y, width, height, lx: x + width, ly: y + height };
+   return {
+      svg, x, y, width, height, lx: x + width, ly: y + height,
+      e: { x: ex, y: ey },
+      e2: { x: e2x, y: ey },
+      go: { X: gox, Y: goy },
+      res: { X: resx, Y: resy },
+      susp: { X: suspx, Y: suspy },
+      kill: { X: killx, Y: killy },
+      sel: { X: selx, Y: sely },
+      k0: { X: k0x, Y: k0y },
+      k1: { X: k1x, Y: k1y },
+      k2: { X: k1x, Y: k1y + lm }
+   }
 }
 
 /*---------------------------------------------------------------------*/
@@ -497,10 +509,10 @@ function par(attrs, P, Q) {
       const qem_g = gate.or({ stroke, class: classXEM }, qemx, qemy - dummy_g.xy);
       
       const selPem_w = gate.wire({ stroke, class: classXEM },
-				 [p.sel.X, p.sel.Y],
+				 [p.lx, p.sel.Y],
 				 [pem_g.xx, null]);
       const selQem_w = gate.wire({ stroke, class: classXEM },
-				 [q.sel.X, q.sel.Y],
+				 [q.lx, q.sel.Y],
 				 [qem_g.xx, null]);
 
       return {
@@ -512,7 +524,7 @@ function par(attrs, P, Q) {
    }
    
    function xemNew() {
-      const pemx = p.sel.X + 8*km;
+      const pemx = Math.max(p.sel.X, q.sel.X) + 8*km;
       const pemy = p.sel.Y;
       const qemx = pemx;
       const qemy = q.sel.Y;
@@ -546,7 +558,7 @@ function par(attrs, P, Q) {
    
    function xem() {
       const { pem_g, qem_g, selPem_w, selQem_w, qPem_w, pQem_w, emdot } = 
-	 (attrs.synchronizer === "orig") ? xemOrig() : xemNew();
+	 (attrs.synchronizer === "new") ? xemNew() : xemOrig();
 
       const pem_w = gate.wire({ stroke, class: classXEM, dot: "*-" },
 			      [pGo_w.lx, p.ly + km],
@@ -578,7 +590,7 @@ function par(attrs, P, Q) {
    const p = (typeof P === "string") ? named({ stroke, name: P, margin }, cm, y + km*5) : P;
    const q = (typeof Q === "string") ? named({ stroke, name: Q, margin }, cm, y + p.ly + km*5) : Q;
    const selww = 50;
-   const width = Math.max(p.width, q.width) + km*52 - x;
+   const width = Math.max(p.width, q.width) + km*45;
    const height = q.ly - y + km;
    const connectm = 8;
 
@@ -617,7 +629,7 @@ function par(attrs, P, Q) {
 
    // go
    const gox = x;
-   const goy = x + km*10;
+   const goy = p.go.Y + km;
    const pGo_w = gate.wire({ stroke, class: classGO, label: "GO", dot: "-*" }, [x + lm, goy], [p.x - 5*km, null]);
    const qGo_w = gate.wire({ stroke, class: classRES }, [p.x, p.go.Y], [p.x - 5*km, null], [null, q.go.Y], [q.x, null]); 
 
