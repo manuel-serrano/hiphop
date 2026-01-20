@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Jan  9 18:26:39 2026                          */
-/*    Last change :  Fri Jan 16 11:41:14 2026 (serrano)                */
+/*    Last change :  Tue Jan 20 07:30:06 2026 (serrano)                */
 /*    Copyright   :  2026 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Svg circuits                                                     */
@@ -300,7 +300,7 @@ function k0(attrs) {
    // surrounding box
    const surrounding = attrs.box
       ? { svg: `${margin}<g`
-	 + getId(attrs, "box k")
+	 + getId(attrs, "circuit box k")
 	 + ` style="${getStyle(attrs)}"`
 	 + ">\n"
 	 + `${margin}   <path class="circuit" d="m ${x},${y} ${width},0 0,${height} -${width},0 Z"/>\n`
@@ -447,7 +447,7 @@ function seq(attrs, P, Q) {
    // surrounding box
    const surrounding = attrs.box
       ? { svg: `${margin}<g`
-	 + getId(attrs, "circuit seq")
+	 + getId(attrs, "circuit box seq")
 	 + ` style="${getStyle(attrs)}"`
 	 + ">\n"
 	 + `${margin}   <path class="circuit" d="m ${x},${y} ${width},0 0,${height} -${width},0 Z"/>\n`
@@ -820,7 +820,7 @@ function par(attrs, P, Q) {
    // surrounding box
    const surrounding = attrs.box
       ? { svg: `${margin}<g`
-	 + getId(attrs, "circuit par")
+	 + getId(attrs, "circuit box par")
 	 + ` style="${getStyle(attrs)}"`
 	 + ">\n"
 	 + `${margin}   <path class="circuit" d="m ${x},${y} ${width},0 0,${height} -${width},0 Z"/>\n`
@@ -1014,7 +1014,7 @@ function pause(attrs) {
    // surrounding box
    const surrounding = attrs.box
       ? { svg: `${margin}<g`
-	 + getId(attrs, "box seq")
+	 + getId(attrs, "circuit box seq")
 	 + ` style="${getStyle(attrs)}"`
 	 + ">\n"
 	 + `${margin}   <path class="circuit" d="m ${x},${y} ${width},0 0,${height} -${width},0 Z"/>\n`
@@ -1154,7 +1154,7 @@ function emit(attrs) {
    // surrounding box
    const surrounding = attrs.box
       ? { svg: `${margin}<g`
-	 + getId(attrs, "box seq")
+	 + getId(attrs, "circuit box seq")
 	 + ` style="${getStyle(attrs)}"`
 	 + ">\n"
 	 + `${margin}   <path class="circuit" d="m ${x},${y} ${width},0 0,${height} -${width},0 Z"/>\n`
@@ -1284,7 +1284,7 @@ function loop(attrs, P) {
    // surrounding box
    const surrounding = attrs.box
       ? { svg: `${margin}<g`
-	 + getId(attrs, "circuit seq")
+	 + getId(attrs, "circuit box seq")
 	 + ` style="${getStyle(attrs)}"`
 	 + ">\n"
 	 + `${margin}   <path class="circuit" d="m ${x},${y} ${width},0 0,${height} -${width},0 Z"/>\n`
