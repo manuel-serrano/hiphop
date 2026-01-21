@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 08:53:28 2026                          */
-/*    Last change :  Thu Jan 15 09:15:32 2026 (serrano)                */
+/*    Last change :  Wed Jan 21 08:16:23 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Various circuit gates drawing                                    */
@@ -88,7 +88,7 @@ function wire(attrs, ...coords) {
    
    const margin = attrs?.margin ?? "   ";
    const name = attrs?.name ?? "P";
-   const dw = 6;
+   const dw = 10;
    const lx = coords[coords.length - 1][0];
    const ly = coords[coords.length - 1][1];
 
@@ -140,7 +140,7 @@ function dot(attrs, x, y) {
       throw new TypeError("dot: bad attributes " + attrs);
    }
    const margin = attrs?.margin ?? "   ";
-   const width = attrs?.width ?? 6;
+   const width = attrs?.width ?? 10;
 
    return `${margin}<circle`
       + getId(attrs, "dot")

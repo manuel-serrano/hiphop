@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Jan  9 18:26:39 2026                          */
-/*    Last change :  Tue Jan 20 13:23:06 2026 (serrano)                */
+/*    Last change :  Wed Jan 21 07:03:39 2026 (serrano)                */
 /*    Copyright   :  2026 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Svg circuits                                                     */
@@ -178,10 +178,10 @@ function named(attrs, x, y) {
    }
 
    circuit.svg = `${margin}<g`
-      + getId(attrs)
+      + getId(attrs, "circuit named")
       + ` style="${getStyle(attrs)}"`
       + ">\n"
-      + `${margin}   <path class="${attrs.class ?? "circuit"}" d="m ${b.x},${b.y} ${b.width},0 0,${b.height} -${b.width},0 Z"/>\n`
+      + `${margin}   <path class="${getClass(attrs, "named")}" d="m ${b.x},${b.y} ${b.width},0 0,${b.height} -${b.width},0 Z"/>\n`
       + `${margin}</g>\n`
       + `${margin}<text class="circuit-name" x="${x + width/2}" y="${y + height/2}" text-anchor="middle" dominant-baseline="middle">${name}</text>\n`
       + ins.map((t, i) => `${margin}<text class="${t}" x="${b.x + padding}" y="${circuit[t].Y}" text-anchor="start" dominant-baseline="middle">${t.toUpperCase()}</text>\n`).join("")
@@ -590,7 +590,7 @@ function par(attrs, P, Q) {
    const p = (typeof P === "string") ? named({ stroke, name: P, margin }, cm, y + km*5) : P;
    const q = (typeof Q === "string") ? named({ stroke, name: Q, margin }, cm, y + p.ly + km*5) : Q;
    const selww = 50;
-   const width = Math.max(p.width, q.width) + km*45;
+   const width = Math.max(p.width, q.width) + km*49;
    const height = q.ly - y + km;
    const connectm = 8;
 
@@ -669,7 +669,7 @@ function par(attrs, P, Q) {
    const sely = p.y - dummy_g.yy;
 
    const sel_g = gate.or({ stroke, class: getClass(attrs, "par sel g") }, e_g.x, sely);
-   const sel_w = gate.wire({ stroke, class: getClass(attrs, "par sel p"), label: "SEL", anchor: "r" }, [sel_g.lx, sel_g.outy], [selx - lm, null]);
+   const sel_w = gate.wire({ stroke, class: getClass(attrs, "par sel"), label: "SEL", anchor: "r" }, [sel_g.lx, sel_g.outy], [selx - lm, null]);
    
    // p.sel -> sel
    const pSel_w = gate.wire({ stroke, class: getClass(attrs, "par sel p"), dot: "*-" },
@@ -682,8 +682,8 @@ function par(attrs, P, Q) {
    const { pem_g, qem_g, selPem_w, selQem_w, pem_w, qem_w, qPem_w, pQem_w, emdot } = xem();
 
    // synchronizer
-   const pSyncK0_g = gate.or({ stroke, class: getClass(attrs, "par sync synck0 p") }, pem_g.lx + 11*km, pem_g.ly + 3*km);
-   const pXemSyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par sync sel xem synck0 p"), dot: emdot },
+   const pSyncK0_g = gate.or({ stroke, class: getClass(attrs, "par sync psynck0") }, pem_g.lx + 11*km, pem_g.ly + 3*km);
+   const pXemSyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par xem synck0 p"), dot: emdot },
 				  [pem_g.lx, pem_g.outy],
 				  [pem_g.lx + 3*km, null],
 				  [null, pSyncK0_g.xy],
@@ -691,7 +691,7 @@ function par(attrs, P, Q) {
    const pXemLSyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par sync xem synck0 p"), "label": "p.em" },
 				  [pXemSyncK0_w.lx + lm, pXemSyncK0_w.ly],
 				  [pSyncK0_g.xx, null]);
-   const pK0SyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par sync k0 synck0 p") },
+   const pK0SyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par k0 synck0 p") },
 				 [p.lx, p.k0.Y],
 				 [pem_g.lx + 2*km, null],
 				 [null, pSyncK0_g.yy],
@@ -699,22 +699,22 @@ function par(attrs, P, Q) {
    const pK0LSyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par sync k0 synck0 p"), "label": "p.K0" },
 				  [pXemLSyncK0_w.x, pK0SyncK0_w.ly],
 				  [pSyncK0_g.xx, null]);
-   const uSyncK0_g = gate.or({ stroke, class: getClass(attrs, "par sync synck0 u") }, pSyncK0_g.x, pSyncK0_g.ly + km);
+   const uSyncK0_g = gate.or({ stroke, class: getClass(attrs, "par sync usynck0") }, pSyncK0_g.x, pSyncK0_g.ly + km);
    const pK0uSynck0_w = gate.wire({ stroke, class: getClass(attrs, "par sync k0 synck0 p"), dot: "*-" },
 				  [pSyncK0_g.x - km, pSyncK0_g.yy],
 				  [null, uSyncK0_g.xy],
 				  [uSyncK0_g.xx, null]);
 
-   const qSyncK0_g = gate.or({ stroke, class: getClass(attrs, "par sync synck0 q") }, uSyncK0_g.x, uSyncK0_g.ly + km);
-   const qXemSyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par sync sel xem synck0 q"), dot: emdot },
+   const qSyncK0_g = gate.or({ stroke, class: getClass(attrs, "par sync qsynck0") }, uSyncK0_g.x, uSyncK0_g.ly + km);
+   const qXemSyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par xem qsynck0 q"), dot: emdot },
 				  [qem_g.lx, qem_g.outy],
 				  [pem_g.lx + 3*km, null],
 				  [null, qSyncK0_g.ly - connectm],
 				  [pXemSyncK0_w.lx, null]);
-   const qXemLSyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par sync xem k0 q"), "label": "q.em" },
+   const qXemLSyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par sync xem qsynck0 q"), "label": "q.em" },
 				  [pXemSyncK0_w.lx + lm, qXemSyncK0_w.ly],
 				  [pSyncK0_g.xx, null]);
-   const qK0SyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par sync k0 synck0 q") },
+   const qK0SyncK0_w = gate.wire({ stroke, class: getClass(attrs, "par k0 synck0 q") },
 				 [q.lx, q.k0.Y],
 				 [pem_g.lx + 2*km, null],
 				 [null, qSyncK0_g.xy],
@@ -730,21 +730,21 @@ function par(attrs, P, Q) {
    // k0
    const k0x = x + width;
    const k0y = sel_g.outy + 2*km;
-   const k0_g = gate.and({ stroke, class: getClass(attrs, "par sync k0") }, pSyncK0_g.x + 7*km, pSyncK0_g.ly + km);
-   const k0_w = gate.wire({ stroke, class: classK0, label: "K0", anchor: "r" },
+   const k0_g = gate.and({ stroke, class: getClass(attrs, "par sync andk0") }, pSyncK0_g.x + 7*km, pSyncK0_g.ly + km);
+   const k0_w = gate.wire({ stroke, class: getClass(attrs, "par andk0 k0"), label: "K0", anchor: "r" },
 			  [k0_g.lx, k0_g.outy],
 			  [k0_g.lx + 2*km, null],
 			  [null, k0y],
 			  [k0x - lm, null]);
-   const pk0_w = gate.wire({ stroke, class: classSYNC },
+   const pk0_w = gate.wire({ stroke, class: getClass(attrs, "par sync psynck0 andk0") },
 			   [pSyncK0_g.lx, pSyncK0_g.outy],
 			   [pSyncK0_g.lx + 3*km, null],
 			   [null, k0_g.xy],
 			   [k0_g.xx, null]);
-   const uk0_w = gate.wire({ stroke, class: classSYNC },
+   const uk0_w = gate.wire({ stroke, class: getClass(attrs, "par sync usynck0 andk0") },
 			   [uSyncK0_g.lx, uSyncK0_g.outy],
 			   [k0_g.xx, k0_g.y + k0_g.height/2]);
-   const qk0_w = gate.wire({ stroke, class: classSYNC },
+   const qk0_w = gate.wire({ stroke, class: getClass(attrs, "par sync qsynck0 andk0") },
 			   [qSyncK0_g.lx, qSyncK0_g.outy],
 			   [qSyncK0_g.lx + 3*km, null],
 			   [null, k0_g.yy],
@@ -752,35 +752,35 @@ function par(attrs, P, Q) {
 			   
    
    // k1
-   const pSyncK1_g = gate.or({ stroke, class: getClass(attrs, "par sync synck1 p") }, pSyncK0_g.x, pSyncK0_g.y + 10*km);
+   const pSyncK1_g = gate.or({ stroke, class: getClass(attrs, "par sync psynck1") }, pSyncK0_g.x, pSyncK0_g.y + 10*km);
 
-   const uSyncK1_g = gate.or({ stroke, class: getClass(attrs, "par sync synck1 u") }, pSyncK0_g.x, pSyncK1_g.ly + km);
+   const uSyncK1_g = gate.or({ stroke, class: getClass(attrs, "par sync usynck1") }, pSyncK0_g.x, pSyncK1_g.ly + km);
 
-   const qSyncK1_g = gate.or({ stroke, class: getClass(attrs, "par sync synck1 q") }, pSyncK0_g.x, uSyncK1_g.ly + km);
+   const qSyncK1_g = gate.or({ stroke, class: getClass(attrs, "par sync qsynck1") }, pSyncK0_g.x, uSyncK1_g.ly + km);
    
    const k1x = k0x;
    const k1y = k0y + 2*km;
-   const k1_g = gate.and({ stroke, class: getClass(attrs, "par sync k1") }, k0_g.x, pSyncK1_g.ly + km);
-   const k1_w = gate.wire({ stroke, class: getClass(attrs, "par sync k1 synck1 p"), label: "K1", anchor: "r" },
+   const k1_g = gate.and({ stroke, class: getClass(attrs, "par sync andk1") }, k0_g.x, pSyncK1_g.ly + km);
+   const k1_w = gate.wire({ stroke, class: getClass(attrs, "par andk1 k1"), label: "K1", anchor: "r" },
 			  [k1_g.lx, k1_g.outy],
 			  [k1_g.lx + 3*km, null],
 			  [null, k1y],
 			  [k1x - lm, null]);
-   const pk1_w = gate.wire({ stroke, class: classSYNC },
+   const pk1_w = gate.wire({ stroke, class: getClass(attrs, "par sync psynck1 andk1") },
 			   [pSyncK1_g.lx, pSyncK1_g.outy],
 			   [pSyncK1_g.lx + 3*km, null],
 			   [null, k1_g.xy],
 			   [k1_g.xx, null]);
-   const uk1_w = gate.wire({ stroke, class: classSYNC },
+   const uk1_w = gate.wire({ stroke, class: getClass(attrs, "par sync usynck1 andk1")  },
 			   [uSyncK1_g.lx, uSyncK1_g.outy],
 			   [k1_g.xx, k1_g.y + k1_g.height/2]);
-   const qk1_w = gate.wire({ stroke, class: classSYNC },
+   const qk1_w = gate.wire({ stroke, class: getClass(attrs, "par sync qsynck1 andk1") },
 			   [qSyncK1_g.lx, qSyncK1_g.outy],
 			   [qSyncK1_g.lx + 3*km, null],
 			   [null, k1_g.yy],
 			   [k1_g.xx, null]);
 
-   const pK1SyncK1_w = gate.wire({ stroke, class: getClass(attrs, "par sync k1 synck1 p") },
+   const pK1SyncK1_w = gate.wire({ stroke, class: getClass(attrs, "par k1 synck1 p") },
 				 [p.lx, p.k1.Y],
 				 [pem_g.lx + km, null],
 				 [null, pSyncK1_g.yy],
@@ -795,26 +795,26 @@ function par(attrs, P, Q) {
 				     [pSyncK1_g.x - 2*km, null],
 				     [null, pSyncK1_g.xy],
 				     [pSyncK1_g.xx, null]);
-   const qSyncK0SyncK1_w = gate.wire({ stroke, class: getClass(attrs, "par sync synck0 q synck1"), classSYNC, dot: "*-" },
+   const qSyncK0SyncK1_w = gate.wire({ stroke, class: getClass(attrs, "par sync qsynck0 q qsynck1"), classSYNC, dot: "*-" },
 				     [qSyncK0_g.lx + km, qSyncK0_g.outy],
 				     [null, pSyncK1_g.y - 2*km],
 				     [pSyncK1_g.x - 3*km, null],
 				     [null, qSyncK1_g.xy],
 				     [pSyncK1_g.xx, null]);
-   const qK1SyncK1_w = gate.wire({ stroke, class: getClass(attrs, "par sync k1 synck1 q") },
+   const qK1SyncK1_w = gate.wire({ stroke, class: getClass(attrs, "par k1 synck1 q") },
 				 [q.lx, q.k1.Y],
 				 [pem_g.lx + km, null],
 				 [null, qSyncK1_g.yy],
 				 [pXemSyncK0_w.lx, null]);
-   const qK1LSyncK1_w = gate.wire({ stroke, class: classSYNC, label: "q.K1" },
+   const qK1LSyncK1_w = gate.wire({ stroke, class: getClass(attrs, "par sync k1 qsynck1 q"), label: "q.K1" },
 				  [pXemSyncK0_w.lx + lm, qSyncK1_g.yy],
 				  [qSyncK1_g.xx, null]);
    
-   const pK1uSynck1_w = gate.wire({ stroke, class: classSYNC, dot: "*-" },
+   const pK1uSynck1_w = gate.wire({ stroke, class: getClass(attrs, "par sync k1 usynck1 p"), dot: "*-" },
 				  [pSyncK1_g.x - km, pSyncK1_g.yy],
 				  [null, uSyncK1_g.xy],
 				  [uSyncK1_g.xx, null]);
-   const qK1uSynck1_w = gate.wire({ stroke, class: classSYNC, dot: "*-" },
+   const qK1uSynck1_w = gate.wire({ stroke, class: getClass(attrs, "par sync k1 qsynck1 q"), dot: "*-" },
 				  [qSyncK1_g.x - km, qSyncK1_g.yy],
 				  [null, uSyncK1_g.yy],
 				  [uSyncK1_g.xx, null]);
@@ -894,16 +894,16 @@ function pause(attrs) {
    const margin = attrs?.margin ?? "   ";
    const stroke = attrs.stroke;
    
-   const classE = getClass(attrs, "e");
-   const classGO = getClass(attrs, "go");
-   const classRES = getClass(attrs, "res");
-   const classSUSP = getClass(attrs, "susp");
-   const classKILL = getClass(attrs, "kill");
-   const classSEL = getClass(attrs, "sel");
-   const classK0 = getClass(attrs, "k0");
-   const classK1 = getClass(attrs, "k1");
-   const classK2 = getClass(attrs, "k2");
-   const classREG = getClass(attrs, "reg");
+   const classE = getClass(attrs, "pause yield e");
+   const classGO = getClass(attrs, "pause yield go");
+   const classRES = getClass(attrs, "pause yield res");
+   const classSUSP = getClass(attrs, "pause yield susp");
+   const classKILL = getClass(attrs, "pause yield kill");
+   const classSEL = getClass(attrs, "pause yield sel");
+   const classK0 = getClass(attrs, "pause yield k0");
+   const classK1 = getClass(attrs, "pause yield k1");
+   const classK2 = getClass(attrs, "pause yield k2");
+   const classREG = getClass(attrs, "pause yield reg");
    
    const lm = 45;
    const km = 20;
@@ -950,10 +950,10 @@ function pause(attrs) {
    const killy = goy + km*6;
 
    // go_and_not_kill
-   const go_and_not_kill = gate.and({ stroke, class: getClass(attrs, "go_and_not_kill") }, x + 5*km, killy + 20);
+   const go_and_not_kill = gate.and({ stroke, class: getClass(attrs, "pause yield go_and_not_kill") }, x + 5*km, killy + 20);
    
    // susp_and_not_kill
-   const susp_and_not_kill = gate.and({ stroke, class: getClass(attrs, "susp_and_not_kill") }, go_and_not_kill.x, suspy - connectm);
+   const susp_and_not_kill = gate.and({ stroke, class: getClass(attrs, "pause yield susp_and_not_kill") }, go_and_not_kill.x, suspy - connectm);
    const go_w = gate.wire({ stroke, class: classGO, dot: "*-" },
 			   [gox + km, goy],
 			   [null, go_and_not_kill.ly - connectm],
@@ -966,7 +966,7 @@ function pause(attrs) {
 			    
    // susp_and_not_kill_and_reg
    const andX = go_and_not_kill.lx + 2*km;
-   const susp_and_not_kill_and_reg = gate.and({ stroke, class: getClass(attrs, "susp_and_not_kill_and_reg") }, andX, susp_and_not_kill.outy - connectm);
+   const susp_and_not_kill_and_reg = gate.and({ stroke, class: getClass(attrs, "pause yield susp_and_not_kill_and_reg") }, andX, susp_and_not_kill.outy - connectm);
    const susp_and_not_kill_w = gate.wire({ stroke, class: classSUSP },
 					  [susp_and_not_kill.lx, susp_and_not_kill.outy],
 					  [susp_and_not_kill_and_reg.x, null]);
@@ -974,15 +974,15 @@ function pause(attrs) {
    // OR
    const orX = susp_and_not_kill_and_reg.lx + 2*km;
    const orY = go_and_not_kill.y + (susp_and_not_kill.ly  - go_and_not_kill.y - (regSize/2)) / 2;
-   const OR = gate.or({ stroke, class: getClass(attrs, "go_and_not_kill") }, orX, orY);
-   const OR_w = gate.wire({ stroke, class: getClass(attrs, "toreg") }, [OR.lx, OR.outy], [OR.lx + km, null]);
+   const OR = gate.or({ stroke, class: getClass(attrs, "pause yield go_and_not_kill") }, orX, orY);
+   const OR_w = gate.wire({ stroke, class: getClass(attrs, "pause yield toreg") }, [OR.lx, OR.outy], [OR.lx + km, null]);
 
-   const go_and_not_kill_w = gate.wire({ stroke, class: getClass(attrs, "go_and_not_kill") },
+   const go_and_not_kill_w = gate.wire({ stroke, class: getClass(attrs, "pause yield go_and_not_kill") },
 					[go_and_not_kill.lx, go_and_not_kill.outy],
 					[OR.x - km, null],
 					[null, OR.ly - connectm],
 					[OR.x + 8, null]);
-   const susp_and_not_kill_and_reg_w = gate.wire({ stroke, class: getClass(attrs, "susp_and_not_kill_and_reg") },
+   const susp_and_not_kill_and_reg_w = gate.wire({ stroke, class: getClass(attrs, "pause yield susp_and_not_kill_and_reg") },
 						  [susp_and_not_kill_and_reg.lx, susp_and_not_kill_and_reg.outy],
 						  [susp_and_not_kill_and_reg.lx + km, null],
 						  [null, OR.y + connectm],
@@ -1033,7 +1033,7 @@ function pause(attrs) {
    // dot
    const dotx = selx;
    const doty = k0_g.outy + 3*lm;
-   const dot = gate.label({ stroke, class: getClass(attrs, "etc"), label: "...", anchor: "r" }, "...", dotx, doty);
+   const dot = gate.label({ stroke, class: getClass(attrs, "pause yield etc"), label: "...", anchor: "r" }, "...", dotx, doty);
    
    // surrounding box
    const surrounding = attrs.box
@@ -1102,22 +1102,22 @@ function emit(attrs) {
 
    const esl = 1*width/2 - assigSize/2 - ex;
    const esr = 1*width/2 - assigSize/2;
-   const e = gate.label({ stroke, class: "E", baseline: "text-bottom" }, "E", ex, ey);
-   const e2 = gate.label({ stroke, class: "E2", baseline: "text-bottom" }, "E'", e2x, ey);
+   const e = gate.label({ stroke, class: getClass(attrs, "emit E"), baseline: "text-bottom" }, "E", ex, ey);
+   const e2 = gate.label({ stroke, class: getClass(attrs, "emit E2"), baseline: "text-bottom" }, "E'", e2x, ey);
    const e_gw = 30;
-   const e_g = gate.assig({ stroke, class: "E", width: e_gw }, assigx, ey + e_gw/2);
+   const e_g = gate.assig({ stroke, class: getClass(attrs, "emit E"), width: e_gw }, assigx, ey + e_gw/2);
    
-   const e_w = gate.wire({ stroke, class: "E" }, [e.x, e.y + 2], [null, e_g.outy], [e_g.x, null]);
-   const e2_w = gate.wire({ stroke, class: "E" }, [e_g.lx, e_g.outy], [e2.x, null], [null, e2.y + 2]);
+   const e_w = gate.wire({ stroke, class: getClass(attrs, "emit E") }, [e.x, e.y + 2], [null, e_g.outy], [e_g.x, null]);
+   const e2_w = gate.wire({ stroke, class: getClass(attrs, "emit E") }, [e_g.lx, e_g.outy], [e2.x, null], [null, e2.y + 2]);
    
-   const s = gate.label({ stroke, class: "s", baseline: "text-bottom" }, "s", e2x + lm/3, ey);
+   const s = gate.label({ stroke, class: getClass(attrs, "emit s"), baseline: "text-bottom" }, "s", e2x + lm/3, ey);
 
    // go
    const gox = x + lm;
    const goy = y + km*5;
-   const go_g = gate.assig({ stroke, class: "k0" }, assigx, goy - assigSize/2);
-   const go_w = gate.wire({ stroke, class: "go", label: "GO", anchor: "l" }, [gox, goy], [go_g.x, null]);
-   const s_w = gate.wire({ stroke, class: "s", "dot": "*-" },
+   const go_g = gate.assig({ stroke, class: getClass(attrs, "emit k0") }, assigx, goy - assigSize/2);
+   const go_w = gate.wire({ stroke, class: getClass(attrs, "emit go"), label: "GO", anchor: "l" }, [gox, goy], [go_g.x, null]);
+   const s_w = gate.wire({ stroke, class: getClass(attrs, "emit s"), "dot": "*-" },
 			  [go_g.lx + km, go_g.outy],
 			  [null, go_g.outy - 2*km],
 			  [s.x, null],
@@ -1126,59 +1126,59 @@ function emit(attrs) {
    // res
    const resx = gox;
    const resy = goy + (km*2);
-   const res_w = gate.wire({ stroke, class: "res", label: "RES", anchor: "l" }, [resx, resy]);
+   const res_w = gate.wire({ stroke, class: getClass(attrs, "emit res"), label: "RES", anchor: "l" }, [resx, resy]);
 
    // susp
    const suspx = gox;
    const suspy = goy + (km*4);
-   const susp_w = gate.wire({ stroke, class: "susp", label: "SUSP", anchor: "l" }, [suspx, suspy]);
+   const susp_w = gate.wire({ stroke, class: getClass(attrs, "emit susp"), label: "SUSP", anchor: "l" }, [suspx, suspy]);
    
    // kill
    const killx = gox;
    const killy = goy + (km*6);
-   const kill_w = gate.wire({ stroke, class: "kill", label: "KILL", anchor: "l" }, [killx, killy]);
+   const kill_w = gate.wire({ stroke, class: getClass(attrs, "emit kill"), label: "KILL", anchor: "l" }, [killx, killy]);
 
    // sel
    const selx = x + width - lm;
    const sely = y + km*5;
 
-   const sel_g = gate.assig({ stroke, class: "sel" }, selx - km*2 - assigSize/2, sely - assigSize/2);
-   const sel_w = gate.wire({ stroke, class: "sel", label: "SEL", anchor: "r" }, [sel_g.lx, sel_g.outy], [selx, null]);
-   const sel0_w = gate.wire({ stroke, class: "sel", label: "0", anchor: "l" }, [sel_g.x - km, sel_g.outy], [sel_g.x, null]);
+   const sel_g = gate.assig({ stroke, class: getClass(attrs, "emit sel") }, selx - km*2 - assigSize/2, sely - assigSize/2);
+   const sel_w = gate.wire({ stroke, class: getClass(attrs, "emit sel"), label: "SEL", anchor: "r" }, [sel_g.lx, sel_g.outy], [selx, null]);
+   const sel0_w = gate.wire({ stroke, class: getClass(attrs, "emit sel"), label: "0", anchor: "l" }, [sel_g.x - km, sel_g.outy], [sel_g.x, null]);
 
    // k0
    const k0x = selx;
    const k0y = sely + km*2;
-   const k0_w = gate.wire({ stroke, class: "k0", label: "K0", anchor: "r" }, [go_g.lx, go_g.outy], [go_g.lx + km, null], [null, k0y], [k0x, null]);
+   const k0_w = gate.wire({ stroke, class: getClass(attrs, "emit k0"), label: "K0", anchor: "r" }, [go_g.lx, go_g.outy], [go_g.lx + km, null], [null, k0y], [k0x, null]);
 
    // k1
    const k1x = selx;
    const k1y = sely + km*4;
 
-   const k1_g = gate.assig({ stroke, class: "k1" }, k1x - km*2 - assigSize/2, k1y - assigSize/2);
-   const k1_w = gate.wire({ stroke, class: "k1", label: "K1", anchor: "r" }, [k1_g.lx, k1_g.outy], [k1x, null]);
-   const k10_w = gate.wire({ stroke, class: "k1", label: "0", anchor: "l" }, [k1_g.x - km, k1_g.outy], [k1_g.x, null]);
+   const k1_g = gate.assig({ stroke, class: getClass(attrs, "emit k1") }, k1x - km*2 - assigSize/2, k1y - assigSize/2);
+   const k1_w = gate.wire({ stroke, class: getClass(attrs, "emit k1"), label: "K1", anchor: "r" }, [k1_g.lx, k1_g.outy], [k1x, null]);
+   const k10_w = gate.wire({ stroke, class: getClass(attrs, "emit k1"), label: "0", anchor: "l" }, [k1_g.x - km, k1_g.outy], [k1_g.x, null]);
 
    // k2
    const k2x = selx;
    const k2y = sely + km*6;
 
-   const k2_g = gate.assig({ stroke, class: "k2" }, k2x - km*2 - assigSize/2, k2y - assigSize/2);
-   const k2_w = gate.wire({ stroke, class: "k2", label: "K2", anchor: "r" }, [k2_g.lx, k2_g.outy], [k2x, null]);
-   const k20_w = gate.wire({ stroke, class: "k2", label: "0", anchor: "l" }, [k2_g.x - km, k2_g.outy], [k2_g.x, null]);
+   const k2_g = gate.assig({ stroke, class: getClass(attrs, "emit k2") }, k2x - km*2 - assigSize/2, k2y - assigSize/2);
+   const k2_w = gate.wire({ stroke, class: getClass(attrs, "emit k2"), label: "K2", anchor: "r" }, [k2_g.lx, k2_g.outy], [k2x, null]);
+   const k20_w = gate.wire({ stroke, class: getClass(attrs, "emit k2"), label: "0", anchor: "l" }, [k2_g.x - km, k2_g.outy], [k2_g.x, null]);
 
    // dot
    const dotx = selx;
    const doty = sely + km*8;
 
-   const dot_g = gate.assig({ stroke, class: "etc" }, dotx - km*2 - assigSize/2, doty - assigSize/2);
-   const dot_w = gate.wire({ stroke, class: "etc", label: "...", anchor: "r" }, [dot_g.lx, dot_g.outy], [dotx, null]);
-   const dot0_w = gate.wire({ stroke, class: "etc", label: "0", anchor: "l" }, [dot_g.x - km, dot_g.outy], [dot_g.x, null]);
+   const dot_g = gate.assig({ stroke, class: getClass(attrs, "emit etc") }, dotx - km*2 - assigSize/2, doty - assigSize/2);
+   const dot_w = gate.wire({ stroke, class: getClass(attrs, "emit etc"), label: "...", anchor: "r" }, [dot_g.lx, dot_g.outy], [dotx, null]);
+   const dot0_w = gate.wire({ stroke, class: getClass(attrs, "emit etc"), label: "0", anchor: "l" }, [dot_g.x - km, dot_g.outy], [dot_g.x, null]);
 
    // surrounding box
    const surrounding = attrs.box
       ? { svg: `${margin}<g`
-	 + getId(attrs, "circuit box seq")
+	 + getId(attrs, "circuit box emit")
 	 + ` style="${getStyle(attrs)}"`
 	 + ">\n"
 	 + `${margin}   <path class="circuit" d="m ${x},${y} ${width},0 0,${height} -${width},0 Z"/>\n`
@@ -1228,15 +1228,15 @@ function loop(attrs, P) {
    const connectm = 8;
    const assigSize = 30;
 
-   const classE = getClass(attrs, "e");
-   const classGO = getClass(attrs, "go");
-   const classRES = getClass(attrs, "res");
-   const classSUSP = getClass(attrs, "susp");
-   const classKILL = getClass(attrs, "kill");
-   const classSEL = getClass(attrs, "sel");
-   const classK0 = getClass(attrs, "k0");
-   const classK1 = getClass(attrs, "k1");
-   const classK2 = getClass(attrs, "k2");
+   const classE = getClass(attrs, "loop e");
+   const classGO = getClass(attrs, "loop go");
+   const classRES = getClass(attrs, "loop res");
+   const classSUSP = getClass(attrs, "loop susp");
+   const classKILL = getClass(attrs, "loop kill");
+   const classSEL = getClass(attrs, "loop sel");
+   const classK0 = getClass(attrs, "loop k0");
+   const classK1 = getClass(attrs, "loop k1");
+   const classK2 = getClass(attrs, "loop k2");
    
    // E
    const ex = x + lm*2;
@@ -1256,8 +1256,8 @@ function loop(attrs, P) {
    const goy = p.go.Y;
    const dummy_g = gate.or({ stroke, class: classGO }, 0, 0);
    const or_g = gate.or({ stroke, class: classGO }, x + lm + 2*km, p.go.Y - dummy_g.height + connectm);
-   const go_w = gate.wire({ stroke, class: classGO, label: "GO" }, [gox, goy], [or_g.x + 8, or_g.ly - connectm]);
-   const or_w = gate.wire({ stroke, class: classGO }, [or_g.lx, or_g.outy], [or_g.lx + lm/2, null], [null, p.go.Y], [p.go.X, null]);
+   const go_w = gate.wire({ stroke, class: getClass(attrs, "loop go boot") }, [gox, goy], [or_g.x + 8, or_g.ly - connectm]);
+   const or_w = gate.wire({ stroke, class: getClass(attrs, "loop go") }, [or_g.lx, or_g.outy], [or_g.lx + lm/2, null], [null, p.go.Y], [p.go.X, null]);
 
    // res
    const resx = gox;
@@ -1285,7 +1285,7 @@ function loop(attrs, P) {
    const k0_w = gate.wire({ stroke, class: classK0, label: "K0", anchor: "r" }, [k0_g.lx, k0_g.outy], [k0x, null]);
    const k00_w = gate.wire({ stroke, class: classK0, label: "0", anchor: "l" }, [k0_g.x - km, k0_g.outy], [k0_g.x, null]);
 
-   const k0loop_w = gate.wire({ stroke, class: classK0 },
+   const k0loop_w = gate.wire({ stroke, class: getClass(attrs, "loop go k0") },
 			       [p.k0.X, p.k0.Y],
 			       [p.k0.X + km, null],
 			       [null, p.y - km],

@@ -3,22 +3,17 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Mon Jan 12 13:41:26 2026                          */
-/*    Last change :  Thu Jan 15 11:32:51 2026 (serrano)                */
+/*    Last change :  Wed Jan 21 07:46:06 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Default CSS style for HipHop circuits                            */
 /*=====================================================================*/
 
 /*---------------------------------------------------------------------*/
-/*    color                                                            */
+/*    Default color scheme                                             */
 /*---------------------------------------------------------------------*/
-svg.circuit {
-    --stroke-color: #555555;
-    --or-color: #22aa22;
-    --and-color: #2222bb;
-    --reg-color: #f53736;
-    --circuit-color: black;
-    --assig-color: #555555;
+:root {
+    --stroke-color: #111111;
 }
 
 /*---------------------------------------------------------------------*/
@@ -52,43 +47,40 @@ svg circle.not {
 /*    reg ...                                                          */
 /*---------------------------------------------------------------------*/
 svg .reg {
-    stroke: var(--reg-color);
     stroke-width: 2px;
+    stroke: var(--stroke-color);
 }
 
 /*---------------------------------------------------------------------*/
 /*    assig ...                                                        */
 /*---------------------------------------------------------------------*/
 svg .assig {
-    stroke: var(--assig-color);
     stroke-width: 2px;
+    stroke: var(--stroke-color);
 }
 
 /*---------------------------------------------------------------------*/
 /*    logical                                                          */
 /*---------------------------------------------------------------------*/
-svg g.logical * {
+svg g.logical {
     stroke-width: 2px;
-}
-
-svg g.and path {
-    stroke: var(--and-color);
-}
-
-svg g.or path {
-    stroke: var(--or-color);
+    stroke: var(--stroke-color);
 }
 
 /*---------------------------------------------------------------------*/
 /*    synchronizer                                                     */
 /*---------------------------------------------------------------------*/
 svg path.synchronizer {
-    stroke-dasharray: "12 6";
+    stroke-dasharray: 12 6;
+}
+
+svg text.synchronizer {
+    letter-spacing: 5px;
 }
 
 /*---------------------------------------------------------------------*/
 /*    circuit                                                          */
 /*---------------------------------------------------------------------*/
 svg path.circuit {
-    stroke: var(--circuit-color);
+    stroke: inherit;
 }
