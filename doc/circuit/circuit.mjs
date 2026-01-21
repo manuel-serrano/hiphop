@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Jan  9 18:26:39 2026                          */
-/*    Last change :  Wed Jan 21 07:03:39 2026 (serrano)                */
+/*    Last change :  Wed Jan 21 13:47:41 2026 (serrano)                */
 /*    Copyright   :  2026 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Svg circuits                                                     */
@@ -1281,9 +1281,9 @@ function loop(attrs, P) {
    // k0
    const k0x = x + width - lm;
    const k0y = p.k0.Y;
-   const k0_g = gate.assig({ stroke, class: classK0 }, k0x - km*2 - assigSize/2, k0y - assigSize/2);
-   const k0_w = gate.wire({ stroke, class: classK0, label: "K0", anchor: "r" }, [k0_g.lx, k0_g.outy], [k0x, null]);
-   const k00_w = gate.wire({ stroke, class: classK0, label: "0", anchor: "l" }, [k0_g.x - km, k0_g.outy], [k0_g.x, null]);
+   const k0_g = gate.assig({ stroke, class: getClass(attrs, "loop k0 k00") }, k0x - km*2 - assigSize/2, k0y - assigSize/2);
+   const k0_w = gate.wire({ stroke, class: getClass(attrs, "loop k0 k00"), label: "K0", anchor: "r" }, [k0_g.lx, k0_g.outy], [k0x, null]);
+   const k00_w = gate.wire({ stroke, class: getClass(attrs, "loop k0 k00"), label: "0", anchor: "l" }, [k0_g.x - km, k0_g.outy], [k0_g.x, null]);
 
    const k0loop_w = gate.wire({ stroke, class: getClass(attrs, "loop go k0") },
 			       [p.k0.X, p.k0.Y],
