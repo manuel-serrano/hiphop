@@ -17,10 +17,15 @@ a `;` are executed sequentially.
 
 <span class="syntax">&#x2606;</span> [Formal syntax](../syntax/hiphop.bnf#HHYield)
 
-The `pragma` form executes a JavaScript statement during the reaction.
+The `pragma { stmt }` form executes a JavaScript statement during the reaction.
 
 <span class="hiphop">&#x2605;</span> Example: [seq.hh.js](../../test/seq.hh.js)
 <!-- ${doc.includeCode("../../test/seq.hh.js", "hiphop")} -->
+
+JavaScript expressions can also be directly included inside HipHop.
+
+<span class="hiphop">&#x2605;</span> Example: [pragmaexpr.hh.js](../../test/pragmaexpr.hh.js)
+<!-- ${doc.includeCode("../../test/pragmaexpr.hh.js", "hiphop")} -->
 
 The JavaScript body may have signal dependencies.
 

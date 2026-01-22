@@ -29,7 +29,10 @@
   | <HHExpression> ; 
 
 <HHPragma> --> pragma { <Statement> }
+  | <Identifier> <AssigOp> <HHExpression>
   | <Identifier> = <HHExpression>
+
+<AssiOg> = Any JavaScript assignment operators such as "+=", "*=", etc.
 
 <HHBlock> --> {}
   | { <HHStatement> }
