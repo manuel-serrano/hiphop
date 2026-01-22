@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 09:49:26 2026                          */
-/*    Last change :  Tue Jan 20 09:16:25 2026 (serrano)                */
+/*    Last change :  Thu Jan 22 12:21:36 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    An example of circuit                                            */
@@ -14,7 +14,7 @@
 /*---------------------------------------------------------------------*/
 import { writeFileSync, existsSync, renameSync, unlinkSync } from "node:fs";
 import { svg, xml } from "./svg.mjs";
-import { named, kn, seq, par, pause, loop, emit } from "./circuit.mjs";
+import { named, kn, seq, par, pause, loop, emit, prog } from "./circuit.mjs";
 
 const n = named({ stroke: "green", box: true, name: "", wire: true }, 0, 0);
 writeFileSync("named.svg", xml(svg({width: n.width + n.x, height: n.height + n.y}, n)));
@@ -52,3 +52,6 @@ const zp = par({ stroke: "green", class: "sustain-par", box: true, x: ze.x, y: z
 const zs = seq({ stroke: "red", class: "sustain-seq", box: true, x: ze.x - 250, y: ze.y - 100}, ze, zp);
 const zl = loop({ stroke: "cyan", class: "sustain-loop", box: true, x: zs.x - 200, y: zs.y - 100}, zs);
 writeFileSync("schizo.svg", xml(svg({width: zl.width + zl.x, height: zl.height + zl.y}, zl)));
+
+const pr = prog({stroke: "#3388cc", box: true, x: 200, y: 100}, "P");
+writeFileSync("prog.svg", xml(svg({width: pr.width + pr.x, height: pr.height + pr.y}, pr)));

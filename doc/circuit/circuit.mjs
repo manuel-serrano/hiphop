@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Jan  9 18:26:39 2026                          */
-/*    Last change :  Wed Jan 21 13:47:41 2026 (serrano)                */
+/*    Last change :  Thu Jan 22 12:23:05 2026 (serrano)                */
 /*    Copyright   :  2026 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Svg circuits                                                     */
@@ -12,7 +12,7 @@
 /*---------------------------------------------------------------------*/
 /*    The module                                                       */
 /*---------------------------------------------------------------------*/
-export { css, and, or, assig, reg, named, kn, seq, par, pause, emit, loop };
+export { css, and, or, assig, reg, named, kn, seq, par, pause, emit, loop, prog };
 
 import * as gate from "./gate.mjs";
 import { getId, getStyle, getClass } from "./gate.mjs";
@@ -1337,3 +1337,55 @@ function loop(attrs, P) {
       k1: { X: k1x, Y: k1y }
    };
 }
+
+/*---------------------------------------------------------------------*/
+/*    prog ...                                                         */
+/*---------------------------------------------------------------------*/
+function prog(attrs, P) {
+   const lm = 45;
+   const km = 20;
+   const stroke = attrs.stroke;
+   const margin = attrs?.margin ?? "   ";
+   const regSize = 30;
+   const x = attrs?.x ?? 0;
+   const y = attrs?.y ?? 0;
+   const p = (typeof P === "string") ? named({ stroke, name: P, margin }, x + 14*km, y + 2*km) : P;
+   const width = p.width + 16*km;
+   const height = p.height + 8*km;
+
+   const boot = gate.reg({ stroke, class: getClass(attrs, "prog boot"), width: regSize }, x + 2*km, p.go.Y - regSize/2);
+   const boot_w = gate.wire({ stroke, class: getClass(attrs, "prog boot"), dot: "-o" }, [x, boot.outy], [boot.xx, null]);
+   const go_w = gate.wire({ stroke, class: getClass(attrs, "prog boot go"), dot: "o-" }, [boot.lx, boot.outy], p.x, p.go.Y);
+
+   const res = gate.and({ stroke, class: getClass(attrs, "prog res") }, boot.x + 8*km, boot.y + 3*km);
+   const res_w = gate.wire({ stroke, class: getClass(attrs, "prog res") }, [res.lx, res.outy], [p.x - km, null], [null, p.res.Y], [p.x, null]);
+
+   const go_res_w = gate.wire({ stroke, class: getClass(attrs, "prog boot res" ), dot: "*-" },
+			      [res.x - 2*km, boot.outy],
+			      [null, res.xy],
+			      [res.x, null]);
+
+   const sel = gate.or({ stroke, class: getClass(attrs, "prog globalsel") }, boot.x + 2*km, res.y + 3*km);
+   const sel_w = gate.wire({ stroke, class: getClass(attrs, "prog globalsel") },
+			    [sel.lx, sel.outy],
+			    [res.x - 2*km, null],
+			    [null, res.yy],
+			    [res.x, null]);
+   const sel_sel_w = gate.wire({ stroke, class: getClass(attrs, "prog globalsel sel") },
+			      [p.lx, p.sel.Y],
+			      [p.lx + 2*km, null],
+			      [null, p.ly + 2*km],
+			      [sel.x - 2*km, null],
+			      [null, sel.outy],
+			      [sel.xx, null]);
+			   
+   const svg = SVG(p, boot, boot_w, go_w, res, res_w, go_res_w, sel, sel_w, sel_sel_w);
+
+   return {
+      svg, x, y, width, height, lx: x + width, ly: y + height,
+      boot: { X: boot.x, Y: boot.y },
+      res: { X: res.x, Y: res.y }
+   };
+}
+   
+   

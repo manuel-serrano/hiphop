@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 08:53:28 2026                          */
-/*    Last change :  Wed Jan 21 08:16:23 2026 (serrano)                */
+/*    Last change :  Thu Jan 22 12:36:30 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Various circuit gates drawing                                    */
@@ -234,7 +234,7 @@ function reg(attrs, x, y) {
       + `${margin}   <path class="reg" d="m ${x+padding},${y+width} ${(width/2)-padding},${-padding} ${width/2-padding},${+padding}"/>\n`
       + `${margin}</g>\n`;
 
-   return { svg, x, y, width, height: width, lx: x + width, ly: y + width, outy: y + width/2 };
+   return { svg, x, y, width, height: width, lx: x + width, ly: y + width, outy: y + width/2, xx: x };
 }
 
 
