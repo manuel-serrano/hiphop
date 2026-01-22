@@ -4,8 +4,8 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Sep 14 08:27:50 2018                          */
-#*    Last change :  Wed Dec  3 07:24:23 2025 (serrano)                */
-#*    Copyright   :  2018-25 Manuel Serrano                            */
+#*    Last change :  Thu Jan 22 10:48:31 2026 (serrano)                */
+#*    Copyright   :  2018-26 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    HipHop configuration                                             */
 #*=====================================================================*/
@@ -35,6 +35,8 @@ hop=hop
 hopjs=hopjs
 hopc=hopc
 hflags=-Ox
+
+pragmaexpression=true
 
 # environment parsing
 if [ "$HFLAGS " != " " ]; then
@@ -96,6 +98,12 @@ while : ; do
     --debug)
       hflags=-g2;;
 
+    --pragma-expr=true)
+      pragmaexpression=true;;
+
+    --pragma-expr=false)
+      pragmaexpression=false;;
+
     -*)
       if [ $1 != "--help" ]; then
         echo "*** Configure error, unknown option $1" >&2;
@@ -118,6 +126,7 @@ while : ; do
       echo "   --libdir=dir............... alternative Hop lib directory" >&2;
       echo "   --mandir=dir............... alternative Hop man directory" >&2;
       echo "   --debug.................... debug mode" >&2;
+      echo "   --pragma-expr=true|false... enable/disable pragma expressions" >&2;
       echo "" >&2;
       exit 255;
   esac
@@ -244,6 +253,7 @@ for path in docker/Dockerfile etc/hiphop.el doc/doc.json arch/debian/makedeb.sh 
           -e "s|@SODIR@|$sodir|g" \
           -e "s|@SO@|$hopso|g" \
           -e "s|@HIPHOPBUILDID@|$hiphopbuildid|g" \
+          -e "s|@PRAGMAEXPRESSION@|$pragmaexpression|g" \
   	  >> $path
 done
 

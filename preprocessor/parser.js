@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Dec  4 10:09:03 2025 (serrano)                */
-/*    Copyright   :  2018-25 Manuel Serrano                            */
+/*    Last change :  Thu Jan 22 09:51:48 2026 (serrano)                */
+/*    Copyright   :  2018-26 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
 /*=====================================================================*/
@@ -861,13 +861,8 @@ function parseModuleSiglist(interfacep) {
 /*       | pragma statement                                            */
 /*---------------------------------------------------------------------*/
 function parsePragma(token) {
-   
-   function parsePragmaBlock(loc) {
-      return parseHHThisBlock.call(this);
-   }
-
    const loc = token.location;
-   const { block, accessors, signames } = parsePragmaBlock.call(this, loc);
+   const { block, accessors, signames } = parseHHThisBlock.call(this);
    const appl = astutils.J2SDataPropertyInit(
       loc, 
       astutils.J2SString(loc, "apply"),
@@ -892,7 +887,7 @@ function parsePragmaAssig(token) {
 			  expr)
       : astutils.J2SAssigOp(loc,
 			    astutils.J2SUnresolvedRef(loc, token.value),
-			    expr, op.value);
+			    expr, op.value.substring(0, op.value.length - 1));
    const stmt = astutils.J2SStmtExpr(loc, assig);
    const block = astutils.J2SBlock(loc, loc, [stmt]);
    const appl = astutils.J2SDataPropertyInit(
@@ -905,8 +900,32 @@ function parsePragmaAssig(token) {
 				 [attrs].concat(accessors));
    return wrapSignalNames(node, signames);
 }
-      
-   
+
+/*---------------------------------------------------------------------*/
+/*    parsePragmExpression ...                                         */
+/*---------------------------------------------------------------------*/
+function parsePragmaExpression(token) {
+   const loc = token.location;
+   this.unconsumeToken(token);
+   const { expr, accessors, signames } = parseHHExpression.call(this, false);
+
+   if (this.peekToken().type === this.SEMICOLON) {
+      const stmt = astutils.J2SStmtExpr(loc, expr);
+      const block = astutils.J2SBlock(loc, loc, [stmt]);
+      const appl = astutils.J2SDataPropertyInit(
+	 loc, 
+	 astutils.J2SString(loc, "apply"),
+	 astutils.J2SMethod(loc, "atomfun", [], block, self(loc)));
+      const tag = tagInit("pragma", loc);
+      const attrs = astutils.J2SObjInit(loc, [locInit(loc), tag, appl]);
+      const node = astutils.J2SCall(loc, hhref(loc, "ATOM"), null,
+				    [attrs].concat(accessors));
+      return wrapSignalNames(node, signames);
+   } else {
+      throw tokenValueError(token);
+   }
+}
+
 /*---------------------------------------------------------------------*/
 /*    parseEmpty ...                                                   */
 /*---------------------------------------------------------------------*/
@@ -1987,7 +2006,10 @@ function parseStmt(token, declaration) {
 		  || pt === this.AMPEGAL
 		  || pt === this.HATEGAL
 		  || pt === this.PERCENTEGAL) {
+		  if (config.pragmaExpression)
 		  return parsePragmaAssig.call(this, next);
+	       } else if (config.pragmaExpression) {
+		  return parsePragmaExpression.call(this, next);
 	       } else {
 		  throw tokenValueError(next);
 	       }
@@ -2018,10 +2040,12 @@ function parseStmt(token, declaration) {
       case this.STRING:
 	 return parseNamedSequence.call(this, next, "sequence", false);
 
-      case this.ID:
-	 
       default:
-	 throw tokenTypeError(this.consumeAny());
+	 if (config.pragmaExpression) {
+	    return parsePragmaExpression.call(this, next);
+	 } else {
+	    throw tokenTypeError(this.consumeAny());
+	 }
    }
 }
 

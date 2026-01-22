@@ -18,3 +18,4 @@ export const homepage = "@HOMEPAGE@";
 export const CAUSALITY_JSON = "hiphop.causality.json";
 export const isServer = !(typeof window !== 'undefined' && window.document);
 export const Process = globalThis?.process ?? {env: {}, exit: n => n};
+export const pragmaExpression = @PRAGMAEXPRESSION@;
