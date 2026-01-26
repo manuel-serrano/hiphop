@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 09:49:26 2026                          */
-/*    Last change :  Thu Jan 22 12:21:36 2026 (serrano)                */
+/*    Last change :  Mon Jan 26 11:11:41 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    An example of circuit                                            */
@@ -52,6 +52,11 @@ const zp = par({ stroke: "green", class: "sustain-par", box: true, x: ze.x, y: z
 const zs = seq({ stroke: "red", class: "sustain-seq", box: true, x: ze.x - 250, y: ze.y - 100}, ze, zp);
 const zl = loop({ stroke: "cyan", class: "sustain-loop", box: true, x: zs.x - 200, y: zs.y - 100}, zs);
 writeFileSync("schizo.svg", xml(svg({width: zl.width + zl.x, height: zl.height + zl.y}, zl)));
+
+const zp2 = par({ stroke: "green", class: "sustain-par", synchronizer: "new", box: true, x: ze.x, y: zn.y - 100, }, zn, zy);
+const zs2 = seq({ stroke: "red", class: "sustain-seq", box: true, x: ze.x - 250, y: ze.y - 100}, ze, zp2);
+const zl2 = loop({ stroke: "cyan", class: "sustain-loop", box: true, x: zs2.x - 200, y: zs2.y - 100}, zs2);
+writeFileSync("schizo2.svg", xml(svg({width: zl2.width + zl2.x, height: zl2.height + zl2.y}, zl2)));
 
 const pr = prog({stroke: "#3388cc", box: true, x: 200, y: 100}, "P");
 writeFileSync("prog.svg", xml(svg({width: pr.width + pr.x, height: pr.height + pr.y}, pr)));
