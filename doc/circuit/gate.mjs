@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 08:53:28 2026                          */
-/*    Last change :  Thu Jan 22 12:36:30 2026 (serrano)                */
+/*    Last change :  Thu Jan 22 20:19:18 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Various circuit gates drawing                                    */
@@ -94,7 +94,7 @@ function wire(attrs, ...coords) {
 
    let svg = "";
    
-   if (attrs.dot === "*-" || attrs.dot === "*-*") {
+   if (attrs.dot === "*-" || attrs.dot === "*-*" || attrs.dot === "*-o") {
       svg += dot({ fill: attrs.stroke, stroke: attrs.stroke, class: getClass(attrs, "branch"), width: dw }, coords[0][0] - dw/2, coords[0][1] - dw/2);
    }
 
@@ -108,7 +108,7 @@ function wire(attrs, ...coords) {
       coords[coords.length - 1][0] -= dw/2;
    }
 
-   if (attrs.dot === "-o") {
+   if (attrs.dot === "-o" || attrs.dot === "*-o") {
       svg += dot({ fill: "transparent", stroke: attrs.stroke, class: getClass(attrs, "not"), width: dw }, lx - dw, ly - dw/2);
       coords[coords.length - 1][0] -= dw;
    }
