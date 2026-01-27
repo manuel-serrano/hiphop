@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Jan  9 18:26:39 2026                          */
-/*    Last change :  Mon Jan 26 11:15:22 2026 (serrano)                */
+/*    Last change :  Mon Jan 26 14:38:04 2026 (serrano)                */
 /*    Copyright   :  2026 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Svg circuits                                                     */
@@ -349,15 +349,15 @@ function seq(attrs, P, Q) {
    const height = q.ly - y + km;
    const connectm = 8;
 
-   const classE = getClass(attrs, "e");
-   const classGO = getClass(attrs, "go");
-   const classRES = getClass(attrs, "res");
-   const classSUSP = getClass(attrs, "susp");
-   const classKILL = getClass(attrs, "kill");
-   const classSEL = getClass(attrs, "sel");
-   const classK0 = getClass(attrs, "k0");
-   const classK1 = getClass(attrs, "k1");
-   const classK2 = getClass(attrs, "k2");
+   const classE = getClass(attrs, "seq e");
+   const classGO = getClass(attrs, "seq go");
+   const classRES = getClass(attrs, "seq res");
+   const classSUSP = getClass(attrs, "seq susp");
+   const classKILL = getClass(attrs, "seq kill");
+   const classSEL = getClass(attrs, "seq sel");
+   const classK0 = getClass(attrs, "seq k0");
+   const classK1 = getClass(attrs, "seq k1");
+   const classK2 = getClass(attrs, "seq k2");
    
    // dummy
    const dummy_g = gate.or({stroke});
@@ -373,7 +373,7 @@ function seq(attrs, P, Q) {
    const ep_w = gate.wire({ stroke, class: classE}, [e.x, e.y + 2], [null, p.y - km], [p.e.x, null], [null, p.y]);
    
    const e2 = gate.label({ stroke, class: classE, baseline: "text-bottom" }, "E'", e2x, e2y);
-   const e_g = gate.or({ stroke, class: getClass(attrs, "seq-e") }, Math.max(p.lx, q.lx) + km*3, p.y - km - connectm);
+   const e_g = gate.or({ stroke, class: getClass(attrs, "seq seq-e") }, Math.max(p.lx, q.lx) + km*3, p.y - km - connectm);
    const e_w = gate.wire({ stroke, class: classE }, [p.e2.x, p.y], [null, p.y - km], [e_g.x + 8, e_g.y + connectm]);
    const ep2_w = gate.wire({ stroke, class: classE }, [e_g.lx, e_g.outy], [e2.x, null], [null, e2.y + 2]);
 
@@ -406,18 +406,18 @@ function seq(attrs, P, Q) {
    // sel
    const selx = width + x;
    const sely = p.sel.Y + dummy_g.height/2;
-   const sel_g = gate.or({ stroke, class: getClass(attrs, "seq-sel") }, selx -lm - 2*km - dummy_g.width, p.sel.Y - connectm);
-   const sel_w = gate.wire({ stroke, class: getClass(attrs, "sel-wire"), label: "SEL", anchor: "r" }, [sel_g.lx, sel_g.outy], [selx - lm, null]);
+   const sel_g = gate.or({ stroke, class: getClass(attrs, "seq seq-sel") }, selx -lm - 2*km - dummy_g.width, p.sel.Y - connectm);
+   const sel_w = gate.wire({ stroke, class: getClass(attrs, "seq sel-wire"), label: "SEL", anchor: "r" }, [sel_g.lx, sel_g.outy], [selx - lm, null]);
    
    // p.sel -> sel
-   const pSel_w = gate.wire({ stroke, class: getClass(attrs, "p-to-sel") }, [p.lx, p.sel.Y], [sel_g.x + 8, null]);
+   const pSel_w = gate.wire({ stroke, class: getClass(attrs, "seq p-to-sel") }, [p.lx, p.sel.Y], [sel_g.x + 8, null]);
    // q.sel -> sel
-   const qSel_w = gate.wire({ stroke, class: getClass(attrs, "q-to-sel") }, [q.lx, q.sel.Y], [q.sel.X + km*3, null], [null, sel_g.ly - connectm], [sel_g.x + 8, null]);
+   const qSel_w = gate.wire({ stroke, class: getClass(attrs, "seq q-to-sel") }, [q.lx, q.sel.Y], [q.sel.X + km*3, null], [null, sel_g.ly - connectm], [sel_g.x + 8, null]);
 
    // p.k0 -> q.go
    const k0x = x + width;
    const k0y = p.k0.Y + connectm;
-   const pk0_w = gate.wire({ stroke, class: getClass(attrs, "k0-to-go") },
+   const pk0_w = gate.wire({ stroke, class: getClass(attrs, "seq k0-to-go") },
 			    [p.lx, p.k0.Y],
 			    [p.lx + km, null],
 			    [null, p.ly + km],
@@ -1024,7 +1024,7 @@ function pause(attrs) {
    // surrounding box
    const surrounding = attrs.box
       ? { svg: `${margin}<g`
-	 + getId(attrs, "circuit box seq")
+	 + getId(attrs, "circuit box pause yield")
 	 + ` style="${getStyle(attrs)}"`
 	 + ">\n"
 	 + `${margin}   <path class="circuit" d="m ${x},${y} ${width},0 0,${height} -${width},0 Z"/>\n`
@@ -1242,7 +1242,7 @@ function loop(attrs, P) {
    const goy = p.go.Y;
    const dummy_g = gate.or({ stroke, class: classGO }, 0, 0);
    const or_g = gate.or({ stroke, class: classGO }, x + lm + 2*km, p.go.Y - dummy_g.height + connectm);
-   const go_w = gate.wire({ stroke, class: getClass(attrs, "loop go boot") }, [gox, goy], [or_g.x + 8, or_g.ly - connectm]);
+   const go_w = gate.wire({ stroke, class: getClass(attrs, "loop go boot"), label: "GO" }, [gox, goy], [or_g.x + 8, or_g.ly - connectm]);
    const or_w = gate.wire({ stroke, class: getClass(attrs, "loop go") }, [or_g.lx, or_g.outy], [or_g.lx + lm/2, null], [null, p.go.Y], [p.go.X, null]);
 
    // res
@@ -1292,7 +1292,7 @@ function loop(attrs, P) {
    // surrounding box
    const surrounding = attrs.box
       ? { svg: `${margin}<g`
-	 + getId(attrs, "circuit box seq")
+	 + getId(attrs, "circuit box loop")
 	 + ` style="${getStyle(attrs)}"`
 	 + ">\n"
 	 + `${margin}   <path class="circuit" d="m ${x},${y} ${width},0 0,${height} -${width},0 Z"/>\n`
@@ -1336,7 +1336,7 @@ function prog(attrs, P) {
    const x = attrs?.x ?? 0;
    const y = attrs?.y ?? 0;
    const p = (typeof P === "string") ? named({ stroke, name: P, margin }, x + 14*km, y + 2*km) : P;
-   const width = p.width + 16*km;
+   const width = p.width + 24*km;
    const height = p.height + 6*km;
 
    const dummy_g = gate.and({});

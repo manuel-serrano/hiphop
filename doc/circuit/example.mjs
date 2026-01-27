@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Fri Jan  9 09:49:26 2026                          */
-/*    Last change :  Mon Jan 26 11:11:41 2026 (serrano)                */
+/*    Last change :  Tue Jan 27 09:57:19 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    An example of circuit                                            */
@@ -45,7 +45,7 @@ const sl = loop({ stroke: "orange", class: "sustain-loop", box: true, x: ss.x - 
 writeFileSync("sustain.svg", xml(svg({width: sl.width + sl.x, height: sl.height + sl.y}, sl)));
 
    
-const ze = emit({ stroke: "orange", class: "sustain-emit", box: true, x: 500, y: 200 });
+const ze = emit({ stroke: "orange", class: "sustain-emit", box: true, x: 800, y: 200 });
 const zn = kn({ stroke: "magenta", class: "sustain-nothing", box: true, x: ze.x + 200, y: ze.ly + 130});
 const zy = pause({ stroke: "blue", class: "sustain-pause", box: true, x: zn.x, y: zn.ly + 100});
 const zp = par({ stroke: "green", class: "sustain-par", box: true, x: ze.x, y: zn.y - 100}, zn, zy);
@@ -60,3 +60,6 @@ writeFileSync("schizo2.svg", xml(svg({width: zl2.width + zl2.x, height: zl2.heig
 
 const pr = prog({stroke: "#3388cc", box: true, x: 200, y: 100}, "P");
 writeFileSync("prog.svg", xml(svg({width: pr.width + pr.x, height: pr.height + pr.y}, pr)));
+
+const pr2 = prog({stroke: "#3388cc", box: true, x: 0, y: 0}, zl2);
+writeFileSync("prog2.svg", xml(svg({width: pr2.width + pr2.x, height: pr2.height + pr2.y}, pr2)));
