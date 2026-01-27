@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Jan  9 18:26:39 2026                          */
-/*    Last change :  Mon Jan 26 14:38:04 2026 (serrano)                */
+/*    Last change :  Tue Jan 27 10:39:38 2026 (serrano)                */
 /*    Copyright   :  2026 Manuel Serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Svg circuits                                                     */
@@ -789,7 +789,7 @@ function par(attrs, P, Q) {
 				     [pSyncK1_g.xx, null]);
    const qK1SyncK1_w = gate.wire({ stroke, class: getClass(attrs, "par k1 synck1 q") },
 				 [q.lx, q.k1.Y],
-				 [pem_g.lx + km, null],
+				 [pXemSyncK0_w.lx - km, null],
 				 [null, qSyncK1_g.yy],
 				 [pXemSyncK0_w.lx, null]);
    const qK1LSyncK1_w = gate.wire({ stroke, class: getClass(attrs, "par sync k1 qsynck1 q"), label: "q.K1" },
