@@ -159,3 +159,39 @@ m.react({ A: 3, B: 4 });
 > [!IMPORTANT]
 > HipHop requires programs to use ECMAScript modules. They cannot 
 > be used with CommonJS modules.
+
+
+Testing
+-------
+
+To test the HipHop installation using non-regression tests:
+
+```
+npm run test
+```
+
+To test the HipHop installation using random testing:
+
+```
+npm run testrandom
+```
+
+HipHop can also be tested again other Esterel-compatible systems. The currently
+supported systems are:
+
+  - Esterel v5
+  - [Esterel in Racket](https://docs.racket-lang.org/esterel)
+  - Redex model
+  
+Note that the HipHop installation process does not include the installation
+of any of these systems that should be installed independently of HipHop.
+
+When running testrandom, the procedure reads the shell variable 
+`HIPHOP_RT_SYSTEMS` for configuring the systems to be used in the testing.
+For instance, to compare the executions of `esterel` and `racket`, one
+may use:
+
+```
+HIPHOP_RT_SYSTEMS="esterel racket" npm run testrandom
+```
+  
