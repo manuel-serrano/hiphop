@@ -176,6 +176,15 @@ To test the HipHop installation using random testing:
 npm run testrandom
 ```
 
+THe number of iterations to be executed can be controlled with the
+shell variable `HIPHOP_RT_ITERATIONS`, which defaults to `10000`. 
+
+Example:
+
+```
+HIPHOP_RT_ITERATIONS=100000 npm run testrandom
+```
+
 HipHop can also be tested again other Esterel-compatible systems. The currently
 supported systems are:
 

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Thu Jan  8 13:46:27 2026 (serrano)                */
+/*    Last change :  Thu Feb  5 08:43:59 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -15,7 +15,7 @@ import { jsonToAst } from "./json.mjs";
 import { jsonToHiphop } from "./hiphop.mjs";
 import { parse } from "../preprocessor/parser.js";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
-import { ITERATION, SYSTEMS, VERBOSE } from "./config.mjs";
+import { ITERATIONS, SYSTEMS, VERBOSE } from "./config.mjs";
 import * as hh from "./hiphop.mjs";
 import * as racket from "./racket.mjs";
 import * as esterel from "./esterel.mjs";
@@ -245,7 +245,7 @@ function mkDirname(prefix) {
 /*---------------------------------------------------------------------*/
 async function main(argv) {
    if (argv.length < 3) {
-      const bug = findBugInGen(prop, ITERATION);
+      const bug = findBugInGen(prop, ITERATIONS);
 
       if (bug) {
 	 const dir = mkDirname(`out/${bug.machines.map(m => m.name()).join("-")}`);
