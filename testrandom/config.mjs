@@ -3,13 +3,13 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 18 07:21:33 2025                          */
-/*    Last change :  Fri Dec 19 12:54:03 2025 (serrano)                */
-/*    Copyright   :  2025 Manuel Serrano                               */
+/*    Last change :  Thu Feb  5 08:43:39 2026 (serrano)                */
+/*    Copyright   :  2025-26 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    testrandom configuration                                         */
 /*=====================================================================*/
 
-export const ITERATION = parseInt(process.env.HIPHOP_RT_ITERATION) || 10000;
+export const ITERATIONS = parseInt(process.env.HIPHOP_RT_ITERATIONS) || 10000;
 export const LOOPSAFE = process.env?.HIPHOP_RT_LOOPSAFE !== "false";
 export const DELAYONLY = process.env?.HIPHOP_RT_DELAYONLY !== "false";
 export const VERBOSE = parseInt(process.env.HIPHOP_RT_VERBOSE) || 0;
