@@ -26,6 +26,15 @@ lib/nodejs/parallelmap.js
 lib/nodejs/queue.js
 lib/nodejs/signal.js
 lib/nodejs/sweep.js
+mermaid-6302dfb2.svg
+modules/http.js
+modules/http.js.map
+modules/interval.js
+modules/interval.js.map
+modules/node_modules/
+modules/promise.js
+modules/promise.js.map
+modules/timeout.js.map
 etc/hiphop.el.in
 tests/TEST
 tests/node_modules
