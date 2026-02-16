@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Thu Dec  7 10:09:27 2023                          */
-/*    Last change :  Wed Dec  3 07:15:54 2025 (serrano)                */
-/*    Copyright   :  2023-25 Manuel Serrano                            */
+/*    Last change :  Mon Feb 16 07:33:52 2026 (serrano)                */
+/*    Copyright   :  2023-26 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Simple configuration in JavaScript                               */
 /*=====================================================================*/
@@ -34,7 +34,9 @@ if (!existsSync(target)) {
 			    .replace(/@VERSION@/g, json.version)
 			    .replace(/@MINOR@/g, json.minor ?? "")
 			    .replace(/@HOMEPAGE@/g, json.homepage)
-			    .replace(/@HIPHOPBUILDID@/g, stdout.trim()));
+			    .replace(/@HIPHOPBUILDID@/g, stdout.trim())
+			    .replace(/@PRAGMAEXPRESSION@/g, "true"));
+
 	});
 }
 
