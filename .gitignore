@@ -1,6 +1,7 @@
 doc/*.html
 doc/lib/bootstrap/css/bootstrap*.map
 doc/idx.json
+doc/doc.json
 doc/lib
 Makefile
 config.status
