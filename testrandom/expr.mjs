@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Nov 14 14:49:15 2025                          */
-/*    Last change :  Thu Nov 27 07:14:11 2025 (serrano)                */
-/*    Copyright   :  2025 Manuel Serrano                               */
+/*    Last change :  Fri Feb 20 11:20:38 2026 (serrano)                */
+/*    Copyright   :  2025-26 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Simple JS expression parser                                      */
 /*=====================================================================*/
@@ -23,7 +23,10 @@ function makeTokenizer(buf) {
       } else if (buf[index] === " ") {
 	 index++;
 	 return next();
-      } else if (buf[index] === "(" || buf[index] === ")" || buf[index] === "!") {
+      } else if (buf[index] === "(" || buf[index] === ")") {
+	 const m = buf[index++];
+	 return { node: m, value: m };
+      } else if (buf[index] === "!" && buf[index+1] !== "=") {	 
 	 const m = buf[index++];
 	 return { node: m, value: m };
       } else {
@@ -41,6 +44,12 @@ function makeTokenizer(buf) {
 	 } else if (m = s.match(/^&&|^\|\|/)) {
 	    index += m[0].length;
 	    return { node: "binary", value: m[0] };
+	 } else if (m = s.match(/^==|^!==/)) {
+	    index += m[0].length;
+	    return { node: "binary", value: m[0] };
+	 } else if (m= s.match(/^[0-9]+/)) {
+	    index += m[0].length;
+	    return { node: "constant", value: m[0] };
 	 } else {
 	    index++;
 	    return { node: "error", value: s };
@@ -83,7 +92,7 @@ function parse(next) {
       case "eoi":
 	 throw SyntaxError("Unexpected eof");
       case "error":
-	 throw SyntaxError("Unexpected token: " + tok.value);
+	 throw SyntaxError("Unexpected token: " + "[" + tok.value + "]");
       default:
 	 throw SyntaxError("Illegal token: " + tok.node);
    }
@@ -149,6 +158,10 @@ function newBinary(op, lhs, rhs) {
 	 return (op === "||") ? lhs : rhs;
       } else if (lhs.value === "false") {
 	 return (op === "||") ? rhs : lhs;
+      } else {
+	 return {
+	    node: "binary", op, lhs, rhs
+	 }
       }
    } else if (rhs.node === "constant") {
       return newBinary(op, rhs, lhs);
