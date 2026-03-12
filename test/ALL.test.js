@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 21 07:42:24 2023                          */
-/*    Last change :  Fri Dec 19 09:50:09 2025 (serrano)                */
-/*    Copyright   :  2023-25 Manuel Serrano                            */
+/*    Last change :  Thu Mar 12 10:22:14 2026 (serrano)                */
+/*    Copyright   :  2023-26 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing driver.                                                  */
 /*=====================================================================*/
@@ -98,28 +98,36 @@ async function main(argv) {
    }
 
    let args = "";
+   let idxp = argv.indexOf("reincarnation+");
    let idx = argv.indexOf("reincarnation");
    
-   if (idx > 0) {
+   if (idxp >= 0) {
+      hiphop.ReactiveMachine.setConfiguration({ LoopUnroll: false, Reincarnation: true, ReincarnationTrap: true });
+      argv.splice(idx, 1);
+      args += " reincarnation";
+   }
+   
+   if (idx >= 0) {
       hiphop.ReactiveMachine.setConfiguration({ LoopUnroll: false, Reincarnation: true });
       argv.splice(idx, 1);
       args += " reincarnation";
    }
+   
    idx = argv.indexOf("old");
-   if (idx > 0) {
+   if (idx >= 0) {
       hiphop.ReactiveMachine.setConfiguration({ Compiler: "old", Reincarnation: true });
       argv.splice(idx, 1);
       args += " old";
    }
    idx = argv.indexOf("int");
-   if (idx > 0) {
+   if (idx >= 0) {
       hiphop.ReactiveMachine.setConfiguration({ Compiler: "int" });
       argv.splice(idx, 1);
       args += " int";
    }
 
    idx = argv.indexOf("--");
-   if (idx > 0) {
+   if (idx >= 0) {
       tests = argv.slice(idx + 1);
    }
 
