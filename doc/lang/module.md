@@ -89,11 +89,6 @@ of the `run` form.
 Signals that are declared after the first body statements are
 local signals and they cannot be bound in a `run` statement.
 
-#### module.precompile() ####
-
-Compiles a module. Compiling a module is optional and serves only the
-purpose of running preliminary checks such as signal names resolution.
-
 
 HipHop Interfaces
 -----------------
