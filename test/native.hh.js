@@ -1,6 +1,6 @@
 import * as hh from "@hop/hiphop";
 
-const mach = new hh.ReactiveMachine(hiphop module() {
+const prg =  hiphop module() {
    out S = 1;
 
    emit S(2);
@@ -12,21 +12,16 @@ const mach = new hh.ReactiveMachine(hiphop module() {
    yield;
    yield;
    yield;
-});
+}
 
 export const mach = new hh.ReactiveMachine(prg);
 mach.outbuf = "";
 
-mach.outbuf += JSON.stringify(mach.reactDebug());
-mach.outbuf += "\n";
-mach.outbuf += JSON.stringify(mach.reactDebug());
-mach.outbuf += "\n";
-mach.outbuf += JSON.stringify(mach.reactDebug());
-mach.outbuf += "\n";
-mach.outbuf += JSON.stringify(mach.reactDebug());
-mach.outbuf += "\n";
-mach.outbuf += JSON.stringify(mach.reactDebug());
-mach.outbuf += "\n";
+for (let i = 0; i < 5; i++) {
+   mach.react();
+   mach.outbuf += JSON.stringify(mach.signals.S);
+   mach.outbuf += "\n";
+}
 
 if (process.env.HIPHOP_TEST) {
    console.log(mach.name() + "...");

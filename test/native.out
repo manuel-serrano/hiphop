@@ -1,5 +1,5 @@
-{"signame":"S","nowval":1,"now":false,"pre":false}
-{"signame":"S","nowval":1,"now":false,"pre":false}
-{"signame":"S","nowval":1,"now":false,"pre":false}
-{"signame":"S","nowval":1,"now":false,"pre":false}
-{"signame":"S","nowval":1,"now":false,"pre":false}
+{"signame":"S","nowval":2,"preval":1,"now":true,"pre":false}
+{"signame":"S","nowval":3,"preval":2,"now":true,"pre":true}
+{"signame":"S","nowval":4,"preval":3,"now":true,"pre":true}
+{"signame":"S","nowval":4,"preval":3,"now":false,"pre":true}
+{"signame":"S","nowval":4,"preval":3,"now":false,"pre":false}
