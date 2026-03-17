@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Fri Oct 24 16:29:15 2025                          */
-/*    Last change :  Fri Feb 20 14:30:23 2026 (serrano)                */
+/*    Last change :  Tue Mar 17 08:22:56 2026 (serrano)                */
 /*    Copyright   :  2025-26 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with Hiphop                              */
@@ -39,11 +39,11 @@ const events = ${JSON.stringify(events)};
 const prg = hiphop ${jsonToHiphop(json, 0)}
 
 const opts = process.env.HIPHOP_TEST === "reincarnation+"
-  ? { name: "rnca+", loopUnroll: false, reincarnation: true, reincarnationTrap: true, native: false }
+  ? { name: "rnca+", reincarnation: true, reincarnationTrap: true, native: false }
   : process.env.HIPHOP_TEST === "reincarnation" 
-   ? { name: "rnca", loopUnroll: false, reincarnation: true, native: false }
+   ? { name: "rnca", reincarnation: true, reincarnationTrap: false, native: false }
    : (process.env.HIPHOP_TEST === "unroll"
-      ? { name: "unroll", loopUnroll: true, reincarnation: false, native: false }
+      ? { name: "unroll", reincarnation: false, native: false }
       : ${JSON.stringify(this.opts)});
 export const mach = new hh.ReactiveMachine(prg, opts);
 mach.outbuf = "";

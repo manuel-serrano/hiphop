@@ -35,8 +35,8 @@
    },
    "scripts": {
      "test": "HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js",
-     "testreincarnation": "HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js reincarnation",
-     "testreincarnation+": "HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js reincarnation+",
+     "testunroll": "HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js unroll",
+     "testunrolltrap": "HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js unrolltrap",
      "testold": "HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js old",
      "testint": "HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js int",
      "testrandom": "node testrandom/test.mjs",

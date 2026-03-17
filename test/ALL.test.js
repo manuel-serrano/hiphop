@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 21 07:42:24 2023                          */
-/*    Last change :  Thu Mar 12 10:22:14 2026 (serrano)                */
+/*    Last change :  Tue Mar 17 08:10:19 2026 (serrano)                */
 /*    Copyright   :  2023-26 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing driver.                                                  */
@@ -98,32 +98,38 @@ async function main(argv) {
    }
 
    let args = "";
-   let idxp = argv.indexOf("reincarnation+");
-   let idx = argv.indexOf("reincarnation");
+   let idxp = argv.indexOf("unroll");
+   let idx = argv.indexOf("unrolltrap");
    
    if (idxp >= 0) {
-      hiphop.ReactiveMachine.setConfiguration({ LoopUnroll: false, Reincarnation: true, ReincarnationTrap: true });
+      hiphop.ReactiveMachine.setConfiguration({ Reincarnation: false, ReincarnationTrap: false });
       argv.splice(idx, 1);
-      args += " reincarnation";
+      args += " unroll";
    }
    
    if (idx >= 0) {
-      hiphop.ReactiveMachine.setConfiguration({ LoopUnroll: false, Reincarnation: true });
+      hiphop.ReactiveMachine.setConfiguration({ Reincarnation: true, ReincarnationTrap: false });
       argv.splice(idx, 1);
-      args += " reincarnation";
+      args += " unrolltrap";
    }
    
    idx = argv.indexOf("old");
    if (idx >= 0) {
-      hiphop.ReactiveMachine.setConfiguration({ Compiler: "old", Reincarnation: true });
+      hiphop.ReactiveMachine.setConfiguration({ Compiler: "old", Reincarnation: false });
       argv.splice(idx, 1);
       args += " old";
    }
    idx = argv.indexOf("int");
    if (idx >= 0) {
-      hiphop.ReactiveMachine.setConfiguration({ Compiler: "int" });
+      hiphop.ReactiveMachine.setConfiguration({ Compiler: "int", Reincarnation: false });
       argv.splice(idx, 1);
       args += " int";
+   }
+   idx = argv.indexOf("new");
+   if (idx >= 0) {
+      hiphop.ReactiveMachine.setConfiguration({ Compiler: "new" });
+      argv.splice(idx, 1);
+      args += " new";
    }
 
    idx = argv.indexOf("--");

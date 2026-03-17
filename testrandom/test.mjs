@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Thu Mar 12 09:54:22 2026 (serrano)                */
+/*    Last change :  Tue Mar 17 07:42:02 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -24,25 +24,15 @@ import * as esterel from "./esterel.mjs";
 /*    prop ...                                                         */
 /*---------------------------------------------------------------------*/
 export const prop = new Prop(
-   { name: "default", ctor: (prg => new hh.ReactiveMachine(prg, { name: "default", native: undefined })), config: { maxLoop: 3, maxSize: 10 } },
-   { name: "nosweep", ctor: (prg => new hh.ReactiveMachine(prg, { name: "nosweep", native: false, sweep: 0 })), config: { maxLoop: 3, maxSize: 10 } },
-   { name: "nonative", ctor: (prg => new hh.ReactiveMachine(prg, { name: "nonative", native: false })), config: { maxLoop: 3, maxSize: 10 } },
+   { name: "default", ctor: (prg => new hh.ReactiveMachine(prg, { name: "default", native: undefined })) },
+   { name: "loopunroll", ctor: (prg => new hh.ReactiveMachine(prg, { name: "loopUnroll", native: undefined, reincarnation: false })) },
+   { name: "trapunroll", ctor: (prg => new hh.ReactiveMachine(prg, { name: "trapUnroll", native: undefined, reincarnationTrap: false })) },
+   { name: "int", ctor: (prg => new hh.ReactiveMachine(prg, { name: "int", native: undefined, compiler: "int", reincarnation: false })), config: { maxLoop: 3, maxSize: 10 } },
+   { name: "nosweep", ctor: (prg => new hh.ReactiveMachine(prg, { name: "nosweep", native: false, sweep: 0 })) },
+   { name: "nonative", ctor: (prg => new hh.ReactiveMachine(prg, { name: "nonative", native: false })) },
    { name: "racket", ctor: (prg => new racket.ReactiveMachine(prg, { name: "racket" })), config: { expr: 0, pre: 0 } },
    { name: "esterel", ctor: (prg => new esterel.ReactiveMachine(prg, { name: "esterel" })), config: { pre: 0 } },
-   { name: "redex", ctor: (prg => new racket.ReactiveMachine(prg, { name: "redex", "backend": "redex" })), config: { expr: 0, present: 1, pre: 0, stdlib: 0, maxSize: 5  } },
-   { name: "reincarnation", ctor: (prg => new hh.ReactiveMachine(prg, { name: "reincarnation", loopUnroll: false, reincarnation: true, native: false })) },
-   { name: "experimental", ctor: (prg => new hh.ReactiveMachine(prg, { name: "experimental", loopUnroll: false, reincarnation: true, native: false, experimental: true })) },
-   { name: "reincarnation+", ctor: (prg => new hh.ReactiveMachine(prg, { name: "reincarnation+", loopUnroll: false, reincarnation: true, reincarnationTrap: true, native: false })) },
-   { name: "int", ctor: (prg => new hh.ReactiveMachine(prg, { name: "int", compiler: "int" })) }
-/*    M("default") && (prg => new hh.ReactiveMachine(prg, { name: "default", native: "no", randomTesting: { maxLoop: 3 }))), */
-/*    M("forkorkill") && (prg => new hh.ReactiveMachine(prg, { name: "forkorkill", forkOrKill: true })), */
-/*    M("no-loopunroll") && (prg => new hh.ReactiveMachine(prg, { name: "no-loopunroll", loopUnroll: false })), */
-/*    M("native") && (prg => new hh.ReactiveMachine(prg, { name: "native", native: "try" })), */
-/*    M("forcenative") && (prg => new hh.ReactiveMachine(prg, { name: "native", native: "force" })), */
-/*    M("no-unreachable") && (prg => new hh.ReactiveMachine(prg, { name: "no-unreachable", unreachable: false })), */
-/*    M("colin") && (prg => new hh.ReactiveMachine(prg, { name: "colin", compiler: "int" })), */
-/*    M("colin-no-sweep") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: 0 })), */
-   /*    M("colin-sweep-wire") && (prg => new hh.ReactiveMachine(prg, { name: "colin-no-sweep", compiler: "int", sweep: -1 })), */
+   { name: "redex", ctor: (prg => new racket.ReactiveMachine(prg, { name: "redex", "backend": "redex" })), config: { expr: 0, present: 1, pre: 0, stdlib: 0, maxSize: 5  } }
 );
 
 /*---------------------------------------------------------------------*/
@@ -68,7 +58,7 @@ function shrinkBugInConf(conf, res, prop) {
 
 	       if (VERBOSE >= 1) {
 		  console.error("  |" + margin + " +-", r.status, r.reason);
-		  if (VERBOSE >= 4) {
+		  if (VERBOSE >= 2) {
 		     console.error(jsonToHiphop(confs[i].prog.tojson()));
 		  }
 	       }
@@ -77,7 +67,7 @@ function shrinkBugInConf(conf, res, prop) {
 		  return shrinker(shrink, confs[i], r, margin + " ");
 	       }
 	    } catch(e) {
-	       // an error occured, ignore that program
+	       // an error occurred, ignore that program
 	       if (VERBOSE >= 1) {
 		  console.error("shrinker E=", e);
 	       }

@@ -50,8 +50,7 @@ If `opts` is an object, its optional properties are:
   errors, defaults to `deep`.
   * `loopSafe`: (boolean), enable static detection of instantaneous loops;
   * `compiler`: (string), compiler selection (either "new" or "int");
-  * `loopUnroll`: (boolean), enable loop unrolling for net generation;
-  * `reincarnation`: (boolean), enable loop reincarnation instead of loop unrolling.
+  * `reincarnation`: (boolean), enable loop reincarnation instead of loop unrolling, default to `true'.
 
 Running HipHop Reactive Machines
 --------------------------------

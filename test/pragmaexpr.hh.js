@@ -28,9 +28,9 @@ const prg = hiphop module() {
 
 
 const opts = process.env.HIPHOP_TEST === "reincarnation"
-   ? { name: "rnca", loopUnroll: false, reincarnation: true, native: false }
+   ? { name: "rnca", reincarnation: true, native: false }
    : (process.env.HIPHOP_TEST === "unroll"
-      ? { name: "unroll", loopUnroll: true, reincarnation: false, native: false }
+      ? { name: "unroll", reincarnation: false, native: false }
       : { name: "default" });
 export const mach = new hh.ReactiveMachine(prg, opts);
 mach.outbuf = "";
