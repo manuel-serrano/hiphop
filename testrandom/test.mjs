@@ -3,13 +3,13 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Tue Mar 17 07:42:02 2026 (serrano)                */
+/*    Last change :  Tue Mar 17 14:49:54 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
 /*=====================================================================*/
 import { Prop } from "./prop.mjs";
-import { gen, gensym, genreactsigs } from "./gen.mjs";
+import { gen, gensym } from "./gen.mjs";
 import { shrinkA, shrinkB } from "./shrink.mjs";
 import { jsonToAst } from "./json.mjs";
 import { jsonToHiphop } from "./hiphop.mjs";
@@ -31,8 +31,8 @@ export const prop = new Prop(
    { name: "nosweep", ctor: (prg => new hh.ReactiveMachine(prg, { name: "nosweep", native: false, sweep: 0 })) },
    { name: "nonative", ctor: (prg => new hh.ReactiveMachine(prg, { name: "nonative", native: false })) },
    { name: "racket", ctor: (prg => new racket.ReactiveMachine(prg, { name: "racket" })), config: { expr: 0, pre: 0 } },
-   { name: "esterel", ctor: (prg => new esterel.ReactiveMachine(prg, { name: "esterel" })), config: { pre: 0 } },
-   { name: "redex", ctor: (prg => new racket.ReactiveMachine(prg, { name: "redex", "backend": "redex" })), config: { expr: 0, present: 1, pre: 0, stdlib: 0, maxSize: 5  } }
+   { name: "redex", ctor: (prg => new racket.ReactiveMachine(prg, { name: "redex", "backend": "redex" })), config: { expr: 0, present: 1, pre: 0, stdlib: 0, maxSize: 5  } },
+   { name: "esterel", ctor: (prg => new esterel.ReactiveMachine(prg, { name: "esterel" })), config: { pre: 0 } }
 );
 
 /*---------------------------------------------------------------------*/

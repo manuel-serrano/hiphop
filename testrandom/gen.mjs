@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Fri Feb 20 11:22:44 2026 (serrano)                */
+/*    Last change :  Wed Mar 18 13:15:29 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -157,8 +157,12 @@ function genDelay(conf, env) {
 /*---------------------------------------------------------------------*/
 /*    genEmitValue ...                                                 */
 /*---------------------------------------------------------------------*/
-function genEmitValue() {
-   return 1 + Math.floor(Math.random() * 100);
+function genEmitValue(conf) {
+   if (conf.expr === 0) {
+      return true;
+   } else {
+      return 1 + Math.floor(Math.random() * 100);
+   }
 }
 
 /*---------------------------------------------------------------------*/
@@ -225,7 +229,12 @@ function genLocal(weight) {
       const signals = env.signals.concat(names);
       const nenv = Object.assign({}, env);
       nenv.signals = nenv.signals.concat(signals);
-      names.forEach(name => attrs[name] = { signal: name, name, initValue: 10, accessibility: hh.INOUT, combine: (x, y) => (x + y) });
+
+      if (conf.pre === 0) {
+	 names.forEach(name => attrs[name] = { signal: name, name, initValue: false, accessibility: hh.INOUT, combine: (x, y) => (x || y) });
+      } else {
+	 names.forEach(name => attrs[name] = { signal: name, name, initValue: 10, accessibility: hh.INOUT, combine: (x, y) => (x + y) });
+      }
 
       return hh.LOCAL(attrs, genStmt(conf, nenv, size - 1, loop));
    };
@@ -412,7 +421,7 @@ function genEmit(weight) {
    const gen = (conf, env, size, loop) => {
       const i = Math.floor(Math.random() * env.signals.length);
       const sig = env.signals[i];
-      const val = genEmitValue();
+      const val = genEmitValue(conf);
       return hh.EMIT({signame: env.signals[i], apply: (conf, env, size, loop) => val});
    };
    return choice(weight, gen);
@@ -481,7 +490,7 @@ function gen(prop) {
    for (let i = 0; i < 10000; i++) {
       const l = Math.round(Math.random() * 4);
       const signals = Array.from({length: l}).map(c => gensym());
-      const events = Array.from({length: 8}).map(i => genreactsigs(signals))
+      const events = Array.from({length: 8}).map(i => genreactsigs(config, signals))
       const size = randomInRange(config.minSize, config.maxSize);
       const body = genStmt(config, {signals: signals, traps: []}, size, 0);
       const attrs = {};
@@ -527,7 +536,7 @@ function gen(prop) {
 /*---------------------------------------------------------------------*/
 /*    genreactsigs ...                                                 */
 /*---------------------------------------------------------------------*/
-function genreactsigs(signals) {
+function genreactsigs(conf, signals) {
    const l = Math.round(Math.random() * signals.length);
 
    if (l === 0) {
@@ -539,7 +548,7 @@ function genreactsigs(signals) {
 	 const j = Math.floor(Math.random() * (l - i));
 	 const s = sigs[j];
 	 sigs[j] = sigs[l - i - 1];
-	 obj[s] = genEmitValue();
+	 obj[s] = genEmitValue(conf);
       }
 
       return obj;
