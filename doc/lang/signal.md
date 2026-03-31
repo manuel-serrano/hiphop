@@ -36,10 +36,7 @@ A signal has four attributes that are **invariant** during a reaction:
 > happens. The attribute `preval` stores the value of the signal only at
 > the previous reaction.
 
-Variables are regular JavaScript variables. Assignments to variables
-should never be observed during a reaction. That is, a variable should never
-been read after having being assigned during a reaction. It is the 
-responsibility of the program that ensure that this property holds.
+HipHop Variables are regular JavaScript variables.
 
 
 Signal Declarations
@@ -147,13 +144,22 @@ signal accesses. It recognizes
 correspond to signal access. Notice that these detections are only
 executed within the syntactic context of an HipHop expression:
 
+> [!NOTE]
+> Signals are accessible as a property of the currently executing machine
+> but for convenience, inside JavaScript expressions, it is not required
+> to prefix them with the `this` keyword. Note however, that they are
+> not bound as concrete JavaScript variable so, alhouth an expression
+> such as `sig.now` or `sig.preval` would be legal, attempting to 
+> evaluate a mere reference such as `sig` would trigger a JavaScript
+> unbound variable error.
+
 > [!CAUTION]
 > Evaluating an expression that uses a signal value of an arbitrary
 > JavaScript expression cannot be evaluated until all the statuses and
 > values of all the signals involved are know. Evaluating an
 > expression that only involves signal statuses and logical "and", "or",
 > and "not" operation can be partially evaluated as soon as the status
-> of one of the signals is know. For example, the following two expression
+> of one of the signals is know. For example, the following two expressions
 > although equivalent will use two different evaluation rules:
 >    `if (sig.now || false) ...`
 > and
