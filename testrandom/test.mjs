@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Tue Mar 17 14:49:54 2026 (serrano)                */
+/*    Last change :  Wed Apr  8 10:54:16 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -19,12 +19,13 @@ import { ITERATIONS, SYSTEMS, VERBOSE } from "./config.mjs";
 import * as hh from "./hiphop.mjs";
 import * as racket from "./racket.mjs";
 import * as esterel from "./esterel.mjs";
+import * as rocq from "./rocq.mjs";
 
 /*---------------------------------------------------------------------*/
 /*    prop ...                                                         */
 /*---------------------------------------------------------------------*/
 export const prop = new Prop(
-   { name: "default", ctor: (prg => new hh.ReactiveMachine(prg, { name: "default", native: undefined })) },
+   { name: "hiphop", ctor: (prg => new hh.ReactiveMachine(prg, { name: "hiphop", native: undefined })) },
    { name: "loopunroll", ctor: (prg => new hh.ReactiveMachine(prg, { name: "loopUnroll", native: undefined, reincarnation: false })) },
    { name: "trapunroll", ctor: (prg => new hh.ReactiveMachine(prg, { name: "trapUnroll", native: undefined, reincarnationTrap: false })) },
    { name: "int", ctor: (prg => new hh.ReactiveMachine(prg, { name: "int", native: undefined, compiler: "int", reincarnation: false })), config: { maxLoop: 3, maxSize: 10 } },
@@ -32,7 +33,8 @@ export const prop = new Prop(
    { name: "nonative", ctor: (prg => new hh.ReactiveMachine(prg, { name: "nonative", native: false })) },
    { name: "racket", ctor: (prg => new racket.ReactiveMachine(prg, { name: "racket" })), config: { expr: 0, pre: 0 } },
    { name: "redex", ctor: (prg => new racket.ReactiveMachine(prg, { name: "redex", "backend": "redex" })), config: { expr: 0, present: 1, pre: 0, stdlib: 0, maxSize: 5  } },
-   { name: "esterel", ctor: (prg => new esterel.ReactiveMachine(prg, { name: "esterel" })), config: { pre: 0 } }
+   { name: "esterel", ctor: (prg => new esterel.ReactiveMachine(prg, { name: "esterel" })), config: { pre: 0 } },
+   { name: "rocq", ctor: (prg => new rocq.ReactiveMachine(prg, { name: "rocq" })), config: { pre: 0, expr: 0 } }
 );
 
 /*---------------------------------------------------------------------*/
