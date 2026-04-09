@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Thu Jan  8 13:38:43 2026 (serrano)                */
+/*    Last change :  Thu Apr  9 15:43:17 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -213,6 +213,12 @@ function signalsEqual(x, y) {
       }
    }
 
+   if (x === undefined) {
+      return y === undefined;
+   } else if (y === undefined) {
+      return false;
+   }
+   
    const kx = Object.keys(x);
    const ky = Object.keys(y);
 

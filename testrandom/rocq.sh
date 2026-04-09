@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  manuel serrano                                    */
 #*    Creation    :  Fri Nov 21 13:42:15 2025                          */
-#*    Last change :  Thu Apr  9 07:41:09 2026 (serrano)                */
+#*    Last change :  Thu Apr  9 14:13:08 2026 (serrano)                */
 #*    Copyright   :  2025-26 manuel serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Execute rocq programs                                            */
@@ -42,9 +42,15 @@ case $2 in
   constructive)
     opt="--semantics constructive"
     ;;
+  state)
+    opt="--semantics state"
+    ;;
+  micro)
+    opt="--semantics micro"
+    ;;
   *)
     echo "Illegal option \"$2\""
 esac
 
-$ROCQ_DUNE exec ./esterelcoq.exe -- $opt $tmp 2> err-$tmp && cat out-$tmp | sed '/s/"env"/"signals"/'
+$ROCQ_DUNE exec ./esterelcoq.exe -- $opt $tmp 2> err-$tmp && cat out-$tmp
 
