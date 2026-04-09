@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Apr  8 10:55:22 2026                          */
-/*    Last change :  Wed Apr  8 11:50:26 2026 (serrano)                */
+/*    Last change :  Thu Apr  9 07:40:30 2026 (serrano)                */
 /*    Copyright   :  2026 manuel serrano                               */
 /*    -------------------------------------------------------------    */
 /*    Testing HipHop programs with rocq/esterel                        */
@@ -67,8 +67,10 @@ class ReactiveMachine {
    }
 
    run(file) {
-      const child = spawnSync("sh", ["-c", `${require.resolve('./rocq.sh')} ${this.file}`]);
+      const semantics = this.opts?.semantics ?? "";
+      const child = spawnSync("sh", ["-c", `${require.resolve('./rocq.sh')} ${this.file} ${semantics}`]);
       const out = child.stdout.toString();
+      console.error("OUT=[" + out + "]");
       return JSON.parse(out);
    }
 

@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Wed Apr  8 10:54:16 2026 (serrano)                */
+/*    Last change :  Thu Apr  9 07:39:26 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -34,7 +34,9 @@ export const prop = new Prop(
    { name: "racket", ctor: (prg => new racket.ReactiveMachine(prg, { name: "racket" })), config: { expr: 0, pre: 0 } },
    { name: "redex", ctor: (prg => new racket.ReactiveMachine(prg, { name: "redex", "backend": "redex" })), config: { expr: 0, present: 1, pre: 0, stdlib: 0, maxSize: 5  } },
    { name: "esterel", ctor: (prg => new esterel.ReactiveMachine(prg, { name: "esterel" })), config: { pre: 0 } },
-   { name: "rocq", ctor: (prg => new rocq.ReactiveMachine(prg, { name: "rocq" })), config: { pre: 0, expr: 0 } }
+   { name: "rocq", ctor: (prg => new rocq.ReactiveMachine(prg, { name: "rocq" })), config: { pre: 0, expr: 0 } },
+   { name: "rocq-constructive", ctor: (prg => new rocq.ReactiveMachine(prg, { name: "rocq", semantics: "constructive" })), config: { pre: 0, expr: 0 } },
+   { name: "rocq-state", ctor: (prg => new rocq.ReactiveMachine(prg, { name: "rocq", semantics: "state" })), config: { pre: 0, expr: 0 } }
 );
 
 /*---------------------------------------------------------------------*/
