@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Thu Apr  9 08:34:36 2026 (serrano)                */
+/*    Last change :  Tue Apr 14 13:06:41 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -264,10 +264,10 @@ async function main(argv) {
 	 dumpBug(dir, bug);
       }
    } else if (existsSync(argv[2])) {
-      const dir = mkDirname(`out/${bug.machines.map(m => m.name).join("-")}`);
-      const jsonfile = dir + "/bug.hh.json";
       const conf = parseSrcFile(argv[2]);
       const bug = findBugInConf(conf, prop);
+      const dir = mkDirname(`out/${bug.machines.map(m => m.name()).join("-")}`);
+      const jsonfile = dir + "/bug.hh.json";
 
       mkdirSync(dir, { recursive: true });
       
@@ -282,7 +282,7 @@ async function main(argv) {
 	 console.log("");
       });
       
-      if (!existsSync(jsonfile)) {
+      if (!existsSync(jsonfile) && bug.shrink) {
 	 console.log("see ${jsonfile}");
 	 outJson(jsonfile, bug.shrink);
       }
