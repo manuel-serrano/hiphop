@@ -2,7 +2,7 @@
 
 import * as hh from "@hop/hiphop";
 
-const events = [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null];
+const events = [null,null,null,null,null];
 
 const prg = hiphop module() {
    signal g43194;
