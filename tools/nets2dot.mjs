@@ -4,8 +4,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Thu Dec 18 12:03:09 2025 (serrano)                */
-/*    Copyright   :  2023-25 manuel serrano                            */
+/*    Last change :  Tue Apr 21 12:42:38 2026 (serrano)                */
+/*    Copyright   :  2023-26 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
 /*    -------------------------------------------------------------    */
@@ -250,6 +250,7 @@ function main(argv) {
 
    let clusterNum = 0;
    let unpropagateColor = "#cccccc";
+   let maybeBottomColor = "#cccccc";
    
    function td({align, port, content}) {
       if (port !== undefined) {
@@ -293,7 +294,7 @@ function main(argv) {
 	 case "TEST-": return "#f37061";
 	 case "TRUE":
 	 case "FALSE": return "#3691bc";
-	 case "SIG": return net.accessibility === LOCAL ? "#32eee2" : "#ff002c";
+	 case "SIG": return net.accessibility === LOCAL ? "#32eee2" : "#acca08";
 	 default: return "gray85";
       }
    }
@@ -366,7 +367,7 @@ function main(argv) {
 	 console.log(`${margin}  label=<${table({cellspacing: 0, cellpadding: 0, bgcolor: bgcolor, rows: [tr([td({content: ctort})])]})}>;`);
 	 
 	 c.nets.forEach(net => {
-	    const gatecolor = net.$propagated ? "#cccccc" : unpropagateColor;
+	    const gatecolor = net.$propagated ? "#cccccc" : (net.$maybeBottom ? maybeBottomColor : unpropagateColor);
 	    const typ = netType(net);
 	    const id = net.lvl > 0 
                ? td({content: `${net.id} ${typ}${(net.$sweepable ? "" : "*")}`})
@@ -424,6 +425,7 @@ function main(argv) {
 
    if (info.nets.find(n => n.$propagated === true)) {
       unpropagateColor = "#ff3333";
+      maybeBottomColor = "#33ff33";
    }
    
    console.log(`digraph "${argv[2]}" {`);
