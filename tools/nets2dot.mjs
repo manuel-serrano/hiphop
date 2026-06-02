@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Tue Apr 21 12:42:38 2026 (serrano)                */
+/*    Last change :  Thu May 21 16:12:29 2026 (serrano)                */
 /*    Copyright   :  2023-26 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -367,7 +367,8 @@ function main(argv) {
 	 console.log(`${margin}  label=<${table({cellspacing: 0, cellpadding: 0, bgcolor: bgcolor, rows: [tr([td({content: ctort})])]})}>;`);
 	 
 	 c.nets.forEach(net => {
-	    const gatecolor = net.$propagated ? "#cccccc" : (net.$maybeBottom ? maybeBottomColor : unpropagateColor);
+	    
+	    const gatecolor = net.$inCycle ? "#ffa735" : (net.$propagated ? "#cccccc" : (net.$maybeBottom ? maybeBottomColor : unpropagateColor));
 	    const typ = netType(net);
 	    const id = net.lvl > 0 
                ? td({content: `${net.id} ${typ}${(net.$sweepable ? "" : "*")}`})
