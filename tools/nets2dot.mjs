@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Thu May 21 16:12:29 2026 (serrano)                */
+/*    Last change :  Mon Jun 29 09:09:14 2026 (serrano)                */
 /*    Copyright   :  2023-26 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a DOT file from a netlist.                              */
@@ -250,7 +250,7 @@ function main(argv) {
 
    let clusterNum = 0;
    let unpropagateColor = "#cccccc";
-   let maybeBottomColor = "#cccccc";
+   let maybeBottomColor = "#ff987e";
    
    function td({align, port, content}) {
       if (port !== undefined) {
