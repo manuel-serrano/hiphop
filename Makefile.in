@@ -4,7 +4,7 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  Manuel Serrano                                    */
 #*    Creation    :  Fri Jan 20 14:35:57 2006                          */
-#*    Last change :  Tue Mar 17 08:34:50 2026 (serrano)                */
+#*    Last change :  Thu Jul 16 08:27:12 2026 (serrano)                */
 #*    Copyright   :  2006-26 Manuel Serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Generic Makefile to build Hop weblets.                           */
@@ -44,7 +44,7 @@ HHC=bin/hhc.sh --js-require-hop
 LIB=ast.js error.js hiphop.js lang.js \
  comp-common.js comp-new.js comp-int.js comp-utils.js \
  machine.js net.js queue.js signal.js sweep.js causality.js \
- batch.js debugger-common.js debugger.js debugger-server.js debug.js
+ batch.js debugger-common.js debugger.js debugger-server.js debug.js native.js
 LIBMJS=hiphop-loader.mjs
 
 PREPROCESSOR=astutils.js parser.js hhaccess.js
@@ -87,6 +87,7 @@ npm-hiphop:
 	mkdir -p npm/$(HIPHOPNPMDIR)/lib
 	mkdir -p npm/$(HIPHOPNPMDIR)/bin
 	mkdir -p npm/$(HIPHOPNPMDIR)/etc
+	mkdir -p npm/$(HIPHOPNPMDIR)/doc
 	mkdir -p npm/$(HIPHOPNPMDIR)/modules
 	cp package.json npm/$(HIPHOPNPMDIR)
 	cp -r lib npm/$(HIPHOPNPMDIR)
@@ -98,6 +99,7 @@ npm-hiphop:
 	cp -r testrandom npm/$(HIPHOPNPMDIR)
 	cp -r etc/configure.js npm/$(HIPHOPNPMDIR)/etc
 	cp -r etc/buildmodules.js npm/$(HIPHOPNPMDIR)/etc
+	cp -r doc/circuit npm/$(HIPHOPNPMDIR)/doc
 	echo "#!/usr/bin/env node" > npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
 	echo "import * as hhc from \"../lib/hhc.js\"" >> npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
 	chmod a+rx npm/$(HIPHOPNPMDIR)/bin/hhc.mjs
