@@ -44,9 +44,9 @@ function hhaccess(n, iscnt, hhname, accessors) {
 
    if (isDelay(n)) {
       const axs = collectAxs(n, []);
-      const signames = accessorsSigname(axs);
+      //const signames = accessorsSigname(axs);
 
-      return { expr: n.toDelay(), accessors: axs, signames, delay: true };
+      return { expr: n.toDelay(), accessors: axs, signames: [], delay: true };
    } else {
       return hhaccessExpression(n, iscnt, hhname, accessors);
    }
@@ -489,8 +489,10 @@ ast.J2SAccess.prototype.isDelay = function() {
    const field = this.field;
    const fieldname = field instanceof ast.J2SString ? field.val : "";
 
-   return ((obj instanceof ast.J2SUnresolvedRef)
-      || (obj instanceof ast.J2SAccess && obj.obj instanceof J2SThis))
+   return (((obj instanceof ast.J2SUnresolvedRef)
+      || (obj instanceof ast.J2SAccess
+	 && (obj.obj instanceof ast.J2SUnresolvedRef)
+	 && (obj.obj.id === "this")))
       && (fieldname === "now" || fieldname === "pre"));
 }
 
@@ -524,9 +526,13 @@ ast.J2SAccess.prototype.toDelay = function() {
    const clazz = new ast.J2SAccess({loc, obj: hh, field: new ast.J2SString({loc, val: "DelaySig"})});
    const obj = this.obj;
    const field = this.field;
-   const sym = new ast.J2SString({loc: obj.loc, val: obj.id});
 
-   return new ast.J2SNew({loc, clazz, args: list.list(sym, field)});
+   if (obj instanceof ast.J2SUnresolvedRef) {
+      const sym = new ast.J2SString({loc: obj.loc, val: obj.id});
+      return new ast.J2SNew({loc, clazz, args: list.list(sym, field)});
+   } else {
+      return new ast.J2SNew({loc, clazz, args: list.list(obj.field, field)});
+   } 
 }
 
 ast.J2SBinary.prototype.toDelay = function() {

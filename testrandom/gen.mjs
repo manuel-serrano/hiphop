@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 17:28:51 2025                          */
-/*    Last change :  Wed Mar 18 13:15:29 2026 (serrano)                */
+/*    Last change :  Tue Apr 21 11:32:24 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop program random generator                                  */
@@ -36,7 +36,7 @@ function gensym(base = "g") {
 /*    will return "a" with probability 1/4 and "b"                     */
 /*    with probability 3/4.                                            */
 /*---------------------------------------------------------------------*/
-function choose(conf, env, size, loop, ...entries) {
+function choose(conf, env, size, loop, signals, ...entries) {
    let rnd = Math.random();
    let sum = 0;
    entries.forEach(e => sum += e[0]);
@@ -45,27 +45,13 @@ function choose(conf, env, size, loop, ...entries) {
       const w = entries[i][0] / sum;
 
       if (rnd < w) {
-	 return entries[i][1](conf, env, size, loop);
+	 return entries[i][1](conf, env, size, loop, signals);
       } else {
 	 rnd -= w;
       }
    }
    throw new Error("should not be here...");
 }
-
-function testChoose() {
-   const entries = [0, 0, 0, 0];
-   
-   for (let i = 10000; i >= 0; i--) {
-      choose(undefined, undefined, undefined, [3,() => entries[0]++],
-	     [1,() => entries[1]++],
-	     [1,() => entries[2]++],
-	     [1,() => entries[3]++]);
-   }
-   console.log(entries);
-}
-
-// testChoose();
 
 /*---------------------------------------------------------------------*/
 /*    randomInRange ...                                                */
@@ -176,10 +162,12 @@ function choice(weight, gen) {
 /*    genSequence ...                                                  */
 /*---------------------------------------------------------------------*/
 function genSequence(weight) {
-   const gen = (conf, env, size, loop) => {
+   const gen = (conf, env, size, loop, signals) => {
       const n = randomInRange(0, size - 1);
       return hh.SEQUENCE(
-	 {}, genStmt(conf, env, size - n - 1, loop), genStmt(conf, env, n, loop))
+	 {},
+	 genStmt(conf, env, size - n - 1, loop, signals),
+	 genStmt(conf, env, n, loop, signals))
    };
    return choice(weight, gen);
 }
@@ -188,16 +176,16 @@ function genSequence(weight) {
 /*    genFork ...                                                      */
 /*---------------------------------------------------------------------*/
 function genFork(weight) {
-   const gen = (conf, env, size, loop) => {
+   const gen = (conf, env, size, loop, signals) => {
       const l = Math.round(Math.random() * 5);
       let children = [];
       for (let i = 0; i < l - 1; i++) {
 	 const n = randomInRange(0, size - 1);
-	 children[ i ] = genStmt(conf, env, size - n - 1, loop);
+	 children[ i ] = genStmt(conf, env, size - n - 1, loop, signals);
 	 size -= n;
       }
       if (l > 0) {
-	 children[ l - 1 ] = genStmt(conf, env, size, loop);
+	 children[ l - 1 ] = genStmt(conf, env, size, loop, signals);
       }
       return hh.FORK({}, ...children);
    }
@@ -208,11 +196,11 @@ function genFork(weight) {
 /*    genLoop ...                                                      */
 /*---------------------------------------------------------------------*/
 function genLoop(weight) {
-   const gen = (conf, env, size, loop) => {
+   const gen = (conf, env, size, loop, signals) => {
       if (loop >= conf.maxLoop) {
-	 return genStmt(conf, env, size, loop);
+	 return genStmt(conf, env, size, loop, signals);
       } else {
-	 return hh.LOOP({}, genStmt(conf, env, size - 1, loop + 1));
+	 return hh.LOOP({}, genStmt(conf, env, size - 1, loop + 1, signals));
       }
    };
    return choice(weight, gen);
@@ -222,21 +210,25 @@ function genLoop(weight) {
 /*    genLocal ...                                                     */
 /*---------------------------------------------------------------------*/
 function genLocal(weight) {
-   const gen = (conf, env, size, loop) => {
-      const l = Math.round(1 + Math.random() * 4);
-      const names = Array.from({length: l}).map(c => gensym());
-      const attrs = {};
-      const signals = env.signals.concat(names);
-      const nenv = Object.assign({}, env);
-      nenv.signals = nenv.signals.concat(signals);
-
-      if (conf.pre === 0) {
-	 names.forEach(name => attrs[name] = { signal: name, name, initValue: false, accessibility: hh.INOUT, combine: (x, y) => (x || y) });
+   const gen = (conf, env, size, loop, signals) => {
+      if (signals >= conf.maxSignals) {
+	 return genStmt(conf, env, size, loop, signals);
       } else {
-	 names.forEach(name => attrs[name] = { signal: name, name, initValue: 10, accessibility: hh.INOUT, combine: (x, y) => (x + y) });
-      }
+	 const l = Math.min(conf.maxSignals - signals, Math.round(1 + Math.random() * 4));
+	 const names = Array.from({length: l}).map(c => gensym());
+	 const attrs = {};
+	 const sigs = env.signals.concat(names);
+	 const nenv = Object.assign({}, env);
+	 nenv.signals = nenv.signals.concat(sigs);
 
-      return hh.LOCAL(attrs, genStmt(conf, nenv, size - 1, loop));
+	 if (conf.pre === 0) {
+	    names.forEach(name => attrs[name] = { signal: name, name, initValue: false, accessibility: hh.INOUT, combine: (x, y) => (x || y) });
+	 } else {
+	    names.forEach(name => attrs[name] = { signal: name, name, initValue: 10, accessibility: hh.INOUT, combine: (x, y) => (x + y) });
+	 }
+
+	 return hh.LOCAL(attrs, genStmt(conf, nenv, size - 1, loop, signals + l));
+      }
    };
    return choice(weight, gen);
 }
@@ -245,15 +237,15 @@ function genLocal(weight) {
 /*    genIf ...                                                        */
 /*---------------------------------------------------------------------*/
 function genIf(weight) {
-   const gen = (conf, env, size, loop) => {
+   const gen = (conf, env, size, loop, signals) => {
       if (!conf.expr) {
-	 return genStmt(conf, env, size, loop);
+	 return genStmt(conf, env, size, loop, signals);
       } else {
 	 const expr = genExpr(conf, env);
 	 return hh.IF(
 	    {apply: expr},
-	    genStmt(conf, env, size - 1, loop),
-	    genStmt(conf, env, size - 1, loop));
+	    genStmt(conf, env, size - 1, loop, signals),
+	    genStmt(conf, env, size - 1, loop, signals));
       }
    };
    return choice(weight, gen);
@@ -263,12 +255,12 @@ function genIf(weight) {
 /*    genPresent ...                                                   */
 /*---------------------------------------------------------------------*/
 function genPresent(weight) {
-   const gen = (conf, env, size, loop) => {
+   const gen = (conf, env, size, loop, signals) => {
       const expr = genDelay(conf, env);
       return hh.IF(
 	 {apply: expr},
-	 genStmt(conf, env, size - 1, loop),
-	 genStmt(conf, env, size - 1, loop));
+	 genStmt(conf, env, size - 1, loop, signals),
+	 genStmt(conf, env, size - 1, loop, signals));
    };
    return choice(weight, gen);
 }
@@ -277,11 +269,11 @@ function genPresent(weight) {
 /*    genTrap ...                                                      */
 /*---------------------------------------------------------------------*/
 function genTrap(weight) {
-   const gen = (conf, env, size, loop) => {
+   const gen = (conf, env, size, loop, signals) => {
       const trap = gensym("trap");
       const nenv = Object.assign({}, env);
       nenv.traps = [trap, ...nenv.traps];
-      return hh.TRAP({[trap]: trap}, genStmt(conf, nenv, size - 1, loop));
+      return hh.TRAP({[trap]: trap}, genStmt(conf, nenv, size - 1, loop, signals));
    };
    return choice(weight, gen);
 }
@@ -290,11 +282,11 @@ function genTrap(weight) {
 /*    genSuspend ...                                                   */
 /*---------------------------------------------------------------------*/
 function genSuspend(weight) {
-   const gen = (conf, env, size, loop) => {
+   const gen = (conf, env, size, loop, signals) => {
       if (env.signals.length > 0) {
-	 return hh.SUSPEND({apply: genDelay(conf, env)}, genStmt(conf, env, size - 1, loop));
+	 return hh.SUSPEND({apply: genDelay(conf, env)}, genStmt(conf, env, size - 1, loop, signals));
       } else {
-	 return genStmt(conf, env, size, loop);
+	 return genStmt(conf, env, size, loop, signals);
       }
    };
    return choice(weight, gen);
@@ -304,11 +296,11 @@ function genSuspend(weight) {
 /*    genAbort ...                                                     */
 /*---------------------------------------------------------------------*/
 function genAbort(weight) {
-   const gen = (conf, env, size, loop) => {
+   const gen = (conf, env, size, loop, signals) => {
       if (env.signals.length > 0 && conf.stdlib) {
-	 return hh.ABORT({apply: genDelay(conf, env)}, genStmt(conf, env, size - 1, loop));
+	 return hh.ABORT({apply: genDelay(conf, env)}, genStmt(conf, env, size - 1, loop, signals));
       } else {
-	 return genStmt(conf, env, size, loop);
+	 return genStmt(conf, env, size, loop, signals);
       }
    };
    return choice(weight, gen);
@@ -318,13 +310,13 @@ function genAbort(weight) {
 /*    genEvery ...                                                     */
 /*---------------------------------------------------------------------*/
 function genEvery(weight) {
-   const gen = (conf, env, size, loop) => {
+   const gen = (conf, env, size, loop, signals) => {
       if (loop >= conf.maxLoop || !conf.stdlib) {
-	 return genStmt(conf, env, size, loop);
+	 return genStmt(conf, env, size, loop, signals);
       } else if (env.signals.length > 0) {
-	 return hh.EVERY({apply: genDelay(conf, env)}, genStmt(conf, env, size - 1, loop + 1));
+	 return hh.EVERY({apply: genDelay(conf, env)}, genStmt(conf, env, size - 1, loop + 1, signals));
       } else {
-	 return genStmt(conf, env, size, loop);
+	 return genStmt(conf, env, size, loop, signals);
       }
    };
    return choice(weight, gen);
@@ -334,13 +326,13 @@ function genEvery(weight) {
 /*    genLoopeach ...                                                  */
 /*---------------------------------------------------------------------*/
 function genLoopeach(weight) {
-   const gen = (conf, env, size, loop) => {
+   const gen = (conf, env, size, loop, signals) => {
       if (loop >= conf.maxLoop || !conf.stdlib) {
-	 return genStmt(conf, env, size, loop);
+	 return genStmt(conf, env, size, loop, signals);
       } else if (env.signals.length > 0) {
-	 return hh.LOOPEACH({apply: genDelay(conf, env)}, genStmt(conf, env, size - 1, loop + 1));
+	 return hh.LOOPEACH({apply: genDelay(conf, env)}, genStmt(conf, env, size - 1, loop + 1, signals));
       } else {
-	 return genStmt(conf, env, size, loop);
+	 return genStmt(conf, env, size, loop, signals);
       }
    }
    return choice(weight, gen);
@@ -350,11 +342,11 @@ function genLoopeach(weight) {
 /*    genAwait ...                                                     */
 /*---------------------------------------------------------------------*/
 function genAwait(weight) {
-   const gen = (conf, env, size, loop) => {
+   const gen = (conf, env, size, loop, signals) => {
       if (env.signals.length > 0 && conf.stdlib) {
 	 return hh.AWAIT({apply: genDelay(conf, env)});
       } else {
-	 return genStmt(conf, env, size, loop);
+	 return genStmt(conf, env, size, loop, signals);
       }
    };
    return choice(weight, gen);
@@ -364,7 +356,7 @@ function genAwait(weight) {
 /*    genNothing ...                                                   */
 /*---------------------------------------------------------------------*/
 function genNothing(weight) {
-   const gen = (conf, env, size, loop) => hh.NOTHING({});
+   const gen = (conf, env, size, loop, signals) => hh.NOTHING({});
    return choice(weight, gen);
 }
 
@@ -372,7 +364,7 @@ function genNothing(weight) {
 /*    genPause ...                                                     */
 /*---------------------------------------------------------------------*/
 function genPause(weight) {
-   const gen = (conf, env, size, loop) => hh.PAUSE({});
+   const gen = (conf, env, size, loop, signals) => hh.PAUSE({});
    return choice(weight, gen);
 }
 
@@ -380,7 +372,7 @@ function genPause(weight) {
 /*    genAtom ...                                                      */
 /*---------------------------------------------------------------------*/
 function genAtom(weight) {
-   const gen = (conf, env, size, loop) => {
+   const gen = (conf, env, size, loop, signals) => {
       const expr = genExpr(conf, env);
       return hh.ATOM({apply: expr});
    };
@@ -391,11 +383,11 @@ function genAtom(weight) {
 /*    genHalt ...                                                      */
 /*---------------------------------------------------------------------*/
 function genHalt(weight) {
-   const gen = (conf, env, size, loop) => {
+   const gen = (conf, env, size, loop, signals) => {
       if (conf.stdlib) {
 	 return hh.HALT({});
       } else {
-	 return genStmt(conf, env, size, loop);
+	 return genStmt(conf, env, size, loop, signals);
       }
    }
 	 
@@ -406,7 +398,7 @@ function genHalt(weight) {
 /*    genExit ...                                                      */
 /*---------------------------------------------------------------------*/
 function genExit(weight) {
-   const gen = (conf, env, size, loop) => {
+   const gen = (conf, env, size, loop, signals) => {
       const i = Math.floor(Math.random() * env.traps.length);
       const attr = { [env.traps[i]]: env.traps[i] };
       return hh.EXIT(attr);
@@ -418,11 +410,11 @@ function genExit(weight) {
 /*    genEmit ...                                                      */
 /*---------------------------------------------------------------------*/
 function genEmit(weight) {
-   const gen = (conf, env, size, loop) => {
+   const gen = (conf, env, size, loop, signals) => {
       const i = Math.floor(Math.random() * env.signals.length);
       const sig = env.signals[i];
       const val = genEmitValue(conf);
-      return hh.EMIT({signame: env.signals[i], apply: (conf, env, size, loop) => val});
+      return hh.EMIT({signame: env.signals[i], apply: (conf, env, size, loop, signals) => val});
    };
    return choice(weight, gen);
 }
@@ -434,9 +426,9 @@ function genEmit(weight) {
 /*    that might refer to the variables in `env`                       */
 /*    (at the moment, never generates references nor binders, alas)    */
 /*---------------------------------------------------------------------*/
-function genStmt(conf, env, size, loop) {
+function genStmt(conf, env, size, loop, signals) {
    if (size !== 0) {
-      return choose(conf, env, size, loop,
+      return choose(conf, env, size, loop, signals,
 	 genSequence(100),
 	 genFork(50),
 	 genLoop(10),
@@ -448,19 +440,19 @@ function genStmt(conf, env, size, loop) {
 	 genEvery(30),
 	 genLoopeach(30));
    } else if (env.signals.length === 0 && env.traps.length === 0) {
-      return choose(conf, env, size, loop,
+      return choose(conf, env, size, loop, signals,
          genNothing(10),
 	 genPause(20),
 	 genAtom(10));
    } else if (env.signals.length === 0) {
-      return choose(conf, env, size, loop,
+      return choose(conf, env, size, loop, signals,
 	 genNothing(3),
 	 genPause(10),
 	 genAtom(6),
 	 genExit(1),
 	 genHalt(1));
    } else if (env.traps.length === 0) {
-      return choose(conf, env, size, loop,
+      return choose(conf, env, size, loop,signals,
 	 genNothing(3),
 	 genPause(10),
 	 genAtom(5),
@@ -468,7 +460,7 @@ function genStmt(conf, env, size, loop) {
          genAwait(1),
 	 genHalt(1));
    } else {
-      return choose(conf, env, size, loop,
+      return choose(conf, env, size, loop,signals,
 	 genNothing(5),
 	 genPause(10),
 	 genAtom(4),
@@ -492,7 +484,7 @@ function gen(prop) {
       const signals = Array.from({length: l}).map(c => gensym());
       const events = Array.from({length: 8}).map(i => genreactsigs(config, signals))
       const size = randomInRange(config.minSize, config.maxSize);
-      const body = genStmt(config, {signals: signals, traps: []}, size, 0);
+      const body = genStmt(config, {signals: signals, traps: []}, size, 0, 0);
       const attrs = {};
       signals.forEach(name => attrs[name] = { signal: name, name, initValue: 10, accessibility: hh.INOUT, combine: (x, y) => (x + y) });
 

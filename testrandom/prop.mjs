@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Thu Apr  9 15:43:17 2026 (serrano)                */
+/*    Last change :  Tue Apr 21 11:44:40 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -25,6 +25,7 @@ class Prop {
       minSize: config.MINSIZE,
       maxSize: config.MAXSIZE,
       maxLoop: config.MAXLOOP,
+      maxSignals: config.MAXSIGNALS,
       maxTry: config.MAXTRY,
       expr: 1,
       pre: 1,
