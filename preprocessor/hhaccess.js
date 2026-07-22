@@ -3,8 +3,8 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Wed Oct 25 10:36:55 2023                          */
-/*    Last change :  Tue Dec  2 16:03:08 2025 (serrano)                */
-/*    Copyright   :  2023-25 manuel serrano                            */
+/*    Last change :  Wed Apr 15 16:04:15 2026 (serrano)                */
+/*    Copyright   :  2023-26 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    This is the version used by the nodejs port (see _hhaccess.hop)  */
 /*    -------------------------------------------------------------    */
@@ -490,6 +490,7 @@ ast.J2SAccess.prototype.isDelay = function() {
    const fieldname = field instanceof ast.J2SString ? field.val : "";
 
    return ((obj instanceof ast.J2SUnresolvedRef)
+      || (obj instanceof ast.J2SAccess && obj.obj instanceof J2SThis))
       && (fieldname === "now" || fieldname === "pre"));
 }
 
