@@ -33,3 +33,8 @@ try {
    mach.outbuf += "error static.\n";
 }
    
+if (process.env.HIPHOP_TEST) {
+   console.log(mach.name() + "...");
+   console.log(mach.outbuf);
+}
+
