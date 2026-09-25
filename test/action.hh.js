@@ -59,3 +59,7 @@ mach.react({x: 1});
 mach.react({reset: 1});
 mach.react();
 
+if (process.env.HIPHOP_TEST) {
+   console.log(mach.name() + "...");
+   console.log(mach.outbuf);
+}
