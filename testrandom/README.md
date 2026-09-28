@@ -8,7 +8,7 @@ To run the randon tester:
 ```
 cd hiphop
 npm install
-npm run --silent test_random
+npm run --silent test.random
 ```
 
 The content of this directory is:
