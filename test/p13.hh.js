@@ -31,3 +31,8 @@ function react(sigs) {
 react({I: 1});
 react({I: 1, O2: 1});
 react({O1: 2});
+
+if (process.env.HIPHOP_TEST) {
+   console.log(mach.name() + "...");
+   console.log(mach.outbuf);
+}
