@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Fri Sep 25 14:08:41 2026 (serrano)                */
+/*    Last change :  Wed Sep 30 13:23:12 2026 (serrano)                */
 /*    Copyright   :  2023-26 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a TEXT file from a netlist.                             */
@@ -37,7 +37,7 @@ const TYPES = {
    "FALSE": "  0",
    "TRUE": "  1",
    "SIG": "SIG",
-   "SIGACTION": "EMT",
+   "EMIT": "EMT",
    "TEST": "TST",
    "WIRE": "WIR"
 }
@@ -98,7 +98,7 @@ function expr(n) {
 	    + n.fanin.map(f => f.polarity ? f.id : "!" + f.id).join(" v ");
       case "SIG":
       case "ACTION": 
-      case "SIGACTION": 
+      case "EMIT": 
       case "TEST":
       case "AND":
 	 return "="

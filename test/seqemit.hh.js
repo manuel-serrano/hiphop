@@ -15,21 +15,20 @@ const prg = hiphop module() {
 
 try {
    mach = new hh.ReactiveMachine(prg, { name: "seqemit", verbose: -1 });
-   msg = "";
+   msg = mach.name() + "...\n";
 
    msg += JSON.stringify(mach.react());
 } catch (e) {
    if (e.message === "hiphop: causality error") {
       msg += "Causality error.";
    } else {
-      msg = e.message;
+      msg += e.message;
    }
 }
 
 mach.outbuf = msg + "\n";
 
 if (process.env.HIPHOP_TEST) {
-   console.log(mach.name() + "...");
    console.log(msg);
 }
 
