@@ -23,7 +23,7 @@ hiphop module prg() {
    }
 }
 
-export const mach = new hh.ReactiveMachine(prg, "error2");
+export const mach = new hh.ReactiveMachine(prg, { name: "atom-dep-par" });
 
 mach.outbuf = "";
 mach.debug_emitted_func = val => mach.outbuf += "[ '" + val + "' ]\n";
@@ -33,3 +33,9 @@ mach.react()
 mach.react()
 mach.react()
 mach.react()
+
+if (process.env.HIPHOP_TEST) {
+   console.log(mach.name() + "...");
+   console.log(mach.outbuf);
+}
+

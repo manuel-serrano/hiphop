@@ -25,7 +25,7 @@ export const mach = new hh.ReactiveMachine(prg, opts);
 mach.outbuf = "";
 events.forEach((e, i) => mach.react(e));
 
-if (process.env.HIPHOP_TEST_LOOP) {
+if (process.env.HIPHOP_TEST) {
    console.log(mach.outbuf);
 }
 

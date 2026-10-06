@@ -13,10 +13,15 @@ hiphop module prg() {
    }
 }
 
-export const mach = new hh.ReactiveMachine(prg, "atom");
+export const mach = new hh.ReactiveMachine(prg, { name: "atom-exprs-nowval" });
 mach.outbuf = "";
 
 mach.outbuf += "---\n";
 mach.react();
 mach.outbuf += "---\n";
 mach.react();
+
+if (process.env.HIPHOP_TEST) {
+   console.log(mach.name() + "...");
+   console.log(mach.outbuf);
+}
