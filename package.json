@@ -38,6 +38,7 @@
      "test.unroll": "HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js unroll",
      "test.unrolltrap": "HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js unrolltrap",
      "test.uncycle": "HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js uncycle",
+     "test.nonative": "HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js nonative",
      "test.old": "HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js old",
      "test.int": "HIPHOP_DEBUG=0 HIPHOP_RESOLVE=\".\" NODE_OPTIONS=\"--enable-source-maps --no-warnings --loader ./lib/hiphop-loader.mjs\" mocha --exit test/**/*.test.js int",
      "test.random": "node testrandom/test.mjs",

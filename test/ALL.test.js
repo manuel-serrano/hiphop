@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 21 07:42:24 2023                          */
-/*    Last change :  Wed Sep 23 10:01:52 2026 (serrano)                */
+/*    Last change :  Mon Oct  5 14:23:20 2026 (serrano)                */
 /*    Copyright   :  2023-26 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing driver.                                                  */
@@ -101,6 +101,7 @@ async function main(argv) {
    let idxp = argv.indexOf("unroll");
    let idx = argv.indexOf("unrolltrap");
    let idxc = argv.indexOf("uncycle");
+   let idxn = argv.indexOf("nonative");
    
    if (idxp >= 0) {
       hiphop.ReactiveMachine.setConfiguration({ Reincarnation: false, ReincarnationTrap: false });
@@ -112,6 +113,12 @@ async function main(argv) {
       hiphop.ReactiveMachine.setConfiguration({ Uncycle: true });
       argv.splice(idx, 1);
       args += " uncycle";
+   }
+   
+   if (idxn >= 0) {
+      hiphop.ReactiveMachine.setConfiguration({ Native: false });
+      argv.splice(idx, 1);
+      args += " nonative";
    }
    
    if (idx >= 0) {

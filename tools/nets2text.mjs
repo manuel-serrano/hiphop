@@ -4,7 +4,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  manuel serrano                                    */
 /*    Creation    :  Thu Nov 30 07:21:01 2023                          */
-/*    Last change :  Wed Sep 30 13:23:12 2026 (serrano)                */
+/*    Last change :  Mon Oct  5 13:39:27 2026 (serrano)                */
 /*    Copyright   :  2023-26 manuel serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Generate a TEXT file from a netlist.                             */
@@ -116,7 +116,7 @@ function expr(n) {
 function main(argv) {
    const info = JSON.parse(readFileSync(argv[2]));
    info.nets.sort((x, y) => x.id < y.id).forEach(n => {
-      console.log(`[${TYPES[n.type] || n.type}] ${padding(n.$ast.ctor + "@" + n.$ast.loc.pos, 12, false)} | ${padding(n.$name, 40)} | ${num(n.id, 5)}${expr(n)} => {${n.fanout.map(f => f.id + "").join(", ")}} <= {${n.fanin.map(f => f.id + "").join(", ")}}`);
+      console.log(`${n.$maybeBottom ? "*" : " "}[${TYPES[n.type] || n.type}] ${padding(n.$ast.ctor + "@" + n.$ast.loc.pos, 12, false)} | ${padding(n.$name, 40)} | ${num(n.id, 5)}${expr(n)} => {${n.fanout.map(f => f.id + "").join(", ")}} <= {${n.fanin.map(f => f.id + "").join(", ")}}`);
    });
 }
 

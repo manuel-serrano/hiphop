@@ -1,5 +1,17 @@
 import * as hh from "@hop/hiphop";
 
+let reactLogBuffer = [];
+
+function reactLog(msg) {
+   reactLogBuffer.push(msg);
+}
+
+function getReactLog() {
+   const log = reactLogBuffer.sort().join("");
+   reactLogBuffer = [];
+   return log;
+}
+   
 const prg = hiphop module() {
    in x, reset;
    out y;
@@ -16,7 +28,7 @@ const prg = hiphop module() {
 	 }
       } par {
 	 if (x1.now) {
-	    pragma { mach.outbuf += ("hello\n"); }
+	    reactLog("A: hello\n");
 	    emit y1();
 	 }
       } par {
@@ -29,7 +41,7 @@ const prg = hiphop module() {
 	 }
       } par {
 	 if (x2.now) {
-	    pragma { mach.outbuf += ("goodbye\n"); }
+	    reactLog("B: goodbye\n");
 	    emit y2();
 	 }
       } par {
@@ -53,11 +65,11 @@ mach.outbuf = "";
 mach.addEventListener("y", v => mach.outbuf += ("got y " + v.nowval + "\n" ));
 
 
-mach.react();
-mach.react({reset: 1});
-mach.react({x: 1});
-mach.react({reset: 1});
-mach.react();
+mach.react(); mach.outbuf += getReactLog();
+mach.react({reset: 1}); mach.outbuf += getReactLog();
+mach.react({x: 1}); mach.outbuf += getReactLog();
+mach.react({reset: 1}); mach.outbuf += getReactLog();
+mach.react(); mach.outbuf += getReactLog();
 
 if (process.env.HIPHOP_TEST) {
    console.log(mach.name() + "...");

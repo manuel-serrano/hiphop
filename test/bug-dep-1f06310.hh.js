@@ -5,18 +5,12 @@ function consoleLog(...args) {
 }
 
 hiphop module prg(resolve) {
-   inout X = 1;
-   signal __internal = -1;
+   signal __internal = 9999;
 
-   loop {
-      if (__internal.preval === -1) {
-	 pragma { consoleLog("__internal X=" + X.nowval); }
-      }
-      yield;
-   }
+   consoleLog("YEP ", __internal.preval);
 }
 
-export const mach = new hh.ReactiveMachine(prg);
+export const mach = new hh.ReactiveMachine(prg, { name: "bug-dep-1f06310" });
 mach.outbuf = "";
 
 consoleLog("--------------- ", mach.age());

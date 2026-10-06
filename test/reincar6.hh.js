@@ -20,8 +20,12 @@ const prg = hiphop module() {
    }
 }
 
-export const mach = new hh.ReactiveMachine(prg);
+export const mach = new hh.ReactiveMachine(prg, { name: "reincar6" });
 mach.outbuf = "";
 
 events.forEach((e, i) => { mach.react(e); });
 
+if (process.env.HIPHOP_TEST) {
+   console.log(mach.name() + "...");
+   console.log(mach.outbuf);
+}
