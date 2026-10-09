@@ -16,7 +16,7 @@ const prg = hiphop module() {
   }
 }
 
-export const mach = new hh.ReactiveMachine(prg, { name: "bug-uncycle-c40f49a" });
+export const mach = new hh.ReactiveMachine(prg, { name: "bug-uncycle-c40f49a", verbose: -1 });
 mach.outbuf = "";
 
 try {
