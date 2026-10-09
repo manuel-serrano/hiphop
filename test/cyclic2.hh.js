@@ -16,14 +16,14 @@ const prg = hiphop module() {
    }
 }
 
-export const mach = new hh.ReactiveMachine(prg, { name: "cyclic" });
+export const mach = new hh.ReactiveMachine(prg, { name: "cyclic2" });
 mach.outbuf = "";
 
-mach.outbuf += JSON.stringify(mach.react({C: 1, A: 2}));
+mach.outbuf += JSON.stringify(mach.react({B: 2}));
 mach.outbuf += "\n";
 mach.outbuf += JSON.stringify(mach.react({}));
 mach.outbuf += "\n";
-mach.outbuf += JSON.stringify(mach.react({B: 1}));
+mach.outbuf += JSON.stringify(mach.react({A: 1}));
 mach.outbuf += "\n";
 mach.outbuf += JSON.stringify(mach.react({C: 2}));
 mach.outbuf += "\n";
