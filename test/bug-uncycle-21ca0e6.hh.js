@@ -29,13 +29,9 @@ const prg = hiphop module() {
 export const mach = new hh.ReactiveMachine(prg, { name: "bug-uncycle-21ca0e6" });
 mach.outbuf = "";
 
-try {
-   events.forEach((e, i) => {
-      mach.outbuf += (mach.name() + '[' + i + ']: '
-         + JSON.stringify(mach.reactDebug(e)) + '\n')
-   });
-} finally {
-   console.log(mach.outbuf);
-}
+events.forEach((e, i) => {
+   mach.outbuf += (mach.name() + '[' + i + ']: '
+      + JSON.stringify(mach.reactDebug(e)) + '\n')
+});
 
 // NODE_OPTIONS="--enable-source-maps --no-warnings --loader @hop/hiphop/lib/hiphop-loader.mjs" node out/hiphop-loopUnroll-trapUnroll-nonative-uncycle-2026-10-9-11:30/hiphop.hh.mjs
