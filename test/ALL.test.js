@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 21 07:42:24 2023                          */
-/*    Last change :  Mon Oct  5 14:23:20 2026 (serrano)                */
+/*    Last change :  Fri Nov  6 15:32:02 2026 (serrano)                */
 /*    Copyright   :  2023-26 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing driver.                                                  */
@@ -32,9 +32,11 @@ let inMocha = true;
 /*---------------------------------------------------------------------*/
 function test(f) {
    globalThis.it(basename(f), async () => {
+      console.error(">> C1", f);
       let res = true, nres = true;;
       const nf = f.replace(/[.]hh[.]js/, ".nosweep.hh.js");
       copyFileSync(f, nf);
+      console.error(">> C2", f);
       
       try {
 	 hiphop.ReactiveMachine.setConfiguration({ Sweep: Number.MAX_SAFE_INTEGER });
@@ -47,6 +49,7 @@ function test(f) {
 	 if (existsSync(nf)) unlinkSync(nf);
       }
 
+      console.error(">> C3", f);
       if (res.got != res.expected) {
 	 const fail = f.replace(/[.]hh[.]js/, ".sweep.log");
 	 writeFileSync(fail, res.got);
@@ -57,6 +60,7 @@ function test(f) {
 	 }
 	 throw new Error(`${f} failed...(see ${fail})`);
       }
+      console.error(">> C4", f);
       if (nres.got != nres.expected) {
 	 const fail = f.replace(/[.]hh[.]js/, ".nosweep.log");
 	 writeFileSync(fail, nres.got);
@@ -67,6 +71,7 @@ function test(f) {
 	 }
 	 throw new Error(`${f} failed...(see ${fail})`);
       }
+      console.error(">> C5", f);
    });
 }
 
@@ -98,29 +103,30 @@ async function main(argv) {
    }
 
    let args = "";
-   let idxp = argv.indexOf("unroll");
-   let idx = argv.indexOf("unrolltrap");
-   let idxc = argv.indexOf("uncycle");
-   let idxn = argv.indexOf("nonative");
-   
-   if (idxp >= 0) {
+   let idx;
+
+   idx = argv.indexOf("unroll");
+   if (idx >= 0) {
       hiphop.ReactiveMachine.setConfiguration({ Reincarnation: false, ReincarnationTrap: false });
       argv.splice(idx, 1);
       args += " unroll";
    }
-   
-   if (idxc >= 0) {
+
+   idx = argv.indexOf("uncycle");
+   if (idx >= 0) {
       hiphop.ReactiveMachine.setConfiguration({ Uncycle: true });
       argv.splice(idx, 1);
       args += " uncycle";
    }
-   
-   if (idxn >= 0) {
+
+   idx = argv.indexOf("nonative");
+   if (idx >= 0) {
       hiphop.ReactiveMachine.setConfiguration({ Native: false });
       argv.splice(idx, 1);
       args += " nonative";
    }
-   
+
+   idx = argv.indexOf("unrolltrap");
    if (idx >= 0) {
       hiphop.ReactiveMachine.setConfiguration({ Reincarnation: true, ReincarnationTrap: false });
       argv.splice(idx, 1);
@@ -133,12 +139,14 @@ async function main(argv) {
       argv.splice(idx, 1);
       args += " old";
    }
+   
    idx = argv.indexOf("int");
    if (idx >= 0) {
       hiphop.ReactiveMachine.setConfiguration({ Compiler: "int", Reincarnation: false });
       argv.splice(idx, 1);
       args += " int";
    }
+   
    idx = argv.indexOf("new");
    if (idx >= 0) {
       hiphop.ReactiveMachine.setConfiguration({ Compiler: "new" });
@@ -163,6 +171,8 @@ async function main(argv) {
    globalThis.describe("ALL.test.js" + args, () => {
       tests.forEach(async f => test(f));
    });
+
+   return true;
 }
 
 /*---------------------------------------------------------------------*/

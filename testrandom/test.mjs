@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Fri Jun  5 13:27:15 2026 (serrano)                */
+/*    Last change :  Mon Oct 26 13:29:21 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -61,6 +61,8 @@ function shrinkBugInConf(conf, res, prop) {
 	       const r = prop.run(confs[i]);
 	       writeFileSync(2, ".");
 
+               writeFileSync("/tmp/shrink.hh.mjs", jsonToHiphop(confs[i].prog.tojson()));
+               
 	       if (VERBOSE >= 1) {
 		  console.error("  |" + margin + " +-", r.status, r.reason);
 		  if (VERBOSE >= 2) {
