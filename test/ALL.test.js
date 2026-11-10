@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Nov 21 07:42:24 2023                          */
-/*    Last change :  Fri Nov  6 15:32:02 2026 (serrano)                */
+/*    Last change :  Tue Nov 10 14:16:13 2026 (serrano)                */
 /*    Copyright   :  2023-26 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    Testing driver.                                                  */
@@ -32,11 +32,9 @@ let inMocha = true;
 /*---------------------------------------------------------------------*/
 function test(f) {
    globalThis.it(basename(f), async () => {
-      console.error(">> C1", f);
       let res = true, nres = true;;
       const nf = f.replace(/[.]hh[.]js/, ".nosweep.hh.js");
       copyFileSync(f, nf);
-      console.error(">> C2", f);
       
       try {
 	 hiphop.ReactiveMachine.setConfiguration({ Sweep: Number.MAX_SAFE_INTEGER });
@@ -49,7 +47,6 @@ function test(f) {
 	 if (existsSync(nf)) unlinkSync(nf);
       }
 
-      console.error(">> C3", f);
       if (res.got != res.expected) {
 	 const fail = f.replace(/[.]hh[.]js/, ".sweep.log");
 	 writeFileSync(fail, res.got);
@@ -60,7 +57,6 @@ function test(f) {
 	 }
 	 throw new Error(`${f} failed...(see ${fail})`);
       }
-      console.error(">> C4", f);
       if (nres.got != nres.expected) {
 	 const fail = f.replace(/[.]hh[.]js/, ".nosweep.log");
 	 writeFileSync(fail, nres.got);
@@ -71,7 +67,6 @@ function test(f) {
 	 }
 	 throw new Error(`${f} failed...(see ${fail})`);
       }
-      console.error(">> C5", f);
    });
 }
 

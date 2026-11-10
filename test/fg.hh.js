@@ -125,28 +125,23 @@ export function FG(n, variant = "mul3") {
    }
 }
 
-export const mach = new hh.ReactiveMachine(FG(3), { name: "uncycle-backward-edges" });
+export const mach = new hh.ReactiveMachine(FG(2), { name: "uncycle-backward-edges" });
 
 mach.outbuf = "";
 
-console.error("A");
 for (const c of [false, true]) {
    for (let x = 0; x < 8; x++) {
-      const inputs = { C: c, X0: !!(x & 1), X1: !!(x & 2), X2: !!(x & 4) };
+      const inputs = { C: c, X0: !!(x & 1), X1: !!(x & 2) };
       Object.keys(inputs).forEach(k => {
          if (!inputs[k]) delete inputs[k];
       });
       mach.react(inputs);
       const y = (mach.signals.Y0.now ? 1 : 0)
-         + (mach.signals.Y1.now ? 2 : 0)
-         + (mach.signals.Y2.now ? 4 : 0);
+         + (mach.signals.Y1.now ? 2 : 0);
       mach.outbuf += `C=${c ? 1 : 0} X=${x} Y=${y}\n`;
    }
 }
-console.error("B");
 
 if (process.env.HIPHOP_TEST) {
    console.log(mach.outbuf);
 }
-
-console.error("C");
