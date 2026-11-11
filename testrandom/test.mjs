@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Wed Nov 11 17:54:22 2026 (serrano)                */
+/*    Last change :  Wed Nov 11 18:08:13 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -49,7 +49,7 @@ export const prop = new Prop(
 function shrinkBugInConf(conf, res, prop) {
 
    function shrinker(shrink, conf, res, margin) {
-      const confs = shrink(conf, prop);
+      let confs = shrink(conf, prop);
       writeFileSync(2, "!");
 
       if (confs.length === 0) {
