@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Wed Nov 11 18:22:51 2026 (serrano)                */
+/*    Last change :  Wed Nov 11 18:38:03 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -61,7 +61,8 @@ function shrinkBugInConf(conf, res, prop) {
       
 	 for (let i = 0; i < confs.length; i++) {
 	    try {
-	       const r = prop.run(confs[i], true);
+               const conf = confs[i];
+	       const r = prop.run(conf, true);
 	       writeFileSync(2, "~");
 
 	       if (VERBOSE >= 1) {
@@ -72,7 +73,6 @@ function shrinkBugInConf(conf, res, prop) {
 	       }
 	       if (r.status === "failure") {
 		  // we still have an error, shrink more
-                  conf = confs[i];
                   // flush the current confs to avoid heap growth
                   confs = [];
 		  return shrinker(shrink, conf, r, margin + " ");
@@ -97,7 +97,7 @@ function shrinkBugInConf(conf, res, prop) {
    writeFileSync(2, " \\ shrinking ");
 
    try {
-      const a = shrinker(shrinkA, conf, res, "  ");
+      const { conf, res, marging } = shrinker(shrinkA, conf, res, "  ");
       return shrinker(shrinkB, a.conf, a.res, a.margin);
    } catch(e) {
       console.error("*** SHRINK ERROR:", e.toString());
