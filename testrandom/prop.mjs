@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Tue Apr 21 11:44:40 2026 (serrano)                */
+/*    Last change :  Wed Nov 11 08:50:39 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -13,6 +13,7 @@ import * as hhapi from "../lib/ast.js";
 import { jsonToHiphop } from "./hiphop.mjs";
 import * as config from "./config.mjs";
 import { filterinstantaneous } from "./filters.mjs";
+import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 
 export { Prop };
 
@@ -56,7 +57,7 @@ class Prop {
       });
    }
 
-   run(conf) {
+   run(conf, debug = false) {
       let f;
 
       if (!conf.prog) {
@@ -71,8 +72,13 @@ class Prop {
 
       // construct all the reactive machines
       const machs = this.#systems.map(sys => {
+
+         if (debug) {
+            writeFileSync(`/tmp/shrink-${sys.name}.hh.mjs`, jsonToHiphop(conf.prog.tojson()));
+         }
+
 	 try {
-	    return sys.ctor(conf.prog);
+            return sys.ctor(conf.prog);
 	 } catch (e) {
 	    return {
 	       reactDebug(_) {
@@ -177,7 +183,7 @@ function signalsReason(runs) {
 /*    statusesReason ...                                               */
 /*---------------------------------------------------------------------*/
 function statusesReason(runs) {
-   return `statuses: ${runs.map(r => r.map(e => e.status)).join("/")}`;
+   return `statuses: ${runs.map(r => r.map(e => e.status || e)).join("/")}`;
 }
 
 /*---------------------------------------------------------------------*/
@@ -244,6 +250,9 @@ function runMach(mach, events) {
 	    e.signals = {};
 	    res.push(e);
 	 } else {
+            console.error("GOT CAUSALITY ERROR...");
+            console.error(e.message);
+            console.error("E=", e);
 	    res.push({ status: "trouble", msg: e.toString(), signals: {} });
 	 }
 	 return res;

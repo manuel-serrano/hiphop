@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Mon Oct 26 13:29:21 2026 (serrano)                */
+/*    Last change :  Wed Nov 11 08:46:01 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -20,6 +20,9 @@ import * as hh from "./hiphop.mjs";
 import * as racket from "./racket.mjs";
 import * as esterel from "./esterel.mjs";
 import * as rocq from "./rocq.mjs";
+
+import { getHeapStatistics } from  'node:v8';
+
 
 /*---------------------------------------------------------------------*/
 /*    prop ...                                                         */
@@ -49,6 +52,9 @@ function shrinkBugInConf(conf, res, prop) {
       const confs = shrink(conf, prop);
       writeFileSync(2, "!");
 
+      const heap = getHeapStatistics();
+      const msg = (heap.total_available_size/1024/1024).toFixed(2);
+
       if (confs.length === 0) {
 	 return { conf, res,  margin };
       } else {
@@ -58,11 +64,9 @@ function shrinkBugInConf(conf, res, prop) {
       
 	 for (let i = 0; i < confs.length; i++) {
 	    try {
-	       const r = prop.run(confs[i]);
-	       writeFileSync(2, ".");
+	       const r = prop.run(confs[i], true);
+	       writeFileSync(2, "~");
 
-               writeFileSync("/tmp/shrink.hh.mjs", jsonToHiphop(confs[i].prog.tojson()));
-               
 	       if (VERBOSE >= 1) {
 		  console.error("  |" + margin + " +-", r.status, r.reason);
 		  if (VERBOSE >= 2) {
