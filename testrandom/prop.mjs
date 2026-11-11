@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Wed Nov 11 08:50:39 2026 (serrano)                */
+/*    Last change :  Wed Nov 11 18:28:00 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -250,9 +250,6 @@ function runMach(mach, events) {
 	    e.signals = {};
 	    res.push(e);
 	 } else {
-            console.error("GOT CAUSALITY ERROR...");
-            console.error(e.message);
-            console.error("E=", e);
 	    res.push({ status: "trouble", msg: e.toString(), signals: {} });
 	 }
 	 return res;

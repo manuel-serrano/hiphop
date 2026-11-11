@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Wed Nov 11 18:08:13 2026 (serrano)                */
+/*    Last change :  Wed Nov 11 18:22:51 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -75,7 +75,7 @@ function shrinkBugInConf(conf, res, prop) {
                   conf = confs[i];
                   // flush the current confs to avoid heap growth
                   confs = [];
-		  return shrinker(shrink, confs[i], r, margin + " ");
+		  return shrinker(shrink, conf, r, margin + " ");
 	       }
 	    } catch(e) {
 	       // an error occurred, ignore that program
