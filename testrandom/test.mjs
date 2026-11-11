@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Wed Nov 11 18:44:49 2026 (serrano)                */
+/*    Last change :  Wed Nov 11 18:49:52 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -98,14 +98,7 @@ function shrinkBugInConf(conf, res, prop) {
 
    try {
       const a = shrinker(shrinkA, conf, res, "  ");
-
-      // don't keep a live pointer to a
-      const aconf = a.conf;
-      const ares = a.res;
-      const amargin = a.margin;
-      a = undefined;
-      
-      return shrinker(shrinkB, aconf, ares, amargin);
+      return shrinker(shrinkB, a.conf, a.res, a.margin);
    } catch(e) {
       console.error("*** SHRINK ERROR:", e.toString());
       throw e;
