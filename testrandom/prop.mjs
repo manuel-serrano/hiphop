@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Wed Nov 11 20:12:28 2026 (serrano)                */
+/*    Last change :  Thu Nov 12 08:05:28 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -71,7 +71,7 @@ class Prop {
       }
 
       if (debug) {
-         console.log(">>> creating all machines...");
+         console.log(">>> creating all machines...(" + memAvailable() + "mb)");
       }
       
       // construct all the reactive machines
@@ -86,7 +86,7 @@ class Prop {
             const mach = sys.ctor(conf.prog);
             
             if (debug) {
-               writeFileSync(1, "done (" + mach.nets.length + ")\n");
+               writeFileSync(1, "done [#" + mach.nets.length + "]\n");
             }
             
             return mach;
@@ -110,7 +110,7 @@ class Prop {
 	 }
       });
       if (debug) {
-         console.log("<<< all machines created.");
+         console.log("<<< all machines created (" + memAvailable() + "mb)");
          console.log(">>> running all machines...");
       }
 
@@ -136,7 +136,7 @@ class Prop {
 	 return res;
       });
       if (debug) {
-         console.log("<<< all machines ran.");
+         console.log("<<< all machines ran " + memAvailable() + "mb)");
          console.log(">>> comparing results...");
       }
 
@@ -202,6 +202,15 @@ class Prop {
 	 throw e;
       }
    }
+}
+
+/*---------------------------------------------------------------------*/
+/*    memAvailable ...                                                 */
+/*---------------------------------------------------------------------*/
+function memAvailable() {
+   const { heapUsed, heapTotal } = process.memoryUsage();
+
+   return ((heapTotal - heapUsed) / 1024 / 1024).toFixed(2);
 }
 
 /*---------------------------------------------------------------------*/

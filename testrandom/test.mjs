@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Wed Nov 11 20:11:16 2026 (serrano)                */
+/*    Last change :  Thu Nov 12 08:10:51 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -100,7 +100,6 @@ function shrinkBugInConf(conf, res, prop) {
    function shrinkRec(shrink, conf, res, margin) {
       while (true) {
          const { status, value } = shrinker(shrink, conf, res, margin);
-         console.log("s=", status);
          if (status !== "keep") {
             return value;
          } else {
