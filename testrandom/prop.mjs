@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Wed Nov 11 18:28:00 2026 (serrano)                */
+/*    Last change :  Wed Nov 11 20:12:28 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -70,15 +70,26 @@ class Prop {
 	 return { status: "reject", reason: f.name() };
       }
 
+      if (debug) {
+         console.log(">>> creating all machines...");
+      }
+      
       // construct all the reactive machines
       const machs = this.#systems.map(sys => {
-
-         if (debug) {
-            writeFileSync(`/tmp/shrink-${sys.name}.hh.mjs`, jsonToHiphop(conf.prog.tojson()));
-         }
-
+         
 	 try {
-            return sys.ctor(conf.prog);
+            if (debug) {
+               writeFileSync(1, `   + creating ${sys.name}...`);
+               writeFileSync(`/tmp/shrink-${sys.name}.hh.mjs`, jsonToHiphop(conf.prog.tojson()));
+            }
+            
+            const mach = sys.ctor(conf.prog);
+            
+            if (debug) {
+               writeFileSync(1, "done (" + mach.nets.length + ")\n");
+            }
+            
+            return mach;
 	 } catch (e) {
 	    return {
 	       reactDebug(_) {
@@ -98,11 +109,21 @@ class Prop {
 	    }
 	 }
       });
+      if (debug) {
+         console.log("<<< all machines created.");
+         console.log(">>> running all machines...");
+      }
 
-      // run all the machiness
+      // run all the machines
       const runs = machs.map(mach => {
+         if (debug) {
+            writeFileSync(1, `   * running "${mach.name()}"...`);
+         }
 	 const res = runMach(mach, conf.events);
 
+         if (debug) {
+            writeFileSync(1, "done.\n");
+         }
 	 if (config.VERBOSE >= 2) {
 	    console.log(
 	       `  |   | ${mach.name()}: `
@@ -114,10 +135,18 @@ class Prop {
 	 }
 	 return res;
       });
+      if (debug) {
+         console.log("<<< all machines ran.");
+         console.log(">>> comparing results...");
+      }
 
       try {
 	 // compare the execution results
 	 if (runs.find(r => r.length !== runs[0].length)) {
+            if (debug) {
+               console.log("<<< compared failure reactions.");
+            }
+            
 	    return {
 	       status: "failure",
 	       reason: reactionReason(runs),
@@ -129,6 +158,10 @@ class Prop {
 	 } else if (runs.find(r => r[r.length - 1].status !== runs[0][runs[0].length - 1].status)) {
 	    const [ r0, r1 ] = runs;
 
+            if (debug) {
+               console.log("<<< compared failure runs.");
+            }
+            
 	    return {
 	       status: "failure",
 	       reason: statusesReason(runs),
@@ -138,6 +171,10 @@ class Prop {
 	       runs
 	    };
 	 } else if (runs.find(r => r.find((e, i) => !signalsEqual(e.signals, runs[0][i].signals)))) {
+            if (debug) {
+               console.log("<<< compared failure signals.");
+            }
+            
 	    return {
 	       status: "failure",
 	       reason: signalsReason(runs),
@@ -147,6 +184,10 @@ class Prop {
 	       runs
 	    };
 	 } else {
+            if (debug) {
+               console.log("<<< compared success.");
+            }
+            
 	    return {
 	       status: "success",
 	       systems: this.#systems,

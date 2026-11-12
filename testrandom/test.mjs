@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Wed Nov 11 18:49:52 2026 (serrano)                */
+/*    Last change :  Wed Nov 11 20:11:16 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -53,7 +53,7 @@ function shrinkBugInConf(conf, res, prop) {
       writeFileSync(2, "!");
 
       if (confs.length === 0) {
-	 return { conf, res,  margin };
+	 return { status: "stop", value: { conf, res,  margin } };
       } else {
 	 if (VERBOSE) {
 	    console.error("  |" + margin + "confs.length:", confs.length);
@@ -61,8 +61,7 @@ function shrinkBugInConf(conf, res, prop) {
       
 	 for (let i = 0; i < confs.length; i++) {
 	    try {
-               const conf = confs[i];
-	       const r = prop.run(conf, true);
+	       const r = prop.run(confs[i], true);
 	       writeFileSync(2, "~");
 
 	       if (VERBOSE >= 1) {
@@ -74,8 +73,11 @@ function shrinkBugInConf(conf, res, prop) {
 	       if (r.status === "failure") {
 		  // we still have an error, shrink more
                   // flush the current confs to avoid heap growth
-                  confs = [];
-		  return shrinker(shrink, conf, r, margin + " ");
+                  return {
+                     status: "keep",
+                     value: { conf: confs[i], res: r, margin: margin + " " }
+                  };
+		  //return shrinker(shrink, confs[i], r, margin + " ");
 	       }
 	    } catch(e) {
 	       // an error occurred, ignore that program
@@ -90,15 +92,30 @@ function shrinkBugInConf(conf, res, prop) {
 	    console.error("  |" + margin + " #- ending shrink with", res.status, res.reason);
 	 }
 	 
-	 return { conf, res, margin };
+	 return { status: "stop", value: { conf, res, margin } };
       }
    }
 
+   // run the shrinker in empty stack
+   function shrinkRec(shrink, conf, res, margin) {
+      while (true) {
+         const { status, value } = shrinker(shrink, conf, res, margin);
+         console.log("s=", status);
+         if (status !== "keep") {
+            return value;
+         } else {
+            conf = value.conf;
+            res = value.res;
+            margin = value.margin;
+         }
+      }
+   }
+   
    writeFileSync(2, " \\ shrinking ");
 
    try {
-      const a = shrinker(shrinkA, conf, res, "  ");
-      return shrinker(shrinkB, a.conf, a.res, a.margin);
+      const a = shrinkRec(shrinkA, conf, res, "  ");
+      return shrinkRec(shrinkB, a.conf, a.res, a.margin);
    } catch(e) {
       console.error("*** SHRINK ERROR:", e.toString());
       throw e;
