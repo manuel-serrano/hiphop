@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Thu Nov 12 08:05:28 2026 (serrano)                */
+/*    Last change :  Fri Nov 13 08:45:35 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -300,7 +300,7 @@ function runMach(mach, events) {
 	    e.signals = {};
 	    res.push(e);
 	 } else {
-	    res.push({ status: "trouble", msg: e.toString(), signals: {} });
+	    res.push({ status: "causality", msg: e.toString(), signals: {} });
 	 }
 	 return res;
       }
