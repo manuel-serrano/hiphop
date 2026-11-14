@@ -25,4 +25,4 @@ jobs:
     - run: npm install
     - run: npm run prepare
     - run: npm test
-    - run: HIPHOP_RT_MAXITERATIONS=1000 npm run test.random
+    - run: HIPHOP_RT_ITERATIONS=1000 npm run test.random
