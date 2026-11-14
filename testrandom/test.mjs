@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 14:05:43 2025                          */
-/*    Last change :  Thu Nov 12 08:10:51 2026 (serrano)                */
+/*    Last change :  Fri Nov 13 10:35:09 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    HipHop Random Testing entry point.                               */
@@ -20,9 +20,6 @@ import * as hh from "./hiphop.mjs";
 import * as racket from "./racket.mjs";
 import * as esterel from "./esterel.mjs";
 import * as rocq from "./rocq.mjs";
-
-import { getHeapStatistics } from  'node:v8';
-
 
 /*---------------------------------------------------------------------*/
 /*    prop ...                                                         */
@@ -61,7 +58,7 @@ function shrinkBugInConf(conf, res, prop) {
       
 	 for (let i = 0; i < confs.length; i++) {
 	    try {
-	       const r = prop.run(confs[i], true);
+	       const r = prop.run(confs[i], false);
 	       writeFileSync(2, "~");
 
 	       if (VERBOSE >= 1) {
@@ -182,7 +179,15 @@ function findBugInGen(prop, iterCount) {
 /*---------------------------------------------------------------------*/
 /*    pad ...                                                          */
 /*---------------------------------------------------------------------*/
-const pad = ["", " ", "  ", "   ", "    ", "     ", "      ", "       "];
+const pad = ["",
+             " ",
+             "  ",
+             "   ",
+             "    ",
+             "     ",
+             "      ",
+             "       ",
+             "        "];
 
 /*---------------------------------------------------------------------*/
 /*    padding ...                                                      */
@@ -196,8 +201,8 @@ function padding(n, l) {
 /*    writePadding ...                                                 */
 /*---------------------------------------------------------------------*/
 function writePadding(i) {
-   if (i % 72 === 0) {
-      writeFileSync(1, "\n" + padding(i, 5) + " ");
+   if (i % 70 === 0) {
+      writeFileSync(1, "\n" + padding(i, 9) + " ");
    }
    writeFileSync(1, ".");
 }
