@@ -21,9 +21,6 @@ import * as racket from "./racket.mjs";
 import * as esterel from "./esterel.mjs";
 import * as rocq from "./rocq.mjs";
 
-import { getHeapStatistics } from  'node:v8';
-
-
 /*---------------------------------------------------------------------*/
 /*    prop ...                                                         */
 /*---------------------------------------------------------------------*/
@@ -61,7 +58,7 @@ function shrinkBugInConf(conf, res, prop) {
       
 	 for (let i = 0; i < confs.length; i++) {
 	    try {
-	       const r = prop.run(confs[i], true);
+	       const r = prop.run(confs[i], false);
 	       writeFileSync(2, "~");
 
 	       if (VERBOSE >= 1) {
@@ -182,7 +179,15 @@ function findBugInGen(prop, iterCount) {
 /*---------------------------------------------------------------------*/
 /*    pad ...                                                          */
 /*---------------------------------------------------------------------*/
-const pad = ["", " ", "  ", "   ", "    ", "     ", "      ", "       "];
+const pad = ["",
+             " ",
+             "  ",
+             "   ",
+             "    ",
+             "     ",
+             "      ",
+             "       ",
+             "        "];
 
 /*---------------------------------------------------------------------*/
 /*    padding ...                                                      */
@@ -196,8 +201,8 @@ function padding(n, l) {
 /*    writePadding ...                                                 */
 /*---------------------------------------------------------------------*/
 function writePadding(i) {
-   if (i % 72 === 0) {
-      writeFileSync(1, "\n" + padding(i, 5) + " ");
+   if (i % 70 === 0) {
+      writeFileSync(1, "\n" + padding(i, 9) + " ");
    }
    writeFileSync(1, ".");
 }
