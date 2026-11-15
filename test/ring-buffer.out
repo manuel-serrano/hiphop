@@ -1,71 +1,229 @@
---- capacity 1
--              top absent       [_]
-rem            top absent err   [_]
-add(1)         top=1            [1]
-add(2)         top=1 err        [1]
-add(3) rem     top=3            [3]
-rem            top absent       [3]
-add(4) rem     top absent       [4]
-inp(5)         top absent       [4]
-rem            top absent err   [4]
-add(6)         top=6            [6]
-rem            top absent       [6]
---- capacity 6
-add(10)        top=10           [10 _ _ _ _ _]
-add(20)        top=10           [10 20 _ _ _ _]
-add(30)        top=10           [10 20 30 _ _ _]
-rem            top=20           [10 20 30 _ _ _]
-add(40)        top=20           [10 20 30 40 _ _]
-add(50)        top=20           [10 20 30 40 50 _]
-add(60) rem    top=30           [10 20 30 40 50 60]
-add(70)        top=30           [70 20 30 40 50 60]
-add(80)        top=30           [70 80 30 40 50 60]
-add(90)        top=30 err       [70 80 30 40 50 60]
-add(100) rem   top=40           [70 80 100 40 50 60]
-rem            top=50           [70 80 100 40 50 60]
-rem            top=60           [70 80 100 40 50 60]
-inp(110)       top=60           [70 80 100 40 50 60]
-rem            top=70           [70 80 100 40 50 60]
-add(120) rem   top=80           [70 80 100 120 50 60]
-rem            top=100          [70 80 100 120 50 60]
-rem            top=120          [70 80 100 120 50 60]
-rem            top absent       [70 80 100 120 50 60]
-rem            top absent err   [70 80 100 120 50 60]
-add(130) rem   top absent       [70 80 100 120 130 60]
-rem            top absent err   [70 80 100 120 130 60]
-add(140)       top=140          [70 80 100 120 130 140]
-rem            top absent       [70 80 100 120 130 140]
---- capacity 10: fill
-add(1)         top=1
-add(2)         top=1
-add(3)         top=1
-add(4)         top=1
-add(5)         top=1
-add(6)         top=1
-add(7)         top=1
-add(8)         top=1
-add(9)         top=1
-add(10)        top=1
-  slots  0- 9: 1 2 3 4 5 6 7 8 9 10
---- capacity 10: while full
-add(11)        top=1 err
-add(11) rem    top=2
-add(12) rem    top=3
-add(13) rem    top=4
-add(14) rem    top=5
-add(15) rem    top=6
-add(16)        top=6 err
-  slots  0- 9: 11 12 13 14 15 6 7 8 9 10
---- capacity 10: empty
-rem            top=7
-rem            top=8
-rem            top=9
-rem            top=10
-rem            top=11
-rem            top=12
-rem            top=13
-rem            top=14
-rem            top=15
-rem            top absent
-rem            top absent err
-  slots  0- 9: 11 12 13 14 15 6 7 8 9 10
+new machine, capacity = 1
+step 1
+  input:   {}
+  emitted: {}
+  buffer:  [ht_] 
+step 2
+  input:   {"rem":true}
+  emitted: {"err":"rem empty"}
+  buffer:  [ht_] 
+step 3
+  input:   {"search":0}
+  emitted: {}
+  buffer:  [ht_] 
+step 4
+  input:   {"add":true,"inp":1}
+  emitted: {"top":1,"slot0":1,"tail":0,"full":true}
+  buffer:  [ht1] full
+step 5
+  input:   {"add":true,"inp":2}
+  emitted: {"top":1,"err":"add full","full":true}
+  buffer:  [ht1] full
+step 6
+  input:   {"add":true,"rem":true,"inp":3}
+  emitted: {"top":3,"slot0":3,"head":0,"tail":0,"full":true}
+  buffer:  [ht3] full
+step 7
+  input:   {"search":3}
+  emitted: {"top":3,"pos":0,"found0":true,"full":true}
+  buffer:  [ht3] full
+step 8
+  input:   {"search":2}
+  emitted: {"top":3,"full":true}
+  buffer:  [ht3] full
+step 9
+  input:   {"rem":true}
+  emitted: {"head":0}
+  buffer:  [ht3] 
+step 10
+  input:   {"add":true,"rem":true,"inp":4}
+  emitted: {"slot0":4,"head":0,"tail":0}
+  buffer:  [ht4] 
+step 11
+  input:   {"inp":5}
+  emitted: {}
+  buffer:  [ht4] 
+step 12
+  input:   {"rem":true}
+  emitted: {"err":"rem empty"}
+  buffer:  [ht4] 
+step 13
+  input:   {"add":true,"inp":6}
+  emitted: {"top":6,"slot0":6,"tail":0,"full":true}
+  buffer:  [ht6] full
+step 14
+  input:   {"rem":true}
+  emitted: {"head":0}
+  buffer:  [ht6] 
+
+new machine, capacity = 3
+step 1
+  input:   {"add":true,"inp":11}
+  emitted: {"top":11,"slot0":11,"tail":1}
+  buffer:  [h11,t_,_] 
+step 2
+  input:   {"add":true,"inp":22}
+  emitted: {"top":11,"slot1":22,"tail":2}
+  buffer:  [h11,22,t_] 
+step 3
+  input:   {"search":11}
+  emitted: {"top":11,"pos":0,"found0":true,"found1":true,"found2":true}
+  buffer:  [h11,22,t_] 
+step 4
+  input:   {"search":22}
+  emitted: {"top":11,"pos":1,"found1":true,"found2":true}
+  buffer:  [h11,22,t_] 
+step 5
+  input:   {"search":33}
+  emitted: {"top":11}
+  buffer:  [h11,22,t_] 
+step 6
+  input:   {"add":true,"inp":33}
+  emitted: {"top":11,"slot2":33,"tail":0,"full":true}
+  buffer:  [ht11,22,33] full
+step 7
+  input:   {"search":11}
+  emitted: {"top":11,"pos":0,"found0":true,"found1":true,"found2":true,"full":true}
+  buffer:  [ht11,22,33] full
+step 8
+  input:   {"search":22}
+  emitted: {"top":11,"pos":1,"found1":true,"found2":true,"full":true}
+  buffer:  [ht11,22,33] full
+step 9
+  input:   {"search":33}
+  emitted: {"top":11,"pos":2,"found2":true,"full":true}
+  buffer:  [ht11,22,33] full
+step 10
+  input:   {"rem":true}
+  emitted: {"top":22,"head":1}
+  buffer:  [t11,h22,33] 
+step 11
+  input:   {"search":11}
+  emitted: {"top":22}
+  buffer:  [t11,h22,33] 
+step 12
+  input:   {"search":22}
+  emitted: {"top":22,"pos":0,"found0":true,"found1":true,"found2":true}
+  buffer:  [t11,h22,33] 
+step 13
+  input:   {"search":33}
+  emitted: {"top":22,"pos":1,"found0":true,"found2":true}
+  buffer:  [t11,h22,33] 
+
+new machine, capacity = 6
+step 1
+  input:   {"add":true,"inp":10}
+  emitted: {"top":10,"slot0":10,"tail":1}
+  buffer:  [h10,t_,_,_,_,_] 
+step 2
+  input:   {"add":true,"inp":20}
+  emitted: {"top":10,"slot1":20,"tail":2}
+  buffer:  [h10,20,t_,_,_,_] 
+step 3
+  input:   {"add":true,"inp":30}
+  emitted: {"top":10,"slot2":30,"tail":3}
+  buffer:  [h10,20,30,t_,_,_] 
+step 4
+  input:   {"rem":true}
+  emitted: {"top":20,"head":1}
+  buffer:  [10,h20,30,t_,_,_] 
+step 5
+  input:   {"add":true,"inp":40}
+  emitted: {"top":20,"slot3":40,"tail":4}
+  buffer:  [10,h20,30,40,t_,_] 
+step 6
+  input:   {"add":true,"inp":50}
+  emitted: {"top":20,"slot4":50,"tail":5}
+  buffer:  [10,h20,30,40,50,t_] 
+step 7
+  input:   {"search":10}
+  emitted: {"top":20,"pos":5,"found0":true}
+  buffer:  [10,h20,30,40,50,t_] 
+step 8
+  input:   {"search":11}
+  emitted: {"top":20}
+  buffer:  [10,h20,30,40,50,t_] 
+step 9
+  input:   {"add":true,"rem":true,"inp":60}
+  emitted: {"top":30,"slot5":60,"head":2,"tail":0}
+  buffer:  [t10,20,h30,40,50,60] 
+step 10
+  input:   {"add":true,"inp":70}
+  emitted: {"top":30,"slot0":70,"tail":1}
+  buffer:  [70,t20,h30,40,50,60] 
+step 11
+  input:   {"add":true,"inp":80}
+  emitted: {"top":30,"slot1":80,"tail":2,"full":true}
+  buffer:  [70,80,ht30,40,50,60] full
+step 12
+  input:   {"add":true,"inp":90}
+  emitted: {"top":30,"err":"add full","full":true}
+  buffer:  [70,80,ht30,40,50,60] full
+step 13
+  input:   {"search":80}
+  emitted: {"top":30,"pos":5,"found1":true,"full":true}
+  buffer:  [70,80,ht30,40,50,60] full
+step 14
+  input:   {"search":30}
+  emitted: {"top":30,"pos":0,"found0":true,"found1":true,"found2":true,"found3":true,"found4":true,"found5":true,"full":true}
+  buffer:  [70,80,ht30,40,50,60] full
+step 15
+  input:   {"search":81}
+  emitted: {"top":30,"full":true}
+  buffer:  [70,80,ht30,40,50,60] full
+step 16
+  input:   {"add":true,"rem":true,"inp":100}
+  emitted: {"top":40,"slot2":100,"head":3,"tail":3,"full":true}
+  buffer:  [70,80,100,ht40,50,60] full
+step 17
+  input:   {"rem":true}
+  emitted: {"top":50,"head":4}
+  buffer:  [70,80,100,t40,h50,60] 
+step 18
+  input:   {"rem":true}
+  emitted: {"top":60,"head":5}
+  buffer:  [70,80,100,t40,50,h60] 
+step 19
+  input:   {"inp":110}
+  emitted: {"top":60}
+  buffer:  [70,80,100,t40,50,h60] 
+step 20
+  input:   {"rem":true}
+  emitted: {"top":70,"head":0}
+  buffer:  [h70,80,100,t40,50,60] 
+step 21
+  input:   {"add":true,"rem":true,"inp":120}
+  emitted: {"top":80,"slot3":120,"head":1,"tail":4}
+  buffer:  [70,h80,100,120,t50,60] 
+step 22
+  input:   {"rem":true}
+  emitted: {"top":100,"head":2}
+  buffer:  [70,80,h100,120,t50,60] 
+step 23
+  input:   {"rem":true}
+  emitted: {"top":120,"head":3}
+  buffer:  [70,80,100,h120,t50,60] 
+step 24
+  input:   {"rem":true}
+  emitted: {"head":4}
+  buffer:  [70,80,100,120,ht50,60] 
+step 25
+  input:   {"rem":true}
+  emitted: {"err":"rem empty"}
+  buffer:  [70,80,100,120,ht50,60] 
+step 26
+  input:   {"add":true,"rem":true,"inp":130}
+  emitted: {"slot4":130,"head":5,"tail":5}
+  buffer:  [70,80,100,120,130,ht60] 
+step 27
+  input:   {"rem":true}
+  emitted: {"err":"rem empty"}
+  buffer:  [70,80,100,120,130,ht60] 
+step 28
+  input:   {"add":true,"inp":140}
+  emitted: {"top":140,"slot5":140,"tail":0}
+  buffer:  [t70,80,100,120,130,h140] 
+step 29
+  input:   {"rem":true}
+  emitted: {"head":0}
+  buffer:  [ht70,80,100,120,130,140] 

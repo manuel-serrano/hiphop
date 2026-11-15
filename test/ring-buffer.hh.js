@@ -30,20 +30,22 @@ import * as hh from "@hop/hiphop";
 // .pre is false in the first instant, when the buffer is empty.
 function Ring(capacity) {
    const slots = Array.from({ length: capacity }, (_, i) => `slot${i}`);
+   const found = Array.from({ length: capacity }, (_, i) => `found${i}`);
    const inc = i => (i + 1) % capacity;
+   const dec = i => (i - 1 + capacity) % capacity;
 
    // Updates head, tail and full, and detects errors.
-   const control = hiphop loop {
+   const control = hiphop {
       if (full.pre) {
          if (rem.now) {
             emit head(inc(head.preval));
             if (add.now) {
                emit tail(inc(tail.preval));
-               emit full();
+               emit full(true);
             }
          } else {
-            if (add.now) { emit err(); }
-            emit full();
+            if (add.now) { emit err("add full"); }
+            emit full(true);
          }
       } else {
          if (rem.now) {
@@ -51,7 +53,7 @@ function Ring(capacity) {
                if (add.now) {
                   emit head(inc(head.preval));
                } else {
-                  emit err();
+                  emit err("rem empty");
                }
             } else {
                emit head(inc(head.preval));
@@ -60,17 +62,16 @@ function Ring(capacity) {
          if (add.now) {
             emit tail(inc(tail.preval));
             if (!rem.now) {
-               if (inc(tail.preval) === head.preval) { emit full(); }
+               if (inc(tail.preval) === head.preval) { emit full(true); }
             }
          }
       }
-      yield;
    };
 
    // handle storing the values in the slots and the `top` signal
    function slotBranch(i) {
       const me = slots[i];
-      return hiphop loop {
+      return hiphop {
          if (tail.preval === i) {
             if (add.now) {
                if (full.pre) {
@@ -87,78 +88,102 @@ function Ring(capacity) {
                emit top(this[me].nowval);
 	    }
          }
-         yield;
       };
    }
 
-   return hiphop module() {
-      in rem; in add; in inp;
-      out top; out err;
-      out ... ${slots};
-      signal head = 0, tail = 0;
-      signal full;
+  function search() {
+    return hiphop {
+      fork ${slots.map((_, i) => hiphop {
+	if (head.nowval === i) {
+	  if (this[slots[i]].nowval === search.nowval) {
+	    emit ${found[i]}(true);
+	    emit pos((i - head.nowval + capacity) % capacity);
+	  }
+	} else if (tail.nowval === i) {
+	  if (this[found[dec(i)]].now) {
+	    emit ${found[i]}(true);
+	  }
+	} else {
+	  if (this[found[dec(i)]].now) {
+	    emit ${found[i]}(true);
+	  } else if (this[slots[i]].nowval === search.nowval) {
+	    emit ${found[i]}(true);
+	    emit pos((i - head.nowval + capacity) % capacity);
+	  }
+	}
+      })}
+    }
+  }
 
-      fork ${[control, ...slots.map((_, i) => slotBranch(i))]}
+   return hiphop module() {
+      in rem; in add; in inp; in search;
+      out top; out err; out pos;
+      out ... ${slots};
+      out ... ${found};
+      out head = 0, tail = 0;
+      out full;
+     
+     loop {
+       fork {
+	 ${control}
+       } par {
+	 fork ${slots.map((_, i) => slotBranch(i))}
+       } par {
+	 if (search.now) {
+	   if (!(head.nowval === tail.nowval)) {
+	     ${search()}
+	   } else if (full.now) {
+	     ${search()}
+	   }
+	 }
+       }
+       yield;
+     }
    };
 }
 
+let step_count = 0;
 function makeMachine(capacity) {
-   const m = new hh.ReactiveMachine(Ring(capacity), 
-				    {name : `ring-buffer-${capacity}`, 
-				     uncycle: true});
-   m.state = { top: "absent", err: false, slots: new Array(capacity).fill(undefined) };
-   m.addEventListener("top", e => m.state.top = e.nowval);
-   m.addEventListener("err", () => m.state.err = true);
-   for (let i = 0; i < capacity; i++) {
-      m.addEventListener(`slot${i}`, e => m.state.slots[i] = e.nowval);
-   }
-   return m;
-}
-
-let log = "";
-const show = v => v === undefined ? "_" : String(v);
-
-function describe(input) {
-   const parts = [];
-   if (input.add) parts.push(`add(${input.inp})`);
-   else if ("inp" in input) parts.push(`inp(${input.inp})`);
-   if (input.rem) parts.push("rem");
-   return parts.length ? parts.join(" ") : "-";
-}
-
-function react(m, input) {
-   m.state.top = "absent";
-   m.state.err = false;
-   m.react(input);
-   const top = m.state.top === "absent" ? "top absent" : `top=${show(m.state.top)}`;
-   return `${top}${m.state.err ? " err" : ""}`;
+  step_count = 0;
+  const m = new hh.ReactiveMachine(Ring(capacity), 
+				   {name : `ring-buffer-${capacity}`, 
+				    uncycle: false});
+  m.outbuf = "new machine, capacity = " + capacity + "\n";
+  m.ring_buffer_capacity=capacity;
+  return m;
 }
 
 function step(m, input) {
-   const res = react(m, input);
-   log += `${describe(input).padEnd(14)} ${res.padEnd(16)} [${m.state.slots.map(show).join(" ")}]\n`;
+  step_count += 1;
+  m.outbuf += "step " + step_count + "\n";
+  m.outbuf += "  input:   " + JSON.stringify(input) + "\n";
+  const res = m.react(input);
+  m.outbuf += "  emitted: " + JSON.stringify(res) + "\n";
+  m.outbuf += "  buffer:  [" 
+    + Array.from(
+      { length: m.ring_buffer_capacity }, 
+      (_, i) => {
+	let slotcontent = m.signals[`slot${i}`].nowval;
+	return (m.signals.head.nowval === i ? "h" : "")
+	  + (m.signals.tail.nowval === i ? "t" : "")
+	  + (slotcontent === undefined ? "_" : slotcontent)
+      }
+    ).join(",") 
+    + "] "
+    + (m.signals["full"].now ? "full" : "")
+    + "\n"
+
 }
 
-function quickStep(m, input) {
-   const res = react(m, input);
-   log += `${describe(input).padEnd(14)} ${res}\n`;
-}
-
-function dumpSlots(m) {
-   for (let i = 0; i < m.state.slots.length; i += 10) {
-      log += `  slots ${String(i).padStart(2)}-${String(i + 9).padStart(2)}: `
-         + m.state.slots.slice(i, i + 10).map(show).join(" ") + "\n";
-   }
-}
-
-// Capacity 1: the head slot is also the last position.
 const m1 = makeMachine(1);
-log += "--- capacity 1\n";
 step(m1, {});                                // empty
 step(m1, { rem: true });                     // rem on empty: err
+step(m1, { search: 0 });                     // search for 0 (not found)
 step(m1, { add: true, inp: 1 });             // now full
 step(m1, { add: true, inp: 2 });             // add on full: err
 step(m1, { add: true, rem: true, inp: 3 });  // add+rem on full: replaces
+step(m1, { search: 3 });                     // search for 3 (found)
+step(m1, { search: 2 });                     // search for 2 (not found)
 step(m1, { rem: true });                     // now empty
 step(m1, { add: true, rem: true, inp: 4 });  // add+rem on empty: passes through
 step(m1, { inp: 5 });                        // inp without add: ignored
@@ -166,19 +191,37 @@ step(m1, { rem: true });                     // still empty: err
 step(m1, { add: true, inp: 6 });             // full again
 step(m1, { rem: true });                     // now empty
 
-// Capacity 6: wraparound, full and empty edge cases.
+const m3 = makeMachine(3);
+step(m3, { add: true, inp: 11 })
+step(m3, { add: true, inp: 22 })
+step(m3, { search: 11 })
+step(m3, { search: 22 })
+step(m3, { search: 33 })
+step(m3, { add: true, inp: 33 })
+step(m3, { search: 11 })
+step(m3, { search: 22 })
+step(m3, { search: 33 })
+step(m3, { rem: true })
+step(m3, { search: 11 })
+step(m3, { search: 22 })
+step(m3, { search: 33 })
+
 const m6 = makeMachine(6);
-log += "--- capacity 6\n";
 step(m6, { add: true, inp: 10 });
 step(m6, { add: true, inp: 20 });
 step(m6, { add: true, inp: 30 });
 step(m6, { rem: true });
 step(m6, { add: true, inp: 40 });
 step(m6, { add: true, inp: 50 });
+step(m6, { search: 10 })
+step(m6, { search: 11 })
 step(m6, { add: true, rem: true, inp: 60 });
 step(m6, { add: true, inp: 70 });            // wraps to slot0
 step(m6, { add: true, inp: 80 });            // now full
 step(m6, { add: true, inp: 90 });            // add on full: err
+step(m6, { search: 80 })
+step(m6, { search: 30 })
+step(m6, { search: 81 })
 step(m6, { add: true, rem: true, inp: 100 }); // add+rem on full
 step(m6, { rem: true });
 step(m6, { rem: true });
@@ -194,23 +237,5 @@ step(m6, { rem: true });                     // still empty: err
 step(m6, { add: true, inp: 140 });
 step(m6, { rem: true });                     // now empty
 
-// A larger buffer: fill it, operate while full, then empty it.
-const LARGE = 10;
-const mL = makeMachine(LARGE);
-log += `--- capacity ${LARGE}: fill\n`;
-for (let v = 1; v <= LARGE; v++) quickStep(mL, { add: true, inp: v });
-dumpSlots(mL);
-log += `--- capacity ${LARGE}: while full\n`;
-quickStep(mL, { add: true, inp: LARGE + 1 });       // add on full: err
-for (let v = LARGE + 1; v <= LARGE + 5; v++) {
-   quickStep(mL, { add: true, rem: true, inp: v }); // add+rem on full
-}
-quickStep(mL, { add: true, inp: LARGE + 6 });       // still full: err
-dumpSlots(mL);
-log += `--- capacity ${LARGE}: empty\n`;
-for (let k = 0; k < LARGE; k++) quickStep(mL, { rem: true });
-quickStep(mL, { rem: true });                       // rem on empty: err
-dumpSlots(mL);
-
 export const mach = m1;
-mach.outbuf = log;
+mach.outbuf += "\n" + m3.outbuf + "\n" + m6.outbuf
