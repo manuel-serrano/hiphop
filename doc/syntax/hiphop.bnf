@@ -94,7 +94,12 @@
 
 <Declaration> --> <Identifier> | <Identifier> = <HHExpression>
 
-<HHSignal> --> signal <Signal> | signal [mirror] <Intf>
+<HHSignal> --> signal <HHSignalDecls> | signal [mirror] <Intf>
+
+<HHSignalDecls> --> <HHSignalDecl>, ... <HHSignalDecl>
+
+<HHSignalDecl> --> <Signal>
+   | "..." <HHDollarExpression> <SignalAttr>
 
 <HHalt> --> halt
 
