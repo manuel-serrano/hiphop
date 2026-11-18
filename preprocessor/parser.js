@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Thu Jan 22 09:51:48 2026 (serrano)                */
+/*    Last change :  Wed Nov 18 11:41:29 2026 (serrano)                */
 /*    Copyright   :  2018-26 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -1876,39 +1876,99 @@ function parseSignal(token) {
    const loc = token.location;
    let signames = [];
 
+   function parseDotSigList() {
+      const loc = this.consumeAny().location;
+      const name = "n";
+      const arg = astutils.J2SUnresolvedRef(loc, name);
+      const formal = astutils.J2SDecl(loc, name, "param");
+      let arr= [];
+      
+      if (this.peekToken().type === this.DOLLAR) {
+	 const { expr, accessors } = parseHHExpression.call(this, true);
+         arr = expr;
+      } else {
+         let els = [];
+	 while (true) {
+	    els.push(astutils.J2SString(loc, this.consumeToken(this.ID).value));
+	    if (this.peekToken().type === this.COMMA) {
+	       this.consumeAny();
+	    } else {
+	       break;
+	    }
+	 }
+	 arr = astutils.J2SArray(loc, els);
+      }
+
+      const m = astutils.J2SAccess(loc, arr, astutils.J2SString(loc, "map"));
+      
+      if (this.peekToken().type === this.EGAL) {
+	 this.consumeAny();
+	 const { expr, accessors: axs, signames } =
+	    parseHHExpression.call(this, true);
+
+	 const node = parseSigAttr.call(this, loc, arg, expr, axs, undefined);
+	 const block = astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, node)]);
+	 const arrow = astutils.J2SArrow(loc, "sig", [ formal ], block);
+	 const call =  astutils.J2SCall(loc, m, null, [ arrow ]);
+	 return wrapSignalNames(call, signames);
+      } else {
+	 const node = parseSigAttr.call(this, loc, arg, false, [], undefined);
+	 const block = astutils.J2SBlock(loc, loc, [astutils.J2SReturn(loc, node)]);
+	 const arrow = astutils.J2SArrow(loc, "sig", [ formal ], block);
+	 return astutils.J2SCall(loc, m, null, [ arrow ]);
+      }
+   }
+   
    function parseSiglist() {
       let args = [];
 
       while (true) {
-	 const sigloc = this.peekToken().location;
-	 const sigstring = this.peekToken().value;
-	 let signame = parseDollarIdentName.call(this);
+         if (this.peekToken().type === "DOTS") {
+            const args = parseDotSigList.call(this);
 
-	 if (sigstring === "implements") {
-	    args = args.concat(parseInterfaceIntflist.call(this));
-	 } else {
-	    if (this.peekToken().type === this.EGAL) {
-	       this.consumeAny();
-	       const { expr, accessors, signames: sigs } =
-		  parseHHExpression.call(this, true);
-	       signames = signames.concat(sigs);
-	       args.push(parseSigAttr.call(this, sigloc, signame, expr, accessors, undefined));
+            switch (this.peekToken().type) {
+               case this.SEMICOLON:
+                  this.consumeAny();
+                  return args;
+                  
+               case this.COMMA:
+                  this.consumeAny();
+                  break;
+
+               default:
+                  console.error("ERROR DOTS");
+            }
+         } else {
+	    const sigloc = this.peekToken().location;
+	    const sigstring = this.peekToken().value;
+	    let signame = parseDollarIdentName.call(this);
+
+	    if (sigstring === "implements") {
+	       args = args.concat(parseInterfaceIntflist.call(this));
 	    } else {
-	       args.push(parseSigAttr.call(this, sigloc, signame, false, [], undefined));
+	       if (this.peekToken().type === this.EGAL) {
+	          this.consumeAny();
+	          const { expr, accessors, signames: sigs } =
+		     parseHHExpression.call(this, true);
+	          signames = signames.concat(sigs);
+	          args.push(parseSigAttr.call(this, sigloc, signame, expr, accessors, undefined));
+	       } else {
+	          args.push(parseSigAttr.call(this, sigloc, signame, false, [], undefined));
+	       }
 	    }
-	 }
-	 switch (this.peekToken().type) {
-	    case this.SEMICOLON:
-	       this.consumeAny();
-	       return args;
-	       
-	    case this.COMMA:
-	       this.consumeAny();
-	       break;
-	       
-	    default:
-	       throw tokenTypeError(this.consumeAny());
-	 }
+	    switch (this.peekToken().type) {
+	       case this.SEMICOLON:
+	          this.consumeAny();
+	          return args;
+	          
+	       case this.COMMA:
+	          this.consumeAny();
+	          break;
+	          
+	       default:
+	          throw tokenTypeError(this.consumeAny());
+	    }
+         }
       }
    }
 
