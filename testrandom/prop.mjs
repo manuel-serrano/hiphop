@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  robby findler & manuel serrano                    */
 /*    Creation    :  Tue May 27 16:44:27 2025                          */
-/*    Last change :  Fri Nov 13 08:45:35 2026 (serrano)                */
+/*    Last change :  Tue Nov 17 18:28:55 2026 (serrano)                */
 /*    Copyright   :  2025-26 robby findler & manuel serrano            */
 /*    -------------------------------------------------------------    */
 /*    Testing execution engines and compilers                          */
@@ -32,6 +32,7 @@ class Prop {
       pre: 1,
       present: 3,
       stdlib: 0,
+      localSignalsVisible: true,
       filters: [ filterinstantaneous ]
    };
    
@@ -52,7 +53,10 @@ class Prop {
 	    } else if (Array.isArray(this.config[k])) {
 	       this.config[k] =
 		  this.config[k].concat(s?.config?.[k] ?? []);
-	    }
+	    } else if (typeof this.config[k] === "boolean") {
+               this.config[k] = this.config[k] &&
+                  (s?.config?.[k] ?? this.config[k]);
+            }
 	 }
       });
    }
@@ -119,7 +123,7 @@ class Prop {
          if (debug) {
             writeFileSync(1, `   * running "${mach.name()}"...`);
          }
-	 const res = runMach(mach, conf.events);
+	 const res = runMach(mach, conf, this.config);
 
          if (debug) {
             writeFileSync(1, "done.\n");
@@ -289,11 +293,13 @@ function signalsEqual(x, y) {
 /*---------------------------------------------------------------------*/
 /*    runMach ...                                                      */
 /*---------------------------------------------------------------------*/
-function runMach(mach, events) {
+function runMach(mach, conf, config) {
+   const events = conf.events;
    let res = [];
    for (let i = 0; i < events.length; i++) {
       try {
-	 const signals = mach.reactDebug(events[i]);
+	 const signals = config.localSignalsVisible ?
+            mach.reactDebug(events[i]) : mach.react(events[i]);
 	 res.push({ status: "success", signals });
       } catch (e) {
 	 if (e.message !== "Causality error.") {

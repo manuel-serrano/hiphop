@@ -4,13 +4,13 @@
 #*    -------------------------------------------------------------    */
 #*    Author      :  manuel serrano                                    */
 #*    Creation    :  Fri Nov 21 13:42:15 2025                          */
-#*    Last change :  Thu Apr  9 14:13:08 2026 (serrano)                */
+#*    Last change :  Tue Nov 17 13:31:16 2026 (serrano)                */
 #*    Copyright   :  2025-26 manuel serrano                            */
 #*    -------------------------------------------------------------    */
 #*    Execute rocq programs                                            */
 #*=====================================================================*/
 
-ROCQ_HOME=${HIPHOP_RT_ROCQ_HOME:-$HOME/prgm/project/hiphop/work/esterel-coq/ESTEREL}
+ROCQ_HOME=${HIPHOP_RT_ROCQ_HOME:-$HOME/prgm/project/hiphop/work/esterel-coq}
 ROCQ_DUNE=${HIPHOP_RT_ROCQ_DUNE:-$HOME/.opam/default/bin/dune}
 
 srcfile=$1
@@ -52,5 +52,5 @@ case $2 in
     echo "Illegal option \"$2\""
 esac
 
-$ROCQ_DUNE exec ./esterelcoq.exe -- $opt $tmp 2> err-$tmp && cat out-$tmp
+$ROCQ_DUNE exec ./esterelcoq.exe -- $opt $tmp -o out-$tmp 2> err-$tmp && cat out-$tmp
 

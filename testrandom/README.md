@@ -1,4 +1,5 @@
-# Random, property-based testing
+Random, property-based testing
+==============================
 
 A quickcheck-inspired library to test that various different options
 of HipHop evaluate programs to the same results.
@@ -71,4 +72,11 @@ const prg = hh.MODULE(
 	    console.log('ok');
 	 }
       })));
+```
+
+Running from JSON
+-----------------
+
+```
+nodejs testrandom/test.mjs /tmp/bug.hh.json
 ```
