@@ -9,7 +9,7 @@ step 2
   buffer:  [ht_] 
 step 3
   input:   {"search":0}
-  emitted: {}
+  emitted: {"pos":false}
   buffer:  [ht_] 
 step 4
   input:   {"add":true,"inp":1}
@@ -29,7 +29,7 @@ step 7
   buffer:  [ht3] full
 step 8
   input:   {"search":2}
-  emitted: {"top":3,"full":true}
+  emitted: {"top":3,"pos":false,"full":true}
   buffer:  [ht3] full
 step 9
   input:   {"rem":true}
@@ -75,7 +75,7 @@ step 4
   buffer:  [h11,22,t_] 
 step 5
   input:   {"search":33}
-  emitted: {"top":11}
+  emitted: {"top":11,"pos":false}
   buffer:  [h11,22,t_] 
 step 6
   input:   {"add":true,"inp":33}
@@ -99,7 +99,7 @@ step 10
   buffer:  [t11,h22,33] 
 step 11
   input:   {"search":11}
-  emitted: {"top":22}
+  emitted: {"top":22,"pos":false}
   buffer:  [t11,h22,33] 
 step 12
   input:   {"search":22}
@@ -141,7 +141,7 @@ step 7
   buffer:  [10,h20,30,40,50,t_] 
 step 8
   input:   {"search":11}
-  emitted: {"top":20}
+  emitted: {"top":20,"pos":false}
   buffer:  [10,h20,30,40,50,t_] 
 step 9
   input:   {"add":true,"rem":true,"inp":60}
@@ -169,7 +169,7 @@ step 14
   buffer:  [70,80,ht30,40,50,60] full
 step 15
   input:   {"search":81}
-  emitted: {"top":30,"full":true}
+  emitted: {"top":30,"pos":false,"full":true}
   buffer:  [70,80,ht30,40,50,60] full
 step 16
   input:   {"add":true,"rem":true,"inp":100}

@@ -93,25 +93,30 @@ function Ring(capacity) {
 
   function search() {
     return hiphop {
-      fork ${slots.map((_, i) => hiphop {
-	if (head.nowval === i) {
-	  if (this[slots[i]].nowval === search.nowval) {
-	    emit ${found[i]}(true);
-	    emit pos((i - head.nowval + capacity) % capacity);
+      found: {
+	fork ${slots.map((_, i) => hiphop {
+	  if (head.nowval === i) {
+	    if (this[slots[i]].nowval === search.nowval) {
+	      emit ${found[i]}(true);
+	      emit pos((i - head.nowval + capacity) % capacity);
+	      break found;
+	    }
+	  } else if (tail.nowval === i) {
+	    if (this[found[dec(i)]].now) {
+	      emit ${found[i]}(true);
+	    }
+	  } else {
+	    if (this[found[dec(i)]].now) {
+	      emit ${found[i]}(true);
+	    } else if (this[slots[i]].nowval === search.nowval) {
+	      emit ${found[i]}(true);
+	      emit pos((i - head.nowval + capacity) % capacity);
+	      break found;
+	    }
 	  }
-	} else if (tail.nowval === i) {
-	  if (this[found[dec(i)]].now) {
-	    emit ${found[i]}(true);
-	  }
-	} else {
-	  if (this[found[dec(i)]].now) {
-	    emit ${found[i]}(true);
-	  } else if (this[slots[i]].nowval === search.nowval) {
-	    emit ${found[i]}(true);
-	    emit pos((i - head.nowval + capacity) % capacity);
-	  }
-	}
-      })}
+	})};
+	emit pos(false);
+      }
     }
   }
 
@@ -134,6 +139,8 @@ function Ring(capacity) {
 	     ${search()}
 	   } else if (full.now) {
 	     ${search()}
+	   } else {
+	     emit pos(false);
 	   }
 	 }
        }
