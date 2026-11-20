@@ -161,16 +161,17 @@ function findBugInConf(conf, prop) {
 /*---------------------------------------------------------------------*/
 function findBugInGen(prop, iterCount) {
    for (let i = iterCount; i != 0; i--) {
-      writePadding(iterCount - i);
-
       const conf = gen(prop);
       const bug = findBugInConf(conf, prop);
 
+      let sym=".";
       switch (bug?.status) {
-	 case "reject": iterCount++; break;
+	 case "reject": iterCount++; sym="r"; break;
+	 case "gaveup": sym="g"; break;
 	 case "failure": return bug;
 	 case "error": return bug;
       }
+      writePadding(iterCount - i, sym);
    }
    
    return false;
@@ -200,11 +201,11 @@ function padding(n, l) {
 /*---------------------------------------------------------------------*/
 /*    writePadding ...                                                 */
 /*---------------------------------------------------------------------*/
-function writePadding(i) {
+function writePadding(i, sym) {
    if (i % 70 === 0) {
       writeFileSync(1, "\n" + padding(i, 9) + " ");
    }
-   writeFileSync(1, ".");
+   writeFileSync(1, sym);
 }
 
 /*---------------------------------------------------------------------*/

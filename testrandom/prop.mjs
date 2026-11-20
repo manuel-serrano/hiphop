@@ -146,6 +146,18 @@ class Prop {
 
       try {
 	 // compare the execution results
+         if (runs.find(r => r.find(e => e.status === 'gaveup'))) {
+            if (debug) {
+               console.log("<<< gave up.");
+            }
+	    return {
+	       status: "gaveup",
+	       systems: this.#systems,
+	       machines: machs,
+	       conf,
+	       runs
+	    }
+	 }
 	 if (runs.find(r => r.length !== runs[0].length)) {
             if (debug) {
                console.log("<<< compared failure reactions.");
