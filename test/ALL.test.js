@@ -114,6 +114,13 @@ async function main(argv) {
       args += " uncycle";
    }
 
+   idx = argv.indexOf("uncyclesat");
+   if (idx >= 0) {
+      hiphop.ReactiveMachine.setConfiguration({ UncycleSat: true });
+      argv.splice(idx, 1);
+      args += " uncyclesat";
+   }
+
    idx = argv.indexOf("nonative");
    if (idx >= 0) {
       hiphop.ReactiveMachine.setConfiguration({ Native: false });
