@@ -3,7 +3,7 @@
 /*    -------------------------------------------------------------    */
 /*    Author      :  Manuel Serrano                                    */
 /*    Creation    :  Tue Jul 17 17:53:13 2018                          */
-/*    Last change :  Wed Nov 18 11:41:29 2026 (serrano)                */
+/*    Last change :  Wed Nov 25 16:59:14 2026 (serrano)                */
 /*    Copyright   :  2018-26 Manuel Serrano                            */
 /*    -------------------------------------------------------------    */
 /*    HipHop parser based on the genuine Hop parser                    */
@@ -249,9 +249,13 @@ function wrapSignalNames(expr, signames) {
 function parseHHExpression(unwrapDollar = true) {
    return parseHHThisExpr.call(this, accessors => {
       if (this.peekToken().type === this.DOLLAR) {
-	 const dollar = this.parseDollarExpression();
-	 const expr = unwrapDollar ? dollar.node : dollar;
-	 return { expr, accessors };
+         if (unwrapDollar) {
+	    const dollar = this.parseDollarExpression();
+	    const expr = unwrapDollar ? dollar.node : dollar;
+	    return { expr, accessors };
+         } else {
+            throw tokenTypeError(this.consumeAny());
+         }
       } else {
 	 const expr = this.parseCondExpression();
 	 return { expr, accessors };

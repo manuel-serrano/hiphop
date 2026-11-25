@@ -9,8 +9,8 @@ let s2 = false;
 hiphop module prgif2() {
    out O1, O2;
    loop {
-      if (${s1}) emit O1();
-      if (${s2}) emit O2();
+      if (s1) emit O1();
+      if (s2) emit O2();
       yield;
    }
 }
@@ -22,5 +22,5 @@ mach.debug_emitted_func = val => {
 }
 
 mach.react()
-s1 = false; // does not change anything because ${s1} is compile-time
+s1 = false;
 mach.react()

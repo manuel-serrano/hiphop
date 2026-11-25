@@ -3,7 +3,7 @@ import * as hh from "@hop/hiphop";
 hiphop module prg() {
    in IN combine (x, y) => x + y;
 	 
-   emit IN( ${5} );
+   emit IN(5);
    async (){
       mach.outbuf += ( "receive " + IN.nowval ) + "\n";
       this.notify( undefined, false );

@@ -6,7 +6,7 @@ const Instruments = [ "violin", "piano", "trumpet", "sax" ];
 function makeAwait(instruments) {
    return hiphop fork ${ instruments.map(val => hiphop {
       await (this[`${val}IN`].nowval);
-      emit ${`${val}OUT`}(${val});
+      emit ${`${val}OUT`}(val);
    }) }
 }
 

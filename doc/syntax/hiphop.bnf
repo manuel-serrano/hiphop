@@ -112,7 +112,7 @@
   | <HHDollarExpression>
   
 <HHEmit> --> emit <HHSignalName>()
-  | emit <HHSignalName> ( <HHExpression> )
+  | emit <HHSignalName> ( <Expression> )
 
 <HHSustain> --> sustain <HHSignalName>()
   | sustain <HHSignalName> ( <HHExpression> )
@@ -155,7 +155,7 @@
 
 <HHDo> --> do <HHBlock> every <HHDelay>
 
-<HHIf> --> if( <HHExpression> ) <HHStatement>
+<HHIf> --> if( <Expression> ) <HHStatement>
   | if( <HHExpression> ) <HHStatement> else <HHStatement>
 
 <HHTrap> --> <HHLabel> : <HHStatement>

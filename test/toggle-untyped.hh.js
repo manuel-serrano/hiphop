@@ -23,14 +23,14 @@ hiphop module prg() {
 		
    loop {
       emit SEQ( SEQ.preval + 1 );
-      emit STATE1( ${true} );
-      emit STATE1( ${false} );
-      emit STATE2( ${true} );
-      emit STATE2( ${false} );
+      emit STATE1(true);
+      emit STATE1(false);
+      emit STATE2(true);
+      emit STATE2(false);
       if (S.pre) {
-	 emit TOOGLE( ${true} );
+	 emit TOOGLE(true);
       } else {
-	 emit TOOGLE( ${false} );
+	 emit TOOGLE(false);
 	 emit S();
       }
       yield;
